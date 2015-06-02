@@ -34,10 +34,28 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+# Configurable variables:
+#     - INSTALL_BIN_DIR_NAME  - name of the directory where binaries will be installed.
+#     - INSTALL_MAN_DIR_NAME  - name of the directory where man pages will be installed.
+#     - INSTALL_DOC_DIR_NAME  - name of the directory where documentation will be installed.
+#
+# Define variables:
+#     - CLI_VERSION       - CLI full version.
+#     - CLI_VERSION_MAJOR - CLI major version number.
+#     - CLI_VERSION_MINOR - CLI minor version number.
+#     - CLI_VERSION_PATCH - CLI patch number.
+
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 
 # Configure path to custom modules
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+# Configure version
+set (CLI_VERSION_MAJOR 0)
+set (CLI_VERSION_MINOR 2)
+set (CLI_VERSION_PATCH 0)
+set (CLI_VERSION ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH})
+message (STATUS "CLI version: " ${CLI_VERSION})
 
 # Configure path variables
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")

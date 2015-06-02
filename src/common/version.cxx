@@ -37,5 +37,5 @@
 #include <cli/version.h>
 
 const char * virgil::cli_version() {
-    return "@CPP_CLI_VERSION@, virgil library  version: @VIRGIL_VERSION@";
+    return "@CLI_VERSION@";
 }
