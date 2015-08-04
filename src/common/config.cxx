@@ -34,39 +34,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdexcept>
+#include <cli/config.h>
 
-#include <cli/pair.h>
-
-
-static std::string trim(const std::string& s, const std::string& delimiters = " \f\n\r\t\v" ) {
-    std::string result = s;
-    result.erase(result.find_last_not_of(delimiters) + 1);
-    result.erase(0, result.find_first_not_of(delimiters));
-    return result;
-}
-
-
-namespace virgil { namespace cli {
-
-std::pair<std::string, std::string> parse_pair(const std::string& str) {
-    size_t delimPos = str.find_first_of(':');
-    if (delimPos == std::string::npos || delimPos == (str.size() - 1)) {
-        throw std::invalid_argument(std::string("invalid pair format: ") + str +
-                                    ". Expected format: '<key>:<value>'.");
-    }
-    return std::make_pair(trim(str.substr(0, delimPos)), trim(str.substr(delimPos + 1)));
-}
-
-std::multimap<std::string, std::string> parse_pair_array(const std::vector<std::string>& pairs) {
-    std::multimap<std::string, std::string> result;
-    for(const auto& pair : pairs) {
-        result.insert(virgil::cli::parse_pair(pair));
-    }
-
-    return result;
-}
-
-}}
-
-
+const std::string VIRGIL_APP_TOKEN = "@VIRGIL_APP_TOKEN@";

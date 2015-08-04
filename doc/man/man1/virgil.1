@@ -17,7 +17,7 @@ program is a command line tool for using the various cryptography functions of t
 .It
 genarate private key
 .It
-create certificate
+create Virgil Public Key or get Virgil Public Key
 .It
 encrypt data
 .It
@@ -33,22 +33,24 @@ verify data
 Generate private key with given parameters.
 .It \fBkey2pub\fP
 Extract public key from the private key.
-.It \fBpub2cert\fP
-Create certificate from the public key and identifiers.
-.It \fBcertinfo\fP
-Output detailed information about given certificate.
+.It \fBadduser\fP
+Once you've created public key you may push it to the Virgil Public Keys Service. This will allow other users to send you encrypted data using your Virgil Public Key.
+.It \fBgetuser\fP
+Get Virgil Public Key from Public Keys Service.
 .It \fBencrypt\fP
-Encrypt data for given recipients which can be defined by certificates and by passwords.
+Encrypt data for given recipients which can be defined by Virgil Public Keys and by passwords.
 .It \fBdecrypt\fP
-Decrypt data for given recipient which can be defined by certificate or by password.
+Decrypt data for given recipient which can be defined by Virgil Public Key or by password.
 .It \fBsign\fP
 Sign data with private key.
 .It \fBverify\fP
-Verify data with certificate.
+Verify data with Virgil Public Key.
 .El
 .Sh SEE ALSO
 .Xr virgilkeygen 1 ,
-.Xr virgilkey2cert 1 ,
+.Xr virgilkey2pub 1 ,
+.Xr virgiladduser 1 ,
+.Xr virgilgetuser 1 ,
 .Xr virgilencrypt 1 ,
 .Xr virgildecrypt 1 ,
 .Xr virgilsign 1 ,

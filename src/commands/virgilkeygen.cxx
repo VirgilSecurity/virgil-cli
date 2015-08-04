@@ -34,60 +34,56 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 #include <iterator>
-#include <string>
-#include <stdexcept>
 #include <map>
-
-#include <virgil/VirgilByteArray.h>
-using virgil::VirgilByteArray;
-
-#include <virgil/crypto/VirgilKeyPairGenerator.h>
-using virgil::crypto::VirgilKeyPairGenerator;
-
-#include <virgil/crypto/VirgilAsymmetricCipher.h>
-using virgil::crypto::VirgilAsymmetricCipher;
+#include <stdexcept>
+#include <string>
 
 #include <tclap/CmdLine.h>
 
+#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/crypto/foundation/VirgilKeyPairGenerator.h>
+#include <virgil/crypto/foundation/VirgilAsymmetricCipher.h>
+
 #include <cli/version.h>
+#include <cli/util.h>
+
+using virgil::crypto::VirgilByteArray;
+using virgil::crypto::foundation::VirgilKeyPairGenerator;
+using virgil::crypto::foundation::VirgilAsymmetricCipher;
+
+/**
+ * @brief Convert string representation of the Elliptic Curve group to the appropriate constant.
+ */
+static VirgilKeyPairGenerator::ECKeyGroup ec_key_group_from_param(const std::string &param);
 
 #ifdef SPLIT_CLI
-    #define MAIN main
+#define MAIN main
 #else
-    #define MAIN keygen_main
+#define MAIN keygen_main
 #endif
-
-static VirgilKeyPairGenerator::ECKeyGroup ec_key_group_from_param(const std::string& param) {
-    std::map<std::string, VirgilKeyPairGenerator::ECKeyGroup> ecKeyGroup;
-    ecKeyGroup["secp192r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP192R1;
-    ecKeyGroup["secp224r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP224R1;
-    ecKeyGroup["secp256r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP256R1;
-    ecKeyGroup["secp384r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP384R1;
-    ecKeyGroup["secp521r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP521R1;
-    ecKeyGroup["bp256r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_BP256R1;
-    ecKeyGroup["bp384r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_BP384R1;
-    ecKeyGroup["bp512r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_BP512R1;
-    ecKeyGroup["secp192k1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP192K1;
-    ecKeyGroup["secp224k1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP224K1;
-    ecKeyGroup["secp256k1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP256K1;
-
-    std::map<std::string, VirgilKeyPairGenerator::ECKeyGroup>::const_iterator group = ecKeyGroup.find(param);
-    if (group != ecKeyGroup.end()) {
-        return group->second;
-    } else {
-        return VirgilKeyPairGenerator::ECKeyGroup_DP_NONE;
-    }
-}
 
 int MAIN(int argc, char **argv) {
     try {
         // Parse arguments.
         TCLAP::CmdLine cmd("Generate private key with given parameters.", ' ', virgil::cli_version());
+
+        std::vector<std::string> ec_key;
+        ec_key.push_back(" bp256r1 ");
+        ec_key.push_back(" bp384r1 ");
+        ec_key.push_back(" bp512r1 ");
+        ec_key.push_back(" secp192r1 ");
+        ec_key.push_back(" secp224r1 ");
+        ec_key.push_back(" secp256r1 ");
+        ec_key.push_back(" secp384r1 ");
+        ec_key.push_back(" secp521r1 ");
+        ec_key.push_back(" secp192k1 ");
+        ec_key.push_back(" secp224k1 ");
+        ec_key.push_back(" secp256k1 ");
+        TCLAP::ValuesConstraint<std::string> allowedEcKey(ec_key);
 
         TCLAP::ValueArg<std::string> ecArg("e", "ec",
                 "Generate elliptic curve key with one of the following curves:\n"
@@ -102,7 +98,7 @@ int MAIN(int argc, char **argv) {
                 "\t* secp192k1 - 192-bits \"Koblitz\" curve;\n"
                 "\t* secp224k1 - 224-bits \"Koblitz\" curve;\n"
                 "\t* secp256k1 - 256-bits \"Koblitz\" curve.\n",
-                false, "", "curve");
+                false, "bp512r1", &allowedEcKey);
 
         TCLAP::ValueArg<unsigned int> rsaArg("r", "rsa", "Generate RSA key with a given number of bits.",
                 false, 0, "nbits");
@@ -110,28 +106,15 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Private key. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> pwdArg("p", "pwd", "Private key password.",
-                false, "", "arg");
+        TCLAP::ValueArg<std::string> pwdArg("p", "pwd", "Password to be used for private key encryption. "
+                "If omitted private key is stored in the plain format.", false, "", "arg");
 
-        TCLAP::ValueArg<std::string> formatArg("f", "format", "Output format: der | pem (default).",
-                false, "pem", "arg");
-
-        cmd.add(formatArg);
         cmd.add(pwdArg);
         cmd.add(outArg);
-        cmd.add(rsaArg);
         cmd.add(ecArg);
+        cmd.add(rsaArg);
 
         cmd.parse(argc, argv);
-
-        // Prepare output.
-        std::ostream *outStream = &std::cout;
-        std::ofstream outFile(outArg.getValue().c_str(), std::ios::out | std::ios::binary);
-        if (outFile.good()) {
-            outStream = &outFile;
-        } else if (!outArg.getValue().empty()) {
-            throw std::invalid_argument(std::string("can not write file: " + outArg.getValue()));
-        }
 
         // Check parameters
         if (!ecArg.getValue().empty() && rsaArg.getValue() > 0) {
@@ -139,7 +122,7 @@ int MAIN(int argc, char **argv) {
         }
 
         VirgilAsymmetricCipher cipher = VirgilAsymmetricCipher::none();
-        if (rsaArg.getValue() > 0) {
+        if (rsaArg.isSet()) {
             // Generate RSA key
             cipher = VirgilAsymmetricCipher::rsa();
             cipher.genKeyPair(VirgilKeyPairGenerator::rsa(rsaArg.getValue()));
@@ -158,17 +141,11 @@ int MAIN(int argc, char **argv) {
         }
 
         // Export private key
-        VirgilByteArray privateKey;
-        if (formatArg.getValue() == "pem") {
-            privateKey = cipher.exportPrivateKeyToPEM(virgil::str2bytes(pwdArg.getValue()));
-        } else if (formatArg.getValue() == "der") {
-            privateKey = cipher.exportPrivateKeyToDER(virgil::str2bytes(pwdArg.getValue()));
-        } else {
-            throw std::invalid_argument(std::string("unknown output format: ") + formatArg.getValue());
-        }
+        VirgilByteArray privateKey = cipher.exportPrivateKeyToPEM(virgil::crypto::str2bytes(pwdArg.getValue()));
 
-        // Output private key
-        std::copy(privateKey.begin(), privateKey.end(), std::ostreambuf_iterator<char>(*outStream));
+        // Write private key
+        virgil::cli::write_bytes(outArg.getValue(), privateKey);
+
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
@@ -176,5 +153,27 @@ int MAIN(int argc, char **argv) {
         std::cerr << "Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
+}
+
+static VirgilKeyPairGenerator::ECKeyGroup ec_key_group_from_param(const std::string &param) {
+    std::map<std::string, VirgilKeyPairGenerator::ECKeyGroup> ecKeyGroup;
+    ecKeyGroup["secp192r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP192R1;
+    ecKeyGroup["secp224r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP224R1;
+    ecKeyGroup["secp256r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP256R1;
+    ecKeyGroup["secp384r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP384R1;
+    ecKeyGroup["secp521r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP521R1;
+    ecKeyGroup["bp256r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_BP256R1;
+    ecKeyGroup["bp384r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_BP384R1;
+    ecKeyGroup["bp512r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_BP512R1;
+    ecKeyGroup["secp192k1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP192K1;
+    ecKeyGroup["secp224k1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP224K1;
+    ecKeyGroup["secp256k1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP256K1;
+
+    auto group = ecKeyGroup.find(param);
+    if (group != ecKeyGroup.end()) {
+        return group->second;
+    }
+    return VirgilKeyPairGenerator::ECKeyGroup_DP_NONE;
 }

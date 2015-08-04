@@ -8,9 +8,7 @@
 .Nm
 .Op Fl Fl in Ar file
 .Op Fl Fl out Ar file
-.Op Fl Fl format Ar arg
 .Fl Fl key Ar file Op Fl Fl pwd Ar arg
-.Fl Fl certificate Ar file
 .Sh DESCRIPTION
 Sign data with given private key.
 .Sh OPTIONS
@@ -19,14 +17,10 @@ Sign data with given private key.
 Data to be signed. If omitted \fBstdin\fP is used.
 .It Fl o, Fl Fl out Ar file
 Digest sign. If omitted \fBstdout\fP is used.
-.It Fl f, Fl Fl format Ar arg
-Output format (\fBjson\fP | \fBder\fP - default).
 .It Fl k, Fl Fl key Ar file
 Signer's private key.
 .It Fl p, Fl Fl pwd Ar arg
 Signer's private key password.
-.It Fl c, Fl Fl certificate Ar file
-Signer's certificate.
 .El
 .Sh SEE ALSO
 .Xr virgil 1 ,

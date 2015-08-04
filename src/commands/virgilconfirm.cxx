@@ -34,68 +34,75 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <iostream>
+#include <fstream>
 #include <stdexcept>
+#include <string>
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/crypto/VirgilByteArray.h>
-#include <virgil/crypto/VirgilCryptoException.h>
-#include <virgil/crypto/foundation/VirgilAsymmetricCipher.h>
+#include <virgil/sdk/keys/http/Connection.h>
+#include <virgil/sdk/keys/model/UserData.h>
+#include <virgil/sdk/keys/client/KeysClient.h>
 
 #include <cli/version.h>
+#include <cli/config.h>
 #include <cli/util.h>
+#include <cli/pair.h>
+#include <cli/guid.h>
 
-using virgil::crypto::VirgilByteArray;
-using virgil::crypto::VirgilCryptoException;
-using virgil::crypto::foundation::VirgilAsymmetricCipher;
+using virgil::sdk::keys::http::Connection;
+using virgil::sdk::keys::model::UserData;
+using virgil::sdk::keys::client::KeysClient;
 
-
-/**
- * @brief Returns whether underling data is ASN.1 structure or not.
- */
-inline bool is_asn1(const VirgilByteArray& data) {
-    return data.size() > 0 && data[0] == 0x30;
-}
 
 #ifdef SPLIT_CLI
     #define MAIN main
 #else
-    #define MAIN key2pub_main
+    #define MAIN confirm_main
 #endif
+
 
 int MAIN(int argc, char **argv) {
     try {
         // Parse arguments.
-        TCLAP::CmdLine cmd("Extract public key from the private key.", ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd("Send confirmation code to the Virgil Public Keys service. "
+                "Confirmation code is sent after user's public key registration.", ' ',
+                virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Private key. If omitted stdin is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> userIdArg("i", "user-id",
+                "User's identifer.\n"
+                "Format: [email|phone|domain]:<value>\n"
+                "where:\n"
+                "\t* if email, then <value> - user's email;\n"
+                "\t* if phone, then <value> - user's phone;\n"
+                "\t* if domain, then <value> - user's domain.\n",
+                true, "", "arg");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Public key. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> confirmationCodeArg("c", "code", "Confirmation code.",
+                true, "", "arg");
 
-        TCLAP::ValueArg<std::string> pwdArg("p", "pwd", "Private key password.",
-                false, "", "arg");
-
-        cmd.add(pwdArg);
-        cmd.add(outArg);
-        cmd.add(inArg);
+        cmd.add(confirmationCodeArg);
+        cmd.add(userIdArg);
 
         cmd.parse(argc, argv);
 
-        // Prepare input. Read private key.
-        VirgilByteArray privateKey = virgil::cli::read_bytes(inArg.getValue());
+        // Parse User Identifier
+        const std::pair<std::string, std::string> userIdPair = virgil::cli::parse_pair(userIdArg.getValue());
+        const std::string userIdType = userIdPair.first;
+        const std::string userId = userIdPair.second;
 
-        // Extract public key.
-        VirgilAsymmetricCipher cipher = VirgilAsymmetricCipher::none();
-        cipher.setPrivateKey(privateKey, virgil::crypto::str2bytes(pwdArg.getValue()));
+        // Find User Data
+        KeysClient keysClient(std::make_shared<Connection>(VIRGIL_APP_TOKEN));
+        auto foundUserDatas = keysClient.userData().search(userId, userIdType);
 
-        VirgilByteArray publicKey = is_asn1(privateKey) ?
-                cipher.exportPublicKeyToDER() : cipher.exportPublicKeyToPEM();
-
-        // Prepare output. Output public key
-        virgil::cli::write_bytes(outArg.getValue(), publicKey);
-
+        // Confirm User Data
+        if (foundUserDatas.size() > 0) {
+            UserData userData = foundUserDatas.front();
+            keysClient.userData().confirm(userData.userDataId(), confirmationCodeArg.getValue(), virgil::cli::guid());
+        } else {
+            throw std::runtime_error("User with id: " + userIdArg.getValue() + " not found.");
+        }
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;

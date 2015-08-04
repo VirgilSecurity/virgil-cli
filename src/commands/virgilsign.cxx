@@ -34,31 +34,24 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstdlib>
-#include <iostream>
 #include <fstream>
-#include <algorithm>
+#include <iostream>
 #include <iterator>
-#include <string>
 #include <stdexcept>
-
-#include <virgil/VirgilByteArray.h>
-using virgil::VirgilByteArray;
-
-#include <virgil/service/VirgilStreamSigner.h>
-using virgil::service::VirgilStreamSigner;
-
-#include <virgil/stream/VirgilStreamDataSource.h>
-using virgil::stream::VirgilStreamDataSource;
-
-#include <virgil/service/data/VirgilSign.h>
-using virgil::service::data::VirgilSign;
-
-#include <virgil/stream/utils.h>
+#include <string>
 
 #include <tclap/CmdLine.h>
 
+#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/crypto/VirgilStreamSigner.h>
+#include <virgil/crypto/stream/VirgilStreamDataSource.h>
+
 #include <cli/version.h>
+#include <cli/util.h>
+
+using virgil::crypto::VirgilByteArray;
+using virgil::crypto::VirgilStreamSigner;
+using virgil::crypto::stream::VirgilStreamDataSource;
 
 #ifdef SPLIT_CLI
     #define MAIN main
@@ -69,7 +62,7 @@ using virgil::service::data::VirgilSign;
 int MAIN(int argc, char **argv) {
     try {
         // Parse arguments.
-        TCLAP::CmdLine cmd("Decrypt data", ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd("Sign data with given user's private key.", ' ', virgil::cli_version());
 
         TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be signed. If omitted stdin is used.",
                 false, "", "file");
@@ -77,84 +70,58 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Digest sign. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> formatArg("f", "format", "Output format: json | der (default).",
-                false, "der", "arg");
-
         TCLAP::ValueArg<std::string> keyArg("k", "key", "Signer's private key.",
                 true, "", "file");
 
         TCLAP::ValueArg<std::string> pwdArg("p", "pwd", "Signer's private key password.",
                 false, "", "arg");
 
-        TCLAP::ValueArg<std::string> certificateArg("c", "certificate", "Signer's certificate.",
-                true, "", "arg");
-
-        cmd.add(certificateArg);
         cmd.add(pwdArg);
         cmd.add(keyArg);
-        cmd.add(formatArg);
         cmd.add(outArg);
         cmd.add(inArg);
 
         cmd.parse(argc, argv);
 
-        // Prepare input.
-        std::istream *inStream = &std::cin;
-        std::ifstream inFile(inArg.getValue().c_str(), std::ios::in | std::ios::binary);
-        if (inFile.good()) {
+        // Prepare input
+        std::istream* inStream;
+        std::ifstream inFile;
+        if (inArg.getValue().empty() || inArg.getValue() == "-") {
+            inStream = &std::cin;
+        } else {
+            inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
+            if (!inFile) {
+                throw std::invalid_argument("can not read file: " + inArg.getValue());
+            }
             inStream = &inFile;
-        } else if (!inArg.getValue().empty()) {
-            throw std::invalid_argument(std::string("can not read file: " + inArg.getValue()));
         }
-        VirgilStreamDataSource dataSource(*inStream);
-
-        // Prepare output.
-        std::ostream *outStream = &std::cout;
-        std::ofstream outFile(outArg.getValue().c_str(), std::ios::out | std::ios::binary);
-        if (outFile.good()) {
-            outStream = &outFile;
-        } else if (!outArg.getValue().empty()) {
-            throw std::invalid_argument(std::string("can not write file: " + outArg.getValue()));
-        }
-
-        // Read certificate
-        VirgilCertificate certificate = virgil::stream::read_certificate(certificateArg.getValue());
 
         // Read private key
-        std::ifstream keyFile(keyArg.getValue().c_str(), std::ios::in | std::ios::binary);
-        if (!keyFile.good()) {
-            throw std::invalid_argument(std::string("can not read private key: " + keyArg.getValue()));
+        std::ifstream keyFile(keyArg.getValue(), std::ios::in | std::ios::binary);
+        if (!keyFile) {
+            throw std::invalid_argument("can not read file: " + keyArg.getValue());
         }
-        VirgilByteArray privateKey;
-        std::copy(std::istreambuf_iterator<char>(keyFile), std::istreambuf_iterator<char>(),
-                std::back_inserter(privateKey));
-        VirgilByteArray privateKeyPassword = virgil::str2bytes(pwdArg.getValue());
 
-        // Create signer.
+        VirgilByteArray privateKey((std::istreambuf_iterator<char>(keyFile)), std::istreambuf_iterator<char>());
+        VirgilByteArray privateKeyPassword = virgil::crypto::str2bytes(pwdArg.getValue());
+
+        // Create signer
         VirgilStreamSigner signer;
 
-        // Sign data.
-        VirgilSign sign = signer.sign(dataSource, certificate.id().certificateId(), privateKey, privateKeyPassword);
+        // Sign data
+        VirgilStreamDataSource dataSource(*inStream);
+        VirgilByteArray sign = signer.sign(dataSource, privateKey, privateKeyPassword);
 
-        // Marshal sign.
-        VirgilByteArray signData;
-        if (formatArg.getValue() == "der") {
-            signData = sign.toAsn1();
-        } else if (formatArg.getValue() == "json") {
-            signData = sign.toJson();
-        } else {
-            throw std::invalid_argument(std::string("unknown --format: ") + formatArg.getValue());
-        }
-
-        // Write sign to the output.
-        std::copy(signData.begin(), signData.end(), std::ostreambuf_iterator<char>(*outStream));
+        // Prepare output. Write sign to the output.
+        virgil::cli::write_bytes(outArg.getValue(), sign);
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "sing. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "Error: " << exception.what() << std::endl;
+        std::cerr << "sign. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }

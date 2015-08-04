@@ -9,10 +9,11 @@
 .Op Fl Fl in Ar file
 .Op Fl Fl out Ar file
 .Op Fl Fl content-info Ar file
-.Op Fl Fl recipients Ar file | Ar recipient
+.Op Fl Fl recipients Ar file
+.Fl Fl Ar recipient Ar arg
 .Ar ...
 .Sh DESCRIPTION
-Encrypt data for given recipients. Recipient can be represented either by the password, or by the certificate.
+Encrypt data for given recipients. Recipient can be represented either by the password, or by the Virgil Public Key.
 .Sh OPTIONS
 .Bl -tag -width "--"
 .It Fl i, Fl Fl in Ar file
@@ -21,36 +22,42 @@ Data to be encrypted. If omitted \fBstdin\fP is used.
 Encrypted data. If omitted \fBstdout\fP is used.
 .It Fl c, Fl Fl content-info Ar file
 Content info. If omitted - becomes a part of the encrypted data.
+
 .It Fl r, Fl Fl recipients Ar file
-File that contains information about recipients. Each line can be either empty line, or comment line, or recipient.
+File that contains information about recipients. Each line
+can be either empty line,
+or comment line, or recipient defined as:
+[pass|vpk_file|email|phone|domain]:<value>
+where:
+.Bl -bullet -compact
+.It
+if pass, then <value> - recipient's password;
+.It
+if vpk_file, then <value> - recipient's Virgil Public Key file stored locally;
+.It
+if email, then <value> - recipient's email;
+.It
+if phone, then <value> - recipient's phone;
+.It
+if domain, then <value> - recipient's domain;
+.El
+
 .Bd -literal
-\fBFormat\fP:
-# <comment line> | <certfifcate path> | <password>
-.Ed
-.Bd -literal
-\fBExample\fP:
-# Recipients defined by certificates:
-cert:~/certificates/cert1.der
-cert:~/certificates/cert2.json
-# Recipients defined by passwords:
-pass:user1_password
-pass:user2_password
+
 # Recipients defined by user identifier:
 email:test@test.com
 phone:+1 777 666 5555
-fax:+1 777 999 4444
+
 .Ed
 .It Ar recipient
-Format: [cert|pass|email|phone|fax]:<value>
+Line that contains information about recipients. Same as significant line in the configuration file.
 .Bl -bullet
-.It 
-cert:<value> - path to the recipient's certificate file;
-.It 
-pass:<value> - recipient's password;
-.It 
-email|phone|fax:<value> - recipient's identifier.
+.It
+Format: [pass|vpk_file|email|phone|domain]:<value>
+.It
+email|pass|vpk_file|phone|domain:<value> - recipient's identifier.
 .El
 .El
 .Sh SEE ALSO
-.Xr virgil 1 ,
+.Xr virgil 1,
 .Xr virgildecrypt 1

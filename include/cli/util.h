@@ -34,39 +34,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdexcept>
+#ifndef VIRGIL_CLI_COMMON_UTIL_H
+#define VIRGIL_CLI_COMMON_UTIL_H
 
-#include <cli/pair.h>
+#include <string>
 
+#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/sdk/keys/model/PublicKey.h>
 
-static std::string trim(const std::string& s, const std::string& delimiters = " \f\n\r\t\v" ) {
-    std::string result = s;
-    result.erase(result.find_last_not_of(delimiters) + 1);
-    result.erase(0, result.find_first_not_of(delimiters));
-    return result;
-}
-
+namespace vc = virgil::crypto;
+namespace vskm = virgil::sdk::keys::model;
 
 namespace virgil { namespace cli {
 
-std::pair<std::string, std::string> parse_pair(const std::string& str) {
-    size_t delimPos = str.find_first_of(':');
-    if (delimPos == std::string::npos || delimPos == (str.size() - 1)) {
-        throw std::invalid_argument(std::string("invalid pair format: ") + str +
-                                    ". Expected format: '<key>:<value>'.");
-    }
-    return std::make_pair(trim(str.substr(0, delimPos)), trim(str.substr(delimPos + 1)));
-}
+/**
+ * @brief Retive Virgil Public Key from the Virgil Public Key service.
+ */
+vskm::PublicKey get_virgil_public_key(const std::string& recipientId, const std::string& recipientIdType);
 
-std::multimap<std::string, std::string> parse_pair_array(const std::vector<std::string>& pairs) {
-    std::multimap<std::string, std::string> result;
-    for(const auto& pair : pairs) {
-        result.insert(virgil::cli::parse_pair(pair));
-    }
+/**
+ * @brief Read Virgil Public Key from the file.
+ */
+vskm::PublicKey read_virgil_public_key(std::istream& file);
 
-    return result;
-}
+/**
+ * @brief Read bytes from the given source.
+ * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
+ */
+vc::VirgilByteArray read_bytes(const std::string& in);
+
+/**
+ * @brief Write bytes to the given destination.
+ * @param out - if empty or equal to "-" then 'stdout' is used, otherwise - path to file.
+ */
+void write_bytes(const std::string& out, const vc::VirgilByteArray& data);
+void write_bytes(const std::string& out, const std::string& data);
 
 }}
 
-
+#endif /* VIRGIL_CLI_COMMON_UTIL_H */

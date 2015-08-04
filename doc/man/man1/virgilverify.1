@@ -28,14 +28,16 @@ Verification result: \fBsuccess\fP | f\fBailure\fP. If omitted \fBstdout\fP is u
 .It Fl s, Fl Fl sign Ar file
 Digest sign.
 .It Fl r, Fl Fl sign-owner Ar file
-Sign owner, defined as: \fB[email|phone|fax] : <value>\fR, where
+Sign owner, defined as: \fB[vpk_file|email|phone|domain] : <value>\fR, where
 .Bl -bullet
+.It
+vpk_file - recipient's Virgil Public Key stored locally;
 .It
 email - recipient's email;
 .It
 phone - recipient's phone;
 .It
-fax - recipient's fax.
+domain - recipient's domain.
 .El
 .El
 .Sh SEE ALSO

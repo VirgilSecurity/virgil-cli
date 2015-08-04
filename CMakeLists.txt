@@ -45,7 +45,13 @@
 #     - CLI_VERSION_MINOR - CLI minor version number.
 #     - CLI_VERSION_PATCH - CLI patch number.
 
-cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.0 FATAL_ERROR)
+
+project (virgil_cli)
+
+# Enable C++11
+set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Configure path to custom modules
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -62,29 +68,44 @@ set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for exec
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
 set (INSTALL_DOC_DIR_NAME "share/doc" CACHE STRING "Installation directory name for doc pages")
 
-# Enable external project feature
-include (ExternalProject)
+# Configure application token
+set (VIRGIL_APP_TOKEN "" CACHE STRING
+        "Application specific token acquired from the Virgil Security")
 
-# Use cURL
+if (NOT VIRGIL_APP_TOKEN)
+    message (FATAL_ERROR "VIRGIL_APP_TOKEN configuration is not defined.")
+endif ()
+
+# Find dependencies
 find_package (CURL REQUIRED)
-include_directories (CURL_INCLUDE_DIRS)
+include_directories (${CURL_INCLUDE_DIRS})
 
-# Use Virgil Security crypto lib
-include (virgil_ext)
-include_directories (${VIRGIL_INCLUDE_DIR})
+include (virgil)
+virgil_add_dependency ("crypto"
+    VIRGIL_CRYPTO_DEPENDENCIES
+    VIRGIL_CRYPTO_INCLUDE_DIRS
+    VIRGIL_CRYPTO_LIBRARIES
+)
+include_directories (${VIRGIL_CRYPTO_INCLUDE_DIRS})
 
-# Use jsoncpp lib
-include (jsoncpp_ext)
-include_directories (${JSONCPP_INCLUDE_DIR})
+virgil_add_dependency ("keys-public"
+    VIRGIL_KEYS_PUBLIC_DEPENDENCIES
+    VIRGIL_KEYS_PUBLIC_INCLUDE_DIRS
+    VIRGIL_KEYS_PUBLIC_LIBRARIES
+)
+include_directories (${VIRGIL_KEYS_PUBLIC_INCLUDE_DIRS})
 
 # Use tclap lib
-include_directories (${CMAKE_CURRENT_SOURCE_DIR}/ext)
-include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/ext")
+message (STATUS "TCLAP library: ON")
+
+#
+include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # Define sources list
 aux_source_directory ("src/common" SRC_LIST)
-aux_source_directory ("src/pki" SRC_LIST)
 aux_source_directory ("src/commands" SRC_LIST)
+
 foreach (src_file ${SRC_LIST})
     configure_file (
         "${CMAKE_CURRENT_SOURCE_DIR}/${src_file}"
@@ -92,28 +113,17 @@ foreach (src_file ${SRC_LIST})
         @ONLY
     )
 endforeach ()
+
 aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/common SRC_COMMON)
-aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/pki SRC_PKI)
 aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/commands SRC_COMMANDS)
 
-add_library (virgil_cli_common ${SRC_COMMON})
+add_executable (virgil_cli ${SRC_COMMON} ${SRC_COMMANDS})
+target_link_libraries (virgil_cli ${VIRGIL_CRYPTO_LIBRARIES} ${VIRGIL_KEYS_PUBLIC_LIBRARIES} ${CURL_LIBRARIES})
+add_dependencies (virgil_cli ${VIRGIL_CRYPTO_DEPENDENCIES} ${VIRGIL_KEYS_PUBLIC_DEPENDENCIES})
+set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
-add_library (virgil_cli_pki ${SRC_PKI})
-target_link_libraries (virgil_cli_pki ${JSONCPP} ${VIRGIL} ${VIRGIL_EXT_LIBRARIES} ${CURL_LIBRARIES})
-
-add_executable (virgil_cli ${SRC_COMMANDS})
-target_link_libraries (virgil_cli virgil_cli_common virgil_cli_pki)
-set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME virgil)
-
-# Install cli
+# Install virgil_cli
 install (TARGETS virgil_cli DESTINATION ${INSTALL_BIN_DIR_NAME})
 if (UNIX)
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
 endif (UNIX)
-
-if (UNIX AND ENABLE_TESTING)
-    add_test (
-        NAME "test_cli.sh"
-        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/test_cli.sh" "${CMAKE_CURRENT_BINARY_DIR}"
-    )
-endif (UNIX AND ENABLE_TESTING)
