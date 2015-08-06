@@ -1,0 +1,37 @@
+.TH "VIRGIL" "1" "August 01, 2015" "Virgil Security CLI (0.3.0)" "BSD General Commands Manual"
+.SH NAME
+.PP
+\f[B]reconfirm\f[] \-\- resend confirmation code.
+.SH SYNOPSIS
+.PP
+\f[B]virgil reconfirm\f[] \-\-user\-id \f[I]arg\f[]
+.SH DESCRIPTION
+.PP
+Resend confirmation code to the user for given user\[aq]s identifier.
+.SH OPTIONS
+.TP
+.B \-i \f[I]arg\f[], \-\-user\-id \f[I]arg\f[]
+(required) User\[aq]s identifer.
+.RS
+.PP
+Format:
+.IP
+.nf
+\f[C]
+[email|phone|domain]:<value>
+\f[]
+.fi
+.PP
+where:
+.IP \[bu] 2
+if \f[C]email\f[], then \f[I]value\f[] \- user\[aq]s email;
+.IP \[bu] 2
+if \f[C]phone\f[], then \f[I]value\f[] \- user\[aq]s phone;
+.IP \[bu] 2
+if \f[C]domain\f[], then \f[I]value\f[] \- user\[aq]s domain.
+.RE
+.SH SEE ALSO
+.PP
+\f[C]virgil(1)\f[], \f[C]virgilkeyreg(1)\f[]
+.SH AUTHORS
+(c) Virgil Security Inc.

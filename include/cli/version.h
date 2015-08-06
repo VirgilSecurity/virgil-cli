@@ -44,6 +44,6 @@ namespace virgil {
  */
 const char * cli_version();
 
-}
+} // virgil
 
 #endif /* VIRGIL_COMMON_VERSION_H */

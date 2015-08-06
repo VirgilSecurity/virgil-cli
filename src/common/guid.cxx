@@ -34,40 +34,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_PKI_H
-#define VIRGIL_PKI_H
+ #include <cli/guid.h>
 
-#include <string>
-#include <map>
-
-#include <virgil/VirgilByteArray.h>
-using virgil::VirgilByteArray;
-
-#include <virgil/service/data/VirgilCertificate.h>
-using virgil::service::data::VirgilCertificate;
-
-#define VIRGIL_PKI_URL_BASE "https://pki-stg.virgilsecurity.com/"
-
-namespace virgil {
-
-/**
- * @brief Make synchronous request to the Virgil PKI service to retrive certificate for given user.
- * @param userIdType - user's identifier type: email|phone|fax|...
- * @param userId - specific user's identifier, i.e. 'test@test.com'.
- * @return Recipient's certificate.
- * @throw VirgilException - if something wrong.
- */
-VirgilCertificate pki_get_certificate(const std::string& userIdType, const std::string& userId);
-
-/**
- * @brief Make synchronous request to the Virgil PKI service to create user with his identifiers.
- * @param publicKey - user's public key.
- * @param ids - user's identifiers.
- * @return user's certificate.
- * @throw VirgilException - if something wrong.
- */
-VirgilCertificate pki_create_user(const VirgilByteArray& publicKey, const std::map<std::string, std::string>& ids);
-
+extern "C"
+{
+#ifdef WIN32
+#include <Rpc.h>
+#else
+#include <uuid/uuid.h>
+#endif
 }
 
-#endif /* VIRGIL_PKI_H */
+#include <algorithm>
+
+std::string virgil::cli::guid() {
+#ifdef WIN32
+    UUID uuid;
+    UuidCreate (&uuid);
+    unsigned char * str;
+    UuidToStringA (&uuid, &str);
+    std::string s((char*) str);
+    RpcStringFreeA (&str);
+#else
+    uuid_t uuid;
+    uuid_generate_random (uuid);
+    char buf[37] = {0x0};
+    uuid_unparse (uuid, buf);
+    std::string s(buf);
+#endif
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s;
+}

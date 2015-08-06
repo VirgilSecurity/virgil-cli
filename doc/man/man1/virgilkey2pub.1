@@ -1,26 +1,34 @@
-.Dd April 22, 2015
-.Dt KEY2PUB 1
-.Os Darwin
-.Sh NAME
-.Nm key2pub
-.Nd extract public key from the private key
-.Sh SYNOPSIS
-.Nm
-.Op Fl Fl in Ar file
-.Op Fl Fl out Ar file
-.Op Fl Fl pwd Ar arg
-.Sh DESCRIPTION
-Extract public key from the private key.
-.Sh OPTIONS
-.Bl -tag -width "--"
-.It Fl i, Fl Fl in Ar file
-Private key. If omitted \fBstdin\fP is used.
-.It Fl o, Fl Fl out Ar file
-Public key. If omitted \fBstdout\fP is used.
-.It Fl p, Fl Fl pwd Ar arg
+.TH "VIRGIL" "1" "August 01, 2015" "Virgil Security CLI (0.3.0)" "BSD General Commands Manual"
+.SH NAME
+.PP
+\f[B]key2pub\f[] \-\- get public key from the private key
+.SH SYNOPSIS
+.PP
+\f[B]virgil key2pub\f[] [\-\-in \f[I]file\f[]] [\-\-out \f[I]file\f[]]
+[\-\-pwd \f[I]arg\f[]]
+.SH DESCRIPTION
+.PP
+Get public key from the private key.
+.SH OPTIONS
+.TP
+.B \-i \f[I]file\f[], \-\-in \f[I]file\f[]
+Private key.
+If omitted stdin is used.
+.RS
+.RE
+.TP
+.B \-o \f[I]file\f[], \-\-out \f[I]file\f[]
+Public key.
+If omitted stdout is used.
+.RS
+.RE
+.TP
+.B \-p \f[I]arg\f[], \-\-pwd \f[I]arg\f[]
 Private key password.
-.El
-.Sh SEE ALSO
-.Xr virgil 1 ,
-.Xr virgilpub2cert 1 ,
-.Xr virgilkeygen 1
+.RS
+.RE
+.SH SEE ALSO
+.PP
+\f[C]virgil(1)\f[], \f[C]virgilkeygen(1)\f[]
+.SH AUTHORS
+(c) Virgil Security Inc.

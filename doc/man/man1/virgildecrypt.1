@@ -1,33 +1,55 @@
-.Dd April 22, 2015
-.Dt DECRYPT 1
-.Os Darwin
-.Sh NAME
-.Nm decrypt
-.Nd decrypt data
-.Sh SYNOPSIS
-.Nm
-.Op Fl Fl in Ar file
-.Op Fl Fl out Ar file
-.Op Fl Fl content-info Ar file
-.Op Fl Fl key Ar file Op Fl Fl pwd Ar arg
-.Fl Fl recipient Ar arg
-.Sh DESCRIPTION
-Decrypt data with password or private key.
-.Sh OPTIONS
-.Bl -tag -width "--"
-.It Fl i, Fl Fl in Ar file
-Data to be decrypted. If omitted \fBstdin\fP is used.
-.It Fl o, Fl Fl out Ar file
-Decrypted data. If omitted \fBstdout\fP is used.
-.It Fl c, Fl Fl content-info Ar file
-Content info. Use this option if content info is not embedded in the encrypted data.
-.It Fl k, Fl Fl key Ar file
-Recipient's private key.
-.It Fl p, Fl Fl pwd Ar arg
-Private key password.
-.It Fl r, Fl Fl recipient Ar arg
-If option \fB-key\fP is defined this value is used as recipient's certificate, otherwise this value is used as recipient's password.
-.El
-.Sh SEE ALSO
-.Xr virgil 1 ,
-.Xr virgilencrypt 1
+.TH "VIRGIL" "1" "August 01, 2015" "Virgil Security CLI (0.3.0)" "BSD General Commands Manual"
+.SH NAME
+.PP
+\f[B]decrypt\f[] \-\- decrypt data with given password or user\[aq]s
+private key.
+.SH SYNOPSIS
+.PP
+\f[B]virgil decrypt\f[] [\-\-in \f[I]file\f[]] [\-\-out \f[I]file\f[]]
+[\-\-content\-info \f[I]file\f[]] [\-\-key \f[I]file\f[] [\-\-pwd
+\f[I]arg\f[]]] \-\-recipient \f[I]arg\f[]
+.SH DESCRIPTION
+.PP
+Decrypt data with given password or user\[aq]s private key.
+.SH OPTIONS
+.TP
+.B \-i \f[I]file\f[], \-\-in \f[I]file\f[]
+Data to be decrypted.
+If omitted stdin is used.
+.RS
+.RE
+.TP
+.B \-o \f[I]file\f[], \-\-out \f[I]file\f[]
+Decrypted data.
+If omitted stdout is used.
+.RS
+.RE
+.TP
+.B \-c \f[I]file\f[], \-\-content\-info \f[I]file\f[]
+Content info.
+Use this option to specify explicit content info if it not embedded in
+the encrypted data.
+.RS
+.RE
+.TP
+.B \-k \f[I]file\f[], \-\-key \f[I]file\f[]
+Recipient\[aq]s private key.
+.RS
+.RE
+.TP
+.B \-p \f[I]arg\f[], \-\-pwd \f[I]arg\f[]
+Recipient\[aq]s private key password.
+.RS
+.RE
+.TP
+.B \-r \f[I]arg\f[], \-\-recipient \f[I]arg\f[]
+(required) If option \-\-key is defined this value is used as
+recipient\[aq]s Virgil Public Key, otherwise this value is used as
+recipient\[aq]s password.
+.RS
+.RE
+.SH SEE ALSO
+.PP
+\f[C]virgil(1)\f[], \f[C]virgilencrypt(1)\f[]
+.SH AUTHORS
+(c) Virgil Security Inc.

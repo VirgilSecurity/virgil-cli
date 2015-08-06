@@ -34,67 +34,65 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <iostream>
+#include <fstream>
 #include <stdexcept>
+#include <string>
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/crypto/VirgilByteArray.h>
-#include <virgil/crypto/VirgilCryptoException.h>
-#include <virgil/crypto/foundation/VirgilAsymmetricCipher.h>
+#include <virgil/sdk/keys/model/PublicKey.h>
+#include <virgil/sdk/keys/io/marshaller.h>
 
 #include <cli/version.h>
+#include <cli/pair.h>
 #include <cli/util.h>
 
-using virgil::crypto::VirgilByteArray;
-using virgil::crypto::VirgilCryptoException;
-using virgil::crypto::foundation::VirgilAsymmetricCipher;
+using virgil::sdk::keys::model::PublicKey;
+using virgil::sdk::keys::io::marshaller;
 
-
-/**
- * @brief Returns whether underling data is ASN.1 structure or not.
- */
-inline bool is_asn1(const VirgilByteArray& data) {
-    return data.size() > 0 && data[0] == 0x30;
-}
 
 #ifdef SPLIT_CLI
     #define MAIN main
 #else
-    #define MAIN key2pub_main
+    #define MAIN keyget_main
 #endif
+
 
 int MAIN(int argc, char **argv) {
     try {
         // Parse arguments.
-        TCLAP::CmdLine cmd("Extract public key from the private key.", ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd("Get user's Virgil Public Key from the Virgil Public Keys service.", ' ',
+                virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Private key. If omitted stdin is used.",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Public key. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::UnlabeledValueArg<std::string> userIdArg("user-id",
+                "User identifer.\n"
+                "Format: [email|phone|domain]:<value>\n"
+                "where:\n"
+                "\t* if email, then <value> - user's email;\n"
+                "\t* if phone, then <value> - user's phone;\n"
+                "\t* if domain, then <value> - user's domain.\n",
+                true, "", "user-id", false);
 
-        TCLAP::ValueArg<std::string> pwdArg("p", "pwd", "Private key password.",
-                false, "", "arg");
-
-        cmd.add(pwdArg);
+        cmd.add(userIdArg);
         cmd.add(outArg);
-        cmd.add(inArg);
 
         cmd.parse(argc, argv);
 
-        // Prepare input. Read private key.
-        VirgilByteArray privateKey = virgil::cli::read_bytes(inArg.getValue());
+        // Get user's Virgil Public Key
+        const std::pair<std::string, std::string> recipient = virgil::cli::parse_pair(userIdArg.getValue());
+        const std::string recipientIdType = recipient.first;
+        const std::string recipientId = recipient.second;
+        PublicKey virgilPublicKey = virgil::cli::get_virgil_public_key(recipientId, recipientIdType);
 
-        // Extract public key.
-        VirgilAsymmetricCipher cipher = VirgilAsymmetricCipher::none();
-        cipher.setPrivateKey(privateKey, virgil::crypto::str2bytes(pwdArg.getValue()));
+        // Store Virgil Public Key to the output file
+        std::string publicKeyData = marshaller<PublicKey>::toJson(virgilPublicKey);
 
-        VirgilByteArray publicKey = is_asn1(privateKey) ?
-                cipher.exportPublicKeyToDER() : cipher.exportPublicKeyToPEM();
-
-        // Prepare output. Output public key
-        virgil::cli::write_bytes(outArg.getValue(), publicKey);
+        // Prepare output
+        virgil::cli::write_bytes(outArg.getValue(), publicKeyData);
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
