@@ -1,63 +1,71 @@
-.Dd April 22, 2015
-.Dt ENCRYPT 1
-.Os Darwin
-.Sh NAME
-.Nm encrypt
-.Nd encrypt data for given recipients
-.Sh SYNOPSIS
-.Nm
-.Op Fl Fl in Ar file
-.Op Fl Fl out Ar file
-.Op Fl Fl content-info Ar file
-.Op Fl Fl recipients Ar file
-.Fl Fl Ar recipient Ar arg
-.Ar ...
-.Sh DESCRIPTION
-Encrypt data for given recipients. Recipient can be represented either by the password, or by the Virgil Public Key.
-.Sh OPTIONS
-.Bl -tag -width "--"
-.It Fl i, Fl Fl in Ar file
-Data to be encrypted. If omitted \fBstdin\fP is used.
-.It Fl o, Fl Fl out Ar file
-Encrypted data. If omitted \fBstdout\fP is used.
-.It Fl c, Fl Fl content-info Ar file
-Content info. If omitted - becomes a part of the encrypted data.
-
-.It Fl r, Fl Fl recipients Ar file
-File that contains information about recipients. Each line
-can be either empty line,
-or comment line, or recipient defined as:
-[pass|vpk_file|email|phone|domain]:<value>
+.TH "VIRGIL" "1" "August 01, 2015" "Virgil Security CLI (0.3.0)" "BSD General Commands Manual"
+.SH NAME
+.PP
+\f[B]encrypt\f[] \-\- encrypt data for given recipients.
+.SH SYNOPSIS
+.PP
+\f[B]virgil encrypt\f[] [\-\-in \f[I]file\f[]] [\-\-out \f[I]file\f[]]
+[\-\-content\-info \f[I]file\f[]] [\-\-recipients \f[I]file\f[]]
+\f[I]recipient\f[] \f[I]\&...\f[]
+.SH DESCRIPTION
+.PP
+Encrypt data for given recipients.
+Recipient can be represented either by the password, or by the Virgil
+Public Key.
+.SH OPTIONS
+.TP
+.B \-i \f[I]file\f[], \-\-in \f[I]file\f[]
+Data to be encrypted.
+If omitted stdin is used.
+.RS
+.RE
+.TP
+.B \-o \f[I]file\f[], \-\-out \f[I]file\f[]
+Encrypted data.
+If omitted stdout is used.
+.RS
+.RE
+.TP
+.B \-c \f[I]file\f[], \-\-content\-info \f[I]file\f[]
+Content info \- meta information about encrypted data.
+If omitted becomes a part of the encrypted data.
+.RS
+.RE
+.TP
+.B \-r \f[I]file\f[], \-\-recipients \f[I]file\f[]
+(accepted multiple times) File that contains information about
+recipients.
+Each line can be either empty line, or comment line, or recipient
+defined in format:
+.RS
+.IP
+.nf
+\f[C]
+[pass|file|email|phone|domain]:<value>
+\f[]
+.fi
+.PP
 where:
-.Bl -bullet -compact
-.It
-if pass, then <value> - recipient's password;
-.It
-if vpk_file, then <value> - recipient's Virgil Public Key file stored locally;
-.It
-if email, then <value> - recipient's email;
-.It
-if phone, then <value> - recipient's phone;
-.It
-if domain, then <value> - recipient's domain;
-.El
-
-.Bd -literal
-
-# Recipients defined by user identifier:
-email:test@test.com
-phone:+1 777 666 5555
-
-.Ed
-.It Ar recipient
-Line that contains information about recipients. Same as significant line in the configuration file.
-.Bl -bullet
-.It
-Format: [pass|vpk_file|email|phone|domain]:<value>
-.It
-email|pass|vpk_file|phone|domain:<value> - recipient's identifier.
-.El
-.El
-.Sh SEE ALSO
-.Xr virgil 1,
-.Xr virgildecrypt 1
+.IP \[bu] 2
+if \f[C]pass\f[], then \f[I]value\f[] \- recipient\[aq]s password;
+.IP \[bu] 2
+if \f[C]file\f[], then \f[I]value\f[] \- recipient\[aq]s Virgil Public
+Key file stored locally;
+.IP \[bu] 2
+if \f[C]email\f[], then \f[I]value\f[] \- recipient\[aq]s email;
+.IP \[bu] 2
+if \f[C]phone\f[], then \f[I]value\f[] \- recipient\[aq]s phone;
+.IP \[bu] 2
+if \f[C]domain\f[], then \f[I]value\f[] \- recipient\[aq]s domain.
+.RE
+.TP
+.B \f[I]recipient\f[]
+(accepted multiple times) Contains information about one recipient.
+Same as significant line in the recipients configuration file.
+.RS
+.RE
+.SH SEE ALSO
+.PP
+\f[C]virgil(1)\f[], \f[C]virgildecrypt(1)\f[]
+.SH AUTHORS
+(c) Virgil Security Inc.

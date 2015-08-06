@@ -1,57 +1,157 @@
-.Dd April 22, 2015
-.Dt VIRGIL 1
-.Os Darwin
-.Sh NAME
-.Nm virgil
-.Nd command line interface to the Virgil library.
-.Sh SYNOPSIS
-.Nm
-.Ar command
-.Op Ar command_opts
-.Op Ar command_args
-.Sh DESCRIPTION
-The
-.Nm
-program is a command line tool for using the various cryptography functions of the Virgil library. It can be used to:
-.Bl -bullet -offset "---"
-.It
-genarate private key
-.It
-create Virgil Public Key or get Virgil Public Key
-.It
-encrypt data
-.It
-decrypt data
-.It
-sign data
-.It
-verify data
-.El
-.Sh AVAILABLE COMMANDS
-.Bl -tag -width "key2cert"
-.It \fBkeygen\fP
-Generate private key with given parameters.
-.It \fBkey2pub\fP
-Extract public key from the private key.
-.It \fBadduser\fP
-Once you've created public key you may push it to the Virgil Public Keys Service. This will allow other users to send you encrypted data using your Virgil Public Key.
-.It \fBgetuser\fP
-Get Virgil Public Key from Public Keys Service.
-.It \fBencrypt\fP
-Encrypt data for given recipients which can be defined by Virgil Public Keys and by passwords.
-.It \fBdecrypt\fP
-Decrypt data for given recipient which can be defined by Virgil Public Key or by password.
-.It \fBsign\fP
-Sign data with private key.
-.It \fBverify\fP
+.TH "VIRGIL" "1" "August 01, 2015" "Virgil Security CLI (0.3.0)" "BSD General Commands Manual"
+.SH NAME
+.PP
+\f[B]virgil\f[] \-\- command line tool for using Virgil Security stack
+functionality.
+.SH SYNOPSIS
+.PP
+\f[B]virgil\f[] \f[I]command\f[] [\f[I]command_opts\f[]]
+[\f[I]command_args\f[]]
+.SH DESCRIPTION
+.PP
+The \f[B]virgil\f[] program is a command line tool for using Virgil
+Security stack functionality.
+It can be used to encrypt, decrypt, sign and verify data.
+Functionality also includes interaction with Virgil Public Keys Service.
+.SH COMMANDS
+.TP
+.B \f[B]keygen\f[]
+Generate private key with a given parameters.
+For example:
+.RS
+.IP
+.nf
+\f[C]
+virgil\ keygen\ \-o\ user.key
+\f[]
+.fi
+.RE
+.TP
+.B \f[B]key2pub\f[]
+Get public key from the private key.
+For example:
+.RS
+.IP
+.nf
+\f[C]
+virgil\ key2pub\ \-i\ user.key\ \-o\ user.pub
+\f[]
+.fi
+.RE
+.TP
+.B \f[B]keyreg\f[]
+Register user\[aq]s public key on the Virgil Public Keys service.
+For example:
+.RS
+.IP
+.nf
+\f[C]
+virgil\ keyreg\ \-i\ user.pub\ \-o\ user.pk\ email:user\@domain.com
+\f[]
+.fi
+.RE
+.TP
+.B \f[B]keyget\f[]
+Get user\[aq]s public key from the Virgil Public Keys service.
+For example:
+.RS
+.IP
+.nf
+\f[C]
+virgil\ keyget\ \-o\ user.pk\ email:user\@domain.com
+\f[]
+.fi
+.RE
+.TP
+.B \f[B]confirm\f[]
+Send confirmation code to the Virgil Public Keys service.
+For example:
+.RS
+.IP
+.nf
+\f[C]
+virgil\ confirm\ \-i\ email:user\@domain.com\ \-c\ E5J8W7
+\f[]
+.fi
+.RE
+.TP
+.B \f[B]reconfirm\f[]
+Resend confirmation code to the user for given user\[aq]s identifier.
+For example:
+.RS
+.IP
+.nf
+\f[C]
+virgil\ reconfirm\ \-i\ email:user\@domain.com
+\f[]
+.fi
+.RE
+.TP
+.B \f[B]encrypt\f[]
+Encrypt data for given recipients which can be defined by Virgil Public
+Keys and by passwords.
+For example:
+.RS
+.IP
+.nf
+\f[C]
+virgil\ encrypt\ \-i\ plain.txt\ \-o\ encrypted.dat\ email:user\@domain.com
+\f[]
+.fi
+.RE
+.TP
+.B \f[B]decrypt\f[]
+Decrypt data for given recipient which can be defined by Virgil Public
+Key or by password.
+For example:
+.RS
+.IP
+.nf
+\f[C]
+virgil\ decrypt\ \-i\ encrypted.dat\ \-o\ plain.txt\ \-k\ user.key\ \-r\ user.pk
+\f[]
+.fi
+.RE
+.TP
+.B \f[B]sign\f[]
+Sign data with Private Key.
+For example:
+.RS
+.IP
+.nf
+\f[C]
+virgil\ sign\ \-i\ plain.txt\ \-o\ plain.txt.sign\ \-k\ user.key
+\f[]
+.fi
+.RE
+.TP
+.B \f[B]verify\f[]
 Verify data with Virgil Public Key.
-.El
-.Sh SEE ALSO
-.Xr virgilkeygen 1 ,
-.Xr virgilkey2pub 1 ,
-.Xr virgiladduser 1 ,
-.Xr virgilgetuser 1 ,
-.Xr virgilencrypt 1 ,
-.Xr virgildecrypt 1 ,
-.Xr virgilsign 1 ,
-.Xr virgilverify 1
+For example:
+.RS
+.IP
+.nf
+\f[C]
+virgil\ verify\ \-i\ plain.txt\ \-s\ plain.txt.sign\ \-r\ key:user.pk
+virgil\ verify\ \-i\ plain.txt\ \-s\ plain.txt.sign\ \-r\ email:user\@domain.com
+\f[]
+.fi
+.RE
+.SH SEE ALSO
+.PP
+\f[C]virgilkeygen(1)\f[], \f[C]virgilkey2pub(1)\f[],
+\f[C]virgilkeyreg(1)\f[], \f[C]virgilkeyget(1)\f[],
+.PD 0
+.P
+.PD
+\f[C]virgilconfirm(1)\f[], \f[C]virgilreconfirm(1)\f[],
+.PD 0
+.P
+.PD
+\f[C]virgilencrypt(1)\f[], \f[C]virgildecrypt(1)\f[],
+.PD 0
+.P
+.PD
+\f[C]virgilsign(1)\f[], \f[C]virgilverify(1)\f[]
+.SH AUTHORS
+(c) Virgil Security Inc.

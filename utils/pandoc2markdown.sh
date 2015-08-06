@@ -36,18 +36,18 @@
 #
 
 if [ -z $1 ]; then
-    echo "Directory with man pages is not defined. Please pass it as first argument."
+    echo "Directory with pandoc files is not defined. Please pass it as first argument."
     exit 1;
 fi
 
 if [ ! -d $1 ]; then
-    echo "Man pages are not exist at path: $1"
+    echo "Pandoc files are not exist at path: $1"
     exit 1;
 fi
 
-man_dir=$1
-man_pages="$man_dir/*.1"
-for i in $man_pages
+pandoc_dir=$1
+pandoc_pages="$pandoc_dir/*.pandoc"
+for i in $pandoc_pages
 do
     filename="${i##*/}"
     filename=${filename%.*}
@@ -57,5 +57,5 @@ do
         outdir=$2
         mkdir -p "$outdir"
     fi
-    groff -Tpdf -mandoc -c "$i" > "$outdir/$filename.pdf"
+    pandoc -s -t markdown_strict "$i" -o "$outdir/$filename.md"
 done
