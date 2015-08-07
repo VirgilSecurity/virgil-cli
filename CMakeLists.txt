@@ -69,7 +69,7 @@ set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name 
 set (INSTALL_DOC_DIR_NAME "share/doc" CACHE STRING "Installation directory name for doc pages")
 
 # Configure application token
-set (VIRGIL_APP_TOKEN "" CACHE STRING
+set (VIRGIL_APP_TOKEN "a9b7434cda37b327bdd075bbde201b5d" CACHE STRING
         "Application specific token acquired from the Virgil Security")
 
 if (NOT VIRGIL_APP_TOKEN)
