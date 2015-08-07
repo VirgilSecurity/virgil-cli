@@ -1,0 +1,14 @@
+language: cpp
+branches:
+  only:
+    - master
+    - develop
+compiler:
+    - clang
+env:
+    global:
+        - BUILD_DIR_NAME=build
+before_install: ./ci/install_deps.sh
+before_script: ./ci/configure.sh
+script: ./ci/run.sh
+sudo: required
