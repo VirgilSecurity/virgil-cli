@@ -107,6 +107,12 @@ function (virgil_add_dependency module target includes libraries)
             -DVIRGIL_SDK_KEYS:BOOL=ON
         )
 
+        if (CMAKE_PREFIX_PATH)
+            list (APPEND CMAKE_ARGS
+                -DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}
+            )
+        endif (CMAKE_PREFIX_PATH)
+
         if (CMAKE_TOOLCHAIN_FILE)
             list (APPEND CMAKE_ARGS
                 -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
