@@ -126,7 +126,7 @@ function (virgil_add_dependency module target includes libraries)
 
         ExternalProject_Add (${VIRGIL}_project
             GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil-cpp.git"
-            GIT_TAG "virgil-sdk-keys-1.0.4"
+            GIT_TAG "hotfix-1.0.5"
             PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil-cpp"
             CMAKE_ARGS ${CMAKE_ARGS}
         )
