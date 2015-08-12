@@ -40,7 +40,7 @@
 #include <random>
 
 std::string virgil::cli::guid () {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
 
     uint32_t time_low = ((generator() << 16) & 0xffff0000) | (generator() & 0xffff);
