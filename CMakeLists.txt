@@ -49,12 +49,33 @@ cmake_minimum_required (VERSION 3.0 FATAL_ERROR)
 
 project (virgil_cli)
 
+# Configure path to custom modules
+set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+# Define enviroment parameters
+include (check_pointer_size)
+check_pointer_size (POINTER_SIZE)
+if (POINTER_SIZE)
+    message (STATUS "Compiler pointer size: " ${POINTER_SIZE} " bytes")
+else ()
+    message (STATUS "Compiler pointer size: UNDEFINED")
+endif ()
+
 # Enable C++11
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Configure path to custom modules
-set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+# Configure path to local libraries
+if (MSVC)
+    set (MSVC_EXT_PREBUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/prebuild/msvc")
+    if (POINTER_SIZE EQUAL 8)
+        set (MSVC_EXT_PREBUILD_DIR "${MSVC_EXT_PREBUILD_DIR}/x64")
+    else ()
+        set (MSVC_EXT_PREBUILD_DIR "${MSVC_EXT_PREBUILD_DIR}/x86")
+    endif ()
+    set (CMAKE_PREFIX_PATH "${MSVC_EXT_PREBUILD_DIR}/libcurl" ${CMAKE_PREFIX_PATH})
+    set (CURL_LIBRARY_DLL "${MSVC_EXT_PREBUILD_DIR}/libcurl/lib/libcurl.dll")
+endif (MSVC)
 
 # Configure version
 set (CLI_VERSION_MAJOR 0)
@@ -66,7 +87,6 @@ message (STATUS "CLI version: " ${CLI_VERSION})
 # Configure path variables
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
-set (INSTALL_DOC_DIR_NAME "share/doc" CACHE STRING "Installation directory name for doc pages")
 
 # Configure application token
 set (VIRGIL_APP_TOKEN "a9b7434cda37b327bdd075bbde201b5d" CACHE STRING
@@ -124,6 +144,39 @@ set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
 # Install virgil_cli
 install (TARGETS virgil_cli DESTINATION ${INSTALL_BIN_DIR_NAME})
+if (MSVC)
+    install (PROGRAMS ${CURL_LIBRARY_DLL} DESTINATION "${INSTALL_BIN_DIR_NAME}")
+endif (MSVC)
+
 if (UNIX)
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
 endif (UNIX)
+
+# Pack
+set (CLI_PACKAGE_ARCH win32)
+if (POINTER_SIZE EQUAL 8)
+    set (CLI_PACKAGE_ARCH win64)
+endif ()
+
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY
+    "The Virgil Security CLI program is a command line tool for using Virgil Security stack functionality. "
+    "It can be used to encrypt, decrypt, sign and verify data. "
+    "Functionality also includes interaction with Virgil Public Keys Service."
+)
+set (CPACK_PACKAGE_NAME "Virgil Security CLI")
+set (CPACK_PACKAGE_VENDOR "Virgil Security Inc.")
+set (CPACK_PACKAGE_VERSION_MAJOR "${CLI_VERSION_MAJOR}")
+set (CPACK_PACKAGE_VERSION_MINOR "${CLI_VERSION_MINOR}")
+set (CPACK_PACKAGE_VERSION_PATCH "${CLI_VERSION_PATCH}")
+set (CPACK_PACKAGE_FILE_NAME
+        "virgil-cli-${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}-${CLI_PACKAGE_ARCH}")
+set (CPACK_PACKAGE_INSTALL_DIRECTORY "Virgil Security CLI")
+set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY
+        "Virgil Security CLI ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}")
+set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+if (WIN32 AND NOT CYGWIN)
+    set (CPACK_NSIS_MODIFY_PATH ON)
+    set (CPACK_NSIS_CONTACT "support@virgilsecurity.com")
+    set (CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_REGISTRY_KEY}")
+endif ()
+INCLUDE(CPack)
