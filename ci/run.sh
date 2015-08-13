@@ -38,4 +38,4 @@
 set -ev
 
 cd "${TRAVIS_BUILD_DIR}/${BUILD_DIR_NAME}"
-make VERBOSE=1
+make -j2 VERBOSE=1

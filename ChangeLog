@@ -1,5 +1,21 @@
 virgil CLI ChangeLog (Sorted per date)
 
+= Version 0.3.0 released 2015-08-13
+
+Improvements:
+  * Add Markdown documentation.
+
+Changes:
+  * Replace certificate term with Virgil Public Key term.
+  * Remove options to specify sign's output format.
+  * Use C++11 standard.
+
+Features:
+  * Add command "keyreg" - register user's public key on the Virgil Public Keys service.
+  * Add command "keyget" - get user's public key from the Virgil Public Keys service.
+  * Add command "confirm" - send confirmation code to the Virgil Public Keys service.
+  * Add command "reconfirm" - resend confirmation code to the user for given user's identifier.
+
 = Version 0.2.0 released 2015-05-15
 
 Bugfix:
