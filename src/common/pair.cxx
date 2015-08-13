@@ -34,10 +34,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stdexcept>
+
 #include <cli/pair.h>
 
-#include <cstddef>
-#include <stdexcept>
 
 static std::string trim(const std::string& s, const std::string& delimiters = " \f\n\r\t\v" ) {
     std::string result = s;
@@ -46,19 +46,27 @@ static std::string trim(const std::string& s, const std::string& delimiters = " 
     return result;
 }
 
-std::pair<std::string, std::string> virgil::cli_parse_pair(const std::string& str) {
+
+namespace virgil { namespace cli {
+
+std::pair<std::string, std::string> parse_pair(const std::string& str) {
     size_t delimPos = str.find_first_of(':');
     if (delimPos == std::string::npos || delimPos == (str.size() - 1)) {
         throw std::invalid_argument(std::string("invalid pair format: ") + str +
-                ". Expected format: '<key>:<value>'.");
+                                    ". Expected format: '<key>:<value>'.");
     }
     return std::make_pair(trim(str.substr(0, delimPos)), trim(str.substr(delimPos + 1)));
 }
 
-std::map<std::string, std::string> virgil::cli_parse_pair_array(const std::vector<std::string>& arr) {
-    std::map<std::string, std::string> result;
-    for (std::vector<std::string>::const_iterator pair = arr.begin(); pair != arr.end(); ++pair) {
-        result.insert(virgil::cli_parse_pair(*pair));
+std::multimap<std::string, std::string> parse_pair_array(const std::vector<std::string>& pairs) {
+    std::multimap<std::string, std::string> result;
+    for(const auto& pair : pairs) {
+        result.insert(virgil::cli::parse_pair(pair));
     }
+
     return result;
 }
+
+}}
+
+

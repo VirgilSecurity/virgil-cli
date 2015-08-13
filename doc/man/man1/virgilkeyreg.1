@@ -1,0 +1,49 @@
+.TH "VIRGIL" "1" "August 01, 2015" "Virgil Security CLI (0.3.0)" "BSD General Commands Manual"
+.SH NAME
+.PP
+\f[B]keyreg\f[] \-\- register user\[aq]s public key on the Virgil Public
+Keys service.
+.SH SYNOPSIS
+.PP
+\f[B]virgil keyreg\f[] [\-\-in \f[I]file\f[]] [\-\-out \f[I]file\f[]]
+\f[I]user_id\f[] \f[I]\&...\f[]
+.SH DESCRIPTION
+.PP
+Register user\[aq]s public key on the Virgil Public Keys service.
+If registration successfull confirmation code will be sent to the user.
+.SH OPTIONS
+.TP
+.B \-i \f[I]file\f[], \-\-in \f[I]file\f[]
+Public key.
+If omitted stdin is used.
+.RS
+.RE
+.TP
+.B \-o \f[I]file\f[], \-\-out \f[I]file\f[]
+Virgil Public Key.
+If omitted stdout is used.
+.RS
+.RE
+.TP
+.B \f[I]user_id\f[]
+(required) User\[aq]s identifer.
+.RS
+.PP
+Format: [email|phone|domain]:<value>
+.PD 0
+.P
+.PD
+where:
+.IP \[bu] 2
+if email, then \- user\[aq]s email;
+.IP \[bu] 2
+if phone, then \- user\[aq]s phone;
+.IP \[bu] 2
+if domain, then \- user\[aq]s domain.
+.RE
+.SH SEE ALSO
+.PP
+\f[C]virgil(1)\f[], \f[C]virgilkeygen(1)\f[], \f[C]virgilkeyget(1)\f[],
+\f[C]virgilconfirm(1)\f[]
+.SH AUTHORS
+(c) Virgil Security Inc.

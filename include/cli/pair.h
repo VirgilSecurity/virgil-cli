@@ -40,9 +40,8 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <utility>
 
-namespace virgil {
+namespace virgil { namespace cli {
 
 /**
  * @brief Parse string pair.
@@ -55,7 +54,7 @@ namespace virgil {
  * Note, all whitespaces before <key> and after <key> will be trimmed.
  * Note, all whitespaces before <value> and after <value> will be trimmed.
  */
-std::pair<std::string, std::string> cli_parse_pair(const std::string& str);
+std::pair<std::string, std::string> parse_pair(const std::string& str);
 
 /**
  * @brief Parse array of string pairs.
@@ -68,8 +67,9 @@ std::pair<std::string, std::string> cli_parse_pair(const std::string& str);
  * Note, all whitespaces before <key> and after <key> will be trimmed.
  * Note, all whitespaces before <value> and after <value> will be trimmed.
  */
-std::map<std::string, std::string> cli_parse_pair_array(const std::vector<std::string>& arr);
+std::multimap<std::string, std::string> parse_pair_array(const std::vector<std::string>& pairs);
 
-}
+}}
 
 #endif /* VIRGIL_COMMON_PAIR_H */
+

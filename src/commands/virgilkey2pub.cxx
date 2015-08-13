@@ -34,32 +34,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstdlib>
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-#include <iterator>
-#include <string>
 #include <stdexcept>
-
-#include <virgil/VirgilByteArray.h>
-using virgil::VirgilByteArray;
-
-#include <virgil/VirgilException.h>
-using virgil::VirgilException;
-
-#include <virgil/crypto/VirgilAsymmetricCipher.h>
-using virgil::crypto::VirgilAsymmetricCipher;
 
 #include <tclap/CmdLine.h>
 
-#include <cli/version.h>
+#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/crypto/VirgilCryptoException.h>
+#include <virgil/crypto/foundation/VirgilAsymmetricCipher.h>
 
-#ifdef SPLIT_CLI
-    #define MAIN main
-#else
-    #define MAIN key2pub_main
-#endif
+#include <cli/version.h>
+#include <cli/util.h>
+
+using virgil::crypto::VirgilByteArray;
+using virgil::crypto::VirgilCryptoException;
+using virgil::crypto::foundation::VirgilAsymmetricCipher;
+
 
 /**
  * @brief Returns whether underling data is ASN.1 structure or not.
@@ -67,6 +56,12 @@ using virgil::crypto::VirgilAsymmetricCipher;
 inline bool is_asn1(const VirgilByteArray& data) {
     return data.size() > 0 && data[0] == 0x30;
 }
+
+#ifdef SPLIT_CLI
+    #define MAIN main
+#else
+    #define MAIN key2pub_main
+#endif
 
 int MAIN(int argc, char **argv) {
     try {
@@ -88,37 +83,19 @@ int MAIN(int argc, char **argv) {
 
         cmd.parse(argc, argv);
 
-        // Prepare input.
-        std::istream *inStream = &std::cin;
-        std::ifstream inFile(inArg.getValue().c_str(), std::ios::in | std::ios::binary);
-        if (inFile.good()) {
-            inStream = &inFile;
-        } else if (!inArg.getValue().empty()) {
-            throw std::invalid_argument(std::string("can not read file: " + inArg.getValue()));
-        }
-
-        // Prepare output.
-        std::ostream *outStream = &std::cout;
-        std::ofstream outFile(outArg.getValue().c_str(), std::ios::out | std::ios::binary);
-        if (outFile.good()) {
-            outStream = &outFile;
-        } else if (!outArg.getValue().empty()) {
-            throw std::invalid_argument(std::string("can not write file: " + outArg.getValue()));
-        }
-
-        // Read private key.
-        VirgilByteArray privateKey;
-        std::copy(std::istreambuf_iterator<char>(*inStream), std::istreambuf_iterator<char>(),
-                std::back_inserter(privateKey));
+        // Prepare input. Read private key.
+        VirgilByteArray privateKey = virgil::cli::read_bytes(inArg.getValue());
 
         // Extract public key.
         VirgilAsymmetricCipher cipher = VirgilAsymmetricCipher::none();
-        cipher.setPrivateKey(privateKey, virgil::str2bytes(pwdArg.getValue()));
+        cipher.setPrivateKey(privateKey, virgil::crypto::str2bytes(pwdArg.getValue()));
+
         VirgilByteArray publicKey = is_asn1(privateKey) ?
                 cipher.exportPublicKeyToDER() : cipher.exportPublicKeyToPEM();
 
-        // Output public key
-        std::copy(publicKey.begin(), publicKey.end(), std::ostreambuf_iterator<char>(*outStream));
+        // Prepare output. Output public key
+        virgil::cli::write_bytes(outArg.getValue(), publicKey);
+
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
@@ -126,5 +103,6 @@ int MAIN(int argc, char **argv) {
         std::cerr << "Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }

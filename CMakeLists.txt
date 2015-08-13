@@ -45,14 +45,41 @@
 #     - CLI_VERSION_MINOR - CLI minor version number.
 #     - CLI_VERSION_PATCH - CLI patch number.
 
-cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
+
+project (virgil_cli)
 
 # Configure path to custom modules
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+# Define enviroment parameters
+include (check_pointer_size)
+check_pointer_size (POINTER_SIZE)
+if (POINTER_SIZE)
+    message (STATUS "Compiler pointer size: " ${POINTER_SIZE} " bytes")
+else ()
+    message (STATUS "Compiler pointer size: UNDEFINED")
+endif ()
+
+# Enable C++11
+set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Configure path to local libraries
+if (MSVC)
+    set (MSVC_EXT_PREBUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/prebuild/msvc")
+    if (POINTER_SIZE EQUAL 8)
+        set (MSVC_EXT_PREBUILD_DIR "${MSVC_EXT_PREBUILD_DIR}/x64")
+    else ()
+        set (MSVC_EXT_PREBUILD_DIR "${MSVC_EXT_PREBUILD_DIR}/x86")
+    endif ()
+    set (CMAKE_PREFIX_PATH "${MSVC_EXT_PREBUILD_DIR}/libcurl" ${CMAKE_PREFIX_PATH})
+    set (CURL_LIBRARY_DLL "${MSVC_EXT_PREBUILD_DIR}/libcurl/lib/libcurl.dll")
+endif (MSVC)
+
 # Configure version
 set (CLI_VERSION_MAJOR 0)
-set (CLI_VERSION_MINOR 2)
+set (CLI_VERSION_MINOR 3)
 set (CLI_VERSION_PATCH 0)
 set (CLI_VERSION ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH})
 message (STATUS "CLI version: " ${CLI_VERSION})
@@ -60,31 +87,45 @@ message (STATUS "CLI version: " ${CLI_VERSION})
 # Configure path variables
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
-set (INSTALL_DOC_DIR_NAME "share/doc" CACHE STRING "Installation directory name for doc pages")
 
-# Enable external project feature
-include (ExternalProject)
+# Configure application token
+set (VIRGIL_APP_TOKEN "a9b7434cda37b327bdd075bbde201b5d" CACHE STRING
+        "Application specific token acquired from the Virgil Security")
 
-# Use cURL
+if (NOT VIRGIL_APP_TOKEN)
+    message (FATAL_ERROR "VIRGIL_APP_TOKEN configuration is not defined.")
+endif ()
+
+# Find dependencies
 find_package (CURL REQUIRED)
-include_directories (CURL_INCLUDE_DIRS)
+include_directories (${CURL_INCLUDE_DIRS})
 
-# Use Virgil Security crypto lib
-include (virgil_ext)
-include_directories (${VIRGIL_INCLUDE_DIR})
+include (virgil)
+virgil_add_dependency ("crypto"
+    VIRGIL_CRYPTO_DEPENDENCIES
+    VIRGIL_CRYPTO_INCLUDE_DIRS
+    VIRGIL_CRYPTO_LIBRARIES
+)
+include_directories (${VIRGIL_CRYPTO_INCLUDE_DIRS})
 
-# Use jsoncpp lib
-include (jsoncpp_ext)
-include_directories (${JSONCPP_INCLUDE_DIR})
+virgil_add_dependency ("keys-public"
+    VIRGIL_KEYS_PUBLIC_DEPENDENCIES
+    VIRGIL_KEYS_PUBLIC_INCLUDE_DIRS
+    VIRGIL_KEYS_PUBLIC_LIBRARIES
+)
+include_directories (${VIRGIL_KEYS_PUBLIC_INCLUDE_DIRS})
 
 # Use tclap lib
-include_directories (${CMAKE_CURRENT_SOURCE_DIR}/ext)
-include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/ext")
+message (STATUS "TCLAP library: ON")
+
+#
+include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # Define sources list
 aux_source_directory ("src/common" SRC_LIST)
-aux_source_directory ("src/pki" SRC_LIST)
 aux_source_directory ("src/commands" SRC_LIST)
+
 foreach (src_file ${SRC_LIST})
     configure_file (
         "${CMAKE_CURRENT_SOURCE_DIR}/${src_file}"
@@ -92,28 +133,50 @@ foreach (src_file ${SRC_LIST})
         @ONLY
     )
 endforeach ()
+
 aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/common SRC_COMMON)
-aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/pki SRC_PKI)
 aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/commands SRC_COMMANDS)
 
-add_library (virgil_cli_common ${SRC_COMMON})
+add_executable (virgil_cli ${SRC_COMMON} ${SRC_COMMANDS})
+target_link_libraries (virgil_cli ${VIRGIL_CRYPTO_LIBRARIES} ${VIRGIL_KEYS_PUBLIC_LIBRARIES} ${CURL_LIBRARIES})
+add_dependencies (virgil_cli ${VIRGIL_CRYPTO_DEPENDENCIES} ${VIRGIL_KEYS_PUBLIC_DEPENDENCIES})
+set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
-add_library (virgil_cli_pki ${SRC_PKI})
-target_link_libraries (virgil_cli_pki ${JSONCPP} ${VIRGIL} ${VIRGIL_EXT_LIBRARIES} ${CURL_LIBRARIES})
-
-add_executable (virgil_cli ${SRC_COMMANDS})
-target_link_libraries (virgil_cli virgil_cli_common virgil_cli_pki)
-set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME virgil)
-
-# Install cli
+# Install virgil_cli
 install (TARGETS virgil_cli DESTINATION ${INSTALL_BIN_DIR_NAME})
+if (MSVC)
+    install (PROGRAMS ${CURL_LIBRARY_DLL} DESTINATION "${INSTALL_BIN_DIR_NAME}")
+endif (MSVC)
+
 if (UNIX)
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
 endif (UNIX)
 
-if (UNIX AND ENABLE_TESTING)
-    add_test (
-        NAME "test_cli.sh"
-        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/test_cli.sh" "${CMAKE_CURRENT_BINARY_DIR}"
-    )
-endif (UNIX AND ENABLE_TESTING)
+# Pack
+set (CLI_PACKAGE_ARCH win32)
+if (POINTER_SIZE EQUAL 8)
+    set (CLI_PACKAGE_ARCH win64)
+endif ()
+
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY
+    "The Virgil Security CLI program is a command line tool for using Virgil Security stack functionality. "
+    "It can be used to encrypt, decrypt, sign and verify data. "
+    "Functionality also includes interaction with Virgil Public Keys Service."
+)
+set (CPACK_PACKAGE_NAME "Virgil Security CLI")
+set (CPACK_PACKAGE_VENDOR "Virgil Security Inc.")
+set (CPACK_PACKAGE_VERSION_MAJOR "${CLI_VERSION_MAJOR}")
+set (CPACK_PACKAGE_VERSION_MINOR "${CLI_VERSION_MINOR}")
+set (CPACK_PACKAGE_VERSION_PATCH "${CLI_VERSION_PATCH}")
+set (CPACK_PACKAGE_FILE_NAME
+        "virgil-cli-${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}-${CLI_PACKAGE_ARCH}")
+set (CPACK_PACKAGE_INSTALL_DIRECTORY "Virgil Security CLI")
+set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY
+        "Virgil Security CLI ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}")
+set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+if (WIN32 AND NOT CYGWIN)
+    set (CPACK_NSIS_MODIFY_PATH ON)
+    set (CPACK_NSIS_CONTACT "support@virgilsecurity.com")
+    set (CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_REGISTRY_KEY}")
+endif ()
+INCLUDE(CPack)

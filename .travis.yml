@@ -1,0 +1,32 @@
+language: cpp
+branches:
+  only:
+    - master
+    - develop
+    - /^release-.*$/
+compiler:
+  - g++
+  - clang++
+os:
+  - linux
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.8
+      - g++-4.8
+      - libcurl4-openssl-dev
+      - python-yaml
+install:
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+env:
+  global:
+    - BUILD_DIR_NAME=build
+before_install:
+  - bash ./ci/install-cmake.sh
+before_script:
+  - bash ./ci/configure.sh
+script:
+  - bash ./ci/run.sh
+sudo: false

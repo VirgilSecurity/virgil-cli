@@ -34,37 +34,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstdlib>
-#include <iostream>
 #include <fstream>
-#include <algorithm>
-#include <iterator>
-#include <string>
+#include <iostream>
 #include <stdexcept>
-
-#include <virgil/VirgilByteArray.h>
-using virgil::VirgilByteArray;
-
-#include <virgil/VirgilException.h>
-using virgil::VirgilException;
-
-#include <virgil/service/data/VirgilCertificate.h>
-using virgil::service::data::VirgilCertificate;
-
-#include <virgil/service/VirgilStreamCipher.h>
-using virgil::service::VirgilStreamCipher;
-
-#include <virgil/stream/VirgilStreamDataSource.h>
-using virgil::stream::VirgilStreamDataSource;
-
-#include <virgil/stream/VirgilStreamDataSink.h>
-using virgil::stream::VirgilStreamDataSink;
-
-#include <virgil/stream/utils.h>
+#include <string>
 
 #include <tclap/CmdLine.h>
 
+#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/crypto/VirgilCryptoException.h>
+#include <virgil/crypto/VirgilStreamCipher.h>
+#include <virgil/crypto/stream/VirgilStreamDataSource.h>
+#include <virgil/crypto/stream/VirgilStreamDataSink.h>
+
+#include <virgil/sdk/keys/model/PublicKey.h>
+
+#include <cli/util.h>
 #include <cli/version.h>
+
+using virgil::crypto::VirgilByteArray;
+using virgil::crypto::VirgilCryptoException;
+using virgil::crypto::VirgilStreamCipher;
+using virgil::crypto::stream::VirgilStreamDataSource;
+using virgil::crypto::stream::VirgilStreamDataSink;
+
+using virgil::sdk::keys::model::PublicKey;
 
 #ifdef SPLIT_CLI
     #define MAIN main
@@ -75,7 +69,7 @@ using virgil::stream::VirgilStreamDataSink;
 int MAIN(int argc, char **argv) {
     try {
         // Parse arguments.
-        TCLAP::CmdLine cmd("Decrypt data", ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd("Decrypt data with given password or user's private key", ' ', virgil::cli_version());
 
         TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be decrypted. If omitted stdin is used.",
                 false, "", "file");
@@ -90,14 +84,12 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> keyArg("k", "key", "Recipient's private key.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> pwdArg("p", "pwd", "Private key password.",
-                false, "", "arg");
+        TCLAP::ValueArg<std::string> pwdArg("p", "pwd", "Recipient's private key password", false, "", "arg");
 
         TCLAP::ValueArg<std::string> recipientArg("r", "recipient",
-                "If option -key is defined this value is used as recipient's certificate, "
+                "If option --key is defined this value is used as recipient's Virgil Public Key, "
                 "otherwise this value is used as recipient's password.",
                 true, "", "arg");
-
 
         cmd.add(recipientArg);
         cmd.add(pwdArg);
@@ -108,61 +100,82 @@ int MAIN(int argc, char **argv) {
 
         cmd.parse(argc, argv);
 
-        // Prepare input.
-        std::istream *inStream = &std::cin;
-        std::ifstream inFile(inArg.getValue().c_str(), std::ios::in | std::ios::binary);
-        if (inFile.good()) {
-            inStream = &inFile;
-        } else if (!inArg.getValue().empty()) {
-            throw std::invalid_argument(std::string("can not read file: " + inArg.getValue()));
-        }
-        VirgilStreamDataSource dataSource(*inStream);
-
-        // Prepare output.
-        std::ostream *outStream = &std::cout;
-        std::ofstream outFile(outArg.getValue().c_str(), std::ios::out | std::ios::binary);
-        if (outFile.good()) {
-            outStream = &outFile;
-        } else if (!outArg.getValue().empty()) {
-            throw std::invalid_argument(std::string("can not write file: " + outArg.getValue()));
-        }
-        VirgilStreamDataSink dataSink(*outStream);
-
-        // Create cipher.
+        // Create cipher
         VirgilStreamCipher cipher;
 
-        // Set content info.
-        std::ifstream contentInfoFile(contentInfoArg.getValue().c_str(), std::ios::in | std::ios::binary);
-        if (contentInfoFile.good()) {
-            VirgilByteArray contentInfo;
-            std::copy(std::istreambuf_iterator<char>(contentInfoFile), std::istreambuf_iterator<char>(),
-                    std::back_inserter(contentInfo));
+        if(!contentInfoArg.getValue().empty()) {
+            // Set content info.
+            std::ifstream contentInfoFile(contentInfoArg.getValue(), std::ios::in | std::ios::binary);
+            if (contentInfoFile) {
+                throw std::invalid_argument("can not read file: " + contentInfoArg.getValue());
+            }
+
+            VirgilByteArray contentInfo((std::istreambuf_iterator<char>(contentInfoFile)),
+                    std::istreambuf_iterator<char>());
             cipher.setContentInfo(contentInfo);
-        } else if (!contentInfoArg.getValue().empty()) {
-            throw std::invalid_argument(std::string("can not read file: " + contentInfoArg.getValue()));
         }
 
-        if (!keyArg.getValue().empty()) {
-            // Read certificate
-            VirgilCertificate certificate = virgil::stream::read_certificate(recipientArg.getValue());
-            // Read private key
-            std::ifstream keyFile(keyArg.getValue().c_str(), std::ios::in | std::ios::binary);
-            if (!keyFile.good() && !keyArg.getValue().empty()) {
-                throw std::invalid_argument(std::string("can not read file: " + keyArg.getValue()));
-            }
-            VirgilByteArray privateKey;
-            std::copy(std::istreambuf_iterator<char>(keyFile), std::istreambuf_iterator<char>(),
-                    std::back_inserter(privateKey));
-            VirgilByteArray privateKeyPassword = virgil::str2bytes(pwdArg.getValue());
-            // Decrypt
-            cipher.decryptWithKey(dataSource, dataSink, certificate.id().certificateId(),
-                    privateKey, privateKeyPassword);
-        } else if (!recipientArg.getValue().empty()) {
-            // Decrypt
-            cipher.decryptWithPassword(dataSource, dataSink, virgil::str2bytes(recipientArg.getValue()));
+        // Prepare input
+        std::istream* inStream;
+        std::ifstream inFile;
+        if (inArg.getValue().empty() || inArg.getValue() == "-") {
+            inStream = &std::cin;
         } else {
-            throw std::invalid_argument(std::string("no recipients are defined"));
+            inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
+            if (!inFile) {
+                throw std::invalid_argument("can not read file: " + inArg.getValue());
+            }
+            inStream = &inFile;
         }
+
+        // Prepare output
+        std::ostream* outStream;
+        std::ofstream outFile;
+        if (outArg.getValue().empty() || outArg.getValue() == "-") {
+            outStream = &std::cout;
+        } else {
+            outFile.open(outArg.getValue(), std::ios::out | std::ios::binary);
+            if (!outFile) {
+                throw std::invalid_argument("can not write file: " + outArg.getValue());
+            }
+            outStream = &outFile;
+        }
+
+        // Create IO streams
+        VirgilStreamDataSource dataSource(*inStream);
+        VirgilStreamDataSink dataSink(*outStream);
+
+        // Process
+        if (!keyArg.getValue().empty()) {
+            // Read Virgil Public Key
+            std::ifstream virgilPublicKeyFile(recipientArg.getValue(), std::ios::in | std::ios::binary);
+            if (!virgilPublicKeyFile) {
+                throw std::invalid_argument("can not read recipient's Virgil Public Key: " + recipientArg.getValue());
+            }
+            PublicKey publicKey = virgil::cli::read_virgil_public_key(virgilPublicKeyFile);
+
+            // Define recipient identifier
+            VirgilByteArray publicKeyId = virgil::crypto::str2bytes(publicKey.publicKeyId());
+
+            // Read private key
+            std::ifstream keyFile(keyArg.getValue(), std::ios::in | std::ios::binary);
+            if (!keyFile) {
+                throw std::invalid_argument("can not read private key: " + keyArg.getValue());
+            }
+            VirgilByteArray privateKey((std::istreambuf_iterator<char>(keyFile)),
+                        std::istreambuf_iterator<char>());
+
+            VirgilByteArray privateKeyPassword = virgil::crypto::str2bytes(pwdArg.getValue());
+
+            // Decrypt
+            cipher.decryptWithKey(dataSource, dataSink, publicKeyId, privateKey, privateKeyPassword);
+
+        } else if (!recipientArg.getValue().empty()) {
+            cipher.decryptWithPassword(dataSource, dataSink, virgil::crypto::str2bytes(recipientArg.getValue()));
+        } else {
+            throw std::invalid_argument("no recipients are defined");
+        }
+
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
@@ -170,5 +183,6 @@ int MAIN(int argc, char **argv) {
         std::cerr << "Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }
