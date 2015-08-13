@@ -58,7 +58,7 @@ Functionality also includes interaction with Virgil Public Keys Service.
 
 ### <a name="windows-msvc-toolchain"></a> Toolchain
 
-*   [Visual Studio](https://www.visualstudio.com/)
+*   [Visual Studio 2015](https://www.visualstudio.com/)
 *   [CMake](http://www.cmake.org/) (accessible in command prompt). Minimum version: 3.2.
 *   [Git](http://git-scm.com/) (accessible in command prompt).
 *   [Python](https://www.python.org/) (accessible in command prompt). Minimum version: 2.7.
