@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/VirgilSecurity/virgil-cli.svg?branch=master)](https://travis-ci.org/VirgilSecurity/virgil-cli)
+
 # Virgil Security CLI
 
 - [About](#about)
