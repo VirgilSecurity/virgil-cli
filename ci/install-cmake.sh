@@ -37,18 +37,8 @@
 
 set -ev
 
-sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-sudo apt-get update -qq
+mkdir $HOME/cmake
+cd $HOME/cmake
 
-
-sudo apt-get install -y python-yaml
-sudo apt-get install -y libcurl4-openssl-dev
-sudo apt-get install -qq g++-4.8
-
-sudo apt-get install build-essential
-wget http://www.cmake.org/files/v3.2/cmake-3.2.2.tar.gz
-tar xf cmake-3.2.2.tar.gz
-cd cmake-3.2.2
-./configure
-make
-sudo make install
+wget http://www.cmake.org/files/v3.2/cmake-3.2.2-Linux-x86_64.tar.gz
+tar -xzvf cmake-3.2.2-Linux-x86_64.tar.gz 
