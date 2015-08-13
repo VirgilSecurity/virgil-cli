@@ -45,7 +45,7 @@
 #     - CLI_VERSION_MINOR - CLI minor version number.
 #     - CLI_VERSION_PATCH - CLI patch number.
 
-cmake_minimum_required (VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 
 project (virgil_cli)
 
