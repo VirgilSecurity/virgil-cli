@@ -42,11 +42,11 @@ CMAKE_ARGS=""
 
 # Run CMake
 cd "${TRAVIS_BUILD_DIR}"
-if [ -d "${BUILD_DIR_NAME}" ]; then
-    rm -fr "${BUILD_DIR_NAME}"
+if [ -d "build" ]; then
+    rm -fr "build"
 fi
-mkdir "${BUILD_DIR_NAME}"
-cd "${BUILD_DIR_NAME}"
-cmake --version
-export CXX="g++-4.8"
-cmake ${CMAKE_ARGS} ..
+mkdir "build"
+cd "build"
+
+$HOME/cmake/cmake-3.2.2-Linux-x86_64/bin/cmake --version
+$HOME/cmake/cmake-3.2.2-Linux-x86_64/bin/cmake ${CMAKE_ARGS} ..
