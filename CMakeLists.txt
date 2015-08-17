@@ -80,7 +80,7 @@ endif (MSVC)
 # Configure version
 set (CLI_VERSION_MAJOR 0)
 set (CLI_VERSION_MINOR 3)
-set (CLI_VERSION_PATCH 0)
+set (CLI_VERSION_PATCH 1)
 set (CLI_VERSION ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH})
 message (STATUS "CLI version: " ${CLI_VERSION})
 
@@ -144,9 +144,12 @@ set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
 # Install virgil_cli
 install (TARGETS virgil_cli DESTINATION ${INSTALL_BIN_DIR_NAME})
-if (MSVC)
+
+if (WIN32 AND NOT CYGWIN)
+    include (InstallRequiredSystemLibraries)
+    install (PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION ${INSTALL_BIN_DIR_NAME})
     install (PROGRAMS ${CURL_LIBRARY_DLL} DESTINATION "${INSTALL_BIN_DIR_NAME}")
-endif (MSVC)
+endif (WIN32 AND NOT CYGWIN)
 
 if (UNIX)
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
