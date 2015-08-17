@@ -72,17 +72,17 @@ int MAIN(int argc, char **argv) {
         TCLAP::CmdLine cmd("Generate private key with given parameters.", ' ', virgil::cli_version());
 
         std::vector<std::string> ec_key;
-        ec_key.push_back(" bp256r1 ");
-        ec_key.push_back(" bp384r1 ");
-        ec_key.push_back(" bp512r1 ");
-        ec_key.push_back(" secp192r1 ");
-        ec_key.push_back(" secp224r1 ");
-        ec_key.push_back(" secp256r1 ");
-        ec_key.push_back(" secp384r1 ");
-        ec_key.push_back(" secp521r1 ");
-        ec_key.push_back(" secp192k1 ");
-        ec_key.push_back(" secp224k1 ");
-        ec_key.push_back(" secp256k1 ");
+        ec_key.push_back("bp256r1");
+        ec_key.push_back("bp384r1");
+        ec_key.push_back("bp512r1");
+        ec_key.push_back("secp192r1");
+        ec_key.push_back("secp224r1");
+        ec_key.push_back("secp256r1");
+        ec_key.push_back("secp384r1");
+        ec_key.push_back("secp521r1");
+        ec_key.push_back("secp192k1");
+        ec_key.push_back("secp224k1");
+        ec_key.push_back("secp256k1");
         TCLAP::ValuesConstraint<std::string> allowedEcKey(ec_key);
 
         TCLAP::ValueArg<std::string> ecArg("e", "ec",
@@ -98,7 +98,7 @@ int MAIN(int argc, char **argv) {
                 "\t* secp192k1 - 192-bits \"Koblitz\" curve;\n"
                 "\t* secp224k1 - 224-bits \"Koblitz\" curve;\n"
                 "\t* secp256k1 - 256-bits \"Koblitz\" curve.\n",
-                false, "bp512r1", &allowedEcKey);
+                false, "", &allowedEcKey);
 
         TCLAP::ValueArg<unsigned int> rsaArg("r", "rsa", "Generate RSA key with a given number of bits.",
                 false, 0, "nbits");
@@ -117,7 +117,7 @@ int MAIN(int argc, char **argv) {
         cmd.parse(argc, argv);
 
         // Check parameters
-        if (!ecArg.getValue().empty() && rsaArg.getValue() > 0) {
+        if (ecArg.isSet() && rsaArg.isSet()) {
             throw std::invalid_argument("-e, --ec and -r, --rsa parameters are both specified");
         }
 
