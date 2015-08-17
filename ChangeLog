@@ -1,5 +1,15 @@
 virgil CLI ChangeLog (Sorted per date)
 
+= Version 0.3.2 released 2015-08-17
+
+Bugfix:
+  * Fix RSA and EC keys generation.
+
+= Version 0.3.1 released 2015-08-17
+
+Bugfix:
+  * Add missing win32 runtime libraries.
+
 = Version 0.3.0 released 2015-08-13
 
 Improvements:
