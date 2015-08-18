@@ -1,5 +1,13 @@
 virgil CLI ChangeLog (Sorted per date)
 
+= Version 0.3.3 released 2015-08-18
+
+Bugfix:
+  * Embed MSVC redistributable package installation to the CLI package.
+
+Changes:
+  * Add executable folder to the PATH environment variable silently on Windows.
+
 = Version 0.3.2 released 2015-08-17
 
 Bugfix:
