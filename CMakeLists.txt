@@ -65,16 +65,26 @@ endif ()
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Inspect system
+set (SYSTEM_ARCH x86)
+if (POINTER_SIZE EQUAL 8)
+    set (SYSTEM_ARCH x64)
+endif ()
+string (TOLOWER "${CMAKE_SYSTEM_NAME}" SYSTEM_NAME)
+
+# Check compiler version
+if (MSVC)
+    # MSVC14
+    if (NOT MSVC_VERSION EQUAL 1900)
+        message (FATAL_ERROR "Unsupported MSVC version found. Allowed versions: Visual Studio 2015 (MSVC14)")
+    endif (NOT MSVC_VERSION EQUAL 1900)
+endif (MSVC)
+
 # Configure path to local libraries
 if (MSVC)
-    set (MSVC_EXT_PREBUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/prebuild/msvc")
-    if (POINTER_SIZE EQUAL 8)
-        set (MSVC_EXT_PREBUILD_DIR "${MSVC_EXT_PREBUILD_DIR}/x64")
-    else ()
-        set (MSVC_EXT_PREBUILD_DIR "${MSVC_EXT_PREBUILD_DIR}/x86")
-    endif ()
-    set (CMAKE_PREFIX_PATH "${MSVC_EXT_PREBUILD_DIR}/libcurl" ${CMAKE_PREFIX_PATH})
-    set (CURL_LIBRARY_DLL "${MSVC_EXT_PREBUILD_DIR}/libcurl/lib/libcurl.dll")
+    set (EXT_PREBUILD_MSVC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/prebuild/msvc")
+    set (CMAKE_PREFIX_PATH "${EXT_PREBUILD_MSVC_DIR}/${SYSTEM_ARCH}/libcurl" ${CMAKE_PREFIX_PATH})
+    set (CURL_LIBRARY_DLL "${EXT_PREBUILD_MSVC_DIR}/${SYSTEM_ARCH}/libcurl/lib/libcurl.dll")
 endif (MSVC)
 
 # Configure version
@@ -145,22 +155,16 @@ set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 # Install virgil_cli
 install (TARGETS virgil_cli DESTINATION ${INSTALL_BIN_DIR_NAME})
 
-if (WIN32 AND NOT CYGWIN)
-    include (InstallRequiredSystemLibraries)
-    install (PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION ${INSTALL_BIN_DIR_NAME})
-    install (PROGRAMS ${CURL_LIBRARY_DLL} DESTINATION "${INSTALL_BIN_DIR_NAME}")
-endif (WIN32 AND NOT CYGWIN)
+if (MSVC)
+    install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
+    install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
+endif (MSVC)
 
 if (UNIX)
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
 endif (UNIX)
 
 # Pack
-set (CLI_PACKAGE_ARCH win32)
-if (POINTER_SIZE EQUAL 8)
-    set (CLI_PACKAGE_ARCH win64)
-endif ()
-
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY
     "The Virgil Security CLI program is a command line tool for using Virgil Security stack functionality. "
     "It can be used to encrypt, decrypt, sign and verify data. "
@@ -172,12 +176,13 @@ set (CPACK_PACKAGE_VERSION_MAJOR "${CLI_VERSION_MAJOR}")
 set (CPACK_PACKAGE_VERSION_MINOR "${CLI_VERSION_MINOR}")
 set (CPACK_PACKAGE_VERSION_PATCH "${CLI_VERSION_PATCH}")
 set (CPACK_PACKAGE_FILE_NAME
-        "virgil-cli-${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}-${CLI_PACKAGE_ARCH}")
+    "virgil-cli-${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}-${SYSTEM_NAME}-${SYSTEM_ARCH}"
+)
 set (CPACK_PACKAGE_INSTALL_DIRECTORY "Virgil Security CLI")
 set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY
         "Virgil Security CLI ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-if (WIN32 AND NOT CYGWIN)
+if (MSVC)
     set (CPACK_NSIS_CONTACT "support@virgilsecurity.com")
     set (CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_REGISTRY_KEY}")
     set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS
@@ -188,6 +193,8 @@ if (WIN32 AND NOT CYGWIN)
         "Push \\\"$INSTDIR\\\\${INSTALL_BIN_DIR_NAME}\\\""
         "Call AddToPath"
         "Pop \\\$0"
+        # Install MSVC redistributable package
+        "ExecWait '\\\"$INSTDIR\\\\install\\\\vc_redist.${SYSTEM_ARCH}.exe\\\" /install /quiet'"
     )
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}")
     set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
@@ -200,5 +207,5 @@ if (WIN32 AND NOT CYGWIN)
         "Pop \\\$0"
     )
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}")
-endif ()
+endif (MSVC)
 INCLUDE(CPack)
