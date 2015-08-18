@@ -178,8 +178,27 @@ set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY
         "Virgil Security CLI ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 if (WIN32 AND NOT CYGWIN)
-    set (CPACK_NSIS_MODIFY_PATH ON)
     set (CPACK_NSIS_CONTACT "support@virgilsecurity.com")
     set (CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_REGISTRY_KEY}")
+    set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS
+        # Add executable folder to the PATH
+        "Push \\\"PATH\\\""
+        "Push \\\"A\\\""
+        "Push \\\"HKLM\\\""
+        "Push \\\"$INSTDIR\\\\${INSTALL_BIN_DIR_NAME}\\\""
+        "Call AddToPath"
+        "Pop \\\$0"
+    )
+    string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}")
+    set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
+        # Remove executable folder from the PATH
+        "Push \\\"PATH\\\""
+        "Push \\\"R\\\""
+        "Push \\\"HKLM\\\""
+        "Push \\\"$INSTDIR\\\\${INSTALL_BIN_DIR_NAME}\\\""
+        "Call un.RemoveFromPath"
+        "Pop \\\$0"
+    )
+    string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}")
 endif ()
 INCLUDE(CPack)
