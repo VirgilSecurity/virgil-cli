@@ -1,0 +1,179 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Wed Oct 14 15:30:40 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>VIRGIL</title>
+
+</head>
+<body>
+
+<h1 align=center>VIRGIL</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#AUTHORS">AUTHORS</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>encrypt</b>
+&minus;&minus; encrypt data for given recipients.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>virgil
+encrypt</b> [&minus;&minus;in <i>file</i>]
+[&minus;&minus;out <i>file</i>]
+[&minus;&minus;content&minus;info <i>file</i>]
+[&minus;&minus;recipients <i>file</i>] <i>recipient
+...</i></p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Encrypt data
+for given recipients. Recipient can be represented either by
+the password, or by the Virgil Public Key.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;i</b>
+<i>file</i><b>, &minus;&minus;in</b> <i>file</i> Data to be
+encrypted. If omitted stdin is used. <b><br>
+&minus;o</b> <i>file</i><b>, &minus;&minus;out</b>
+<i>file</i></p>
+
+<p style="margin-left:22%;">Encrypted data. If omitted
+stdout is used.</p>
+
+<p style="margin-left:11%;"><b>&minus;c</b> <i>file</i><b>,
+&minus;&minus;content&minus;info</b> <i>file</i></p>
+
+<p style="margin-left:22%;">Content info &minus; meta
+information about encrypted data. If omitted becomes a part
+of the encrypted data.</p>
+
+<p style="margin-left:11%;"><b>&minus;r</b> <i>file</i><b>,
+&minus;&minus;recipients</b> <i>file</i></p>
+
+<p style="margin-left:22%;">(accepted multiple times) File
+that contains information about recipients. Each line can be
+either empty line, or comment line, or recipient defined in
+format:</p>
+
+
+<p style="margin-left:22%; margin-top: 1em">[pass|file|email|phone|domain]:&lt;value&gt;
+<br>
+where:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="1%">
+
+
+<p style="margin-top: 1em" valign="top">&bull;</p></td>
+<td width="2%"></td>
+<td width="75%">
+
+
+<p style="margin-top: 1em" valign="top">if <tt>pass</tt>,
+then <i>value</i> &minus; recipient's password;</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="1%">
+
+
+<p style="margin-top: 1em" valign="top">&bull;</p></td>
+<td width="2%"></td>
+<td width="75%">
+
+
+<p style="margin-top: 1em" valign="top">if <tt>file</tt>,
+then <i>value</i> &minus; recipient's Virgil Public Key file
+stored locally;</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="1%">
+
+
+<p style="margin-top: 1em" valign="top">&bull;</p></td>
+<td width="2%"></td>
+<td width="75%">
+
+
+<p style="margin-top: 1em" valign="top">if <tt>email</tt>,
+then <i>value</i> &minus; recipient's email;</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="1%">
+
+
+<p style="margin-top: 1em" valign="top">&bull;</p></td>
+<td width="2%"></td>
+<td width="75%">
+
+
+<p style="margin-top: 1em" valign="top">if <tt>phone</tt>,
+then <i>value</i> &minus; recipient's phone;</p></td>
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="1%">
+
+
+<p style="margin-top: 1em" valign="top">&bull;</p></td>
+<td width="2%"></td>
+<td width="75%">
+
+
+<p style="margin-top: 1em" valign="top">if <tt>domain</tt>,
+then <i>value</i> &minus; recipient's domain.</p></td>
+</table>
+
+<p style="margin-left:11%;"><i>recipient</i></p>
+
+<p style="margin-left:22%;">(accepted multiple times)
+Contains information about one recipient. Same as
+significant line in the recipients configuration file.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><tt>virgil(1)</tt>,
+<tt>virgildecrypt(1)</tt></p>
+
+<a name="AUTHORS"></a>
+<h2>AUTHORS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">(c) Virgil
+Security Inc.</p>
+<hr>
+</body>
+</html>

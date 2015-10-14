@@ -1,0 +1,52 @@
+.TH "VIRGIL" "1" "October 14, 2015""Virgil Security CLI (1.0.0)" "BSD General Commands Manual"
+.SH NAME
+.PP
+\f[B]decrypt\f[] \-\- decrypt data with given password or user\[aq]s
+private key.
+
+.SH SYNOPSIS
+.PP
+\f[B]virgil decrypt\f[] [\-\-in \f[I]file\f[]] [\-\-out \f[I]file\f[]]
+[\-\-content\-info \f[I]file\f[]] [\-\-key \f[I]file\f[] [\-\-pwd
+\f[I]arg\f[]]] \-\-recipient \f[I]arg\f[]
+
+.SH DESCRIPTION
+.PP
+Decrypt data with given password or user\[aq]s private key.
+
+.SH OPTIONS
+.TP
+.B \-i \f[I]file\f[], \-\-in \f[I]file\f[]
+Data to be decrypted.
+If omitted stdin is used.
+
+.TP
+.B \-o \f[I]file\f[], \-\-out \f[I]file\f[]
+Decrypted data.
+If omitted stdout is used.
+
+.TP
+.B \-c \f[I]file\f[], \-\-content\-info \f[I]file\f[]
+Content info.
+Use this option to specify explicit content info if it not embedded in
+the encrypted data.
+
+.TP
+.B \-k \f[I]file\f[], \-\-key \f[I]file\f[]
+Recipient\[aq]s private key.
+
+.TP
+.B \-p \f[I]arg\f[], \-\-pwd \f[I]arg\f[]
+Recipient\[aq]s private key password.
+
+.TP
+.B \-r \f[I]arg\f[], \-\-recipient \f[I]arg\f[]
+(required) If option \-\-key is defined this value is used as
+recipient\[aq]s Virgil Public Key, otherwise this value is used as
+recipient\[aq]s password.
+
+.SH SEE ALSO
+.PP
+\f[C]virgil(1)\f[], \f[C]virgilencrypt(1)\f[]
+.SH AUTHORS
+(c) Virgil Security Inc.

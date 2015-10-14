@@ -1,0 +1,53 @@
+.TH "VIRGIL" "1" "October 14, 2015" "Virgil Security CLI (1.0.0)" "BSD General Commands Manual"
+.SH NAME
+\f[B]user-data-del\f[] -- remove user data item from the Public Key.
+
+.SH SYNOPSIS
+\f[B]user-data-del\f[] 
+[\-\-user-data-id \f[I]arg\f[]]
+[\-\-public-key-id \f[I]arg\f[]]
+[\-\-private-key \f[I]file\f[]]
+[\-\-private-pwd \f[I]arg\f[]]
+
+.SH DESCRIPTION
+Remove user data item from the Public Key.
+
+.SH OPTIONS
+.B \-i \f[I]arg\f[]  \-\-user-data-id \f[I]arg\f[]
+User\[aq]s identifer.
+
+.TP
+.B \-e \f[I]arg\f[], \-\-public-key-id \f[I]arg\f[]
+Virgil Public Key.
+
+.RS
+.PP
+.RB Format: [public-id|email|phone|domain]:<value>
+.PD 0
+.P
+.PD
+where:
+.IP \[bu] 2
+if public-id, then \- user\[aq]s public-key-id;
+.IP \[bu] 2
+if email, then \- user\[aq]s email;
+.IP \[bu] 2
+if phone, then \- user\[aq]s phone;
+.IP \[bu] 2
+if domain, then \- user\[aq]s domain.
+.RE
+
+.TP
+.B \-k \f[I]file\f[], \-\-private-key \f[I]file\f[]
+Recipient\[aq]s private key.
+
+.TP
+.B \-p \f[I]arg\f[], \-\-private-pwd \f[I]arg\f[]
+Recipient\[aq]s private key password.
+
+.SH SEE ALSO
+\f[C]virgil(1)\f[], \f[C]virgilkeygen(1)\f[], \f[C]virgilkeyget(1)\f[],
+\f[C]virgilconfirm(1)\f[]
+
+.SH AUTHORS
+(c) Virgil Security Inc.

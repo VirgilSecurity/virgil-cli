@@ -34,55 +34,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_COMMON_UTIL_H
-#define VIRGIL_CLI_COMMON_UTIL_H
+#ifndef VIRGIL_COMMON_UUID_H
+#define VIRGIL_COMMON_UUID_H
 
 #include <string>
-
-#include <virgil/crypto/VirgilByteArray.h>
-
-#include <virgil/sdk/keys/model/PublicKey.h>
-
-#include <virgil/sdk/privatekeys/model/ContainerType.h>
 
 namespace virgil { namespace cli {
 
 /**
- * @brief Retive Virgil Public Key from the Virgil Public Key service.
+ * @brief Generate new GUID
  */
-virgil::sdk::keys::model::PublicKey get_virgil_public_key(const std::string& userId);
-
-/**
- * @brief Read Virgil Public Key from the file.
- */
-virgil::sdk::keys::model::PublicKey read_virgil_public_key(std::istream& file);
-
-/**
- * @brief Read bytes from the given source.
- * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
- */
-virgil::crypto::VirgilByteArray read_bytes(const std::string& in);
-
-/**
- * @brief Write bytes to the given destination.
- * @param out - if empty or equal to "-" then 'stdout' is used, otherwise - path to file.
- */
-void write_bytes(const std::string& out, const virgil::crypto::VirgilByteArray& data);
-void write_bytes(const std::string& out, const std::string& data);
-
-void print_version(std::ostream& out, const char *programName);
-
-
-
-void checkFormatUserId(const std::pair<std::string, std::string>& pair);
-
-void checkFormatPublicId(const std::pair<std::string, std::string>& pair);
-
-
-std::string getPublicKeyId(const std::string& type, const std::string& value);
-
-virgil::sdk::privatekeys::model::ContainerType fromString(const std::string& type);
+std::string uuid();
 
 }}
 
-#endif /* VIRGIL_CLI_COMMON_UTIL_H */
+#endif /* VIRGIL_COMMON_UUID_H */
+

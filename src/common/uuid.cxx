@@ -34,55 +34,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_COMMON_UTIL_H
-#define VIRGIL_CLI_COMMON_UTIL_H
+#include <cli/uuid.h>
 
-#include <string>
+#include <chrono>
+#include <random>
 
-#include <virgil/crypto/VirgilByteArray.h>
+std::string virgil::cli::uuid () {
+    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
 
-#include <virgil/sdk/keys/model/PublicKey.h>
+    uint32_t time_low = ((generator() << 16) & 0xffff0000) | (generator() & 0xffff);
+    uint16_t time_mid = generator() & 0xffff;
+    uint16_t time_high_and_version = (generator() & 0x0fff) | 0x4000;
+    uint16_t clock_seq = (generator() & 0x3fff) | 0x8000;
+    uint8_t node [6];
+    for (size_t i = 0; i < 6; ++i) {
+        node[i] = generator() & 0xff;
+    }
 
-#include <virgil/sdk/privatekeys/model/ContainerType.h>
+    char buffer[37] = {0x0};
+    sprintf(buffer, "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+        time_low, time_mid, time_high_and_version, clock_seq >> 8, clock_seq & 0xff,
+        node[0], node[1], node[2], node[3], node[4], node[5]);
 
-namespace virgil { namespace cli {
-
-/**
- * @brief Retive Virgil Public Key from the Virgil Public Key service.
- */
-virgil::sdk::keys::model::PublicKey get_virgil_public_key(const std::string& userId);
-
-/**
- * @brief Read Virgil Public Key from the file.
- */
-virgil::sdk::keys::model::PublicKey read_virgil_public_key(std::istream& file);
-
-/**
- * @brief Read bytes from the given source.
- * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
- */
-virgil::crypto::VirgilByteArray read_bytes(const std::string& in);
-
-/**
- * @brief Write bytes to the given destination.
- * @param out - if empty or equal to "-" then 'stdout' is used, otherwise - path to file.
- */
-void write_bytes(const std::string& out, const virgil::crypto::VirgilByteArray& data);
-void write_bytes(const std::string& out, const std::string& data);
-
-void print_version(std::ostream& out, const char *programName);
-
-
-
-void checkFormatUserId(const std::pair<std::string, std::string>& pair);
-
-void checkFormatPublicId(const std::pair<std::string, std::string>& pair);
-
-
-std::string getPublicKeyId(const std::string& type, const std::string& value);
-
-virgil::sdk::privatekeys::model::ContainerType fromString(const std::string& type);
-
-}}
-
-#endif /* VIRGIL_CLI_COMMON_UTIL_H */
+    return std::string(buffer);
+}

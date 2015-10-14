@@ -1,0 +1,117 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Wed Oct 14 15:30:40 2015 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title>VIRGIL</title>
+
+</head>
+<body>
+
+<h1 align=center>VIRGIL</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#AUTHORS">AUTHORS</a><br>
+
+<hr>
+
+
+<a name="NAME"></a>
+<h2>NAME</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>decrypt</b>
+&minus;&minus; decrypt data with given password or user's
+private key.</p>
+
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>virgil
+decrypt</b> [&minus;&minus;in <i>file</i>]
+[&minus;&minus;out <i>file</i>]
+[&minus;&minus;content&minus;info <i>file</i>]
+[&minus;&minus;key <i>file</i> [&minus;&minus;pwd
+<i>arg</i>]] &minus;&minus;recipient <i>arg</i></p>
+
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Decrypt data
+with given password or user's private key.</p>
+
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>&minus;i</b>
+<i>file</i><b>, &minus;&minus;in</b> <i>file</i></p>
+
+<p style="margin-left:22%;">Data to be decrypted. If
+omitted stdin is used.</p>
+
+<p style="margin-left:11%;"><b>&minus;o</b> <i>file</i><b>,
+&minus;&minus;out</b> <i>file</i></p>
+
+<p style="margin-left:22%;">Decrypted data. If omitted
+stdout is used.</p>
+
+<p style="margin-left:11%;"><b>&minus;c</b> <i>file</i><b>,
+&minus;&minus;content&minus;info</b> <i>file</i></p>
+
+<p style="margin-left:22%;">Content info. Use this option
+to specify explicit content info if it not embedded in the
+encrypted data.</p>
+
+<p style="margin-left:11%;"><b>&minus;k</b> <i>file</i><b>,
+&minus;&minus;key</b> <i>file</i></p>
+
+<p style="margin-left:22%;">Recipient's private key.</p>
+
+<p style="margin-left:11%;"><b>&minus;p</b> <i>arg</i><b>,
+&minus;&minus;pwd</b> <i>arg</i></p>
+
+<p style="margin-left:22%;">Recipient's private key
+password.</p>
+
+<p style="margin-left:11%;"><b>&minus;r</b> <i>arg</i><b>,
+&minus;&minus;recipient</b> <i>arg</i></p>
+
+<p style="margin-left:22%;">(required) If option
+&minus;&minus;key is defined this value is used as
+recipient's Virgil Public Key, otherwise this value is used
+as recipient's password.</p>
+
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><tt>virgil(1)</tt>,
+<tt>virgilencrypt(1)</tt></p>
+
+<a name="AUTHORS"></a>
+<h2>AUTHORS</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">(c) Virgil
+Security Inc.</p>
+<hr>
+</body>
+</html>

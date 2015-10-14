@@ -1,0 +1,49 @@
+.TH "VIRGIL" "1" "October 14, 2015" "Virgil Security CLI (0.3.0)" "BSD General Commands Manual"
+.SH NAME
+\f[B]private-key-add\f[] \-\- load an existing Private Key into the Private Keys Service and associate it with the
+existing Container object. To register, you must provide a public key/s which will be associated with it.
+
+.SH SYNOPSIS
+\f[B]virgil private-key-add\f[] 
+[\-\-in \f[I]file\f[]] 
+[\-\-private-pwd \f[I]arg\f[]]]      
+[\-\-public-key-id \f[I]arg\f[]]
+
+.SH DESCRIPTION
+Load an existing Private Key into the Private Keys Service and associate it with the
+existing Container object.
+
+.SH OPTIONS
+.B \-i \f[I]file\f[], \-\-in \f[I]file\f[]
+Sender's private key. If omitted stdin is used.
+
+.TP
+.B \-p \f[I]arg\f[], \-\-private-pwd \f[I]arg\f[]
+Sender\[aq]s private key password.
+
+.TP
+.B \-e \f[I]arg\f[], \-\-public-key-id \f[I]arg\f[]
+Sender\[aq]s Virgil Public Key.
+
+.RS
+.PP
+.RB Format: [public-id|email|phone|domain]:<value>
+.PD 0
+.P
+.PD
+where:
+.IP \[bu] 2
+if public-id, then \- user\[aq]s public-key-id;
+.IP \[bu] 2
+if email, then \- user\[aq]s email;
+.IP \[bu] 2
+if phone, then \- user\[aq]s phone;
+.IP \[bu] 2
+if domain, then \- user\[aq]s domain.
+.RE
+
+.SH SEE ALSO
+\f[C]virgil(1)\f[], \f[C]virgilkeygen(1)\f[], \f[C]virgilkeyget(1)\f[],
+\f[C]virgilconfirm(1)\f[]
+.SH AUTHORS
+(c) Virgil Security Inc.

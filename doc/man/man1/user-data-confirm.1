@@ -1,0 +1,27 @@
+.TH "VIRGIL" "1" "October 14, 2015" "Virgil Security CLI (1.0.0)" "BSD General Commands Manual"
+.SH NAME
+\f[B]user-data-confirm\f[] -- send confirmation code to the Virgil Public Keys service.
+Confirmation code is sent after user's public key registration.
+
+.SH SYNOPSIS
+\f[B]virgil user-data-confirm\f[] 
+[\-\-user-data-id \f[I]arg\f[]]
+[\-\-confirmation-code \f[I]arg\f[]]
+
+.SH DESCRIPTION
+Send confirmation code to the Virgil Public Keys service.
+Confirmation code is sent after user's public key registration.
+
+.SH OPTIONS
+.B \-i \f[I]arg\f[]  \-\-user-data-id \f[I]arg\f[]
+User\[aq]s identifer.
+
+.TP
+.B \-c \f[I]arg\f[], \-\-confirmation-code \f[I]arg\f[]
+Confirmation code.
+
+.SH SEE ALSO
+\f[C]virgil(1)\f[], \f[C]virgilkeygen(1)\f[], \f[C]virgilkeyget(1)\f[],
+\f[C]virgilconfirm(1)\f[]
+.SH AUTHORS
+(c) Virgil Security Inc.

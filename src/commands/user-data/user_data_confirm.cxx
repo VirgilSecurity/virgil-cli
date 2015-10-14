@@ -34,55 +34,59 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_COMMON_UTIL_H
-#define VIRGIL_CLI_COMMON_UTIL_H
-
+#include <iostream>
+#include <stdexcept>
 #include <string>
 
-#include <virgil/crypto/VirgilByteArray.h>
+#include <tclap/CmdLine.h>
 
+#include <virgil/sdk/keys/client/KeysClient.h>
 #include <virgil/sdk/keys/model/PublicKey.h>
 
-#include <virgil/sdk/privatekeys/model/ContainerType.h>
+#include <cli/version.h>
+#include <cli/config.h>
+#include <cli/uuid.h>
 
-namespace virgil { namespace cli {
+using virgil::sdk::keys::client::KeysClient;
+using virgil::sdk::keys::model::PublicKey;
 
-/**
- * @brief Retive Virgil Public Key from the Virgil Public Key service.
- */
-virgil::sdk::keys::model::PublicKey get_virgil_public_key(const std::string& userId);
+#ifdef SPLIT_CLI
+    #define MAIN main
+#else
+    #define MAIN user_data_confirm_main
+#endif
 
-/**
- * @brief Read Virgil Public Key from the file.
- */
-virgil::sdk::keys::model::PublicKey read_virgil_public_key(std::istream& file);
+int MAIN(int argc, char **argv) {
+    try {
+        // Parse arguments.
+        TCLAP::CmdLine cmd("Send confirmation code to the Virgil Public Keys service. "
+                "Confirmation code is sent after user's public key registration.", ' ',
+                virgil::cli_version());
 
-/**
- * @brief Read bytes from the given source.
- * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
- */
-virgil::crypto::VirgilByteArray read_bytes(const std::string& in);
+        TCLAP::ValueArg<std::string> userIdArg("i", "user-data-id",
+                "User's data identifer.\n",
+                true, "", "arg");
 
-/**
- * @brief Write bytes to the given destination.
- * @param out - if empty or equal to "-" then 'stdout' is used, otherwise - path to file.
- */
-void write_bytes(const std::string& out, const virgil::crypto::VirgilByteArray& data);
-void write_bytes(const std::string& out, const std::string& data);
+        TCLAP::ValueArg<std::string> confirmationCodeArg("c", "confirmation-code", "Confirmation code.",
+                true, "", "arg");
 
-void print_version(std::ostream& out, const char *programName);
+        cmd.add(confirmationCodeArg);
+        cmd.add(userIdArg);
+        cmd.parse(argc, argv);
 
+        const std::string userDataId = userIdArg.getValue();
+        const std::string confirmationCode = confirmationCodeArg.getValue();
 
+        KeysClient keysClient(VIRGIL_APP_TOKEN);
+        keysClient.userData().confirm(userDataId, confirmationCode, virgil::cli::uuid());
 
-void checkFormatUserId(const std::pair<std::string, std::string>& pair);
+    } catch (TCLAP::ArgException& exception) {
+        std::cerr << "user-data-confirm. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        return EXIT_FAILURE;
+    } catch (std::exception& exception) {
+        std::cerr << "user-data-confirm. Error: " << exception.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
-void checkFormatPublicId(const std::pair<std::string, std::string>& pair);
-
-
-std::string getPublicKeyId(const std::string& type, const std::string& value);
-
-virgil::sdk::privatekeys::model::ContainerType fromString(const std::string& type);
-
-}}
-
-#endif /* VIRGIL_CLI_COMMON_UTIL_H */
+    return EXIT_SUCCESS;
+}

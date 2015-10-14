@@ -38,42 +38,38 @@
 #include <iostream>
 #include <fstream>
 #include <iterator>
-#include <vector>
 #include <stdexcept>
 
 #include <virgil/crypto/VirgilByteArray.h>
 
-#include <virgil/sdk/keys/io/marshaller.h>
+#include <virgil/sdk/keys/io/Marshaller.h>
 #include <virgil/sdk/keys/model/PublicKey.h>
-#include <virgil/sdk/keys/http/Connection.h>
 #include <virgil/sdk/keys/client/KeysClient.h>
 
-#include <cli/util.h>
 #include <cli/config.h>
+#include <cli/version.h>
+#include <cli/util.h>
+#include <cli/uuid.h>
 
 using virgil::crypto::VirgilByteArray;
 
-using virgil::sdk::keys::io::marshaller;
+using virgil::sdk::keys::io::Marshaller;
 using virgil::sdk::keys::model::PublicKey;
-using virgil::sdk::keys::http::Connection;
 using virgil::sdk::keys::client::KeysClient;
 
-PublicKey virgil::cli::get_virgil_public_key(const std::string&  recipientId, const std::string& recipientIdType) {
+using virgil::sdk::privatekeys::model::ContainerType;
+
+PublicKey virgil::cli::get_virgil_public_key(const std::string&  userId) {
     // Get owner Virgil Public Key
-    KeysClient keysClient(std::make_shared<Connection>(VIRGIL_APP_TOKEN));
-    std::vector<PublicKey> publicKeys = keysClient.publicKey().search(recipientId, recipientIdType);
-    PublicKey publicKey;
-    if (!publicKeys.empty()) {
-        publicKey = publicKeys.front();
-    }
-    return publicKey;
+    KeysClient keysClient(VIRGIL_APP_TOKEN);
+    return keysClient.publicKey().grab(userId, uuid());
 }
 
 PublicKey virgil::cli::read_virgil_public_key(std::istream& file) {
     // Read Virgil Public Key
     std::string publicKeyData((std::istreambuf_iterator<char>(file)),
                 std::istreambuf_iterator<char>());
-    PublicKey publicKey = marshaller<PublicKey>::fromJson(publicKeyData);
+    PublicKey publicKey = Marshaller<PublicKey>::fromJson(publicKeyData);
     return publicKey;
 }
 
@@ -92,6 +88,7 @@ VirgilByteArray virgil::cli::read_bytes(const std::string& in) {
 void virgil::cli::write_bytes(const std::string& out, const VirgilByteArray& data) {
     if (out.empty()) {
         std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(std::cout));
+        std::cout << std::endl;
         return;
     }
 
@@ -104,4 +101,61 @@ void virgil::cli::write_bytes(const std::string& out, const VirgilByteArray& dat
 
 void virgil::cli::write_bytes(const std::string& out, const std::string& data) {
     return virgil::cli::write_bytes(out, virgil::crypto::str2bytes(data));
+}
+
+void virgil::cli::print_version(std::ostream& out, const char *programName) {
+    out << programName << "  " << "version: "<< virgil::cli_version() << std::endl;
+}
+
+void virgil::cli::checkFormatUserId(const std::pair<std::string, std::string>& pair) {
+    const std::string type = pair.first;
+    if (type != "email" && type != "phone" && type != "domain" ) {
+        throw std::invalid_argument(
+                "invalid type format: " + type + ". Expected format: '<key>:<value>'."
+                "Where <key> = [email|phone|domain]"
+                );
+    }
+}
+
+void virgil::cli::checkFormatPublicId(const std::pair<std::string, std::string>& pair) {
+    const std::string type = pair.first;
+    if (type != "public-id" && type != "file" && type != "email" && type != "phone" && type != "domain" ) {
+        throw std::invalid_argument(
+                "invalid type format: " + type + ". Expected format: '<key>:<value>'."
+                "Where <key> = [public-id|file|email|phone|domain]"
+                );
+    }
+}
+
+std::string virgil::cli::getPublicKeyId(const std::string& type, const std::string& value) {
+    std::string publicKeyId;
+    if (type == "public-id") {
+        publicKeyId = value;
+    } else if (type == "file") {
+        // Read Virgil Public Key
+        std::string pathToFile = value;
+        std::ifstream virgilPublicKeyFile(pathToFile, std::ios::in | std::ios::binary);
+        if (!virgilPublicKeyFile) {
+            throw std::invalid_argument("can not read recipient's Virgil Public Key: " + pathToFile);
+        }
+        PublicKey publicKey = virgil::cli::read_virgil_public_key(virgilPublicKeyFile);
+        publicKeyId = publicKey.publicKeyId();
+    } else {
+        std::string userId = value;
+        PublicKey publicKey = virgil::cli::get_virgil_public_key(userId);
+        publicKeyId = publicKey.publicKeyId();
+    }
+
+    return publicKeyId;
+}
+
+ContainerType virgil::cli::fromString(const std::string& type) {
+    if (type == "easy") {
+        return ContainerType::Easy;
+    } else if (type == "normal") {
+        return ContainerType::Normal;
+    } else {
+        throw std::invalid_argument("invalid container type: " + type +
+                                    ". Expected easy | normal.");
+    }
 }
