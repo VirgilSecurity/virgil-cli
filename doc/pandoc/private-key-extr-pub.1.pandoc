@@ -1,0 +1,30 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**private-key-extr-pub** -- get public key from the private key
+
+# SYNOPSIS
+
+**virgil private-key-extr-pub** [--in *file*] [--out *file*] [--pwd *arg*]
+
+# DESCRIPTION
+
+Get public key from the private key.
+
+# OPTIONS
+
+-i *file*, \--in *file*
+:   Private key. If omitted stdin is used.
+
+-o *file*, \--out *file*
+:   Public key. If omitted stdout is used.
+
+-p *arg*, \--pwd *arg*
+:   Private key password.
+
+# SEE ALSO
+
+`virgil(1)`, `private-key-gen(1)`

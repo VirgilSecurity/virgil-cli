@@ -44,6 +44,7 @@
 #include <virgil/sdk/keys/model/PublicKey.h>
 
 #include <virgil/sdk/privatekeys/model/ContainerType.h>
+#include <virgil/sdk/privatekeys/model/UserData.h>
 
 namespace virgil { namespace cli {
 
@@ -78,6 +79,8 @@ void checkFormatUserId(const std::pair<std::string, std::string>& pair);
 
 void checkFormatPublicId(const std::pair<std::string, std::string>& pair);
 
+
+virgil::sdk::privatekeys::model::UserData getUserData(const std::string& type, const std::string& value);
 
 std::string getPublicKeyId(const std::string& type, const std::string& value);
 

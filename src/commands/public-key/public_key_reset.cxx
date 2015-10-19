@@ -91,10 +91,10 @@ int MAIN(int argc, char **argv) {
                 "\t* if domain, then <value> - sender's domain.\n",
                 true, "", "arg");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("", "new-private-key", "Sender's new private key.",
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Sender's new private key.",
                 true, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("", "new-private-pwd", "Sender's new private key password.",
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "private-pwd", "Sender's new private key password.",
                 false, "", "arg");
 
         cmd.add(privatePasswordArg);

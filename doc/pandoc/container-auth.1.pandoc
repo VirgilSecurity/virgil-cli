@@ -1,0 +1,47 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**container-auth** -- authenticate a session.
+
+# SYNOPSIS
+
+**virgil container-auth** [--user-id *arg*] [--container-pwd *arg*]
+
+# DESCRIPTION
+
+Authenticate a session. Virgil's Service will create an Authentication token
+that will be available for 60 minutes. If you work longer than 60 minutes, 
+the token will automatically prolong itself.  Otherwise, the token will die 
+and you will need to generate a new one.\
+Note: \
+Before logging in, make sure that you have already initialized the 
+Container  in Virgil's Private Key service. Use the same confirmed User Data
+identity parameter as you registered in our Public Keys service.
+
+# OPTIONS
+
+-u *arg*, --user-id *arg*
+:   User's identifer. Format: 
+
+     [email|phone|domain]:<value>
+
+    where:
+ 
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+-c *arg*,  --container-pwd *arg*
+:   Container password.
+
+# EXAMPLES
+
+**virgil container-auth** [--user-id *arg*] [--container-pwd *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `container-del(1)`, `container-info(1)`, `container-update(1)`,\
+`private-key-add(1)`, `private-key-get(1)`, `private-key-del(1)`

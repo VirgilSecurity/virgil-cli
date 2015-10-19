@@ -34,6 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <fstream>
 #include <stdexcept>
 #include <string>
 
@@ -71,20 +72,18 @@ int MAIN(int argc, char **argv) {
         TCLAP::CmdLine cmd("Get user's Virgil Public Key with/without User Data from the Virgil Public Keys service.", ' ',
                 virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted stdout is used.",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Output Virgil Public Key. If omitted stdout is used.",
                 false, "", "file");
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "User identifer.\n"
-                "If you want return Virgil Public Key with User Data\n"
-                "use format: [public-id]:<value>\n"
-                "In other case ( without User Data ):\n"
-                "Format: [public-id|email|phone|domain]:<value>\n"
+                "Sender's public key id."
+                "[public-id|file|email|phone|domain]:<value>\n"
                 "where:\n"
-                "\t* if public-id, then <value> - user's public-key-id;\n"
-                "\t* if email, then <value> - user's email';\n"
-                "\t* if phone, then <value> - user's phone;\n"
-                "\t* if domain, then <value> - user's domain.\n",
+                "\t* if public-id, then <value> - sender's public-id;\n"
+                "\t* if file, then <value> - sender's Virgil Public Key (without User Data) file stored locally;\n"
+                "\t* if email, then <value> - sender's email;\n"
+                "\t* if phone, then <value> - sender's phone;\n"
+                "\t* if domain, then <value> - sender's domain.\n",
                 true, "", "arg");
 
         TCLAP::SwitchArg isUserDataArg("w", "with-user-data", "If true - get user's Virgil Public Key with User Data."
@@ -110,19 +109,30 @@ int MAIN(int argc, char **argv) {
 
         KeysClient keysClient(VIRGIL_APP_TOKEN);
         PublicKey virgilPublicKey;
+        std::string publicKeyId;
 
         if ( isUserDataArg.getValue() == false ) {
             if (type == "public-id") {
-                std::string publicKeyId = value;
+                publicKeyId = value;
                 virgilPublicKey = keysClient.publicKey().get(publicKeyId);
+            } else if(type == "file") {
+                // Read Virgil Public Key
+                std::string pathToFile = value;
+                std::ifstream virgilPublicKeyFile(pathToFile, std::ios::in | std::ios::binary);
+                if (!virgilPublicKeyFile) {
+                    throw std::invalid_argument("can not read recipient's Virgil Public Key: " + pathToFile);
+                }
 
+                PublicKey publicKey = virgil::cli::read_virgil_public_key(virgilPublicKeyFile);
+                publicKeyId = publicKey.publicKeyId();               
+                virgilPublicKey = keysClient.publicKey().get(publicKeyId);
             } else {
                 std::string userId = value;
                 virgilPublicKey = keysClient.publicKey().grab(userId, virgil::cli::uuid());
             }
+
         } else {
-            if (type == "public-id") {
-                std::string publicKeyId = value;
+                std::string publicKeyId = virgil::cli::getPublicKeyId(type, value);
 
                 // Read private key
                 VirgilByteArray privateKey = virgil::cli::read_bytes(privateKeyArg.getValue());
@@ -130,11 +140,6 @@ int MAIN(int argc, char **argv) {
                 Credentials credentials(publicKeyId, privateKey, privateKeyPassword);
 
                 virgilPublicKey = keysClient.publicKey().grab(credentials, virgil::cli::uuid());
-            } else {
-                std::string errorMessage = "can not use " + publicKeyIdArg.getValue() + "with isUserDataArg=true.";
-                errorMessage += "You should use format: [public-key-id]:<value>";
-                throw std::invalid_argument(errorMessage);
-            }
         }
 
         // Store Virgil Public Key to the output file

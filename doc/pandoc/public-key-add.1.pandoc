@@ -1,0 +1,39 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**public-key-add** -- register user's public key on the Virgil Public Keys service.
+
+# SYNOPSIS
+
+**virgil public-key-add** [--in *file*] [--out *file*] *user-id* *...*
+
+# DESCRIPTION
+
+Register user's public key on the Virgil Public Keys service.
+If registration successfull confirmation code will be sent to the user.
+To confirm, you must use **user-data-confirm**. 
+
+# OPTIONS
+
+-i *file*, \--in *file*
+:   Public key. If omitted stdin is used.
+
+-o *file*, \--out *file*
+:   Virgil Public Key. If omitted stdout is used.
+
+*user-id*
+:   (required) User's identifer.
+
+    Format: [email|phone|domain]:\<value\>\
+    where:
+
+     * if email, then <value> - user's email;
+     * if phone, then <value> - user's phone;
+     * if domain, then <value> - user's domain.
+
+# SEE ALSO
+
+`virgil(1)`, `private-key-gen(1)`, `public-key-get(1)`, `user-data-confirm(1)`

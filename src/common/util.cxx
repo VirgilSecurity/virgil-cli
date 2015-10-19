@@ -46,6 +46,8 @@
 #include <virgil/sdk/keys/model/PublicKey.h>
 #include <virgil/sdk/keys/client/KeysClient.h>
 
+#include <virgil/sdk/privatekeys/model/UserDataClass.h>
+
 #include <cli/config.h>
 #include <cli/version.h>
 #include <cli/util.h>
@@ -58,6 +60,8 @@ using virgil::sdk::keys::model::PublicKey;
 using virgil::sdk::keys::client::KeysClient;
 
 using virgil::sdk::privatekeys::model::ContainerType;
+using virgil::sdk::privatekeys::model::UserData;
+using virgil::sdk::privatekeys::model::UserDataClass;
 
 PublicKey virgil::cli::get_virgil_public_key(const std::string&  userId) {
     // Get owner Virgil Public Key
@@ -125,6 +129,10 @@ void virgil::cli::checkFormatPublicId(const std::pair<std::string, std::string>&
                 "Where <key> = [public-id|file|email|phone|domain]"
                 );
     }
+}
+
+UserData virgil::cli::getUserData(const std::string& type, const std::string& value) {
+    return UserData().className(UserDataClass::userId).type(type).value(value);     
 }
 
 std::string virgil::cli::getPublicKeyId(const std::string& type, const std::string& value) {

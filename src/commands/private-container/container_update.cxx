@@ -87,10 +87,10 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> privatePasswordArg("p", "private-pwd", "Sender's private key password.",
                 false, "", "arg");
 
-        TCLAP::ValueArg<std::string> containerTypeArg("t", "type", "Container type easy | normal. Default easy.",
+        TCLAP::ValueArg<std::string> containerTypeArg("t", "type", "New container type easy or normal. Default easy.",
                 false, "easy", "arg");
 
-        TCLAP::ValueArg<std::string> containerPaswordArg("c", "container-pwd", "Container password",
+        TCLAP::ValueArg<std::string> containerPaswordArg("c", "container-pwd", "New container password",
                 false, "", "arg");
 
         cmd.add(containerPaswordArg);

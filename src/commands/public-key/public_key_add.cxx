@@ -81,10 +81,10 @@ int MAIN(int argc, char **argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd("Register user's public key on the Virgil Public Keys service.", ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inPublicKeyArg("i", "in", "Public key. If omitted stdin is used.",
+        TCLAP::ValueArg<std::string> inPublicKeyArg("i", "in", "Sender's Public key. If omitted stdin is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> outVirgilPublicKeyArg("o", "out", "Virgil Public Key. If omitted stdout is used.",
+        TCLAP::ValueArg<std::string> outVirgilPublicKeyArg("o", "out", "Output sender's Virgil Public Key. If omitted stdout is used.",
                 false, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Sender's private key.",
@@ -127,6 +127,11 @@ int MAIN(int argc, char **argv) {
         std::string publicKeyData = Marshaller<PublicKey>::toJson(virgilPublicKey);
         virgil::cli::write_bytes(outVirgilPublicKeyArg.getValue(), publicKeyData);
 
+        std::cout << "Added user data id: " << virgilPublicKey.userData().front().userDataId() << std::endl;
+        std::cout << "Confirmation code can be found in the email." << std::endl;
+        std::cout << "Now launch next command: \n"  << std::endl;
+        std::cout << "virgil user-data-confirm -i  <user_data_id>  -c <confirmation_code>'" << std::endl;
+
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "public-key-add. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
@@ -143,9 +148,10 @@ PublicKey register_public_key (const VirgilByteArray& publicKey,
 
     std::vector<UserData> userIdsData;
     for (const auto& userId: userIdsDict) {
-        const std::string type = userId.first;
-        const std::string value = userId.second;
-        UserData userIdData = UserData().className(UserDataClass::userId).type(type).value(value);
+        UserData userIdData = UserData()
+            .className(UserDataClass::userId)
+            .type(userId.first)
+            .value(userId.second);
         userIdsData.push_back(userIdData);
     }
 

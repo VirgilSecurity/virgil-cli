@@ -1,0 +1,67 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**public-key-confirm** -- confirms the reset or delete a Public Key operation from the Virgil Public Keys service.
+
+# SYNOPSIS
+
+**virgil public-key-confirm** [--publickey-key-id *arg*] [action-token *arg*] [--reset *bool*] [--private-key *file*] [--private-pwd *arg*] *confirm-codes* *...*
+
+# DESCRIPTION
+
+Send confirmation code to the Virgil Public Keys service.\
+Confirms the reset or delete a Public Key operation from the Virgil Public Keys service.\
+Note:\
+If  -r, --reset true
+: confirms reset Public Key operation.\
+If -r, --reset false
+: confirms delete Public Key operation.
+
+# OPTIONS
+
+-e *arg*, --public-key-id *arg*
+:   Recipient's old Virgil Public Key. Format: 
+
+     [public-id|file|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+-t *arg*,  --action-token *arg*
+:   Action token.
+
+-r *bool*, --reset *bool*
+: Default false.\
+If 
+**-r *false*, --reset *false***
+: confirms delete Public Key operation.\
+If 
+**-r *true*, --reset *true***
+: confirms reset Public Key operation.
+
+-k *file*,  --private-key *file*
+:   Recipient's private key.
+
+-p *arg*,  --private-pwd *arg*
+:   Recipient's private key password.
+
+*confirm-codes*
+:  (required) Confirmation codes.
+
+# EXAMPLES
+
+**virgil public-key-confirm** [--publickey-key-id *arg*] [action-token *arg*] *confirm-codes* *...*
+
+**virgil public-key-confirm** [--publickey-key-id *arg*] [action-token *arg*] [--reset *arg*] [--private-key *file*] [--private-pwd *arg*] *confirm-codes* *...*
+
+# SEE ALSO
+
+`virgil(1)`, `public-key-reset(1)`,`public-key-del(1)`

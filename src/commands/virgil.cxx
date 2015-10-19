@@ -60,6 +60,7 @@ int public_key_del_main(int argc, char **argv);
 int public_key_update_main(int argc, char **argv);
 int public_key_reset_main(int argc, char **argv);
 int public_key_confirm_main(int argc, char **argv);
+int public_key_id_get_main(int argc, char **argv);
 
 int user_data_add_main(int argc, char **argv);
 int user_data_del_main(int argc, char **argv);
@@ -67,10 +68,10 @@ int user_data_confirm_main(int argc, char **argv);
 int user_data_reconfirm_main(int argc, char **argv);
 
 int private_key_gen_main(int argc, char **argv);
+int private_key_extr_pub_main(int argc, char **argv);
 int private_key_add_main(int argc, char **argv);
 int private_key_get_main(int argc, char **argv);
 int private_key_del_main(int argc, char **argv);
-int private_key_info_main(int argc, char **argv);
 
 int private_container_auth_main(int argc, char **argv);
 int private_container_create_main(int argc, char **argv);
@@ -125,17 +126,18 @@ int main(int argc, char **argv) {
     commandsMap["public-key-update"] = &public_key_update_main;
     commandsMap["public-key-reset"] = &public_key_reset_main;
     commandsMap["public-key-confirm"] = &public_key_confirm_main;
-
+    commandsMap["public-key-id-get"] = &public_key_id_get_main;
+    
     commandsMap["user-data-add"] = &user_data_add_main;
     commandsMap["user-data-del"] = &user_data_del_main;
     commandsMap["user-data-confirm"] = &user_data_confirm_main;
     commandsMap["user-data-reconfirm"] = &user_data_reconfirm_main;
 
     commandsMap["private-key-gen"] = &private_key_gen_main;
+    commandsMap["private-key-extr-pub"] = &private_key_extr_pub_main;
     commandsMap["private-key-add"] = &private_key_add_main;
     commandsMap["private-key-get"] = &private_key_get_main;
     commandsMap["private-key-del"] = &private_key_del_main;
-    commandsMap["private-key-info"] = &private_key_info_main;
 
     commandsMap["container-auth"] = &private_container_auth_main;
     commandsMap["container-create"] = &private_container_create_main;

@@ -1,0 +1,28 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**container-confirm** -- confirm password token and re-encrypt Private Key data with the new password. 
+
+# SYNOPSIS
+
+**virgil container-confirm** [--confirmation-token *arg*]
+
+# DESCRIPTION
+
+Confirm password token and re-encrypt Private Key data with the new password. 
+
+# OPTIONS
+
+-t *arg*,  --confirmation-token *arg*
+:   Confirmation token received on email box.
+
+# EXAMPLES
+
+**virgil container-confirm** [--confirmation-token *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `container-del(1)`

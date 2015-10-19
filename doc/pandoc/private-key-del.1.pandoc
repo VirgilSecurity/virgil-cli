@@ -1,0 +1,46 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**private-key-del** -- delete a Private Key object. A Private Key object will be disconnected from the
+Container Object and then deleted from the Private Key service.
+
+# SYNOPSIS
+
+**virgil private-key-del** [--publickey-key-id *arg*] [--private-key *file*]  [--private-pwd *arg*]
+
+# DESCRIPTION
+
+Delete a Private Key object. A Private Key object will be disconnected from the
+Container Object and then deleted from the Private Key service.
+
+# OPTIONS
+
+-e *arg*, --public-key-id *arg*
+:   User's public key id. Format: 
+
+     [public-id|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+-k *file*,  --private-key *file*
+:   User's private key.
+
+-p *arg*,  --private-pwd *arg*
+:   User's private key password.
+
+# EXAMPLES
+
+**virgil private-key-del** [--publickey-key-id *arg*] [--private-key *file*] [--private-pwd *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `private-key-get(1)`, `private-key-add(1)`, 

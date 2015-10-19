@@ -34,41 +34,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
-#include <string>
 #include <stdexcept>
+#include <string>
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/crypto/VirgilByteArray.h>
-
-#include <virgil/sdk/privatekeys/client/Credentials.h>
-#include <virgil/sdk/privatekeys/client/PrivateKeysClient.h>
-#include <virgil/sdk/privatekeys/model/UserData.h>
+#include <virgil/sdk/keys/client/KeysClient.h>
 
 #include <cli/version.h>
 #include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
-#include <cli/uuid.h>
 
-using virgil::crypto::VirgilByteArray;
-
-using virgil::sdk::privatekeys::client::Credentials;
-using virgil::sdk::privatekeys::client::PrivateKeysClient;
-using virgil::sdk::privatekeys::model::UserData;
+using virgil::sdk::keys::client::KeysClient;
 
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN private_container_del_main
+#define MAIN public_key_id_get_main
 #endif
 
 int MAIN(int argc, char **argv) {
     try {
         // Parse arguments.
-        TCLAP::CmdLine cmd("Delete existing container object from the Private Key service. ", ' ',
+        TCLAP::CmdLine cmd("Get user's Public Key Id from the Virgil Public Keys service.", ' ',
                 virgil::cli_version());
+
+        TCLAP::ValueArg<std::string> outPublicKeyIdArg("o", "out", "Output Public Key Id. If omitted stdout is used.",
+                false, "", "file");
 
         TCLAP::ValueArg<std::string> userIdArg("u","user-id",
                 "User's identifer.\n"
@@ -79,44 +72,23 @@ int MAIN(int argc, char **argv) {
                 "\t* if domain, then <value> - user's domain.\n",
                 true, "","arg" );
 
-        TCLAP::ValueArg<std::string> containerPaswordArg("c", "container-pwd", "Container password",
-                true, "", "arg");
-
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Sender's public key id.", true, "", "arg");
-
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Sender's private key.",
-                true, "", "file");
-
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "private-pwd", "Sender's private key password.",
-                false, "", "arg");
-
-        cmd.add(privatePasswordArg);
-        cmd.add(privateKeyArg);
-        cmd.add(publicKeyIdArg);
-        cmd.add(containerPaswordArg);
         cmd.add(userIdArg);
+        cmd.add(outPublicKeyIdArg);
         cmd.parse(argc, argv);
 
-        auto userId = virgil::cli::parse_pair(userIdArg.getValue());
-        virgil::cli::checkFormatUserId(userId);             
-        UserData userData =  virgil::cli::getUserData(userId.first, userId.second);
-        std::string containerPassword = containerPaswordArg.getValue();
+        const auto userId = virgil::cli::parse_pair(userIdArg.getValue());
+        virgil::cli::checkFormatUserId(userId);
+        const std::string typeUserId = userId.first;
+        const std::string valueUserId = userId.second;
 
-        std::string publicKeyId = publicKeyIdArg.getValue();
-        VirgilByteArray privateKey = virgil::cli::read_bytes(privateKeyArg.getValue());
-        std::string privateKeyPassword = privatePasswordArg.getValue();
-        Credentials credentials(publicKeyId, privateKey, privateKeyPassword);
-
-        PrivateKeysClient privateKeysClient(VIRGIL_APP_TOKEN);
-        privateKeysClient.auth().authenticate(userData, containerPassword);
-        privateKeysClient.container().del(credentials, virgil::cli::uuid());
+        std::string publicKeyId = virgil::cli::getPublicKeyId(typeUserId, valueUserId);
+        virgil::cli::write_bytes(outPublicKeyIdArg.getValue(), publicKeyId);
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "private-container-del. Error: " << exception.error() << " for arg " << exception.argId()
-                << std::endl;
+        std::cerr << "public-key-id-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "private-container-del. Error: " << exception.what() << std::endl;
+        std::cerr << "public-key-id-get. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

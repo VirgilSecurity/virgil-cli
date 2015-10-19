@@ -1,0 +1,47 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**user-data-reconfirm** -- resend confirmation code to the user for given user's identifier. 
+
+# SYNOPSIS
+
+**virgil user-data-reconfirm** [--user-da-id *arg*] [--publickey-key-id *arg*] [--private-key *file*] [--private-pwd *arg*]
+
+# DESCRIPTION
+
+Resend confirmation code to the user for given user's identifier. 
+
+# OPTIONS
+
+-i *arg*, --user-data-id *arg*
+:   User's data identifer.
+
+-e *arg*, --public-key-id *arg*
+:   User's public key id. Format: 
+
+     [public-id|file|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+-k *file*,  --private-key *file*
+:   Recipient's private key.
+
+-p *arg*,  --private-pwd *arg*
+:   Recipient's private key password.
+
+# EXAMPLES
+
+**virgil user-data-reconfirm** [--user-data-id *arg*] [--publickey-key-id *arg*]  [--private-key *file*] [--private-pwd *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `public-key-add(1)`, `user-data-confirm`

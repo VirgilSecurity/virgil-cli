@@ -123,8 +123,8 @@ int MAIN(int argc, char **argv) {
             // Read private key
             VirgilByteArray privateKey = virgil::cli::read_bytes(privateKeyArg.getValue());
             std::string privateKeyPassword = privatePasswordArg.getValue();
-
             Credentials credentials(publicKeyId, privateKey, privateKeyPassword);
+            
             // Public Key Delete
             keysClient.publicKey().del(credentials, virgil::cli::uuid());
         }

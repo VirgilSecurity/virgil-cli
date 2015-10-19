@@ -1,0 +1,33 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**user-data-confirm** -- send confirmation code to the Virgil Public Keys service.
+Confirmation code is sent after user's public key registration.
+
+# SYNOPSIS
+
+**virgil user-data--confirm** [--user-data-id *arg*] [--confirmation-code *arg*]
+
+# DESCRIPTION
+
+Send confirmation code to the Virgil Public Keys service.
+Confirmation code is sent after user's public key registration.
+
+# OPTIONS
+
+-i *arg*, --user-data-id *arg*
+:   User's data identifer.
+
+-c *arg*, --confirmation-code *arg*
+:   Confirmation code.
+
+# EXAMPLES
+
+**virgil user-data--confirm** [--user-data-id *arg*] [--confirmation-code *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `public-key-add(1)`

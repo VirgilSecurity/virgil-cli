@@ -109,9 +109,13 @@ int MAIN(int argc, char **argv) {
 
         const auto newUserId = virgil::cli::parse_pair(userIdArg.getValue());
         virgil::cli::checkFormatUserId(newUserId);
-        const std::string type = newUserId.first;
-        const std::string value = newUserId.second;
-        UserData userData = UserData().className(UserDataClass::userId).type(type).value(value);
+        const std::string typeNewUser = newUserId.first;
+        const std::string valueNewUser = newUserId.second;
+
+        UserData userData = UserData()
+                .className(UserDataClass::userId)
+                .type(typeNewUser)
+                .value(valueNewUser);
 
         const auto publicKeyIdFormat = virgil::cli::parse_pair(publicKeyIdArg.getValue());
         virgil::cli::checkFormatPublicId(publicKeyIdFormat);
@@ -123,7 +127,10 @@ int MAIN(int argc, char **argv) {
         const Credentials credentials(publicKeyId, privateKey, privateKeyPassword);
 
         KeysClient keysClient(VIRGIL_APP_TOKEN);
-        UserData userDataResponse = keysClient.userData().add(userData, credentials, virgil::cli::uuid());
+        UserData userDataResponse = keysClient
+                .userData()
+                .add(userData, credentials, virgil::cli::uuid());
+
         std::string data = Marshaller<UserData>::toJson(userDataResponse);
         std::cout << data << std::endl;
 

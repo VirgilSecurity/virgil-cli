@@ -72,7 +72,7 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Get Private Key or Virgil Private Key. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::SwitchArg asVirgilPrivateKey("v", "as-virgil-private-key", "If false  get user's Virgil Private Key"
+        TCLAP::SwitchArg asVirgilPrivateKey("d", "as-virgil-private-key", "If false  get user's Virgil Private Key"
             "else get user's Private Key", false);
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",

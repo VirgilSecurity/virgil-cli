@@ -1,0 +1,38 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**container-info** -- get container-type: **easy** | **normal**. 
+
+# SYNOPSIS
+
+**virgil container-info** [--publickey-key-id *arg*]
+
+# DESCRIPTION
+
+Get container-type: **easy** | **normal**. 
+
+# OPTIONS'
+
+-e *arg*, --public-key-id *arg*
+:   Sender's public key id. Format: 
+
+     [public-id|file|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+# EXAMPLES
+
+**virgil container-info** [--publickey-key-id *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `container-update(1)`
