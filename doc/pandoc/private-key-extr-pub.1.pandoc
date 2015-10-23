@@ -25,6 +25,10 @@ Get public key from the private key.
 -p *arg*, \--pwd *arg*
 :   Private key password.
 
+# EXAMPLES
+
+**virgil private-key-extr-pub** *-i* private.key *-o* public.key
+
 # SEE ALSO
 
 `virgil(1)`, `private-key-gen(1)`

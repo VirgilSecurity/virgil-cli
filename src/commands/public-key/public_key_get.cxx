@@ -76,23 +76,25 @@ int MAIN(int argc, char **argv) {
                 false, "", "file");
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "Sender's public key id."
+                "Sender's public key id.\n"
+                "Format:\n"
                 "[public-id|file|email|phone|domain]:<value>\n"
                 "where:\n"
                 "\t* if public-id, then <value> - sender's public-id;\n"
-                "\t* if file, then <value> - sender's Virgil Public Key (without User Data) file stored locally;\n"
+                "\t* if file, then <value> - sender's Virgil Public Key\n\t(without User Data) file stored locally;\n"
                 "\t* if email, then <value> - sender's email;\n"
                 "\t* if phone, then <value> - sender's phone;\n"
                 "\t* if domain, then <value> - sender's domain.\n",
                 true, "", "arg");
 
-        TCLAP::SwitchArg isUserDataArg("w", "with-user-data", "If true - get user's Virgil Public Key with User Data."
-                " Default false. ",false);
+        TCLAP::SwitchArg isUserDataArg("w", "with-user-data", "If -w, --with-user-data - get user's "
+                "Virgil Public Key with User Data.", false);
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Recipient's private key.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Recipient's private key." 
+                "If --with-user-data - required.",
+                false , "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "private-pwd", "Recipient's private key password",
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "private-pwd", "Recipient's private key password.",
                 false, "", "arg");
 
         cmd.add(privatePasswordArg);
@@ -132,6 +134,14 @@ int MAIN(int argc, char **argv) {
             }
 
         } else {
+                if (privateKeyArg.getValue().empty()) {
+                    std::string errorMes = 
+                            "PARSE ERROR: \n"
+                            "Required argument missing: private-key\n";
+
+                    throw std::invalid_argument(errorMes);
+                }
+
                 std::string publicKeyId = virgil::cli::getPublicKeyId(type, value);
 
                 // Read private key
@@ -143,7 +153,7 @@ int MAIN(int argc, char **argv) {
         }
 
         // Store Virgil Public Key to the output file
-        std::string publicKeyData = Marshaller<PublicKey>::toJson(virgilPublicKey);
+        std::string publicKeyData = Marshaller<PublicKey>::toJson(virgilPublicKey, true);
 
         // Prepare output
         virgil::cli::write_bytes(outArg.getValue(), publicKeyData);

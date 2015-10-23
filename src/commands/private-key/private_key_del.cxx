@@ -68,8 +68,12 @@ int MAIN(int argc, char **argv) {
         TCLAP::CmdLine cmd("Delete a Private Key object. A Private Key object will be disconnected from the "
                 "Container Object and then deleted from the Private Key service. ", ' ', virgil::cli_version());
 
+       TCLAP::ValueArg<std::string> inAuthTokenArg("i", "in", "An authentication token. If omitted stdin is used.",
+                false, "", "file");
+
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "Sender's public key id."
+                "Sender's public key id.\n"
+                "Format:\n"
                 "[public-id|file|email|phone|domain]:<value>\n"
                 "where:\n"
                 "\t* if public-id, then <value> - sender's public-id;\n"
@@ -88,6 +92,7 @@ int MAIN(int argc, char **argv) {
         cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(publicKeyIdArg);
+        cmd.add(inAuthTokenArg);
         cmd.parse(argc, argv);
 
         const auto publicKeyIdFormat = virgil::cli::parse_pair(publicKeyIdArg.getValue());
@@ -103,6 +108,7 @@ int MAIN(int argc, char **argv) {
         const Credentials credentials(publicKeyId, privateKey, privateKeyPassword);
 
         PrivateKeysClient privateKeysClient(VIRGIL_APP_TOKEN);
+        privateKeysClient.authenticate(inAuthTokenArg.getValue());       
         privateKeysClient.privateKey().del(credentials, virgil::cli::uuid());
 
     } catch (TCLAP::ArgException& exception) {

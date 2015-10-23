@@ -1,4 +1,4 @@
-/**
+ /**
  * Copyright (C) 2015 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
@@ -69,14 +69,19 @@ int MAIN(int argc, char **argv) {
             "existing Container object. To register, you must provide a public key/s which will be associated with it.",
             ' ', virgil::cli_version());
 
-       TCLAP::ValueArg<std::string> inPrivateKeyArg("i", "in", "Sender's private key. If omitted stdin is used.",
+       TCLAP::ValueArg<std::string> inAuthTokenArg("i", "in", "An authentication token. If omitted stdin is used.",
                 false, "", "file");
+
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Sender's private key.",
+                true, "", "file");
+
 
         TCLAP::ValueArg<std::string> privatePasswordArg("p", "private-pwd", "Sender's private key password.",
                 false, "", "arg");
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "Sender's public key id."
+                "Sender's public key id.\n"
+                "Format:\n"
                 "[public-id|file|email|phone|domain]:<value>\n"
                 "where:\n"
                 "\t* if public-id, then <value> - sender's public-id;\n"
@@ -88,7 +93,8 @@ int MAIN(int argc, char **argv) {
 
         cmd.add(publicKeyIdArg);
         cmd.add(privatePasswordArg);
-        cmd.add(inPrivateKeyArg);
+         cmd.add(privateKeyArg);       
+        cmd.add(inAuthTokenArg);
         cmd.parse(argc, argv);
 
         const auto publicKeyIdFormat = virgil::cli::parse_pair(publicKeyIdArg.getValue());
@@ -98,11 +104,12 @@ int MAIN(int argc, char **argv) {
         std::string publicKeyId = virgil::cli::getPublicKeyId(type, value);
 
         // Read private key
-        const VirgilByteArray privateKey = virgil::cli::read_bytes(inPrivateKeyArg.getValue());
+        const VirgilByteArray privateKey = virgil::cli::read_bytes(privateKeyArg.getValue());
         const std::string privateKeyPassword = privatePasswordArg.getValue();
         const Credentials credentials(publicKeyId, privateKey, privateKeyPassword);
 
         PrivateKeysClient privateKeysClient(VIRGIL_APP_TOKEN);
+        privateKeysClient.authenticate(inAuthTokenArg.getValue());
         privateKeysClient.privateKey().add(credentials, virgil::cli::uuid());
 
     } catch (TCLAP::ArgException& exception) {

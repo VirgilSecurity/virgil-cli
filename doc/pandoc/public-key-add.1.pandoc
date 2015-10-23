@@ -34,6 +34,10 @@ To confirm, you must use **user-data-confirm**.
      * if phone, then <value> - user's phone;
      * if domain, then <value> - user's domain.
 
+# EXAMPLES
+
+**virgil public-key-add** -i private.key -o virgil_public.key email:user@domain.com
+
 # SEE ALSO
 
 `virgil(1)`, `private-key-gen(1)`, `public-key-get(1)`, `user-data-confirm(1)`

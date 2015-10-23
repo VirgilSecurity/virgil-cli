@@ -54,9 +54,8 @@ If  **-w *false*, --with-user-data *false***
 
 # EXAMPLES
 
-**virgil public-key-get** [--out *file*] [--publickey-key-id *arg*]
-
-**virgil public-key-get** [--out *file*] [--publickey-key-id *arg*] [--with-user-data *bool*] [--private-key *file*] [--private-pwd *arg*]
+        virgil public-key-get -e email:user@domain.com
+        virgil public-key-get -e email:user@domain.com -w -k private.key
 
 # SEE ALSO
 

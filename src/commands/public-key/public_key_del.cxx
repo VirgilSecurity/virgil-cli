@@ -69,7 +69,7 @@ int MAIN(int argc, char **argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd("Delete public key. "
                 "The purpose is to remove a Public Key’s data. "
-                "\n\tNote:\n"
+                "\nNote:\n"
                 "If -c, --confirm - true is used, the Public Key will be removed immediately "
                 "without anyconfirmation.\n"
                 "If -c, --confirm - false is used, confirmation is required. The action will return an"
@@ -79,7 +79,8 @@ int MAIN(int argc, char **argv) {
                 "confirmation codes.", ' ', virgil::cli_version());
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "Sender's public key id."
+                "Sender's public key id.\n"
+                "Format:\n"
                 "[public-id|file|email|phone|domain]:<value>\n"
                 "where:\n"
                 "\t* if public-id, then <value> - sender's public-id;\n"
@@ -90,13 +91,12 @@ int MAIN(int argc, char **argv) {
                 true, "", "arg");
 
         TCLAP::SwitchArg isConfirmArg("c", "confirm",
-                "-c, --cofirm - default false.\n"
-                "If true - Public Key will be removed immediately without anyconfirmation..\n"
-                "If false - Public Key confirmation is required.\n",
+                "Public Key will be removed immediately without anyconfirmation.\n"
+                "If omitted - Public Key confirmation is required.\n",
                 false);
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Sender's private key.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Sender's private key." 
+                "If --confirm - required.", false , "", "file");        
 
         TCLAP::ValueArg<std::string> privatePasswordArg("p", "private-pwd", "Sender's private key password.",
                 false, "", "arg");
@@ -120,6 +120,14 @@ int MAIN(int argc, char **argv) {
             std::string confirmInfo = keysClient.publicKey().del(publicKeyId, virgil::cli::uuid());
             std::cout << confirmInfo << std::endl;
         } else {
+            if (privateKeyArg.getValue().empty()) {
+                std::string errorMes = 
+                        "PARSE ERROR: \n"
+                        "Required argument missing: private-key\n";
+
+                throw std::invalid_argument(errorMes);
+            }
+
             // Read private key
             VirgilByteArray privateKey = virgil::cli::read_bytes(privateKeyArg.getValue());
             std::string privateKeyPassword = privatePasswordArg.getValue();

@@ -64,34 +64,33 @@ int MAIN(int argc, char **argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd("Get container-type: easy | normal. ", ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> userIdArg("u","user-id",
-                "User's identifer.\n"
-                "Format: [email|phone|domain]:<value>\n"
-                "where:\n"
-                "\t* if email, then <value> - user's email;\n"
-                "\t* if phone, then <value> - user's phone;\n"
-                "\t* if domain, then <value> - user's domain.\n",
-                true, "","arg" );
+       TCLAP::ValueArg<std::string> inAuthTokenArg("i", "in", "An authentication token. If omitted stdin is used.",
+                false, "", "file");
 
-        TCLAP::ValueArg<std::string> containerPaswordArg("c", "container-pwd", "Container password",
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
+                "Sender's public key id.\n"
+                "Format:\n"
+                "[public-id|file|email|phone|domain]:<value>\n"
+                "where:\n"
+                "\t* if public-id, then <value> - sender's public-id;\n"
+                "\t* if file, then <value> - sender's Virgil Public Key file stored locally;\n"
+                "\t* if email, then <value> - sender's email;\n"
+                "\t* if phone, then <value> - sender's phone;\n"
+                "\t* if domain, then <value> - sender's domain.\n",
                 true, "", "arg");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Sender's public key id.", true, "", "arg");
-
         cmd.add(publicKeyIdArg);
-        cmd.add(containerPaswordArg);
-        cmd.add(userIdArg);
+        cmd.add(inAuthTokenArg);
         cmd.parse(argc, argv);
 
-        auto userId = virgil::cli::parse_pair(userIdArg.getValue());
-        virgil::cli::checkFormatUserId(userId);             
-        UserData userData =  virgil::cli::getUserData(userId.first, userId.second);
-        std::string containerPassword = containerPaswordArg.getValue();
-
-        std::string publicKeyId = publicKeyIdArg.getValue();
+        const auto publicKeyIdFormat = virgil::cli::parse_pair(publicKeyIdArg.getValue());
+        virgil::cli::checkFormatPublicId(publicKeyIdFormat);
+        const std::string type = publicKeyIdFormat.first;
+        const std::string value = publicKeyIdFormat.second;
+        std::string publicKeyId = virgil::cli::getPublicKeyId(type, value);
 
         PrivateKeysClient privateKeysClient(VIRGIL_APP_TOKEN);
-        privateKeysClient.auth().authenticate(userData, containerPassword);
+        privateKeysClient.authenticate(inAuthTokenArg.getValue());
         ContainerType containerType = privateKeysClient.container().getDetails(publicKeyId);
         std::cout << "container_type: " << virgil::sdk::privatekeys::model::toString(containerType) << std::endl;
 

@@ -87,7 +87,7 @@ int MAIN(int argc, char **argv) {
 
         TCLAP::SwitchArg isResetArg("r", "reset",
                 "-r, --reset - default false.\n"
-                "If false - confirms delete Public Key operation.\n"
+                "If -r, --reset - confirms delete Public Key operation.\n"
                 "If true - confirms reset Public Key operation.\n",
                 false);
 

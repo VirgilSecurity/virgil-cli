@@ -19,7 +19,7 @@ The **virgil** program is a command line tool for using Virgil Security stack fu
 **private-key-gen**
 :   Generate private key with a given parameters. For example:
 
-        virgil private-key-gen -o private.key
+**virgil private-key-gen** -o private.key
 
 **private-key-extr-pub**
 :   Extract public key from the private key. For example:
@@ -31,7 +31,7 @@ The **virgil** program is a command line tool for using Virgil Security stack fu
 If registration successfull confirmation code will be sent to the user.\
 For example:
 
-        virgil public-key-add -i public.key -virgil_pub.key -e email:user@domain.com
+        virgil public-key-add -i public.key -o virgil_pub.key email:user@domain.com
 
 To confirm use **user-data-confirm**.
 
@@ -39,12 +39,21 @@ To confirm use **user-data-confirm**.
 :    Send confirmation code to the Virgil Public Keys service. Confirmation code is sent after user's public key registration.\
 For example:
 
-        virgil user-data-confirm -i email:user@domain.com -c E5J8W7
+        virgil user-data-confirm -i email:user@domain.com -c P8B5T2
 
 **public-key-get**
-:   Get user's public key from the Virgil Public Keys service. For example:
+:   Get user's Virgil Public Key with/without User Data from the Virgil Public Keys service.\
+Note:\
+If  **-w, --with-user-data**
+:  get user's Virgil Public Key with User Data. Required Private Key and Private Key Password.
 
-        virgil public-key-get -o virgil_pub.key email:user@domain.com
+        virgil public-key-get -e email:user@domain.com -w -k private.key
+
+If  **-w, --with-user-data**
+: get user's Virgil Public Key without User Data..\
+**Default -w, --with-user-data** - not needed. For example:
+
+        virgil public-key-get -e email:user@domain.com
 
 **encrypt**
 :   Encrypt data for given recipients which can be defined by Virgil Public Keys and by passwords. For example:
@@ -76,7 +85,8 @@ For example:
 **public-key-del**
 :   The purpose is to remove a Public Key’s data. For example:
 
-        virgil public-key-del -i plain.txt -o plain.txt.sign -k user.key
+        virgil public-key-del -e email:user@domain.com -c -k private.key
+        virgil public-key-del -e email:user@domain.com        
 
 **public-key-reset**
 :   Reset a User's Public Keys data if the user lost his/her Private Key.\

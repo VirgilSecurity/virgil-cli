@@ -69,6 +69,9 @@ int MAIN(int argc, char **argv) {
         TCLAP::CmdLine cmd("Get user's Private Key from the Virgil Private Keys service. ", ' ',
                 virgil::cli_version());
 
+       TCLAP::ValueArg<std::string> inAuthTokenArg("i", "in", "An authentication token. If omitted stdin is used.",
+                false, "", "file");
+
         TCLAP::ValueArg<std::string> outArg("o", "out", "Get Private Key or Virgil Private Key. If omitted stdout is used.",
                 false, "", "file");
 
@@ -76,7 +79,8 @@ int MAIN(int argc, char **argv) {
             "else get user's Private Key", false);
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "Sender's public key id."
+                "Sender's public key id.\n"
+                "Format:\n"
                 "[public-id|file|email|phone|domain]:<value>\n"
                 "where:\n"
                 "\t* if public-id, then <value> - sender's public-id;\n"
@@ -89,6 +93,7 @@ int MAIN(int argc, char **argv) {
         cmd.add(publicKeyIdArg);
         cmd.add(asVirgilPrivateKey);
         cmd.add(outArg);
+        cmd.add(inAuthTokenArg);      
         cmd.parse(argc, argv);
 
         const auto publicKeyIdFormat = virgil::cli::parse_pair(publicKeyIdArg.getValue());
@@ -98,6 +103,7 @@ int MAIN(int argc, char **argv) {
         std::string publicKeyId = virgil::cli::getPublicKeyId(type, value);
 
         PrivateKeysClient privateKeysClient(VIRGIL_APP_TOKEN);
+        privateKeysClient.authenticate(inAuthTokenArg.getValue());          
         PrivateKey virgilPrivateKey = privateKeysClient.privateKey().get(publicKeyId);
 
         if ( asVirgilPrivateKey.getValue() == false ) {

@@ -88,7 +88,8 @@ int MAIN(int argc, char **argv) {
 
         TCLAP::ValueArg<std::string> userIdArg("u","user-id",
                 "User's identifer.\n"
-                "Format: [email|phone|domain]:<value>\n"
+                "Format:\n"
+                "[email|phone|domain]:<value>\n"
                 "where:\n"
                 "\t* if email, then <value> - user's email;\n"
                 "\t* if phone, then <value> - user's phone;\n"

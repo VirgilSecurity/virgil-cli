@@ -37,6 +37,7 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include <vector>
 
 #include <tclap/CmdLine.h>
 
@@ -70,8 +71,12 @@ int MAIN(int argc, char **argv) {
         TCLAP::CmdLine cmd("Update an existing Container object. Update container password or/and container-type. ",
                 ' ', virgil::cli_version());
 
+       TCLAP::ValueArg<std::string> inAuthTokenArg("i", "in", "An authentication token. If omitted stdin is used.",
+                false, "", "file");
+
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "Sender's public key id."
+                "Sender's public key id.\n"
+                "Format:\n"
                 "[public-id|file|email|phone|domain]:<value>\n"
                 "where:\n"
                 "\t* if public-id, then <value> - sender's public-id;\n"
@@ -98,33 +103,33 @@ int MAIN(int argc, char **argv) {
         cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(publicKeyIdArg);
+        cmd.add(inAuthTokenArg);        
         cmd.parse(argc, argv);
 
-        const auto publicKeyIdFormat = virgil::cli::parse_pair(publicKeyIdArg.getValue());
+       const auto publicKeyIdFormat = virgil::cli::parse_pair(publicKeyIdArg.getValue());
         virgil::cli::checkFormatPublicId(publicKeyIdFormat);
-
         const std::string type = publicKeyIdFormat.first;
         const std::string value = publicKeyIdFormat.second;
-
-        const std::string publicKeyId = virgil::cli::getPublicKeyId(type, value);
+        std::string publicKeyId = virgil::cli::getPublicKeyId(type, value);
 
         // Read private key
         const VirgilByteArray privateKey = virgil::cli::read_bytes(privateKeyArg.getValue());
         const std::string privateKeyPassword = privatePasswordArg.getValue();
         const Credentials credentials(publicKeyId, privateKey, privateKeyPassword);
 
-        const ContainerType containerType = virgil::cli::fromString(containerTypeArg.getValue());
-        const std::string containerPassword = containerPaswordArg.getValue();
+        const ContainerType newContainerType = virgil::cli::fromString(containerTypeArg.getValue());
+        const std::string newContainerPassword = containerPaswordArg.getValue();
 
         // Create Container
         PrivateKeysClient privateKeysClient(VIRGIL_APP_TOKEN);
-        privateKeysClient.container().update(credentials, containerType, containerPassword, virgil::cli::uuid());
+        privateKeysClient.authenticate(inAuthTokenArg.getValue());
+        privateKeysClient.container().update(credentials, newContainerType, newContainerPassword, virgil::cli::uuid());        
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-container-update. Error: " << exception.error() << " for arg " << exception.argId()
                 << std::endl;
         return EXIT_FAILURE;
-    } catch (std::exception& exception) {
+    }  catch (std::exception& exception) {
         std::cerr << "private-container-update. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }

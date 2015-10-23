@@ -67,7 +67,7 @@ using virgil::sdk::keys::model::UserDataClass;
  * @brief Register user's public key on the Virgil Public Key Service.
  * @return Virgil Public Key
  */
-PublicKey register_public_key (const VirgilByteArray& publicKey,
+static PublicKey register_public_key (const VirgilByteArray& publicKey,
         const std::multimap<std::string, std::string>& userIdsDict, const Credentials& credentials);
 
 #ifdef SPLIT_CLI
@@ -88,7 +88,7 @@ int MAIN(int argc, char **argv) {
                 false, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Sender's private key.",
-                false, "", "file");
+                true, "", "file");
 
         TCLAP::ValueArg<std::string> privatePasswordArg("p", "private-pwd", "Sender's private key password",
                 false, "", "arg");
@@ -129,7 +129,7 @@ int MAIN(int argc, char **argv) {
 
         std::cout << "Added user data id: " << virgilPublicKey.userData().front().userDataId() << std::endl;
         std::cout << "Confirmation code can be found in the email." << std::endl;
-        std::cout << "Now launch next command: \n"  << std::endl;
+        std::cout << "Now launch next command: "  << std::endl;
         std::cout << "virgil user-data-confirm -i  <user_data_id>  -c <confirmation_code>'" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {

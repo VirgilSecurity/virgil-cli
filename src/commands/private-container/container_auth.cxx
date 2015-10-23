@@ -66,9 +66,13 @@ int MAIN(int argc, char **argv) {
                 "initialized the Container  in Virgil's Private Key service. Use the same confirmed User Data "
                 "identity parameter as you registered in our Public Keys service. ", ' ', virgil::cli_version());
 
+        TCLAP::ValueArg<std::string> outArg("o", "out", "An authentication token. If omitted stdout is used.",
+                false, "", "file");        
+
         TCLAP::ValueArg<std::string> userIdArg("u","user-id",
                 "User's identifer.\n"
-                "Format: [email|phone|domain]:<value>\n"
+                "Format:\n"
+                "[email|phone|domain]:<value>\n"
                 "where:\n"
                 "\t* if email, then <value> - user's email;\n"
                 "\t* if phone, then <value> - user's phone;\n"
@@ -80,18 +84,22 @@ int MAIN(int argc, char **argv) {
 
         cmd.add(containerPaswordArg);
         cmd.add(userIdArg);
+        cmd.add(outArg);        
         cmd.parse(argc, argv);
 
         const auto userId = virgil::cli::parse_pair(userIdArg.getValue());
         virgil::cli::checkFormatUserId(userId);
         const std::string type = userId.first;
         const std::string value = userId.second;
-        const UserData userData = UserData().className(UserDataClass::userId).type(type).value(value);
+        const UserData userData = virgil::cli::getUserData(type, value);
 
         const std::string containerPassword = containerPaswordArg.getValue();
 
         PrivateKeysClient privateKeysClient(VIRGIL_APP_TOKEN);
-        privateKeysClient.auth().authenticate(userData, containerPassword);
+        std::string authToken = privateKeysClient.auth().getAuthToken(userData, containerPassword);
+
+        // Prepare output. Output an authentication token.
+        virgil::cli::write_bytes(outArg.getValue(), authToken);
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-container-auth. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

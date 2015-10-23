@@ -62,9 +62,8 @@ confirmation codes.\
 
 # EXAMPLES
 
-**virgil public-key-del** [--publickey-key-id *arg*]
-
-**virgil public-key-del** [--publickey-key-id *arg*] [--confirm *bool*] [--private-key *file*] [--private-pwd *arg*]
+        virgil public-key-del -e email:user@domain.com -c -k private.key
+        virgil public-key-del -e email:user@domain.com   
 
 # SEE ALSO
 

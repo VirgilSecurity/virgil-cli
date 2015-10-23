@@ -41,6 +41,10 @@ Generate private key with given parameters.
 -p *arg*, \--private-pwd *arg*
 :   Password to be used for private key encryption. If omitted private key is stored in the plain format.
 
+# EXAMPLES
+
+**virgil private-key-gen** *-o* private.key
+
 # SEE ALSO
 
 `virgil(1)`, `private-key-extr-pub(1)`
