@@ -1,0 +1,46 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**private-key-add** -- load an existing Private Key into the Private Keys Service and associate it with the
+existing Container object. To register, you must provide a public key/s which will be associated with it.
+
+# SYNOPSIS
+
+**virgil private-key-add** [--in *file*] [--publickey-key-id *arg*] [--private-pwd *arg*]
+
+# DESCRIPTION
+
+Load an existing Private Key into the Private Keys Service and associate it with the
+existing Container object.
+
+# OPTIONS
+
+-i *file*, \--in *file*
+: User's private key. If omitted stdin is used.
+
+-p *arg*,  --private-pwd *arg*
+:   User's private key password.
+
+-e *arg*, --public-key-id *arg*
+:   User's Virgil Public Key. Format: 
+
+     [public-id|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+# EXAMPLES
+
+**virgil private-key-add** [--in *file*]  [--publickey-key-id *arg*] [--private-pwd *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `private-key-get(1)`, `private-key-del(1)`

@@ -1,0 +1,62 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**public-key-get** -- get user's Virgil Public Key with/without User Data from the Virgil Public Keys service.
+
+# SYNOPSIS
+
+**virgil public-key-get** [--out *file*] [--publickey-key-id *arg*] [--with-user-data *bool*] [--private-key *file*] [--private-pwd *arg*]
+
+# DESCRIPTION
+
+Get user's Virgil Public Key with/without User Data from the Virgil Public Keys service.\
+Note:\
+If  **-w *true*, --with-user-data *true***
+:  get user's Virgil Public Key with User Data. Required Private Key and Private Key Password.\
+If  **-w *false*, --with-user-data *false***
+: get user's Virgil Public Key without User Data..\
+**Default -w *false*, --with-user-data *false***
+
+# OPTIONS
+-o *file*,  --out *file*
+:   Output Virgil Public Key. If omitted stdout is used.
+
+-e *arg*, --public-key-id *arg*
+:   Recipient's old Virgil Public Key. Format: 
+
+     [public-id|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+-w *bool*, --with-user-data *bool*
+: Default false.\
+Note:\
+If  **-w *true*, --with-user-data *true***
+:  get user's Virgil Public Key with User Data. Required Private Key and Private Key Password.\
+If  **-w *false*, --with-user-data *false***
+: get user's Virgil Public Key without User Data..\
+**Default -w *false*, --with-user-data *false***
+
+-k *file*,  --private-key *file*
+:   Recipient's private key.
+
+-p *arg*,  --private-pwd *arg*
+:   Recipient's private key password.
+
+# EXAMPLES
+
+        virgil public-key-get -e email:user@domain.com
+        virgil public-key-get -e email:user@domain.com -w -k private.key
+
+# SEE ALSO
+
+`virgil(1)`, `public-key-add(1)`

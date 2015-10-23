@@ -1,0 +1,83 @@
+ command [command_opts] [command_args]
+      DESCRIPTION:
+            Command line tool for using Virgil Security stack
+            functionality.
+
+      AVAILABLE COMMANDS:
+      encrypt    Encrypt data for given recipients which can be defined by
+            Virgil Public Keys and by passwords.
+
+      decrypt     Decrypt data for given recipient which can be defined by
+            Virgil Public Key or by password.
+
+      sign    Sign data with Private Key.
+
+      verify    Verify data with Virgil Public Key.
+
+      public-key-add    Register user's public key on the Virgil Public 
+            Keys service. 
+
+      public-key-get    Get user's Virgil Public Key from the Virgil 
+            Public Keys service.
+
+      public-key-del    Delete user's Virgil Public Key from the 
+            Virgil Public Keys service.
+
+      public-key-update    Update user's public key on the Virgil Public 
+            Keys service.
+
+      public-key-reset    Reset a User’s Public Keys data if the user 
+            lost his/her Private Key.
+
+      public-key-confirm    Confirm reset or delete a Public Key from the
+            Virgil Public Keys service. 
+
+      user-data-add    Add user data email|phone|domain. 
+
+      user-data-del    Remove user data item from the Public Key.
+
+      user-data-confirm    Send confirmation code to the Virgil Public
+            Keys service. Confirmation code is sent after user's public
+            key registration.
+
+      user-data-reconfirm    Resend confirmation code to the user 
+            for given user's identifier.
+
+      private-key-gen    Generate private key with a given parameters.
+
+      private-key-add    Load an existing Private Key into the Private 
+      Keys service and associate it with the texisting Container object.
+      To register, you must to a provide public key/s which will be 
+      associated with it.
+
+      private-key-get    Get user's Private Key from the Virgil Private
+            Keys service.
+
+      private-key-del    Delete user's Private Key from the Virgil 
+            Private Keys service.
+
+      private-key-info    Get public key from the private key.
+
+      container-auth    Authenticate a session. Virgil’s Service will 
+            create an Authentication token that will be available for 60 
+            minutes. If you work longer than 60 minutes, the token will 
+            automatically prolong itself.  Otherwise, the token will die 
+            and you will need to generate a new one.
+
+      private-container-create    Virgil’s Private Key storage provides 
+            users the container for private keys. Every user in the public
+            key service will have a container for storing their private keys. 
+
+      container-del    Delete existing container object from the Private 
+            Key service.
+
+      container-info    Get container-type: easy | normal.
+
+      container-update    Update an existing Container object. 
+            Update container password or/and container-type.
+
+      container-reset    Reset container password.
+
+      container-confirm    Confirm password token and re-encrypt Private
+            Key data with the new password.
+            

@@ -1,0 +1,46 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**private-key-get** -- get user's Private Key from the Virgil Private Keys service. 
+
+# SYNOPSIS
+
+**virgil private-key-get** [--out *arg*] [as-virgil-private-key] [--publickey-key-id *arg*]
+
+# DESCRIPTION
+
+Get user's Private Key from the Virgil Private Keys service. 
+
+# OPTIONS
+
+-o *file*,  --out *file*
+:   Get Private Key. If omitted stdout is used.
+
+-d *arg*,  --as-virgil-private-Ïkey *arg*  
+: If **false**  get user's Virgil Private Key, else get user's Private Key. Default **false**.
+
+-e *arg*, --public-key-id *arg*
+:   User's public key id. Format: 
+
+     [public-id|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+# EXAMPLES
+
+**virgil private-key-get** [--out *arg*] [--publickey-key-id *arg*]
+
+**virgil private-key-get** [--out *arg*] [as-virgil-private-key] [--publickey-key-id *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `private-key-add(1)`, `private-key-del(1)`

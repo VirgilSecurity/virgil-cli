@@ -1,0 +1,60 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**container-create** -- Virgil’s Private Key storage provides users the container
+for private keys. Every user in the public key service will have a container for 
+storing their private keys.
+
+# SYNOPSIS
+
+**virgil container-create** [--publickey-key-id *arg*] [--private-key *file*] [--private-pwd *arg*] [--type *arg*] [--container-pwd *arg*]
+
+# DESCRIPTION
+
+Virgil’s Private Key storage provides users the container
+for private keys. Every user in the public key service will have a container for 
+storing their private keys.
+
+# OPTIONS'
+
+-e *arg*, --public-key-id *arg*
+:   Sender's Virgil Public Key. Format: 
+
+     [public-id|file|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+-k *file*,  --private-key *file*
+:   Sender's new  private key.
+
+-p *arg*,  --private-pwd *arg*
+:   Sender's private key password.
+
+-t *arg*,  --type *arg*
+:   Container type **easy** | **normal**. Default type **easy**.\
+If you define the container-type as **easy**, Virgil's Keys Service will store the association
+between keys and Virgil would be able to recover the private keys for you if container password is
+forgotten.\
+If the user decides to define the container-type as **normal**, the user is responsible for the security
+of the container. Virgil’s service will accept the private keys whether they are encrypted or not
+encrypted.
+
+-c *arg*,  --container-pwd *arg*
+:   Container password.
+
+# EXAMPLES
+
+**virgil container-create** [--publickey-key-id *arg*] [--private-key *file*] [--private-pwd *arg*] [--type *arg*] [--container-pwd *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `container-auth(1)`,`container-info(1)`, `container-del(1)`, `container-confirm(1)`

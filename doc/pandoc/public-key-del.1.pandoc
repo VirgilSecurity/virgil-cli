@@ -1,0 +1,70 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**public-key-del** -- delete a Public Key.
+
+# SYNOPSIS
+
+**virgil public-key-del** [--publickey-key-id *arg*] [--confirm *bool*] [--private-key *file*] [--private-pwd *arg*]
+
+# DESCRIPTION
+
+Send confirmation code to the Virgil Public Keys service.\
+The purpose is to remove a Public Key’s data.\
+Note:\
+If  **-c *true*, --confirm *true***
+:  is used, the Public Key will be removed immediately
+without anyconfirmation. Required Private Key and Private Key Password.\
+If  **-c *false*, --confirm *false***
+: is used, confirmation is required.\
+**Default -c *false*, --confirm *false***
+
+# OPTIONS
+
+-e *arg*, --public-key-id *arg*
+:   Recipient's old Virgil Public Key. Format: 
+
+     [public-id|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+-c *bool*, --confirm *bool*
+: Default false.\
+Note:\
+If  **-c *true*, --confirm *true***
+:  is used, the Public Key will be removed immediately
+without anyconfirmation.\
+If  **-c *false*, --confirm *false***
+: is used, confirmation is required. The action will return an
+action_token response object and will send confirmation tokens to all of the Public Key’s confirmed
+UDIDs. The list of masked UDID’s will be returned in user_ids response object property. To commit a 
+Public Key remove call 'public-key-confirm' action with action_token value and the list of 
+confirmation codes.\
+**Default -c *false*, --confirm *false***
+
+-k *file*,  --private-key *file*
+:   Recipient's private key.
+
+-p *arg*,  --private-pwd *arg*
+:   Recipient's private key password.
+
+*confirm-codes*
+:  (required) Confirmation codes.
+
+# EXAMPLES
+
+        virgil public-key-del -e email:user@domain.com -c -k private.key
+        virgil public-key-del -e email:user@domain.com   
+
+# SEE ALSO
+
+`virgil(1)`, `public-key-reset(1)`,`public-key-update(1)`, `public-key-confirm(1)`

@@ -1,6 +1,6 @@
-% VIRGIL(1) Virgil Security CLI (0.3.0) | BSD General Commands Manual
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
 % (c) Virgil Security Inc
-% August 01, 2015
+% October 16, 2015
 
 # NAME
 
@@ -16,35 +16,44 @@ The **virgil** program is a command line tool for using Virgil Security stack fu
 
 # COMMANDS
 
-**keygen**
+**private-key-gen**
 :   Generate private key with a given parameters. For example:
 
-        virgil keygen -o user.key
+**virgil private-key-gen** -o private.key
 
-**key2pub**
-:   Get public key from the private key. For example:
+**private-key-extr-pub**
+:   Extract public key from the private key. For example:
 
-        virgil key2pub -i user.key -o user.pub
+        virgil private-key-extr-pub -i private.key -o public.key
 
-**keyreg**
-:   Register user's public key on the Virgil Public Keys service. For example:
+**public-key-add**
+:   Register user's public key on the Virgil Public Keys service.
+If registration successfull confirmation code will be sent to the user.\
+For example:
 
-        virgil keyreg -i user.pub -o user.pk email:user@domain.com
+        virgil public-key-add -i public.key -o virgil_pub.key email:user@domain.com
 
-**keyget**
-:   Get user's public key from the Virgil Public Keys service. For example:
+To confirm use **user-data-confirm**.
 
-        virgil keyget -o user.pk email:user@domain.com
+**user-data-confirm**
+:    Send confirmation code to the Virgil Public Keys service. Confirmation code is sent after user's public key registration.\
+For example:
 
-**confirm**
-:   Send confirmation code to the Virgil Public Keys service. For example:
+        virgil user-data-confirm -i email:user@domain.com -c P8B5T2
 
-        virgil confirm -i email:user@domain.com -c E5J8W7
+**public-key-get**
+:   Get user's Virgil Public Key with/without User Data from the Virgil Public Keys service.\
+Note:\
+If  **-w, --with-user-data**
+:  get user's Virgil Public Key with User Data. Required Private Key and Private Key Password.
 
-**reconfirm**
-:   Resend confirmation code to the user for given user's identifier. For example:
+        virgil public-key-get -e email:user@domain.com -w -k private.key
 
-        virgil reconfirm -i email:user@domain.com
+If  **-w, --with-user-data**
+: get user's Virgil Public Key without User Data..\
+**Default -w, --with-user-data** - not needed. For example:
+
+        virgil public-key-get -e email:user@domain.com
 
 **encrypt**
 :   Encrypt data for given recipients which can be defined by Virgil Public Keys and by passwords. For example:
@@ -54,7 +63,7 @@ The **virgil** program is a command line tool for using Virgil Security stack fu
 **decrypt**
 :   Decrypt data for given recipient which can be defined by Virgil Public Key or by password. For example:
 
-        virgil decrypt -i encrypted.dat -o plain.txt -k user.key -r user.pk
+        virgil decrypt -i encrypted.dat -o plain.txt -k private.key -r virgil_pub.pk
 
 **sign**
 :   Sign data with Private Key. For example:
@@ -67,9 +76,127 @@ The **virgil** program is a command line tool for using Virgil Security stack fu
         virgil verify -i plain.txt -s plain.txt.sign -r key:user.pk
         virgil verify -i plain.txt -s plain.txt.sign -r email:user@domain.com
 
-# SEE ALSO
+**public-key-confirm**
+:   Confirms the reset or delete a Public Key operation from the Virgil Public Keys service.\
+For example:
 
-`virgilkeygen(1)`, `virgilkey2pub(1)`, `virgilkeyreg(1)`, `virgilkeyget(1)`,\
-`virgilconfirm(1)`, `virgilreconfirm(1)`,\
-`virgilencrypt(1)`, `virgildecrypt(1)`,\
-`virgilsign(1)`, `virgilverify(1)`
+        virgil public-key-confirm -i plain.txt -o plain.txt.sign -k user.key
+
+**public-key-del**
+:   The purpose is to remove a Public Key’s data. For example:
+
+        virgil public-key-del -e email:user@domain.com -c -k private.key
+        virgil public-key-del -e email:user@domain.com        
+
+**public-key-reset**
+:   Reset a User's Public Keys data if the user lost his/her Private Key.\
+Note:\
+After action invocation the user will receive the confirmation tokens on all his confirmed UDIDs.
+The Public Key data won’t be updated until the call 'public-key-confirm action' is invoked with the
+token value from this step and confirmation codes sent to UDIDs. The list of UDIDs used as
+confirmation tokens recipients will be listed as user_ids response parameters.\
+For example:
+
+        virgil public-key-del -i plain.txt -o plain.txt.sign -k user.key
+
+**public-key-update**
+:   Update user's public key on the Virgil Public Keys service. For example:
+
+        virgil public-key-update -i plain.txt -o plain.txt.sign -k user.key
+
+**user-data-add**
+:   Add user data email|phone|domain. For example:
+
+        virgil user-data-add -i plain.txt -o plain.txt.sign -k user.key
+
+**user-data-del**
+:  Remove user data item from the Public Key. For example:
+
+        virgil user-data-reconfirm -i email:user@domain.com
+
+**user-data-reconfirm**
+:   Resend confirmation code to the user for given user's identifier. For example:
+
+        virgil user-data-reconfirm -i email:user@domain.com
+
+**private-key-add**
+:   Load an existing Private Key into the Private Keys Service and associate it with the
+existing Container object. To register, you must provide a public key/s which will be associated with it.\
+For example:
+
+        virgil user-data-add -i plain.txt -o plain.txt.sign -k user.key
+
+**private-key-del**
+:   Delete a Private Key object. A Private Key object will be disconnected from the
+Container Object and then deleted from the Private Key service.\
+For example:
+
+        virgil private-key-del -i plain.txt -o plain.txt.sign -k user.key
+
+**private-key-get**
+:   Get user's Virgil Public Key with/without User Data from the Virgil Public Keys service.\
+ For example:
+
+        virgil user-data-add -i plain.txt -o plain.txt.sign -k user.key
+
+**container-create**
+:   Virgil’s Private Key storage provides users the container
+for private keys. Every user in the public key service will have a container for 
+storing their private keys.\
+A user can reset their Private Key object password if the Container Type equals 'easy'. 
+If the Container Type equals 'normal', the Private Key object will be stored in its original form.
+Container type easy | normal. Default type 'easy'.\
+If you define the container-type as “easy”, Virgil's Keys Service will store the association
+between keys and Virgil would be able to recover the private keys for you if container password is
+forgotten.\
+If the user decides to define the container-type as “normal, the user is responsible for the security
+of the container. Virgil’s service will accept the private keys whether they are encrypted or not
+encrypted. \
+For example:
+
+        virgil user-data-add -i plain.txt -o plain.txt.sign -k user.key
+
+**container-auth**
+:   Authenticate a session. Virgil's Service will create an Authentication token
+that will be available for 60 minutes. If you work longer than 60 minutes, 
+the token will automatically prolong itself.  Otherwise, the token will die 
+and you will need to generate a new one.
+Note:  Before logging in, make sure that you have already initialized the 
+Container  in Virgil's Private Key service. Use the same confirmed User Data
+identity parameter as you registered in our Public Keys service. For example:
+
+        virgil user-data-add -i plain.txt -o plain.txt.sign -k user.key
+
+**container-del**
+:   Delete existing container object from the Private Key service. For example:
+
+        virgil user-data-add -i plain.txt -o plain.txt.sign -k user.key
+
+**container-info**
+:   Get container-type: easy | normal. For example:
+
+        virgil user-data-add -i plain.txt -o plain.txt.sign -k user.key
+
+**container-reset**
+:   Reset container password.\
+Note:\
+A user can reset their Private Key object password if the Container Type
+equals 'easy'. If the Container Type equals 'normal', the Private Key object will
+be stored in its original form.\
+For example:
+
+        virgil user-data-add -i plain.txt -o plain.txt.sign -k user.key
+
+**container-update**
+:   Update container password or/and container-type. 
+ For example:
+
+        virgil user-data-add -i plain.txt -o plain.txt.sign -k user.key
+
+# SEE ALSO
+`private-key-gen(1)`, `private-key-info(1)`, `public-key-add(1)`, `user-data-confirm(1)`, `encrypt(1)`,  
+`decrypt(1)`,  `sign(1)`, `verify(1)`\
+ `public-key-get(1)`, `public-key-del(1)`,`public-key-update(1)`, `public-key-reset(1)`,  `public-key-confirm(1)`\
+ `user-data-add(1)`,  `user-data-del(1)`,  `user-data-reconfirm(1)`, \
+`private-key-add(1)`, `private-key-get(1)`, `private-key-del(1)`\
+`container-create(1)`, `container-auth(1)`, `container-del(1)`, `container-info(1)`,  `container-reset(1)`, `container-update(1)`

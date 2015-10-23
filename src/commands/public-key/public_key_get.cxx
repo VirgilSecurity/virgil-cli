@@ -1,0 +1,170 @@
+/**
+ * Copyright (C) 2015 Virgil Security Inc.
+ *
+ * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#include <fstream>
+#include <stdexcept>
+#include <string>
+
+#include <tclap/CmdLine.h>
+
+#include <virgil/crypto/VirgilByteArray.h>
+
+#include <virgil/sdk/keys/client/Credentials.h>
+#include <virgil/sdk/keys/client/KeysClient.h>
+#include <virgil/sdk/keys/io/Marshaller.h>
+#include <virgil/sdk/keys/model/PublicKey.h>
+
+#include <cli/version.h>
+#include <cli/config.h>
+#include <cli/pair.h>
+#include <cli/util.h>
+#include <cli/uuid.h>
+
+using virgil::crypto::VirgilByteArray;
+
+using virgil::sdk::keys::client::Credentials;
+using virgil::sdk::keys::client::KeysClient;
+using virgil::sdk::keys::io::Marshaller;
+using virgil::sdk::keys::model::PublicKey;
+
+#ifdef SPLIT_CLI
+#define MAIN main
+#else
+#define MAIN public_key_get_main
+#endif
+
+int MAIN(int argc, char **argv) {
+    try {
+        // Parse arguments.
+        TCLAP::CmdLine cmd("Get user's Virgil Public Key with/without User Data from the Virgil Public Keys service.", ' ',
+                virgil::cli_version());
+
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Output Virgil Public Key. If omitted stdout is used.",
+                false, "", "file");
+
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
+                "Sender's public key id.\n"
+                "Format:\n"
+                "[public-id|file|email|phone|domain]:<value>\n"
+                "where:\n"
+                "\t* if public-id, then <value> - sender's public-id;\n"
+                "\t* if file, then <value> - sender's Virgil Public Key\n\t(without User Data) file stored locally;\n"
+                "\t* if email, then <value> - sender's email;\n"
+                "\t* if phone, then <value> - sender's phone;\n"
+                "\t* if domain, then <value> - sender's domain.\n",
+                true, "", "arg");
+
+        TCLAP::SwitchArg isUserDataArg("w", "with-user-data", "If -w, --with-user-data - get user's "
+                "Virgil Public Key with User Data.", false);
+
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Recipient's private key." 
+                "If --with-user-data - required.",
+                false , "", "file");
+
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "private-pwd", "Recipient's private key password.",
+                false, "", "arg");
+
+        cmd.add(privatePasswordArg);
+        cmd.add(privateKeyArg);
+        cmd.add(isUserDataArg);
+        cmd.add(publicKeyIdArg);
+        cmd.add(outArg);
+        cmd.parse(argc, argv);
+
+        const auto publicKeyIdFormat = virgil::cli::parse_pair(publicKeyIdArg.getValue());
+        virgil::cli::checkFormatPublicId(publicKeyIdFormat);
+        const std::string type = publicKeyIdFormat.first;
+        const std::string value = publicKeyIdFormat.second;
+
+        KeysClient keysClient(VIRGIL_APP_TOKEN);
+        PublicKey virgilPublicKey;
+        std::string publicKeyId;
+
+        if ( isUserDataArg.getValue() == false ) {
+            if (type == "public-id") {
+                publicKeyId = value;
+                virgilPublicKey = keysClient.publicKey().get(publicKeyId);
+            } else if(type == "file") {
+                // Read Virgil Public Key
+                std::string pathToFile = value;
+                std::ifstream virgilPublicKeyFile(pathToFile, std::ios::in | std::ios::binary);
+                if (!virgilPublicKeyFile) {
+                    throw std::invalid_argument("can not read recipient's Virgil Public Key: " + pathToFile);
+                }
+
+                PublicKey publicKey = virgil::cli::read_virgil_public_key(virgilPublicKeyFile);
+                publicKeyId = publicKey.publicKeyId();               
+                virgilPublicKey = keysClient.publicKey().get(publicKeyId);
+            } else {
+                std::string userId = value;
+                virgilPublicKey = keysClient.publicKey().grab(userId, virgil::cli::uuid());
+            }
+
+        } else {
+                if (privateKeyArg.getValue().empty()) {
+                    std::string errorMes = 
+                            "PARSE ERROR: \n"
+                            "Required argument missing: private-key\n";
+
+                    throw std::invalid_argument(errorMes);
+                }
+
+                std::string publicKeyId = virgil::cli::getPublicKeyId(type, value);
+
+                // Read private key
+                VirgilByteArray privateKey = virgil::cli::read_bytes(privateKeyArg.getValue());
+                std::string privateKeyPassword = privatePasswordArg.getValue();
+                Credentials credentials(publicKeyId, privateKey, privateKeyPassword);
+
+                virgilPublicKey = keysClient.publicKey().grab(credentials, virgil::cli::uuid());
+        }
+
+        // Store Virgil Public Key to the output file
+        std::string publicKeyData = Marshaller<PublicKey>::toJson(virgilPublicKey, true);
+
+        // Prepare output
+        virgil::cli::write_bytes(outArg.getValue(), publicKeyData);
+
+    } catch (TCLAP::ArgException& exception) {
+        std::cerr << "public-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        return EXIT_FAILURE;
+    } catch (std::exception& exception) {
+        std::cerr << "public-key-get. Error: " << exception.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}

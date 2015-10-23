@@ -33,7 +33,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-include (CheckCCompilerFlag)
+include (CheckCXXCompilerFlag)
 include (ExternalProject)
 
 function (virgil_add_dependency module target includes libraries)
@@ -45,7 +45,7 @@ function (virgil_add_dependency module target includes libraries)
 
     if (NOT CMAKE_CROSSCOMPILING)
         # Configure compiler settings
-        check_c_compiler_flag (-fPIC COMPILER_SUPPORT_PIC)
+        check_cxx_compiler_flag (-fPIC COMPILER_SUPPORT_PIC)
         string (REGEX MATCH "-fPIC|-fpic" HAS_PIC "${CMAKE_CXX_FLAGS_ALL}")
         if (COMPILER_SUPPORT_PIC AND NOT HAS_PIC)
             set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -83,12 +83,14 @@ function (virgil_add_dependency module target includes libraries)
             )
         endif ()
 
-        ExternalProject_Add (${VIRGIL}_project
-            GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil.git"
-            GIT_TAG "v1.0.1"
-            PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil.crypto"
-            CMAKE_ARGS ${CMAKE_ARGS}
-        )
+        if (NOT TARGET ${VIRGIL}_project)
+            ExternalProject_Add (${VIRGIL}_project
+                GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil.git"
+                GIT_TAG "v1.0.1"
+                PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil.crypto"
+                CMAKE_ARGS ${CMAKE_ARGS}
+            )
+        endif ()
 
         # Payload targets and output variables
         ExternalProject_Get_Property (${VIRGIL}_project INSTALL_DIR)
@@ -124,17 +126,62 @@ function (virgil_add_dependency module target includes libraries)
             )
         endif ()
 
-        ExternalProject_Add (${VIRGIL}_project
-            GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil-cpp.git"
-            GIT_TAG "virgil-sdk-keys-1.0.5"
-            PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil-cpp"
-            CMAKE_ARGS ${CMAKE_ARGS}
-        )
+        if (NOT TARGET ${VIRGIL}_project)
+            ExternalProject_Add (${VIRGIL}_project
+                GIT_REPOSITORY "https://github.com/VladEvka/virgil-cpp"
+                GIT_TAG "sdk.keys"
+                PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/keys-public"
+                CMAKE_ARGS ${CMAKE_ARGS}
+            )
+        endif ()
 
         # Payload targets and output variables
         ExternalProject_Get_Property (${VIRGIL}_project INSTALL_DIR)
 
         set (VIRGIL_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}virgil_sdk_keys${CMAKE_STATIC_LIBRARY_SUFFIX})
+        set (REST_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}restless${CMAKE_STATIC_LIBRARY_SUFFIX})
+        set (VIRGIL_INCLUDE_DIR "${INSTALL_DIR}/include")
+        set (VIRGIL_LIBRARIES "${INSTALL_DIR}/lib/${VIRGIL_LIBRARY_NAME};${INSTALL_DIR}/lib/${REST_LIBRARY_NAME}")
+
+    elseif (${module} STREQUAL "keys-private")
+        set (VIRGIL virgil_keys_private)
+
+        set (CMAKE_ARGS
+            -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+            -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+            -DVIRGIL_SDK_PRIVATE_KEYS:BOOL=ON
+        )
+
+        if (CMAKE_PREFIX_PATH)
+            list (APPEND CMAKE_ARGS
+                -DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}
+            )
+        endif (CMAKE_PREFIX_PATH)
+
+        if (CMAKE_TOOLCHAIN_FILE)
+            list (APPEND CMAKE_ARGS
+                -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+            )
+        else ()
+            list (APPEND CMAKE_ARGS
+                -DCMAKE_CXX_COMPILER:STRING=${CMAKE_CXX_COMPILER}
+                -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
+            )
+        endif ()
+
+        if (NOT TARGET ${VIRGIL}_project)
+            ExternalProject_Add (${VIRGIL}_project
+                GIT_REPOSITORY "https://github.com/VladEvka/virgil-cpp"
+                GIT_TAG "sdk.private-keys"
+                PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/keys-private"
+                CMAKE_ARGS ${CMAKE_ARGS}
+            )
+        endif ()
+
+        # Payload targets and output variables
+        ExternalProject_Get_Property (${VIRGIL}_project INSTALL_DIR)
+
+        set (VIRGIL_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}virgil_sdk_private_keys${CMAKE_STATIC_LIBRARY_SUFFIX})
         set (REST_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}restless${CMAKE_STATIC_LIBRARY_SUFFIX})
         set (VIRGIL_INCLUDE_DIR "${INSTALL_DIR}/include")
         set (VIRGIL_LIBRARIES "${INSTALL_DIR}/lib/${VIRGIL_LIBRARY_NAME};${INSTALL_DIR}/lib/${REST_LIBRARY_NAME}")

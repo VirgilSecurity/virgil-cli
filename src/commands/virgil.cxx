@@ -39,58 +39,117 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <fstream>
+#include <iterator>
 
 #include <cli/version.h>
+#include <cli/util.h>
 
 typedef int (*main_func)(int argc, char **argv);
 
-int keygen_main(int argc, char **argv);
-int key2pub_main(int argc, char **argv);
-int keyreg_main(int argc, char **argv);
-int keyget_main(int argc, char **argv);
-int confirm_main(int argc, char **argv);
-int reconfirm_main(int argc, char **argv);
+// simple-action
 int encrypt_main(int argc, char **argv);
 int decrypt_main(int argc, char **argv);
 int sign_main(int argc, char **argv);
 int verify_main(int argc, char **argv);
 
-static void print_usage(std::ostream &out, const char *programName);
-static void print_version(std::ostream& out, const char *programName);
+// module-action
+int public_key_add_main(int argc, char **argv);
+int public_key_get_main(int argc, char **argv);
+int public_key_del_main(int argc, char **argv);
+int public_key_update_main(int argc, char **argv);
+int public_key_reset_main(int argc, char **argv);
+int public_key_confirm_main(int argc, char **argv);
+int public_key_id_get_main(int argc, char **argv);
+
+int user_data_add_main(int argc, char **argv);
+int user_data_del_main(int argc, char **argv);
+int user_data_confirm_main(int argc, char **argv);
+int user_data_reconfirm_main(int argc, char **argv);
+
+int private_key_gen_main(int argc, char **argv);
+int private_key_extr_pub_main(int argc, char **argv);
+int private_key_add_main(int argc, char **argv);
+int private_key_get_main(int argc, char **argv);
+int private_key_del_main(int argc, char **argv);
+
+int private_container_auth_main(int argc, char **argv);
+int private_container_create_main(int argc, char **argv);
+int private_container_del_main(int argc, char **argv);
+int private_container_info_main(int argc, char **argv);
+int private_container_update_main(int argc, char **argv);
+int private_container_reset_pass_main(int argc, char **argv);
+int private_container_confirm_main(int argc, char **argv);
+
+
+static void print_usage(std::ostream &out, const char *programName, const std::string& doc);
 
 
 int main(int argc, char **argv) {
+        // Read doc
+    std::string pathToDocFile = "doc.txt";
+    std::ifstream docFile(pathToDocFile, std::ios::in | std::ios::binary);
+    if (!docFile) {
+        throw std::invalid_argument("can not read doc file: " + pathToDocFile);
+    }
+
+    std::string docData((std::istreambuf_iterator<char>(docFile)),
+                std::istreambuf_iterator<char>());
+
     // Parse arguments.
     if (argc < 2) {
         std::cerr << "Error: " << " Required argument missing: " << "command" << std::endl;
-        print_usage(std::cerr, argv[0]);
+        print_usage(std::cerr, argv[0], docData);
         return EXIT_FAILURE;
     }
 
     std::string firstArg(argv[1]);
     if (firstArg == "-h" || firstArg == "--help") {
-        print_usage(std::cout, argv[0]);
+        print_usage(std::cout, argv[0], docData);
         return EXIT_SUCCESS;
     } else if (firstArg == "--version") {
-        print_version(std::cout, argv[0]);
+        virgil::cli::print_version(std::cout, argv[0]);
         return EXIT_SUCCESS;
     }
 
     std::map<std::string, main_func> commandsMap;
-    commandsMap["keygen"] = &keygen_main;
-    commandsMap["key2pub"] = &key2pub_main;
-    commandsMap["keyreg"] = &keyreg_main;
-    commandsMap["keyget"] = &keyget_main;
-    commandsMap["confirm"] = &confirm_main;
-    commandsMap["reconfirm"] = &reconfirm_main;
+    // simple-action
     commandsMap["encrypt"] = &encrypt_main;
     commandsMap["decrypt"] = &decrypt_main;
     commandsMap["sign"] = &sign_main;
     commandsMap["verify"] = &verify_main;
 
-    auto command = commandsMap.find(firstArg);
-    if (command != commandsMap.end()) {
-        command->second(argc - 1, argv + 1);
+    // module-action
+    commandsMap["public-key-add"] = &public_key_add_main;
+    commandsMap["public-key-get"] = &public_key_get_main;
+    commandsMap["public-key-del"] = &public_key_del_main;
+    commandsMap["public-key-update"] = &public_key_update_main;
+    commandsMap["public-key-reset"] = &public_key_reset_main;
+    commandsMap["public-key-confirm"] = &public_key_confirm_main;
+    commandsMap["public-key-id-get"] = &public_key_id_get_main;
+    
+    commandsMap["user-data-add"] = &user_data_add_main;
+    commandsMap["user-data-del"] = &user_data_del_main;
+    commandsMap["user-data-confirm"] = &user_data_confirm_main;
+    commandsMap["user-data-reconfirm"] = &user_data_reconfirm_main;
+
+    commandsMap["private-key-gen"] = &private_key_gen_main;
+    commandsMap["private-key-extr-pub"] = &private_key_extr_pub_main;
+    commandsMap["private-key-add"] = &private_key_add_main;
+    commandsMap["private-key-get"] = &private_key_get_main;
+    commandsMap["private-key-del"] = &private_key_del_main;
+
+    commandsMap["container-auth"] = &private_container_auth_main;
+    commandsMap["container-create"] = &private_container_create_main;
+    commandsMap["container-del"] = &private_container_del_main;
+    commandsMap["container-info"] = &private_container_info_main;
+    commandsMap["container-update"] = &private_container_update_main;
+    commandsMap["container-reset"] = &private_container_reset_pass_main;
+    commandsMap["container-confirm"] = &private_container_confirm_main;
+
+    auto module = commandsMap.find(firstArg);
+    if (module != commandsMap.end()) {
+        module->second(argc - 1, argv + 1);
     } else {
         std::cerr << "Error: " << "command '" << firstArg << "' not found" << std::endl;
         return EXIT_FAILURE;
@@ -99,40 +158,8 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-
-static void print_usage(std::ostream &out, const char *programName) {
-    out << std::endl << "USAGE:" << std::endl;
-    out << "    " << programName << " command [command_opts] [command_args]" << std::endl;
-    out << std::endl << "DESCRIPTION:" << std::endl;
-    out << "    " << "Command line tool for using Virgil Security stack functionality." << std::endl;
-    out << std::endl << "AVAILABLE COMMANDS:" << std::endl;
-    out << "    " << "keygen     " <<
-            "Generate private key with a given parameters." << std::endl;
-    out << "    " << "key2pub    " <<
-            "Get public key from the private key." << std::endl;
-    out << "    " << "keyreg     " <<
-            "Register user's public key on the Virgil Public Keys service." << std::endl;
-    out << "    " << "keyget     " <<
-            "Get user's public key from the Virgil Public Keys service." << std::endl;
-    out << "    " << "confirm    " <<
-            "Send confirmation code to the Virgil Public Keys service." << std::endl;
-    out << "    " << "reconfirm  " <<
-            "Resend confirmation code to the user for given user's identifier." << std::endl;
-    out << "    " << "encrypt    " <<
-            "Encrypt data for given recipients which can be defined by " <<
-            "Virgil Public Keys and by passwords." << std::endl;
-    out << "    " << "decrypt    " <<
-            "Decrypt data for given recipient which can be defined by " <<
-            "Virgil Public Key or by password." << std::endl;
-    out << "    " << "sign       " <<
-            "Sign data with Private Key." << std::endl;
-    out << "    " << "verify     " <<
-            "Verify data with Virgil Public Key." << std::endl;
-}
-
-
-static void print_version(std::ostream& out, const char *programName) {
-    out << programName << "  " << "version: "<< virgil::cli_version() << std::endl;
+void print_usage(std::ostream &out, const char *programName, const std::string& doc) {
+    out << "USAGE:"  <<  programName << doc << std::endl;
 }
 
 #endif /* SPLIT_CLI */

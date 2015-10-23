@@ -99,7 +99,7 @@ set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for exec
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
 
 # Configure application token
-set (VIRGIL_APP_TOKEN "a9b7434cda37b327bdd075bbde201b5d" CACHE STRING
+set (VIRGIL_APP_TOKEN "45fd8a505f50243fa8400594ba0b2b29" CACHE STRING
         "Application specific token acquired from the Virgil Security")
 
 if (NOT VIRGIL_APP_TOKEN)
@@ -125,6 +125,13 @@ virgil_add_dependency ("keys-public"
 )
 include_directories (${VIRGIL_KEYS_PUBLIC_INCLUDE_DIRS})
 
+virgil_add_dependency ("keys-private"
+    VIRGIL_KEYS_PRIVATE_DEPENDENCIES
+    VIRGIL_KEYS_PRIVATE_INCLUDE_DIRS
+    VIRGIL_KEYS_PRIVATE_LIBRARIES
+)
+include_directories (${VIRGIL_KEYS_PRIVATE_INCLUDE_DIRS})
+
 # Use tclap lib
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/ext")
 message (STATUS "TCLAP library: ON")
@@ -132,24 +139,31 @@ message (STATUS "TCLAP library: ON")
 #
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-# Define sources list
-aux_source_directory ("src/common" SRC_LIST)
-aux_source_directory ("src/commands" SRC_LIST)
-
-foreach (src_file ${SRC_LIST})
+# Grab source directory tree
+file (GLOB_RECURSE SRC_LIST "src/*.cxx")
+foreach (SRC_FILE ${SRC_LIST})
+    string (REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/src/" "" SRC_REL_PATH ${SRC_FILE})
     configure_file (
-        "${CMAKE_CURRENT_SOURCE_DIR}/${src_file}"
-        "${CMAKE_CURRENT_BINARY_DIR}/${src_file}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/${SRC_REL_PATH}"
+        "${CMAKE_CURRENT_BINARY_DIR}/src/${SRC_REL_PATH}"
         @ONLY
     )
 endforeach ()
+file (GLOB_RECURSE SRC_LIST "${CMAKE_CURRENT_BINARY_DIR}/src/*.cxx")
 
-aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/common SRC_COMMON)
-aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/commands SRC_COMMANDS)
+add_executable (virgil_cli ${SRC_LIST})
+target_link_libraries (virgil_cli
+    ${VIRGIL_KEYS_PUBLIC_LIBRARIES}
+    ${VIRGIL_KEYS_PRIVATE_LIBRARIES}
+    ${VIRGIL_CRYPTO_LIBRARIES}
+    ${CURL_LIBRARIES}
+    )
 
-add_executable (virgil_cli ${SRC_COMMON} ${SRC_COMMANDS})
-target_link_libraries (virgil_cli ${VIRGIL_CRYPTO_LIBRARIES} ${VIRGIL_KEYS_PUBLIC_LIBRARIES} ${CURL_LIBRARIES})
-add_dependencies (virgil_cli ${VIRGIL_CRYPTO_DEPENDENCIES} ${VIRGIL_KEYS_PUBLIC_DEPENDENCIES})
+add_dependencies (virgil_cli
+    ${VIRGIL_CRYPTO_DEPENDENCIES}
+    ${VIRGIL_KEYS_PUBLIC_DEPENDENCIES}
+    ${VIRGIL_KEYS_PRIVATE_DEPENDENCIES}
+    )
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
 # Install virgil_cli
@@ -163,6 +177,17 @@ endif (MSVC)
 if (UNIX)
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
 endif (UNIX)
+
+file (GLOB DATA_FILES "${CMAKE_CURRENT_SOURCE_DIR}/data/*")
+foreach (DATA_FILE ${DATA_FILES})
+    string (REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/data/" "" DATA_FILE_NAME ${DATA_FILE})
+    configure_file (
+        ${CMAKE_CURRENT_SOURCE_DIR}/data/${DATA_FILE_NAME}
+        ${CMAKE_CURRENT_BINARY_DIR}/${DATA_FILE_NAME}
+        COPYONLY
+    )
+endforeach (DATA_FILE)
+install (DIRECTORY "data/" DESTINATION ".")
 
 # Pack
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY

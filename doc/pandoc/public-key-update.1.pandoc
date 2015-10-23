@@ -1,0 +1,55 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**public-key-update** -- update user's public key on the Virgil Public Keys service.
+
+# SYNOPSIS
+
+**virgil public-key-update** [--in *file*] [--publickey-key-id *arg*] [--private-key *file*] [--private-pwd *arg*] [--new-private-key *file*] [--new-private-pwd *arg*]
+
+# DESCRIPTION
+
+Update user's public key on the Virgil Public Keys service.
+
+
+# OPTIONS'
+
+-i *file*, --in *file*
+:  New Public key. If omitted stdin is used.
+
+-e *arg*, --public-key-id *arg*
+:   Sender's old Virgil Public Key. Format: 
+
+     [public-id|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+-k *file*,  --private-key *file*
+:   Sender's old  private key.
+
+-p *arg*,  --private-pwd *arg*
+:   Sender's private key password.
+
+
+--new-private-key *file*
+:   Sender's new private key.
+
+--new-private-pwd *arg*
+:   Sender's new private key password.
+
+# EXAMPLES
+
+**virgil public-key-update** [--in *file*] [--publickey-key-id *arg*] [--private-key *file*] [--private-pwd *arg*] [--new-private-key *file*] [--new-private-pwd *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `public-key-reset(1)`,`public-key-del(1)`

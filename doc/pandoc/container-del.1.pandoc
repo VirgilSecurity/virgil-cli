@@ -1,0 +1,45 @@
+% VIRGIL(1) Virgil Security CLI (1.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% October 19*, 2015
+
+# NAME
+
+**container-del** -- delete existing container object from the Private Key service.
+
+# SYNOPSIS
+
+**virgil container-del** [--publickey-key-id *arg*] [--private-key *file*] [--private-pwd *arg*]
+
+# DESCRIPTION
+
+Delete existing container object from the Private Key service. 
+To confirm, you must use **container-confirm**. 
+
+# OPTIONS'
+
+-e *arg*, --public-key-id *arg*
+:   Sender's Virgil Public Key. Format: 
+
+     [public-id|file|email|phone|domain]:<value>
+
+    where:
+
+     * if `public-id`, then *value* - user's public-key-id;
+     * if `file`, then *value* - user's Virgil Public Key file stored locally;     
+     * if `email`, then *value* - user's email;
+     * if `phone`, then  *value* - user's phone;
+     * if `domain`, then  *value* - user's domain.
+
+-k *file*,  --private-key *file*
+:   Sender's new  private key.
+
+-p *arg*,  --private-pwd *arg*
+:   Sender's private key password.
+
+# EXAMPLES
+
+**virgil container-del** [--publickey-key-id *arg*] [--private-key *file*] [--private-pwd *arg*]
+
+# SEE ALSO
+
+`virgil(1)`, `container-reset(1)`,`container-update(1)`, `container-auth(1)`, `container-confirm(1)`
