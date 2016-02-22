@@ -1,0 +1,52 @@
+% PRIVATE-KEY-GET(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**private-key-get** -- get the Private Key from Private Key Service
+
+# SYNOPSIS
+
+**virgil private-key-get** --card_id *arg*, --identity *arg*, --validation_token *arg*
+
+
+# DESCRIPTION
+
+Get the Private Key from Private Key Service
+
+
+# OPTIONS
+
+--card_id *arg*
+:   (required) Public key identifier
+
+
+-e *arg*, \--identity *arg*
+:   (required) Virgil Card identifier.
+
+    Format:
+        [email]:<value>
+        [application]:<value>
+
+        where:
+        * if `email`, then *value* - user's email.
+        * if `email`, then *value* - developer's application.
+
+
+--validation_token *arg*
+:   (required) Validation token.
+
+
+
+# EXAMPLES
+
+virgil private-key-get --card_id <card_id> --identity email:user@domain.com --validation_token <token>
+
+
+# SEE ALSO
+
+[`keygen(1)`]()
+[`private-key-add(1)`]()
+[`identity-verify(1)`]()
+[`identity-confirm(1)`]()

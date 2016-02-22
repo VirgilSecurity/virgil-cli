@@ -1,0 +1,47 @@
+% CARD-UNSIGN(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**card-unsign** -- снятие подписи с карточки
+
+# SYNOPSIS
+
+**virgil card-unsign** --signed_card_id *arg*, --signer_card_id *arg*, --private_key *file*
+    [--private_key_pass *arg*]
+
+# DESCRIPTION
+
+Снятие подписи с карточки.
+
+
+# OPTIONS
+
+--signed_card_id *arg*
+:   card id карточки с которой снимаем подпись.
+
+
+--signer_card_id *arg*
+:   card id карточки осуществившей подпись
+
+
+--private_key *file*
+: Private Key signer
+
+
+--private_key_pass
+: Private Key pass signer
+
+
+# EXAMPLES
+
+User1 снимает подпись карточки user2
+
+virgil card-unsign --signed_card_id <user2_card_id> --signer_card_id <user1_card_id>
+    --private_key <user1_private_key> --private_key_pass <user1_private_key_pass>
+
+
+# SEE ALSO
+[`virgil(1)`]()
+[`unsign(1)`]()

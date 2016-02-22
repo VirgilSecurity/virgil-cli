@@ -1,0 +1,67 @@
+% VIRGIL(1) Virgil Security CLI (2.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**encrypt** -- encrypt data for given recipients
+
+# SYNOPSIS
+
+**virgil encrypt** [--in *file*] [--out *file*] [--content-info *file*] [--recipients *file*] <*recipient*> *...*
+
+# DESCRIPTION
+
+Encrypt data for given recipients. Recipient can be represented either by the password, or by the Virgil Public Key.
+
+# OPTIONS
+
+-i *file*,  \--in *file*
+:   Data to be encrypted. If omitted stdin is used.
+
+-o *file*,  \--out *file*
+:   Encrypted data. If omitted stdout is used.
+
+-c *file*,  \--content-info *file*
+:   Content info - meta information about encrypted data. If omitted becomes a part of the encrypted data.
+
+-r *file*,  \--recipients *file*
+:   (accepted multiple times) File that contains information about recipients.
+    Each line can be either empty line, or comment line, or recipient defined in format:
+
+        [pass|id|vkey|email]:<value>
+
+    where:
+
+    * if `pass`, then *value* - recipient's password (max length 31 ASCII characters);
+    * if `id`, then <value> - UUID associated with Virgil Public Key identifier;
+    * if `vkey`, then *value* - recipient's Virgil Public Key file stored locally.
+    * if `email`, then *value* - recipient's email;
+
+<*recipient*>
+:   (accepted multiple times) Contains information about one recipient.
+    Same as significant line in the recipients configuration file.
+
+# EXAMPLES
+
+1. Encrypt data for Bob identified by email:
+
+        virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com
+
+
+1. Encrypt data for Bob and Tom identified by emails:
+
+        virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com
+
+1. Encrypt data for user identified by password:
+
+        virgil encrypt -i plain.txt -o plain.txt.enc pass:strong_password
+
+1. Encrypt data for user's identified by configuration file:
+
+        virgil encrypt -i plain.txt -o plain.txt.enc -r friends.txt
+
+
+# SEE ALSO
+
+[`decrypt(1)`](https://github.com/VirgilSecurity/virgil-cli/blob/v2.0.0/doc/markdown/decrypt.1.md)

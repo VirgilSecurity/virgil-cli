@@ -1,0 +1,52 @@
+% CARD-SEARCH(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**card-search** -- поиск карточки/чек по identity с фильтрами
+
+# SYNOPSIS
+
+**virgil card-search** --identity *arg*, include_unconfirmed *bool*, <cards_id> ...
+
+# DESCRIPTION
+
+Поиск карточки/карточек, которая подписала карточки.
+User1 имеет 5 карточек. Он подписывает одну карточку User2 четырьмя своими.
+
+virgil card-search --identity email:user1_email --include_unconfirmed 1 <user2_card_id>
+
+Возвращает 4 карточки User1, которые подписали card User2.
+
+
+# OPTIONS
+
+-e *arg*, \--identity *arg*
+:   (required) Virgil Card identifier.
+
+    Format:
+        [email]:<value>
+        [application]:<value>
+
+        where:
+        * if `email`, then *value* - user's email.
+
+--include_unconfirmed *bool*
+: (switch) Показывает либо Карточки с не/подтвержденным identity
+
+<cards_id> *arg*
+:   Signed Cards id. Id карточек подписанных карточкой указанной в identity
+
+
+# EXAMPLES
+
+Ищем среди Карточек с невалидным identity
+
+virgil card-search --identity email:user1_email --include_unconfirmed 1 <user2_card_id> <user3_card_id>
+
+# SEE ALSO
+
+[`virgil(1)`]()
+[`card-create(1)`]()
+[`card-get(1)`]()

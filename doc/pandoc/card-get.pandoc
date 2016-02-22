@@ -1,0 +1,81 @@
+% PUBLIC-KEY-ADD(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**card-get** -- возвращение Карточки/Карту
+
+# SYNOPSIS
+
+**virgil card-get** [--identity *arg*], [--card_id *arg*],[--public_key_id *arg*], [--private_key *file*],
+    [--private_key_pas *arg*]
+
+
+# DESCRIPTION
+
+Возвращение Карточки, карточек связанных по pub key id
+
+
+# OPTIONS
+
+-e *arg*, \--identity *arg*
+:   (required) Virgil Card identifier.
+
+    Format:
+        [email]:<value>
+        [application]:<value>
+
+        where:
+        * if `email`, then *value* - user's email.
+        * if `email`, then *value* - developer's application.
+
+
+--card_id *arg*
+:   Card identifier
+
+
+--public_key_id *arg*
+: Public Key identifier
+
+
+--private_key *file*
+: Private Key
+
+
+--private_key_pass
+: Private Key pass
+
+
+# EXAMPLES
+
+1. Возвращение Карточек связанных между собой public-key-id
+
+virgil card-get --public_key_id <pub_key_id>, --card_id <card_id>, --private_key <path_private_key>
+    --private_key_pass <private_key_pass>
+
+
+2. Возвращение Карточки по card-id
+
+virgil card-get --card_id <card_id>
+
+
+3. Возвращение Карточки по identity ( email, phone etc )
+
+virgil card-get --identity email:user@domain.com
+
+
+4. Возвращение application card
+
+virgil card-get --identity application:com.virgilsecurity.gmail
+
+Всех Карт на Сервисе
+
+virgil card-get --identity application:"com.virgilsecurity.*"
+
+
+
+# SEE ALSO
+
+[`virgil(1)`]()
+[`card-create(1)`]()

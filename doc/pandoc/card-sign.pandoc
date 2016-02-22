@@ -1,0 +1,51 @@
+% CARD-SIGN(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**card-sign** -- подпись карточки
+
+# SYNOPSIS
+
+**virgil card-sign** --signer_card_id *arg*, --signed_card_hash *arg*, --signed_card_id *arg*, --private_key *file*
+    [--private_key_pass *arg*]
+
+# DESCRIPTION
+
+Подпись карточки. Подписывая карточку вы строете модель доверия.
+
+
+# OPTIONS
+
+--signer_card_id *arg*
+:   card id карточки, которая осуществляет подпись
+
+
+--signed_card_hash
+ :   card hash карты, которую подписываем
+
+
+--signed_card_id *arg*
+:   card id чью карточку подписываем
+
+
+--private_key *file*
+: Private Key signer
+
+
+--private_key_pass
+: Private Key pass signer
+
+
+# EXAMPLES
+
+User1 подписывает карточку user2
+
+virgil card-sign --signer_card_id<user1_card_id> --signed_card_hash <user2_card_hash> --signed_card_id <user2_card_id>
+    --private_key <signer_private_key> --private_key_pass <signer_private_key_pass>
+
+
+# SEE ALSO
+[`virgil(1)`]()
+[`unsign(1)`]()

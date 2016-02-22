@@ -1,0 +1,48 @@
+% PUBLIC-KEY-ADD(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**identity-confirm** -- confirms the identity from the **identity-verify** step to obtain an identity confirmation token
+
+
+# SYNOPSIS
+
+**virgil identity-confirm** --action_id *arg*, --confirmation_code *arg*, [--time_to_live *arg*],
+[--count_to_live *arg*]
+
+
+# DESCRIPTION
+
+Developer invokes **identity-confirm** endpoint with the *confirmation_code* sent to the email and
+*action_id* from the previous step *identity-verify*.
+
+
+# OPTIONS
+-a *arg*, \--action_id *arg*
+:   (required) Action id.
+
+-k *arg*, \--confirmation_code *arg*
+:   (required) Confirmation code.
+
+-t *arg*, \--time_to_live
+:   Ограничение validation_token по времени.
+
+-c *arg*, \--count_to_live
+:   Ограничение validation_token по кол-ву запросов.
+
+
+# RETURN VALUE
+
+On success, validation_token is returned. On error, throw exeption.
+Описать, что такое validation_token и для чего применяется.
+
+
+# EXAMPLES
+
+        virgil identity-verify -a d6b4abd9-057c-4d01-bdec-7b2ab232e2af -k B4L7O2
+
+# SEE ALSO
+
+[`identity-verify(1)`]()

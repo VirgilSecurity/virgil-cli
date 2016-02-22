@@ -1,0 +1,61 @@
+% CARD-REVOKE(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**card-revoke** -- отзывает Карточку с сервиса Public Key Service
+
+# SYNOPSIS
+
+**virgil card-revoke** --card_id *arg*, --identity *arg*, --private_key *file*, --private_key_pass *arg*
+
+
+# DESCRIPTION
+
+Отзывает Карточку с сервиса Public Key Service
+
+
+# OPTIONS
+
+--card_id *arg*
+:   Card identifier
+
+
+-e *arg*, \--identity *arg*
+:   (required) Virgil Card identifier.
+
+    Format:
+        [email]:<value>
+        [application]:<value>
+
+        where:
+        * if `email`, then *value* - user's email.
+        * if `email`, then *value* - developer's application.
+
+
+--private_key *file*
+: Private Key
+
+
+--private_key_pass *arg*
+: Private Key pass
+
+
+# EXAMPLES
+
+1. revoke карточки с валидным identity
+
+virgil card-revoke --card_id <card_id> --identity email:user@domain.com --validation_token <token>
+    --private_key <private_key> --private_key_pass <private_key_pass>
+
+
+2. revoke карточки с невалидным identity
+
+virgil card-revoke --card_id <card_id> --identity email:user@domain.com --private_key <private_key> --private_key_pass <private_key_pass>
+
+
+# SEE ALSO
+[`virgil(1)`]()
+[`card-create(1)`]()
+[`public-key-revoke(1)`]()

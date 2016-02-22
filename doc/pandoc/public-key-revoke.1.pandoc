@@ -1,0 +1,71 @@
+% PUBLIC-KEY-REVOKE(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**public-key-revoke** -- отзывает Карточку с сервиса Public Key Service
+
+# SYNOPSIS
+
+**virgil public-key-revoke** --public_key_id *arg*, --card_id *arg*, --identity *arg*, [--validation_token *arg*],
+    --private_key *arg*, --private_key_pass *arg*
+
+
+# DESCRIPTION
+
+Отзываем цепочку карточек связанных public key id с сервиса Public Key Service
+
+
+# OPTIONS
+
+--public_key_id *arg*
+: Public Key id, который служат связывающим звеном
+
+
+--card_id *arg*
+:   Card identifier
+
+
+-e *arg*, \--identity *arg*
+:   (multiple) (required) Virgil Card identifier.
+
+    Format:
+        [email]:<value>
+        [application]:<value>
+
+        where:
+        * if `email`, then *value* - user's email.
+        * if `email`, then *value* - developer's application.
+
+
+--validation_token *arg*
+:   (multiple) (required) Validation token
+
+
+--private_key *file*
+: Private Key
+
+
+--private_key_pass *arg*
+: Private Key pass
+
+
+# EXAMPLES
+
+1. revoke цепочки карточек с валидным identity связанных public key id
+
+virgil public-key-revoke --public_key_id <public_key_id> --card_id <card_id> --private_key <private_key>
+    --private_key_pass <private_key_pass> --identity email:user_email_1@domain.com --validation_token <token_email_1>
+    --identity email:user_email_2@domain.com --validation_token <token_email_2>
+
+2. revoke цепочки карточек с невалидным identity связанных public key id
+
+virgil public-key-revoke --public_key_id <public_key_id> --card_id <card_id> --private_key <private_key>
+    --private_key_pass <private_key_pass> --identity email:user_email_1@domain.com --identity email:user_email_2@domain.com
+
+
+# SEE ALSO
+[`virgil(1)`]()
+[`card-create(1)`]()
+[`public-key-revoke(1)`]()

@@ -1,0 +1,46 @@
+% VERIFY(1) Virgil Security CLI (2.0.0) | BSD General Commands Manual
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**verify** --  verify data and signature
+
+# SYNOPSIS
+
+**virgil verify** [--in *file*] [--out *file*] --sign *file* --public-key-id *arg*
+
+# DESCRIPTION
+
+Verify data and signature with given user's identifier or with it Virgil Public Key.
+
+# OPTIONS
+
+-i *file*,  \--in *file*
+:   Data to be verified. If omitted stdin is used.
+
+-o *file*,  \--out *file*
+:   Verification result: `success` | `failure`. If omitted stdout is used.
+
+-s *file*, \--sign *file*
+:   (required) Digest sign.
+
+-e *arg*, \--public-key-id *arg*
+:   (required)  Sign owner, defined in format:
+
+        [id|vkey|email]:<value>
+
+    where:
+
+    * if `id`, then <value> - signers's Virgil Public Key identifier;
+    * if `vkey`, then *value* - signers's Virgil Public Key file stored locally;
+    * if `email`, then *value* - signers's email.
+
+
+# EXAMPLES
+
+        virgil verify -i plain.txt -s plain.txt.sign -e email:user@domain.com
+
+# SEE ALSO
+
+[`sign(1)`](https://github.com/VirgilSecurity/virgil-cli/blob/v2.0.0/doc/markdown/sign.1.md)

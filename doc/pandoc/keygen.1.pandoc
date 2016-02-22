@@ -1,0 +1,63 @@
+% KEYGEN(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**keygen** -- generate Private Key with given parameters
+
+# SYNOPSIS
+
+**virgil keygen** [--ec *curve* | --rsa *nbits*] [--out *file*] [--key-pwd *arg*]
+
+# DESCRIPTION
+
+Generate Elliptic Curve Private Key or RSA Private Key.
+
+# OPTIONS
+
+-e *curve*, \--ec *curve*
+:   Generate elliptic curve key with one of the following curves:
+
+    * `bp256r1` - 256-bits Brainpool curve;
+    * `bp384r1` - 384-bits Brainpool curve;
+    * `bp512r1` - 512-bits Brainpool curve (default);
+    * `secp192r1` - 192-bits NIST curve;
+    * `secp224r1` - 224-bits NIST curve;
+    * `secp256r1` - 256-bits NIST curve;
+    * `secp384r1` - 384-bits NIST curve;
+    * `secp521r1` - 521-bits NIST curve;
+    * `secp192k1` - 192-bits "Koblitz" curve;
+    * `secp224k1` - 224-bits "Koblitz" curve;
+    * `secp256k1` - 256-bits "Koblitz" curve.
+
+-r *nbits*, \--rsa *nbits*
+:   Generate RSA key with a given number of bits.
+
+-o *file*, \--out *file*
+:   Private key. If omitted stdout is used.
+
+-p *arg*, \--key-pwd *arg*
+:   Password to be used for Private Key encryption. If omitted Private Key is stored in the plain format. Note, that password max length is 31 ASCII characters.
+
+# EXAMPLES
+
+1. Generate Elliptic 512-bits Brainpool Curve Private Key(default):
+
+        virgil keygen -o private.key
+
+1. Generate Elliptic Curve Private Key with password protection:
+
+        virgil keygen -o private.key -p strong_private_key_password
+
+1. Generate Elliptic 521-bits NIST Curve Private Key:
+
+        virgil keygen -o private.key -e secp521r1
+
+1. Generate RSA Private Key:
+
+        virgil keygen -r 2048 -o private.key
+
+# SEE ALSO
+
+[`key2pub(1)`](https://github.com/VirgilSecurity/virgil-cli/blob/v2.0.0/doc/markdown/key2pub.1.md)

@@ -1,0 +1,48 @@
+% PRIVATE-KEY-ADD(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**private-key-add** -- add the private key to Private Key Service
+
+# SYNOPSIS
+
+**virgil private-key-add** --card_id *arg*, --private_key *file*, --private-key-pass *arg*
+
+
+# DESCRIPTION
+
+General statements:
+
+1. Make sure that you have registered and confirmed your account for the Public Keys Service.
+1. Make sure that you have a public/private key pair and you have already uploaded the public key
+to the Public Keys Service.
+1. Make sure that you have your private key on local machine.
+1. Make sure that you have registered an application at [Virgil Security, Inc](https://developer.virgilsecurity.com/account/signup).
+
+
+# OPTIONS
+
+--card_id *arg*
+:   Public key identifier
+
+
+--private_key *file*
+:   Private Key.
+
+
+--private_key_pass *arg*
+:   Private Key password.
+
+
+# EXAMPLES
+
+virgil private-key-add --card_id <card_id> --private_key <private_key> --private_key_pass <private_key_pass>
+
+
+# SEE ALSO
+
+[`keygen(1)`]()
+[`identity-verify(1)`]()
+[`identity-confirm(1)`]()

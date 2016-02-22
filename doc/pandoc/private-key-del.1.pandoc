@@ -1,0 +1,42 @@
+% PRIVATE-KEY-DEL(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**private-key-del** -- delete the private key in Private Key Service
+
+# SYNOPSIS
+
+**virgil private-key-del** --card_id *arg*, --private_key *file*, --private-key-pass *arg*
+
+
+# DESCRIPTION
+
+ Delete the private key in Private Key Service
+
+
+# OPTIONS
+
+--card_id *arg*
+:   Public key identifier
+
+
+--private_key *file*
+:   Private Key.
+
+
+--private_key_pass *arg*
+:   Private Key password.
+
+
+# EXAMPLES
+
+virgil private-key-del --card_id <card_id> --private_key <private_key> --private_key_pass <private_key_pass>
+
+
+# SEE ALSO
+
+[`keygen(1)`]()
+[`identity-verify(1)`]()
+[`identity-confirm(1)`]()

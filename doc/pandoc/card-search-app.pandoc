@@ -1,0 +1,43 @@
+% CARD-SEARCH-APP(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**card-search-app** -- поиск application cards
+
+# SYNOPSIS
+
+**virgil card-search-app** --identity *arg*
+
+# DESCRIPTION
+
+Поиск application cards
+
+# OPTIONS
+
+-e *arg*, \--identity *arg*
+:   (required) Virgil Card identifier.
+
+    Format:
+        [application]:<value>
+
+        where:
+        * if `application`, then *value* - developer name.
+
+
+# EXAMPLES
+
+Ищем карточку приложения по ее имени. Шаблон имени
+    com.virgilsecurity.<application_name>
+
+Если задать сom.virgilsecurity.<*> вернет все созданные application cards.
+
+virgil card-search-app --identity application:<application_name>
+
+
+# SEE ALSO
+
+[`virgil(1)`]()
+[`card-create(1)`]()
+[`card-get(1)`]()

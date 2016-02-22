@@ -1,0 +1,101 @@
+% CARD-CREATE(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
+
+**card-create** -- создание Карточки.
+
+# SYNOPSIS
+
+**virgil card-create** --identity *arg*, [--validation_token *arg*], [--public_key *file*], [--public_key_id *arg*],
+    --private_key *file*
+
+
+# DESCRIPTION
+
+Confirm Identity - это identity ( email, phone, etc ), который прошел следующие эндпоинты
+**identity-verify** - для получения confirmation_code на почту.
+**identity-confirm** - для подтверждения identity, получаем validation_token.
+
+validation_token - токен для дополнительной защиты таких операций, как:
+**public-key-revoke** - удаление цепочки карточек/карточки по pub id
+**card-revoke** - удаление одной карточки по card-id
+**card-create** - создание Confirm Card
+
+1. Создание новой Карточки с confirm Identintity
+2. Добавление нового Identity к уже созданной карточки. Будет создано еще одна
+карточка, которая связана с _родительской_ по public-key-id.
+Создание связи с уже созданной Карточкой с confirm Identity по public key id.
+Внимание:
+Public Key + Private Key + Private Key Pass должны совпадать
+
+3. Создание новой Карточки с UNconfirm Identity
+4. Добавление нового Identity к уже созданной карточки все так же, как и (2)
+
+Внимание:
+Карточку с UNconfirm Identity нельзя превратить в Карточку с Валидным Identity.
+Лучше не создавать связи между Карточками с confirm и UNconfirm Identity.
+
+
+Создание Карточки с подтвержденным Identity.
+Подтвержденный Identity - это прохождение таких шагов:
+1. [`identity-verify(1)`]()
+2. [`identity-confirm(1)`]()
+
+
+# OPTIONS
+
+-e *arg*, \--identity *arg*
+:   (required) Virgil Card identifier.
+
+    Format:
+        [email]:<value>
+
+        where:
+        * if `email`, then *value* - user's email.
+
+
+-t *arg*, \--validation_token *arg*
+:   Validation Token
+
+
+--public_key *file*
+:   Public Key.
+
+
+--public_key_id *arg*
+:   Public key identifier
+
+--private_key *file*
+:   Private Key.
+
+
+--private_key_pass *arg*
+:   Private Key password.
+
+
+# EXAMPLES
+
+1. Confrim Identity
+
+    virgil card-create --identity email:user@domain.com --validation_token <token> --public_key <path_pub_key> --private_key <path_private_key> --private_key_pass "STRONG PASS"
+
+2. Создание связи с уже созданной Валидной Карточкой
+
+    virgil card-create --identity email:user@domain.com --validation_token <token> --public_key_id <pub_key_id> --private_key <path_private_key> --private_key_pass "STRONG PASS"
+
+3. UnConfrim Identity
+
+    virgil card-create --identity email:user@domain.com --public_key <path_pub_key> --private_key <path_private_key> --private_key_pass "STRONG PASS"
+
+4. Создание связи с уже созданной Не_Валидной Карточкой
+
+    virgil card-create --identity email:user@domain.com --public_key_id <pub_key_id> --private_key <path_private_key> --private_key_pass "STRONG PASS"
+
+
+# SEE ALSO
+
+[`keygen(1)`]()
+[`identity-verify(1)`]()
+[`identity-confirm(1)`]()
