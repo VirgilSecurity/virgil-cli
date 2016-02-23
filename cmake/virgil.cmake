@@ -33,7 +33,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-include (CheckCCompilerFlag)
+include (CheckCXXCompilerFlag)
 include (ExternalProject)
 
 function (virgil_add_dependency module target includes libraries)
@@ -45,7 +45,7 @@ function (virgil_add_dependency module target includes libraries)
 
     if (NOT CMAKE_CROSSCOMPILING)
         # Configure compiler settings
-        check_c_compiler_flag (-fPIC COMPILER_SUPPORT_PIC)
+        check_cxx_compiler_flag (-fPIC COMPILER_SUPPORT_PIC)
         string (REGEX MATCH "-fPIC|-fpic" HAS_PIC "${CMAKE_CXX_FLAGS_ALL}")
         if (COMPILER_SUPPORT_PIC AND NOT HAS_PIC)
             set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -83,28 +83,32 @@ function (virgil_add_dependency module target includes libraries)
             )
         endif ()
 
-        ExternalProject_Add (${VIRGIL}_project
-            GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil.git"
-            GIT_TAG "v1.0.1"
-            PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil.crypto"
-            CMAKE_ARGS ${CMAKE_ARGS}
-        )
+        if (NOT TARGET ${VIRGIL}_project)
+            ExternalProject_Add (${VIRGIL}_project
+                GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil-crypto.git"
+                GIT_TAG "v1.2.2"
+                PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil-crypto"
+                CMAKE_ARGS ${CMAKE_ARGS}
+            )
+        endif ()
 
         # Payload targets and output variables
         ExternalProject_Get_Property (${VIRGIL}_project INSTALL_DIR)
 
-        set (VIRGIL_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}virgil${CMAKE_STATIC_LIBRARY_SUFFIX})
+        set (VIRGIL_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}virgil_crypto${CMAKE_STATIC_LIBRARY_SUFFIX})
         set (MBEDTLS_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}mbedtls${CMAKE_STATIC_LIBRARY_SUFFIX})
         set (VIRGIL_INCLUDE_DIR "${INSTALL_DIR}/include")
         set (VIRGIL_LIBRARIES "${INSTALL_DIR}/lib/${VIRGIL_LIBRARY_NAME};${INSTALL_DIR}/lib/${MBEDTLS_LIBRARY_NAME}")
 
-    elseif (${module} STREQUAL "keys-public")
-        set (VIRGIL virgil_keys_public)
+    elseif (${module} STREQUAL "virgil-sdk")
+        set (VIRGIL virgil_sdk)
 
         set (CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
             -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-            -DVIRGIL_SDK_KEYS:BOOL=ON
+            -DENABLE_TESTING:BOOL=OFF
+            -DVIRGIL_EXAMPLES:BOOL=OFF
+            -DDOXYGEN_EXCLUDE_PRIVATE=OFF
         )
 
         if (CMAKE_PREFIX_PATH)
@@ -124,17 +128,19 @@ function (virgil_add_dependency module target includes libraries)
             )
         endif ()
 
-        ExternalProject_Add (${VIRGIL}_project
-            GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil-cpp.git"
-            GIT_TAG "virgil-sdk-keys-1.0.5"
-            PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil-cpp"
-            CMAKE_ARGS ${CMAKE_ARGS}
-        )
+        if (NOT TARGET ${VIRGIL}_project)
+            ExternalProject_Add (${VIRGIL}_project
+                GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil-sdk-cpp.git"
+                GIT_TAG "v3-create"
+                PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil-sdk"
+                CMAKE_ARGS ${CMAKE_ARGS}
+            )
+        endif ()
 
         # Payload targets and output variables
         ExternalProject_Get_Property (${VIRGIL}_project INSTALL_DIR)
 
-        set (VIRGIL_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}virgil_sdk_keys${CMAKE_STATIC_LIBRARY_SUFFIX})
+        set (VIRGIL_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}virgil_sdk${CMAKE_STATIC_LIBRARY_SUFFIX})
         set (REST_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}restless${CMAKE_STATIC_LIBRARY_SUFFIX})
         set (VIRGIL_INCLUDE_DIR "${INSTALL_DIR}/include")
         set (VIRGIL_LIBRARIES "${INSTALL_DIR}/lib/${VIRGIL_LIBRARY_NAME};${INSTALL_DIR}/lib/${REST_LIBRARY_NAME}")
@@ -152,4 +158,5 @@ function (virgil_add_dependency module target includes libraries)
     set (${target} ${VIRGIL} PARENT_SCOPE)
     set (${includes} ${VIRGIL_INCLUDE_DIR} PARENT_SCOPE)
     set (${libraries} ${VIRGIL_LIBRARIES} PARENT_SCOPE)
+
 endfunction (virgil_add_dependency)

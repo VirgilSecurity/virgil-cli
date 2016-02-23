@@ -88,9 +88,9 @@ if (MSVC)
 endif (MSVC)
 
 # Configure version
-set (CLI_VERSION_MAJOR 0)
-set (CLI_VERSION_MINOR 3)
-set (CLI_VERSION_PATCH 4)
+set (CLI_VERSION_MAJOR 2)
+set (CLI_VERSION_MINOR 0)
+set (CLI_VERSION_PATCH 0)
 set (CLI_VERSION ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH})
 message (STATUS "CLI version: " ${CLI_VERSION})
 
@@ -99,11 +99,11 @@ set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for exec
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
 
 # Configure application token
-set (VIRGIL_APP_TOKEN "a9b7434cda37b327bdd075bbde201b5d" CACHE STRING
+set (VIRGIL_ACCESS_TOKEN "dbebfb4230aef5a72b3aaf0ad57ac49f" CACHE STRING
         "Application specific token acquired from the Virgil Security")
 
-if (NOT VIRGIL_APP_TOKEN)
-    message (FATAL_ERROR "VIRGIL_APP_TOKEN configuration is not defined.")
+if (NOT VIRGIL_ACCESS_TOKEN)
+    message (FATAL_ERROR "VIRGIL_ACCESS_TOKEN configuration is not defined.")
 endif ()
 
 # Find dependencies
@@ -118,12 +118,12 @@ virgil_add_dependency ("crypto"
 )
 include_directories (${VIRGIL_CRYPTO_INCLUDE_DIRS})
 
-virgil_add_dependency ("keys-public"
-    VIRGIL_KEYS_PUBLIC_DEPENDENCIES
-    VIRGIL_KEYS_PUBLIC_INCLUDE_DIRS
-    VIRGIL_KEYS_PUBLIC_LIBRARIES
+virgil_add_dependency ("virgil-sdk"
+    VIRGIL_SDK_DEPENDENCIES
+    VIRGIL_SDK_INCLUDE_DIRS
+    VIRGIL_SDK_LIBRARIES
 )
-include_directories (${VIRGIL_KEYS_PUBLIC_INCLUDE_DIRS})
+include_directories (${VIRGIL_SDK_INCLUDE_DIRS})
 
 # Use tclap lib
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/ext")
@@ -132,24 +132,29 @@ message (STATUS "TCLAP library: ON")
 #
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-# Define sources list
-aux_source_directory ("src/common" SRC_LIST)
-aux_source_directory ("src/commands" SRC_LIST)
-
-foreach (src_file ${SRC_LIST})
+# Grab source directory tree
+file (GLOB_RECURSE SRC_LIST "src/*.cxx")
+foreach (SRC_FILE ${SRC_LIST})
+    string (REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/src/" "" SRC_REL_PATH ${SRC_FILE})
     configure_file (
-        "${CMAKE_CURRENT_SOURCE_DIR}/${src_file}"
-        "${CMAKE_CURRENT_BINARY_DIR}/${src_file}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/${SRC_REL_PATH}"
+        "${CMAKE_CURRENT_BINARY_DIR}/src/${SRC_REL_PATH}"
         @ONLY
     )
 endforeach ()
+file (GLOB_RECURSE SRC_LIST "${CMAKE_CURRENT_BINARY_DIR}/src/*.cxx")
 
-aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/common SRC_COMMON)
-aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/commands SRC_COMMANDS)
+add_executable (virgil_cli ${SRC_LIST})
+target_link_libraries (virgil_cli
+    ${VIRGIL_SDK_LIBRARIES}
+    ${VIRGIL_CRYPTO_LIBRARIES}
+    ${CURL_LIBRARIES}
+)
 
-add_executable (virgil_cli ${SRC_COMMON} ${SRC_COMMANDS})
-target_link_libraries (virgil_cli ${VIRGIL_CRYPTO_LIBRARIES} ${VIRGIL_KEYS_PUBLIC_LIBRARIES} ${CURL_LIBRARIES})
-add_dependencies (virgil_cli ${VIRGIL_CRYPTO_DEPENDENCIES} ${VIRGIL_KEYS_PUBLIC_DEPENDENCIES})
+add_dependencies (virgil_cli
+    ${VIRGIL_CRYPTO_DEPENDENCIES}
+    ${VIRGIL_SDK_DEPENDENCIES}
+)
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
 # Install virgil_cli
@@ -168,7 +173,7 @@ endif (UNIX)
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY
     "The Virgil Security CLI program is a command line tool for using Virgil Security stack functionality. "
     "It can be used to encrypt, decrypt, sign and verify data. "
-    "Functionality also includes interaction with Virgil Public Keys Service."
+    "Functionality also includes interaction with Virgil Public Keys Service and Virgil Private Keys Service."
 )
 set (CPACK_PACKAGE_NAME "Virgil Security CLI")
 set (CPACK_PACKAGE_VENDOR "Virgil Security Inc.")
