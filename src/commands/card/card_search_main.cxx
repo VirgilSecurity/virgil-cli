@@ -34,18 +34,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <fstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <tclap/CmdLine.h>
 
 #include <virgil/crypto/VirgilByteArray.h>
 
+#include <virgil/sdk/ServicesHub.h>
+#include <virgil/sdk/io/Marshaller.h>
+
 #include <cli/version.h>
 #include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+
+namespace vsdk = virgil::sdk;
+namespace vcrypto = virgil::crypto;
+namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
 #define MAIN main
@@ -55,55 +62,67 @@
 
 int MAIN(int argc, char **argv) {
     try {
-      std::string description =
-            "Get Virgil Public Key from the Virgil Keys service.\n";
+        std::string description = "Create card.\n";
 
         std::vector <std::string> examples;
         examples.push_back(
-                "Get pure Virgil Public Key:\n"
-                "virgil public-key-get -o virgil_pub.key -e email:user@domain.com\n"
-                );
+                "Search Virgil Cards with confirm identity:\n"
+                "virgil card-search --identity email:user_email");
 
         examples.push_back(
-                "Get Virgil Public Key with associated user data:\n"
-                "virgil public-key-get -o virgil_pub.key -e email:user@domain.com -k private.key\n"
-                );
+                "Search Virgil Cards with unconfirm identity:\n"
+                "virgil card-search --identity email:user_email --include_unconfirmed 1");
+
+        examples.push_back(
+                "Search Virgil Cards with confirm identity signed other Cards <user1_card_id> <user2_card_id>:\n"
+                "virgil card-search --identity email:user_email --include_unconfirmed 1 "
+                "<user1_card_id> <user1_card_id>");
+
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
-
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Output Virgil Public Key. If omitted stdout is used.",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Cards. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "Virgil Public Key identifier, associated with given Private Key.\n"
-                "Format:\n"
-                "[id|vkey|email]:<value>\n"
-                "where:\n"
-                "\t* if id, then <value> - UUID associated with Public Key;\n"
-                "\t* if vkey, then <value> - user's Virgil Public Key file stored locally;\n"
-                "\t* if email, then <value> - user email associated with Public Key.\n",
+        TCLAP::ValueArg<std::string> identityArg("", "identity", "Identity email, phone etc",
                 true, "", "arg");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key. If specified then all"
-                " user data associated with Virgil Public Key will be provided.",
-                false , "", "file");
+        TCLAP::ValueArg<bool> includeUnconfirmedArg("", "include_unconrimed", "Search Cards with unconfirm "
+                "identity", false, "", "arg");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password.",
-                false, "", "arg");
+        TCLAP::UnlabeledMultiArg<std::string> signedCardsIdArg("signed-card-id", "Signed card id", false, "card-id",
+                false);
 
-        cmd.add(privatePasswordArg);
-        cmd.add(privateKeyArg);
-        cmd.add(publicKeyIdArg);
+        cmd.add(signedCardsIdArg);
+        cmd.add(includeUnconfirmedArg);
+        cmd.add(identityArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
+        vsdk::ServicesHub servicesHub(VIRGIL_APP_TOKEN);
 
+        auto identityPair = vcli::parsePair(identityArg.getValue());
+        std::string userEmail = identityPair.second;
+        vsdk::model::Identity identity(userEmail, vsdk::model::IdentityType::Email);
 
+        bool includeUnconfirmed = false;
+        if (includeUnconfirmedArg.isSet()) {
+            includeUnconfirmed = includeUnconfirmedArg.getValue();
+        }
 
+        std::vector<vsdk::model::Card> foundCards;
+        if (signedCardsIdArg.isSet()) {
+            std::vector<std::string> signedCardsId = signedCardsIdArg.getValue();
+            foundCards = servicesHub.card().search(identity, signedCardsId, includeUnconfirmed);
+        } else {
+            foundCards = servicesHub.card().search(identity, std::vector<std::string>(), includeUnconfirmed);
+        }
+
+        std::string foundCardsStr = vsdk::io::cardsToJson(foundCards, 4);
+        vcli::writeBytes(outArg.getValue(), foundCardsStr);
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "card-search. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
