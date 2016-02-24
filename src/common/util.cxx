@@ -38,49 +38,26 @@
 #include <iostream>
 #include <fstream>
 #include <iterator>
-#include <vector>
 #include <stdexcept>
 
 #include <virgil/crypto/VirgilByteArray.h>
 
-#include <virgil/sdk/keys/io/marshaller.h>
-#include <virgil/sdk/keys/model/PublicKey.h>
-#include <virgil/sdk/keys/http/Connection.h>
-#include <virgil/sdk/keys/client/KeysClient.h>
-
-#include <cli/util.h>
 #include <cli/config.h>
+#include <cli/version.h>
+#include <cli/util.h>
 
 using virgil::crypto::VirgilByteArray;
 
-using virgil::sdk::keys::io::marshaller;
-using virgil::sdk::keys::model::PublicKey;
-using virgil::sdk::keys::http::Connection;
-using virgil::sdk::keys::client::KeysClient;
+typedef std::pair<std::string, std::string> PairStringString;
 
-PublicKey virgil::cli::get_virgil_public_key(const std::string&  recipientId, const std::string& recipientIdType) {
-    // Get owner Virgil Public Key
-    KeysClient keysClient(std::make_shared<Connection>(VIRGIL_APP_TOKEN));
-    std::vector<PublicKey> publicKeys = keysClient.publicKey().search(recipientId, recipientIdType);
-    PublicKey publicKey;
-    if (!publicKeys.empty()) {
-        publicKey = publicKeys.front();
-    }
-    return publicKey;
+
+void virgil::cli::printVersion(std::ostream& out, const char *programName) {
+    out << programName << "  " << "version: "<< virgil::cli_version() << std::endl;
 }
 
-PublicKey virgil::cli::read_virgil_public_key(std::istream& file) {
-    // Read Virgil Public Key
-    std::string publicKeyData((std::istreambuf_iterator<char>(file)),
-                std::istreambuf_iterator<char>());
-    PublicKey publicKey = marshaller<PublicKey>::fromJson(publicKeyData);
-    return publicKey;
-}
+//-------------------------------------------------------------------------------------
 
-VirgilByteArray virgil::cli::read_bytes(const std::string& in) {
-    if(in.empty() || in == "-") {
-        return VirgilByteArray((std::istreambuf_iterator<char>(std::cin)), std::istreambuf_iterator<char>());
-    }
+VirgilByteArray virgil::cli::readFileBytes(const std::string& in) {
     std::ifstream inFile(in, std::ios::in | std::ios::binary);
     if (!inFile) {
         throw std::invalid_argument("can not read file: " + in);
@@ -88,10 +65,19 @@ VirgilByteArray virgil::cli::read_bytes(const std::string& in) {
     return VirgilByteArray((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
 }
 
+VirgilByteArray virgil::cli::readInput(const std::string& in) {
+    if(in.empty() || in == "-") {
+        return VirgilByteArray((std::istreambuf_iterator<char>(std::cin)), std::istreambuf_iterator<char>());
+    }
+    return readFileBytes(in);
+}
 
-void virgil::cli::write_bytes(const std::string& out, const VirgilByteArray& data) {
+//-------------------------------------------------------------------------------------
+
+void virgil::cli::writeBytes(const std::string& out, const VirgilByteArray& data) {
     if (out.empty()) {
         std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(std::cout));
+        std::cout << std::endl;
         return;
     }
 
@@ -102,6 +88,22 @@ void virgil::cli::write_bytes(const std::string& out, const VirgilByteArray& dat
     std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(outFile));
 }
 
-void virgil::cli::write_bytes(const std::string& out, const std::string& data) {
-    return virgil::cli::write_bytes(out, virgil::crypto::str2bytes(data));
+void virgil::cli::writeBytes(const std::string& out, const std::string& data) {
+    return virgil::cli::writeBytes(out, virgil::crypto::str2bytes(data));
 }
+
+//-------------------------------------------------------------------------------------
+
+std::string virgil::cli::getDescriptionMessage(const std::string description, std::vector<std::string> examples) {
+    std::string descriptionMessage;
+    descriptionMessage += "\nDESCRIPTION:\n" + description;
+    if (!examples.empty()) {
+        descriptionMessage += "EXAMPLES:\n";
+        for (const auto& example : examples) {
+            descriptionMessage += example;
+        }
+    }
+    return descriptionMessage;
+}
+
+//-------------------------------------------------------------------------------------

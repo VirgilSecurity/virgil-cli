@@ -34,73 +34,78 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <iostream>
+#include <string>
 #include <stdexcept>
 
 #include <tclap/CmdLine.h>
 
 #include <virgil/crypto/VirgilByteArray.h>
-#include <virgil/crypto/VirgilCryptoException.h>
-#include <virgil/crypto/foundation/VirgilAsymmetricCipher.h>
 
 #include <cli/version.h>
+#include <cli/config.h>
+#include <cli/pair.h>
 #include <cli/util.h>
 
 using virgil::crypto::VirgilByteArray;
-using virgil::crypto::VirgilCryptoException;
-using virgil::crypto::foundation::VirgilAsymmetricCipher;
-
-
-/**
- * @brief Returns whether underling data is ASN.1 structure or not.
- */
-inline bool is_asn1(const VirgilByteArray& data) {
-    return data.size() > 0 && data[0] == 0x30;
-}
 
 #ifdef SPLIT_CLI
-    #define MAIN main
+#define MAIN main
 #else
-    #define MAIN key2pub_main
+#define MAIN card_sign_main
 #endif
 
 int MAIN(int argc, char **argv) {
     try {
+        std::string description = "Get user's Private Key from the Virgil Private Keys service.\n";
+
+        std::vector <std::string> examples;
+        examples.push_back(
+                "Container type 'easy':\n"
+                "virgil private-key-get -u email:user@domain.com -n container_pwd\n");
+
+        examples.push_back(
+                "Container type 'normal':\n"
+                "virgil private-key-get -u email:user@domain.com -n container_pwd -w wrapper_pwd\n");
+
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+
         // Parse arguments.
-        TCLAP::CmdLine cmd("Extract public key from the private key.", ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Private key. If omitted stdin is used.",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Public key. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> userIdArg("u","user-id",
+                "User identifier, associated with container.\n"
+                "Format:\n"
+                "[email]:<value>\n"
+                "where:\n"
+                "\t* if email, then <value> - user email associated with Public Key.\n",
+                true, "","arg" );
 
-        TCLAP::ValueArg<std::string> pwdArg("p", "pwd", "Private key password.",
+        TCLAP::ValueArg<std::string> containerPaswordArg("n", "container-pwd", "Container password.",
+                true, "", "arg");
+
+        TCLAP::ValueArg<std::string> wrapperPaswordArg("w", "wrapper-pwd",
+                "Password is used to encrypt Private Key before it will be send to the."
+                "Virgil Private Keys Service.\n"
+                "Note, MUST be used only if container type is `normal`.\n"
+                "Note, MUST be managed by user, because it can not be reset or recovered.",
                 false, "", "arg");
 
-        cmd.add(pwdArg);
+        cmd.add(wrapperPaswordArg);
+        cmd.add(containerPaswordArg);
+        cmd.add(userIdArg);
         cmd.add(outArg);
-        cmd.add(inArg);
-
         cmd.parse(argc, argv);
 
-        // Prepare input. Read private key.
-        VirgilByteArray privateKey = virgil::cli::read_bytes(inArg.getValue());
-
-        // Extract public key.
-        VirgilAsymmetricCipher cipher = VirgilAsymmetricCipher::none();
-        cipher.setPrivateKey(privateKey, virgil::crypto::str2bytes(pwdArg.getValue()));
-
-        VirgilByteArray publicKey = is_asn1(privateKey) ?
-                cipher.exportPublicKeyToDER() : cipher.exportPublicKeyToPEM();
-
-        // Prepare output. Output public key
-        virgil::cli::write_bytes(outArg.getValue(), publicKey);
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "private-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "Error: " << exception.what() << std::endl;
+        std::cerr << "private-key-get. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

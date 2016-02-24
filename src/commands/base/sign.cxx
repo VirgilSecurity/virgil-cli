@@ -61,8 +61,17 @@ using virgil::crypto::stream::VirgilStreamDataSource;
 
 int MAIN(int argc, char **argv) {
     try {
+       std::string description = "Sign data with given user's Private Key.\n";
+
+        std::vector <std::string> examples;
+        examples.push_back(
+                "virgil sign -i plain.txt -o plain.txt.sign -k private.key\n"
+                );
+
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+
         // Parse arguments.
-        TCLAP::CmdLine cmd("Sign data with given user's private key.", ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
         TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be signed. If omitted stdin is used.",
                 false, "", "file");
@@ -70,50 +79,44 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Digest sign. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> keyArg("k", "key", "Signer's private key.",
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private Key.",
                 true, "", "file");
 
-        TCLAP::ValueArg<std::string> pwdArg("p", "pwd", "Signer's private key password.",
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Signer's Private Key password.",
                 false, "", "arg");
 
-        cmd.add(pwdArg);
-        cmd.add(keyArg);
+        cmd.add(privatePasswordArg);
+        cmd.add(privateKeyArg);
         cmd.add(outArg);
         cmd.add(inArg);
-
         cmd.parse(argc, argv);
 
-        // Prepare input
-        std::istream* inStream;
-        std::ifstream inFile;
-        if (inArg.getValue().empty() || inArg.getValue() == "-") {
-            inStream = &std::cin;
-        } else {
-            inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
-            if (!inFile) {
-                throw std::invalid_argument("can not read file: " + inArg.getValue());
-            }
-            inStream = &inFile;
-        }
+        // // Prepare input
+        // std::istream* inStream;
+        // std::ifstream inFile;
+        // if (inArg.getValue().empty() || inArg.getValue() == "-") {
+        //     inStream = &std::cin;
+        // } else {
+        //     inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
+        //     if (!inFile) {
+        //         throw std::invalid_argument("can not read file: " + inArg.getValue());
+        //     }
+        //     inStream = &inFile;
+        // }
 
-        // Read private key
-        std::ifstream keyFile(keyArg.getValue(), std::ios::in | std::ios::binary);
-        if (!keyFile) {
-            throw std::invalid_argument("can not read file: " + keyArg.getValue());
-        }
+        // // Read private key
+        // VirgilByteArray privateKey = virgil::cli::readFileBytes(privateKeyArg.getValue());
+        // VirgilByteArray privateKeyPassword = virgil::crypto::str2bytes(privatePasswordArg.getValue());
 
-        VirgilByteArray privateKey((std::istreambuf_iterator<char>(keyFile)), std::istreambuf_iterator<char>());
-        VirgilByteArray privateKeyPassword = virgil::crypto::str2bytes(pwdArg.getValue());
+        // // Create signer
+        // VirgilStreamSigner signer;
 
-        // Create signer
-        VirgilStreamSigner signer;
-
-        // Sign data
-        VirgilStreamDataSource dataSource(*inStream);
-        VirgilByteArray sign = signer.sign(dataSource, privateKey, privateKeyPassword);
+        // // Sign data
+        // VirgilStreamDataSource dataSource(*inStream);
+        // VirgilByteArray sign = signer.sign(dataSource, privateKey, privateKeyPassword);
 
         // Prepare output. Write sign to the output.
-        virgil::cli::write_bytes(outArg.getValue(), sign);
+        //virgil::cli::writeBytes(outArg.getValue(), sign);
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "sing. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

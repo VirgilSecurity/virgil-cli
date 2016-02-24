@@ -35,70 +35,77 @@
  */
 
 #include <iostream>
-#include <fstream>
-#include <stdexcept>
 #include <string>
+#include <stdexcept>
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/sdk/keys/model/PublicKey.h>
-#include <virgil/sdk/keys/io/marshaller.h>
+#include <virgil/crypto/VirgilByteArray.h>
 
 #include <cli/version.h>
+#include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 
-using virgil::sdk::keys::model::PublicKey;
-using virgil::sdk::keys::io::marshaller;
-
+using virgil::crypto::VirgilByteArray;
 
 #ifdef SPLIT_CLI
-    #define MAIN main
+#define MAIN main
 #else
-    #define MAIN keyget_main
+#define MAIN identity_verify_main
 #endif
-
 
 int MAIN(int argc, char **argv) {
     try {
-        // Parse arguments.
-        TCLAP::CmdLine cmd("Get user's Virgil Public Key from the Virgil Public Keys service.", ' ',
-                virgil::cli_version());
+        std::string description = "Get user's Private Key from the Virgil Private Keys service.\n";
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted stdout is used.",
+        std::vector <std::string> examples;
+        examples.push_back(
+                "Container type 'easy':\n"
+                "virgil private-key-get -u email:user@domain.com -n container_pwd\n");
+
+        examples.push_back(
+                "Container type 'normal':\n"
+                "virgil private-key-get -u email:user@domain.com -n container_pwd -w wrapper_pwd\n");
+
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+
+        // Parse arguments.
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::UnlabeledValueArg<std::string> userIdArg("user-id",
-                "User identifer.\n"
-                "Format: [email|phone|domain]:<value>\n"
+        TCLAP::ValueArg<std::string> userIdArg("u","user-id",
+                "User identifier, associated with container.\n"
+                "Format:\n"
+                "[email]:<value>\n"
                 "where:\n"
-                "\t* if email, then <value> - user's email;\n"
-                "\t* if phone, then <value> - user's phone;\n"
-                "\t* if domain, then <value> - user's domain.\n",
-                true, "", "user-id", false);
+                "\t* if email, then <value> - user email associated with Public Key.\n",
+                true, "","arg" );
 
+        TCLAP::ValueArg<std::string> containerPaswordArg("n", "container-pwd", "Container password.",
+                true, "", "arg");
+
+        TCLAP::ValueArg<std::string> wrapperPaswordArg("w", "wrapper-pwd",
+                "Password is used to encrypt Private Key before it will be send to the."
+                "Virgil Private Keys Service.\n"
+                "Note, MUST be used only if container type is `normal`.\n"
+                "Note, MUST be managed by user, because it can not be reset or recovered.",
+                false, "", "arg");
+
+        cmd.add(wrapperPaswordArg);
+        cmd.add(containerPaswordArg);
         cmd.add(userIdArg);
         cmd.add(outArg);
-
         cmd.parse(argc, argv);
 
-        // Get user's Virgil Public Key
-        const std::pair<std::string, std::string> recipient = virgil::cli::parse_pair(userIdArg.getValue());
-        const std::string recipientIdType = recipient.first;
-        const std::string recipientId = recipient.second;
-        PublicKey virgilPublicKey = virgil::cli::get_virgil_public_key(recipientId, recipientIdType);
-
-        // Store Virgil Public Key to the output file
-        std::string publicKeyData = marshaller<PublicKey>::toJson(virgilPublicKey);
-
-        // Prepare output
-        virgil::cli::write_bytes(outArg.getValue(), publicKeyData);
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "private-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "Error: " << exception.what() << std::endl;
+        std::cerr << "private-key-get. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

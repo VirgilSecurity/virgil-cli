@@ -40,35 +40,38 @@
 #include <string>
 
 #include <virgil/crypto/VirgilByteArray.h>
-#include <virgil/sdk/keys/model/PublicKey.h>
 
-namespace vc = virgil::crypto;
-namespace vskm = virgil::sdk::keys::model;
 
 namespace virgil { namespace cli {
 
-/**
- * @brief Retive Virgil Public Key from the Virgil Public Key service.
- */
-vskm::PublicKey get_virgil_public_key(const std::string& recipientId, const std::string& recipientIdType);
+//-------------------------------------------------------------------------------------
 
-/**
- * @brief Read Virgil Public Key from the file.
- */
-vskm::PublicKey read_virgil_public_key(std::istream& file);
+void printVersion(std::ostream& out, const char *programName);
+
+//-------------------------------------------------------------------------------------
+
+
+virgil::crypto::VirgilByteArray readFileBytes(const std::string& in);
 
 /**
  * @brief Read bytes from the given source.
  * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
  */
-vc::VirgilByteArray read_bytes(const std::string& in);
+virgil::crypto::VirgilByteArray readInput(const std::string& in);
+
+//-------------------------------------------------------------------------------------
 
 /**
  * @brief Write bytes to the given destination.
  * @param out - if empty or equal to "-" then 'stdout' is used, otherwise - path to file.
  */
-void write_bytes(const std::string& out, const vc::VirgilByteArray& data);
-void write_bytes(const std::string& out, const std::string& data);
+void writeBytes(const std::string& out, const virgil::crypto::VirgilByteArray& data);
+void writeBytes(const std::string& out, const std::string& data);
+
+
+std::string getDescriptionMessage(const std::string description, std::vector<std::string> examples);
+
+//-------------------------------------------------------------------------------------
 
 }}
 

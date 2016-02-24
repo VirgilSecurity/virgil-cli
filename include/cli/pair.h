@@ -54,7 +54,7 @@ namespace virgil { namespace cli {
  * Note, all whitespaces before <key> and after <key> will be trimmed.
  * Note, all whitespaces before <value> and after <value> will be trimmed.
  */
-std::pair<std::string, std::string> parse_pair(const std::string& str);
+std::pair<std::string, std::string> parsePair(const std::string& str);
 
 /**
  * @brief Parse array of string pairs.
@@ -67,7 +67,7 @@ std::pair<std::string, std::string> parse_pair(const std::string& str);
  * Note, all whitespaces before <key> and after <key> will be trimmed.
  * Note, all whitespaces before <value> and after <value> will be trimmed.
  */
-std::multimap<std::string, std::string> parse_pair_array(const std::vector<std::string>& pairs);
+std::multimap<std::string, std::string> parsePairArray(const std::vector<std::string>& pairs);
 
 }}
 

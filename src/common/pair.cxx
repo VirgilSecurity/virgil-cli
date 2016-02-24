@@ -49,24 +49,22 @@ static std::string trim(const std::string& s, const std::string& delimiters = " 
 
 namespace virgil { namespace cli {
 
-std::pair<std::string, std::string> parse_pair(const std::string& str) {
+std::pair<std::string, std::string> parsePair(const std::string& str) {
     size_t delimPos = str.find_first_of(':');
     if (delimPos == std::string::npos || delimPos == (str.size() - 1)) {
-        throw std::invalid_argument(std::string("invalid pair format: ") + str +
+        throw std::invalid_argument("invalid pair format: " + str +
                                     ". Expected format: '<key>:<value>'.");
     }
     return std::make_pair(trim(str.substr(0, delimPos)), trim(str.substr(delimPos + 1)));
 }
 
-std::multimap<std::string, std::string> parse_pair_array(const std::vector<std::string>& pairs) {
+std::multimap<std::string, std::string> parsePairArray(const std::vector<std::string>& pairs) {
     std::multimap<std::string, std::string> result;
     for(const auto& pair : pairs) {
-        result.insert(virgil::cli::parse_pair(pair));
+        result.insert(virgil::cli::parsePair(pair));
     }
 
     return result;
 }
 
 }}
-
-

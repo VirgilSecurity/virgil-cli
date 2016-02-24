@@ -34,76 +34,82 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include <string>
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/sdk/keys/http/Connection.h>
-#include <virgil/sdk/keys/model/UserData.h>
-#include <virgil/sdk/keys/client/KeysClient.h>
+#include <virgil/crypto/VirgilByteArray.h>
 
 #include <cli/version.h>
 #include <cli/config.h>
-#include <cli/util.h>
 #include <cli/pair.h>
-#include <cli/guid.h>
-
-using virgil::sdk::keys::http::Connection;
-using virgil::sdk::keys::model::UserData;
-using virgil::sdk::keys::client::KeysClient;
-
+#include <cli/util.h>
 
 #ifdef SPLIT_CLI
-    #define MAIN main
+#define MAIN main
 #else
-    #define MAIN reconfirm_main
+#define MAIN card_search_main
 #endif
-
 
 int MAIN(int argc, char **argv) {
     try {
-        // Parse arguments.
-        TCLAP::CmdLine cmd("Resend confirmation code to the user for given user's identifier.", ' ',
-                virgil::cli_version());
+      std::string description =
+            "Get Virgil Public Key from the Virgil Keys service.\n";
 
-        TCLAP::ValueArg<std::string> userIdArg("i", "user-id",
-                "User's identifer.\n"
-                "Format: [email|phone|domain]:<value>\n"
+        std::vector <std::string> examples;
+        examples.push_back(
+                "Get pure Virgil Public Key:\n"
+                "virgil public-key-get -o virgil_pub.key -e email:user@domain.com\n"
+                );
+
+        examples.push_back(
+                "Get Virgil Public Key with associated user data:\n"
+                "virgil public-key-get -o virgil_pub.key -e email:user@domain.com -k private.key\n"
+                );
+
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+
+
+        // Parse arguments.
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Output Virgil Public Key. If omitted stdout is used.",
+                false, "", "file");
+
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
+                "Virgil Public Key identifier, associated with given Private Key.\n"
+                "Format:\n"
+                "[id|vkey|email]:<value>\n"
                 "where:\n"
-                "\t* if email, then <value> - user's email;\n"
-                "\t* if phone, then <value> - user's phone;\n"
-                "\t* if domain, then <value> - user's domain.\n",
+                "\t* if id, then <value> - UUID associated with Public Key;\n"
+                "\t* if vkey, then <value> - user's Virgil Public Key file stored locally;\n"
+                "\t* if email, then <value> - user email associated with Public Key.\n",
                 true, "", "arg");
 
-        cmd.add(userIdArg);
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key. If specified then all"
+                " user data associated with Virgil Public Key will be provided.",
+                false , "", "file");
 
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password.",
+                false, "", "arg");
+
+        cmd.add(privatePasswordArg);
+        cmd.add(privateKeyArg);
+        cmd.add(publicKeyIdArg);
+        cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        // Parse User Identifier
-        const std::pair<std::string, std::string> userIdPair = virgil::cli::parse_pair(userIdArg.getValue());
-        const std::string userIdType = userIdPair.first;
-        const std::string userId = userIdPair.second;
 
-        // Find User Data
-        KeysClient keysClient(std::make_shared<Connection>(VIRGIL_APP_TOKEN));
-        auto foundUserDatas = keysClient.userData().search(userId, userIdType);
 
-        // Resend confirmation code
-        if (foundUserDatas.size() > 0) {
-            UserData userData = foundUserDatas.front();
-            auto guid = virgil::cli::guid();
-            keysClient.userData().resendConfirmation(userData.userDataId(), guid);
-        } else {
-            throw std::runtime_error("User with id: " + userIdArg.getValue() + " not found.");
-        }
+
+
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-search. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "Error: " << exception.what() << std::endl;
+        std::cerr << "card-search. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

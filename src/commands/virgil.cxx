@@ -39,24 +39,44 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <fstream>
+#include <iterator>
 
 #include <cli/version.h>
+#include <cli/util.h>
 
 typedef int (*main_func)(int argc, char **argv);
 
+// simple-action
 int keygen_main(int argc, char **argv);
 int key2pub_main(int argc, char **argv);
-int keyreg_main(int argc, char **argv);
-int keyget_main(int argc, char **argv);
-int confirm_main(int argc, char **argv);
-int reconfirm_main(int argc, char **argv);
 int encrypt_main(int argc, char **argv);
 int decrypt_main(int argc, char **argv);
 int sign_main(int argc, char **argv);
 int verify_main(int argc, char **argv);
 
+// module-action
+int identity_verify_main(int argc, char **argv);
+int identity_confirm_main(int argc, char **argv);
+int identity_validate_main(int argc, char **argv);
+
+int card_create_main(int argc, char **argv);
+int card_get_main(int argc, char **argv);
+int card_search_main(int argc, char **argv);
+int card_search_app_main(int argc, char **argv);
+int card_sign_main(int argc, char **argv);
+int card_unsign_main(int argc, char **argv);
+int card_revoke_main(int argc, char **argv);
+
+int public_key_get_main(int argc, char **argv);
+int public_key_revoke_main(int argc, char **argv);
+
+int private_key_add_main(int argc, char **argv);
+int private_key_get_main(int argc, char **argv);
+int private_key_del_main(int argc, char **argv);
+
+
 static void print_usage(std::ostream &out, const char *programName);
-static void print_version(std::ostream& out, const char *programName);
 
 
 int main(int argc, char **argv) {
@@ -72,25 +92,42 @@ int main(int argc, char **argv) {
         print_usage(std::cout, argv[0]);
         return EXIT_SUCCESS;
     } else if (firstArg == "--version") {
-        print_version(std::cout, argv[0]);
+        virgil::cli::printVersion(std::cout, argv[0]);
         return EXIT_SUCCESS;
     }
 
     std::map<std::string, main_func> commandsMap;
+    // simple-action
     commandsMap["keygen"] = &keygen_main;
     commandsMap["key2pub"] = &key2pub_main;
-    commandsMap["keyreg"] = &keyreg_main;
-    commandsMap["keyget"] = &keyget_main;
-    commandsMap["confirm"] = &confirm_main;
-    commandsMap["reconfirm"] = &reconfirm_main;
     commandsMap["encrypt"] = &encrypt_main;
     commandsMap["decrypt"] = &decrypt_main;
     commandsMap["sign"] = &sign_main;
     commandsMap["verify"] = &verify_main;
 
-    auto command = commandsMap.find(firstArg);
-    if (command != commandsMap.end()) {
-        command->second(argc - 1, argv + 1);
+    // module-action
+    commandsMap["identity-verify"] = &identity_verify_main;
+    commandsMap["identity-confirm"] = &identity_confirm_main;
+    commandsMap["identity-validate"] = &identity_validate_main;
+
+    commandsMap["card-create"] = &card_create_main;
+    commandsMap["card-get"] = &card_get_main;
+    commandsMap["card-search"] = &card_search_main;
+    commandsMap["card-search-app"] = &card_search_app_main;
+    commandsMap["card-sign"] = &card_sign_main;
+    commandsMap["card-unsign"] = &card_unsign_main;
+    commandsMap["card-revoke"] = &card_revoke_main;
+
+    commandsMap["public-key-get"] = &public_key_get_main;
+    commandsMap["public-key-revoke"] = &public_key_revoke_main;
+
+    commandsMap["private-key-add"] = &private_key_add_main;
+    commandsMap["private-key-get"] = &private_key_get_main;
+    commandsMap["private-key-del"] = &private_key_del_main;
+
+    auto module = commandsMap.find(firstArg);
+    if (module != commandsMap.end()) {
+        module->second(argc - 1, argv + 1);
     } else {
         std::cerr << "Error: " << "command '" << firstArg << "' not found" << std::endl;
         return EXIT_FAILURE;
@@ -99,40 +136,96 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
+void print_usage(std::ostream &out, const char *programName) {
+    std::string doc =
+            "command [command_opts] [command_args]\n"
+            "DESCRIPTION:\n"
+            "The 'virgil' program is a command line tool for using Virgil Security\n"
+            "stack functionality:\n"
+            "encrypt, decrypt, sign and verify data;\n"
+            "interact with Virgil Keys Service;\n"
+            "interact with Virgil Private Keys Service.\n\n"
 
-static void print_usage(std::ostream &out, const char *programName) {
-    out << std::endl << "USAGE:" << std::endl;
-    out << "    " << programName << " command [command_opts] [command_args]" << std::endl;
-    out << std::endl << "DESCRIPTION:" << std::endl;
-    out << "    " << "Command line tool for using Virgil Security stack functionality." << std::endl;
-    out << std::endl << "AVAILABLE COMMANDS:" << std::endl;
-    out << "    " << "keygen     " <<
-            "Generate private key with a given parameters." << std::endl;
-    out << "    " << "key2pub    " <<
-            "Get public key from the private key." << std::endl;
-    out << "    " << "keyreg     " <<
-            "Register user's public key on the Virgil Public Keys service." << std::endl;
-    out << "    " << "keyget     " <<
-            "Get user's public key from the Virgil Public Keys service." << std::endl;
-    out << "    " << "confirm    " <<
-            "Send confirmation code to the Virgil Public Keys service." << std::endl;
-    out << "    " << "reconfirm  " <<
-            "Resend confirmation code to the user for given user's identifier." << std::endl;
-    out << "    " << "encrypt    " <<
-            "Encrypt data for given recipients which can be defined by " <<
-            "Virgil Public Keys and by passwords." << std::endl;
-    out << "    " << "decrypt    " <<
-            "Decrypt data for given recipient which can be defined by " <<
-            "Virgil Public Key or by password." << std::endl;
-    out << "    " << "sign       " <<
-            "Sign data with Private Key." << std::endl;
-    out << "    " << "verify     " <<
-            "Verify data with Virgil Public Key." << std::endl;
-}
+            "COMMON COMMANDS:\n"
+
+            "keygen                      Generate private key with given parameters.\n\n"
+
+            "key2pub                     Extract Public Key from the Private Key.\n\n"
+
+            "encrypt                     Encrypt data for given recipients which can be\n"
+            "                            defined by Virgil Public Keys and by passwords.\n\n"
+
+            "decrypt                     Decrypt data for given recipient which can be\n"
+            "                            defined by Virgil Public Key or by password.\n\n"
+
+            "sign                        Sign data with Private Key.\n\n"
+
+            "verify                      Verify data with Virgil Public Key.\n\n\n"
 
 
-static void print_version(std::ostream& out, const char *programName) {
-    out << programName << "  " << "version: "<< virgil::cli_version() << std::endl;
+            "KEYS SERVICE COMMANDS:\n"
+
+            "public-key-add              Register user's public key on the Virgil\n"
+            "                            Keys service.\n\n"
+
+            "public-key-get              Get user's Virgil Public Key from the Virgil\n"
+            "                            Keys service.\n\n"
+
+            "public-key-del              Delete user's Virgil Public Key from the\n"
+            "                            Virgil Keys service.\n\n"
+
+            "public-key-confirm-del      Confirm operation 'delete' of Public Key from\n"
+            "                            the Virgil Keys service.\n\n"
+
+            "public-key-reset            Reset a User’s Public Keys data if the user\n"
+            "                            losts Private Key.\n\n"
+
+            "public-key-confirm-reset    Confirm operation 'reset' of Public Key from\n"
+            "                            the Virgil Keys service.\n\n"
+
+            "public-key-update           Update user's public key on the Virgil\n"
+            "                            Keys service.\n\n\n"
+
+
+            "user-data-add               Add extra user data as email, phone or domain to\n"
+            "                            the existing Public Key.\n\n"
+
+            "user-data-del               Remove extra user data from the Public Key.\n\n"
+
+            "user-data-confirm           Send confirmation code to the Virgil\n"
+            "                            Keys service.\n\n"
+
+            "user-data-reconfirm         Resend confirmation code for given user data\n"
+            "                            identifier\n\n\n"
+
+
+            "PRIVATE KEYS SERVICE COMMANDS:\n"
+
+            "container-create            Virgil’s Private Key storage provides\n"
+            "                            users the container for private keys.\n\n"
+
+            "container-info              Get container-type: easy or normal.\n\n"
+
+            "container-del               Delete existing container object from the Private\n"
+            "                            Key service.\n\n"
+
+            "container-update            Update container password or/and container-type.\n\n"
+
+            "container-reset             Reset container password.\n\n"
+
+            "container-confirm           Confirm password token and re-encrypt Private\n"
+            "                            Key data with the new password.\n\n"
+
+
+            "private-key-add             Add existing Private Key to the Private Keys Service.\n\n"
+
+            "private-key-get             Get Private Key from the Virgil Private\n"
+            "                            Keys service.\n\n"
+
+            "private-key-del             Delete Private Key from the Virgil Private Keys\n"
+            "                            service.\n";
+
+    out << "USAGE: "  <<  programName << " " << doc << std::endl;
 }
 
 #endif /* SPLIT_CLI */
