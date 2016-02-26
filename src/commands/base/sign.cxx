@@ -49,9 +49,8 @@
 #include <cli/version.h>
 #include <cli/util.h>
 
-using virgil::crypto::VirgilByteArray;
-using virgil::crypto::VirgilStreamSigner;
-using virgil::crypto::stream::VirgilStreamDataSource;
+namespace vcrypto = virgil::crypto;
+namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
     #define MAIN main
@@ -66,7 +65,7 @@ int MAIN(int argc, char **argv) {
         std::vector <std::string> examples;
         examples.push_back(
                 "virgil sign -i plain.txt -o plain.txt.sign -k private.key\n"
-                );
+        );
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -91,32 +90,32 @@ int MAIN(int argc, char **argv) {
         cmd.add(inArg);
         cmd.parse(argc, argv);
 
-        // // Prepare input
-        // std::istream* inStream;
-        // std::ifstream inFile;
-        // if (inArg.getValue().empty() || inArg.getValue() == "-") {
-        //     inStream = &std::cin;
-        // } else {
-        //     inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
-        //     if (!inFile) {
-        //         throw std::invalid_argument("can not read file: " + inArg.getValue());
-        //     }
-        //     inStream = &inFile;
-        // }
+        // Prepare input
+        std::istream* inStream;
+        std::ifstream inFile;
+        if (inArg.getValue().empty() || inArg.getValue() == "-") {
+            inStream = &std::cin;
+        } else {
+            inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
+            if (!inFile) {
+                throw std::invalid_argument("can not read file: " + inArg.getValue());
+            }
+            inStream = &inFile;
+        }
 
-        // // Read private key
-        // VirgilByteArray privateKey = virgil::cli::readFileBytes(privateKeyArg.getValue());
-        // VirgilByteArray privateKeyPassword = virgil::crypto::str2bytes(privatePasswordArg.getValue());
+        // Read private key
+        vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(privateKeyArg.getValue());
+        vcrypto::VirgilByteArray privateKeyPassword = vcrypto::str2bytes(privatePasswordArg.getValue());
 
-        // // Create signer
-        // VirgilStreamSigner signer;
+        // Create signer
+        vcrypto::VirgilStreamSigner signer;
 
-        // // Sign data
-        // VirgilStreamDataSource dataSource(*inStream);
-        // VirgilByteArray sign = signer.sign(dataSource, privateKey, privateKeyPassword);
+        // Sign data
+        vcrypto::stream::VirgilStreamDataSource dataSource(*inStream);
+        vcrypto::VirgilByteArray sign = signer.sign(dataSource, privateKey, privateKeyPassword);
 
         // Prepare output. Write sign to the output.
-        //virgil::cli::writeBytes(outArg.getValue(), sign);
+        vcli::writeBytes(outArg.getValue(), sign);
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "sing. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
