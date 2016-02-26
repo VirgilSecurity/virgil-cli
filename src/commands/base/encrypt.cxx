@@ -40,6 +40,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <tclap/CmdLine.h>
 
@@ -48,39 +49,31 @@
 #include <virgil/crypto/stream/VirgilStreamDataSource.h>
 #include <virgil/crypto/stream/VirgilStreamDataSink.h>
 
+#include <virgil/sdk/model/Card.h>
+
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 
-using virgil::crypto::VirgilByteArray;
-using virgil::crypto::VirgilStreamCipher;
-using virgil::crypto::stream::VirgilStreamDataSource;
-using virgil::crypto::stream::VirgilStreamDataSink;
+namespace vcrypto = virgil::crypto;
+namespace vsdk = virgil::sdk;
+namespace vcli = virgil::cli;
 
+/**
+ * @brief Add recipients from the list to the cipher.
+ * @param recipients - array of recipients <type:value>, where type can be [pass|vpk_file|email|phone|domain].
+ * @param cipher - recipients added to.
+ * @return Number of added recipients.
+ */
+static size_t add_recipients(const std::vector<std::string>& recipientsData, vcrypto::VirgilStreamCipher* cipher);
 
-// /**
-//  * @brief Add recipients from the configuration files to the cipher.
-//  * @param configFiles - array of configuration files names.
-//  * @param cipher - recipients added to.
-//  * @return Number of added recipients.
-//  */
-// static size_t add_recipients_configs(const std::vector<std::string>& configFiles, VirgilStreamCipher* cipher);
-
-// *
-//  * @brief Add recipients from the list to the cipher.
-//  * @param recipients - array of recipients <type:value>, where type can be [pass|vpk_file|email|phone|domain].
-//  * @param cipher - recipients added to.
-//  * @return Number of added recipients.
-
-// static size_t add_recipients(const std::vector<std::string>& recipientsData, VirgilStreamCipher* cipher);
-
-// /**
-//  * @brief Add recipient to the cipher.
-//  * @param recipientData - <type:value>, where type can be [pass|key|email|phone|domain].
-//  * @param cipher - recipients added to.
-//  */
-// static void add_recipient(const std::string recipientIdType, const std::string recipientId,
-//         VirgilStreamCipher* cipher);
+/**
+ * @brief Add recipient to the cipher.
+ * @param recipientData - <type:value>, where type can be [pass|key|email|phone|domain].
+ * @param cipher - recipients added to.
+ */
+static void add_recipient(const std::string& recipientType, const std::string& recipientValue,
+        vcrypto::VirgilStreamCipher* cipher);
 
 
 #ifdef SPLIT_CLI
@@ -132,83 +125,75 @@ int MAIN(int argc, char **argv) {
                 "Content info - meta information about encrypted data. If omitted becomes a part of"
                 " the encrypted data.", false, "", "file");
 
-        TCLAP::MultiArg<std::string> recipientsConfigArg("r", "recipients",
-                "File that contains information about recipients. Each line "
-                "can be either empty line, or comment line, or recipient defined in format:\n"
-                "[pass|id|vkey|email]:<value>\n"
+        TCLAP::UnlabeledMultiArg<std::string> recipientsArg("recipient",
+                "Contains information about one recipient.\n"
+                "Format:\n"
+                "[pass|id|vcard|email]:<value>\n"
                 "where:\n"
                 "\t* if pass, then <value> - recipient's password;\n"
-                "\t* if id, then <value> - recipient's Virgil Public Key identifier;\n"
-                "\t* if vkey, then <value> - recipient's Virgil Public Key file\n\t  stored locally;\n"
+                "\t* if id, then <value> - recipient's Virgil Card identifier;\n"
+                "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
                 "\t* if email, then <value> - recipient's email;\n",
-                false, "file");
-
-        TCLAP::UnlabeledMultiArg<std::string> recipientsArg("recipient",
-                "Contains information about one recipient. "
-                "Same as significant line in the recipients configuration file.",
                 false, "recipient", false);
 
         cmd.add(recipientsArg);
-        cmd.add(recipientsConfigArg);
         cmd.add(contentInfoArg);
         cmd.add(outArg);
         cmd.add(inArg);
         cmd.parse(argc, argv);
 
+       // Create cipher
+        vcrypto::VirgilStreamCipher cipher;
 
-       // // Create cipher
-       // VirgilStreamCipher cipher;
+       // Add recipients
+       size_t addedRecipientsCount = 0;
+       addedRecipientsCount += add_recipients(recipientsArg.getValue(), &cipher);
+       if (addedRecipientsCount == 0) {
+           throw std::invalid_argument("no recipients are defined");
+       }
 
-       // // Add recipients
-       // size_t addedRecipientsCount = 0;
-       // addedRecipientsCount += add_recipients_configs(recipientsConfigArg.getValue(), &cipher);
-       // addedRecipientsCount += add_recipients(recipientsArg.getValue(), &cipher);
-       // if (addedRecipientsCount == 0) {
-       //     throw std::invalid_argument("no recipients are defined");
-       // }
+       // Prepare input
+       std::istream* inStream;
+       std::ifstream inFile;
+       if (inArg.getValue().empty() || inArg.getValue() == "-") {
+           inStream = &std::cin;
+       } else {
+           inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
+           if (!inFile) {
+               throw std::invalid_argument("can not read file: " + inArg.getValue());
+           }
+           inStream = &inFile;
+       }
 
-       // // Prepare input
-       // std::istream* inStream;
-       // std::ifstream inFile;
-       // if (inArg.getValue().empty() || inArg.getValue() == "-") {
-       //     inStream = &std::cin;
-       // } else {
-       //     inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
-       //     if (!inFile) {
-       //         throw std::invalid_argument("can not read file: " + inArg.getValue());
-       //     }
-       //     inStream = &inFile;
-       // }
+       // Prepare output
+       std::ostream* outStream;
+       std::ofstream outFile;
+       if (outArg.getValue().empty()) {
+           outStream = &std::cout;
+       } else {
+           outFile.open(outArg.getValue(), std::ios::out | std::ios::binary);
+           if (!outFile) {
+               throw std::invalid_argument("can not write file: " + outArg.getValue());
+           }
+           outStream = &outFile;
+       }
 
-       // // Prepare output
-       // std::ostream* outStream;
-       // std::ofstream outFile;
-       // if (outArg.getValue().empty()) {
-       //     outStream = &std::cout;
-       // } else {
-       //     outFile.open(outArg.getValue(), std::ios::out | std::ios::binary);
-       //     if (!outFile) {
-       //         throw std::invalid_argument("can not write file: " + outArg.getValue());
-       //     }
-       //     outStream = &outFile;
-       // }
+       vcrypto::stream::VirgilStreamDataSource dataSource(*inStream);
+       vcrypto::stream::VirgilStreamDataSink dataSink(*outStream);
 
-       // VirgilStreamDataSource dataSource(*inStream);
-       // VirgilStreamDataSink dataSink(*outStream);
+       // Define whether embed content info or not
+       bool embedContentInfo = contentInfoArg.getValue().empty();
+       cipher.encrypt(dataSource, dataSink, embedContentInfo);
 
-       // // Define whether embed content info or not
-       // bool embedContentInfo = contentInfoArg.getValue().empty();
-       // cipher.encrypt(dataSource, dataSink, embedContentInfo);
-
-       // // Write content info to file if it was not embedded
-       // if (!embedContentInfo) {
-       //     std::ofstream contentInfoFile(contentInfoArg.getValue(), std::ios::out | std::ios::binary);
-       //     if (!contentInfoFile) {
-       //         throw std::invalid_argument("can not write file: " + contentInfoArg.getValue());
-       //     }
-       //     VirgilByteArray contentInfo = cipher.getContentInfo();
-       //     std::copy(contentInfo.begin(), contentInfo.end(), std::ostreambuf_iterator<char>(contentInfoFile));
-       // }
+       // Write content info to file if it was not embedded
+       if (!embedContentInfo) {
+           std::ofstream contentInfoFile(contentInfoArg.getValue(), std::ios::out | std::ios::binary);
+           if (!contentInfoFile) {
+               throw std::invalid_argument("can not write file: " + contentInfoArg.getValue());
+           }
+           vcrypto::VirgilByteArray contentInfo = cipher.getContentInfo();
+           std::copy(contentInfo.begin(), contentInfo.end(), std::ostreambuf_iterator<char>(contentInfoFile));
+       }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "encrypt. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
@@ -221,63 +206,38 @@ int MAIN(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-// size_t add_recipients_configs(const std::vector<std::string>& configFiles, VirgilStreamCipher* cipher) {
-//     size_t addedRecipientsCount = 0;
-//     for (const auto& configFile : configFiles) {
-//         std::ifstream file(configFile);
-//         if (!file) {
-//              throw std::invalid_argument("recipientsConfigArg: can not read recipient config file: " + configFile);
-//         }
 
-//         // Else
-//         std::string recipientData;
-//         unsigned long long numberLine = 0;
-//         while (file >> std::ws && std::getline(file, recipientData)) {
-//             ++numberLine;
-//             if (!recipientData.empty() && recipientData[0] != '#') {
-//                 const auto recipientPair = virgil::cli::parsePair(recipientData);
-//                 checkFormatRecipientArg(recipientPair);
-//                 const std::string recipientIdType = recipientPair.first;
-//                 const std::string recipientId = recipientPair.second;
-//                 try {
-//                     add_recipient(recipientIdType, recipientId, cipher);
-//                 } catch (std::exception& exception) {
-//                     throw std::runtime_error("can not add recipient " + recipientIdType + ":" + recipientId +
-//                             " from line " + std::to_string(numberLine) + " . Details: " + exception.what());
-//                 }
-//                ++addedRecipientsCount;
-//             }
-//         }
-//     }
+size_t add_recipients(const std::vector<std::string>& recipientsData, vcrypto::VirgilStreamCipher* cipher) {
+    size_t addedRecipientsCount = 0;
+    for (const auto& recipientData : recipientsData) {
+        auto recipientPair = virgil::cli::parsePair(recipientData);
+        vcli::checkFormatRecipientArg(recipientPair);
+        std::string recipientType = recipientPair.first;
+        std::string recipientValue = recipientPair.second;
+        try {
+            add_recipient(recipientType, recipientValue, cipher);
+        } catch (std::exception& exception) {
+            throw std::invalid_argument("can not add recipient. Error " + recipientType +
+                    ":" + recipientValue + "\n" + exception.what());
+        }
+        ++addedRecipientsCount;
+    }
+    return addedRecipientsCount;
+}
 
-//     return addedRecipientsCount;
-// }
-
-// size_t add_recipients(const std::vector<std::string>& recipientsData, VirgilStreamCipher* cipher) {
-//     size_t addedRecipientsCount = 0;
-//     for (const auto& recipientData : recipientsData) {
-//         const auto recipientPair = virgil::cli::parsePair(recipientData);
-//         const std::string recipientIdType = recipientPair.first;
-//         const std::string recipientId = recipientPair.second;
-//         try {
-//             add_recipient(recipientIdType, recipientId, cipher);
-//         } catch (std::exception& exception) {
-//             throw std::invalid_argument("can not add recipient. Error " + recipientIdType +
-//                     ":" + recipientId + "\n" + exception.what());
-//         }
-//         ++addedRecipientsCount;
-//     }
-//     return addedRecipientsCount;
-// }
-
-// void add_recipient(const std::string recipientIdType, const std::string recipientId,
-//         VirgilStreamCipher* cipher) {
-//     if (recipientIdType == "pass") {
-//         VirgilByteArray pwd = virgil::crypto::str2bytes(recipientId);
-//         cipher->addPasswordRecipient(pwd);
-//     } else {
-//         // Else recipientIdType [id|vkey|email]:<recipientId>
-
-//         //cipher->addKeyRecipient(publicKeyId, publicKey.key());
-//     }
-// }
+void add_recipient(const std::string& recipientType, const std::string& recipientValue,
+        vcrypto::VirgilStreamCipher* cipher) {
+    if (recipientType == "pass") {
+        vcrypto::VirgilByteArray pwd = virgil::crypto::str2bytes(recipientValue);
+        cipher->addPasswordRecipient(pwd);
+    } else {
+        // Else recipientType [id|vcard|email]
+        std::vector<vsdk::model::Card> recipientsCard = vcli::getRecipientCards(recipientType, recipientValue);
+        for (const auto& recipientCard : recipientsCard) {
+            cipher->addKeyRecipient(
+                    vcrypto::str2bytes(recipientCard.getId()),
+                    recipientCard.getPublicKey().getKey()
+            );
+        }
+    }
+}
