@@ -67,15 +67,15 @@ int MAIN(int argc, char **argv) {
         std::vector <std::string> examples;
         examples.push_back(
                 "Search Virgil Cards with confirm identity:\n"
-                "virgil card-search --identity email:user_email");
+                "virgil card-search -d email:user_email");
 
         examples.push_back(
                 "Search Virgil Cards with unconfirm identity:\n"
-                "virgil card-search --identity email:user_email --include_unconfirmed 1");
+                "virgil card-search -d email:user_email -u 1");
 
         examples.push_back(
                 "Search Virgil Cards with confirm identity signed other Cards <user1_card_id> <user2_card_id>:\n"
-                "virgil card-search --identity email:user_email --include_unconfirmed 1 "
+                "virgil card-search -d email:user_email -u 1 "
                 "<user1_card_id> <user1_card_id>");
 
 
@@ -87,32 +87,32 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Cards. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> identityArg("", "identity", "Identity email, phone etc",
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email, phone etc",
                 true, "", "arg");
 
-        TCLAP::ValueArg<bool> includeUnconfirmedArg("", "include_unconrimed", "Search Cards with unconfirm "
+        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirm "
                 "identity", false, "", "arg");
 
         TCLAP::UnlabeledMultiArg<std::string> signedCardsIdArg("signed-card-id", "Signed card id", false, "card-id",
                 false);
 
         cmd.add(signedCardsIdArg);
-        cmd.add(includeUnconfirmedArg);
+        cmd.add(unconfirmedArg);
         cmd.add(identityArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_APP_TOKEN);
 
         auto identityPair = vcli::parsePair(identityArg.getValue());
         std::string userEmail = identityPair.second;
         vsdk::model::Identity identity(userEmail, vsdk::model::IdentityType::Email);
 
         bool includeUnconfirmed = false;
-        if (includeUnconfirmedArg.isSet()) {
-            includeUnconfirmed = includeUnconfirmedArg.getValue();
+        if (unconfirmedArg.isSet()) {
+            includeUnconfirmed = unconfirmedArg.getValue();
         }
 
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         std::vector<vsdk::model::Card> foundCards;
         if (signedCardsIdArg.isSet()) {
             std::vector<std::string> signedCardsId = signedCardsIdArg.getValue();
