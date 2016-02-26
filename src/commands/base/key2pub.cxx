@@ -44,13 +44,13 @@
 #include <cli/version.h>
 #include <cli/util.h>
 
-using virgil::crypto::VirgilByteArray;
-using virgil::crypto::foundation::VirgilAsymmetricCipher;
+namespace vcrypto = virgil::crypto;
+namespace vcli = virgil::cli;
 
 /**
  * @brief Returns whether underling data is ASN.1 structure or not.
  */
-inline bool is_asn1(const VirgilByteArray& data) {
+inline bool is_asn1 (const vcrypto::VirgilByteArray& data) {
     return data.size() > 0 && data[0] == 0x30;
 }
 
@@ -70,7 +70,6 @@ int MAIN(int argc, char **argv) {
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
-
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
@@ -88,24 +87,24 @@ int MAIN(int argc, char **argv) {
         cmd.add(inArg);
         cmd.parse(argc, argv);
 
-        // // Prepare input. Read private key.
-        // VirgilByteArray privateKey = virgil::cli::readInput(inArg.getValue());
+         // Prepare input. Read private key.
+         vcrypto::VirgilByteArray privateKey = virgil::cli::readInput(inArg.getValue());
 
-        // // Extract public key.
-        // VirgilAsymmetricCipher cipher = VirgilAsymmetricCipher::none();
-        // cipher.setPrivateKey(privateKey, virgil::crypto::str2bytes(privatePasswordArg.getValue()));
+         // Extract public key.
+         vcrypto::foundation::VirgilAsymmetricCipher cipher;
+         cipher.setPrivateKey(privateKey, virgil::crypto::str2bytes(privatePasswordArg.getValue()));
 
-        // VirgilByteArray publicKey = is_asn1(privateKey) ?
-        //         cipher.exportPublicKeyToDER() : cipher.exportPublicKeyToPEM();
+        vcrypto::VirgilByteArray publicKey = is_asn1(privateKey) ?
+                 cipher.exportPublicKeyToDER() : cipher.exportPublicKeyToPEM();
 
-        // // Prepare output. Output public key
-        // virgil::cli::writeBytes(outArg.getValue(), publicKey);
+         // Prepare output. Output public key
+         virgil::cli::writeBytes(outArg.getValue(), publicKey);
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "private-key-extr-pub. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "key2pub. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "private-key-extr-pub. Error: " << exception.what() << std::endl;
+        std::cerr << "key2pub. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 
