@@ -40,24 +40,31 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <set>
 
 #include <tclap/CmdLine.h>
 
 #include <virgil/crypto/VirgilByteArray.h>
-// #include <virgil/crypto/foundation/VirgilKeyPairGenerator.h>
-// #include <virgil/crypto/foundation/VirgilAsymmetricCipher.h>
+#include <virgil/crypto/VirgilKeyPair.h>
+
+#include <virgil/crypto/foundation/VirgilAsymmetricCipher.h>
 
 #include <cli/version.h>
 #include <cli/util.h>
 
-using virgil::crypto::VirgilByteArray;
-// using virgil::crypto::foundation::VirgilKeyPairGenerator;
-// using virgil::crypto::foundation::VirgilAsymmetricCipher;
+namespace vcrypto = virgil::crypto;
+namespace vcli = virgil::cli;
 
-// /**
-//  * @brief Convert string representation of the Elliptic Curve group to the appropriate constant.
-//  */
-//static VirgilKeyPairGenerator::ECKeyGroup ec_key_group_from_param(const std::string &param);
+/**
+  * @brief Convert string representation of the Elliptic Curve group to the appropriate constant.
+  */
+static vcrypto::VirgilKeyPair::Type ec_key_group_from_param(const std::string &param);
+
+/**
+ * @brief Convert string representation of the RSA group to the appropriate constant.
+ */
+static vcrypto::VirgilKeyPair::Type rsa_key_group_from_param(const std::string &param);
+
 
 #ifdef SPLIT_CLI
 #define MAIN main
@@ -84,7 +91,7 @@ int MAIN(int argc, char **argv) {
 
         examples.push_back(
                 "Generate RSA Private Key:\n"
-                "virgil keygen -o private.key -r 2048\n");
+                "virgil keygen -o private.key -r 8192\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -123,8 +130,17 @@ int MAIN(int argc, char **argv) {
                 "\t* secp256k1 - 256-bits \"Koblitz\" curve.\n",
                 false, "", &allowedEcKey);
 
-        TCLAP::ValueArg<unsigned int> rsaArg("r", "rsa", "Generate RSA key with a given number of bits.",
-                false, 0, "nbits");
+        std::vector<std::string> rsa_key;
+        rsa_key.push_back("rsa3072");
+        rsa_key.push_back("rsa4096");
+        rsa_key.push_back("rsa8192");
+        TCLAP::ValuesConstraint<std::string> allowedRSAKey(rsa_key);
+
+        TCLAP::ValueArg<std::string> rsaArg("r", "rsa", "Generate RSA key with one following pos:\n"
+                "\t* rsa3072;\n"
+                "\t* rsa4096;\n"
+                "\t* rsa8192",
+                false, 0, &allowedRSAKey);
 
         TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Password to be used for Private"
                 " Key encryption. If omitted Private Key is stored in the plain format.\n"
@@ -136,36 +152,35 @@ int MAIN(int argc, char **argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        // // Check parameters
-        // if (ecArg.isSet() && rsaArg.isSet()) {
-        //     throw std::invalid_argument("-e, --ec and -r, --rsa parameters are both specified");
-        // }
+        // Check parameters
+        if (ecArg.isSet() && rsaArg.isSet()) {
+            throw std::invalid_argument("-e, --ec and -r, --rsa parameters are both specified");
+        }
 
-        // VirgilAsymmetricCipher cipher = VirgilAsymmetricCipher::none();
-        // if (rsaArg.isSet()) {
-        //     // Generate RSA key
-        //     cipher = VirgilAsymmetricCipher::rsa();
-        //     cipher.genKeyPair(VirgilKeyPairGenerator::rsa(rsaArg.getValue()));
-        // } else {
-        //     // Generate EC key
-        //     VirgilKeyPairGenerator::ECKeyGroup ecKeyGroup = ec_key_group_from_param(ecArg.getValue());
-        //     if (ecKeyGroup == VirgilKeyPairGenerator::ECKeyGroup_DP_NONE) {
-        //         if (ecArg.getValue().empty()) {
-        //             ecKeyGroup = VirgilKeyPairGenerator::ECKeyGroup_DP_BP512R1;
-        //         } else {
-        //             throw std::invalid_argument(std::string("unknown elliptic curve: ") + ecArg.getValue());
-        //         }
-        //     }
-        //     cipher = VirgilAsymmetricCipher::ec();
-        //     cipher.genKeyPair(VirgilKeyPairGenerator::ec(ecKeyGroup));
-        // }
+        vcrypto::VirgilByteArray privateKeyPassword = vcrypto::str2bytes(privatePasswordArg.getValue());
+        vcrypto::VirgilByteArray privateKey;
 
-        // // Export private key
-        // VirgilByteArray privateKeyPassword = virgil::crypto::str2bytes(privatePasswordArg.getValue());
-        // VirgilByteArray privateKey = cipher.exportPrivateKeyToPEM(privateKeyPassword);
+        if (!ecArg.isSet() && !rsaArg.isSet()) {
+            // Generate EC key
+            // bp512r1 - 512-bits Brainpool curve (default)
+            vcrypto::VirgilKeyPair keyPair;
+            privateKey = keyPair.privateKey();
+        } else {
+            if (rsaArg.isSet()) {
+                // Generate RSA key
+                vcrypto::VirgilKeyPair::Type type = rsa_key_group_from_param(rsaArg.getValue());
+                vcrypto::VirgilKeyPair keyPair = vcrypto::VirgilKeyPair::generate(type, privateKeyPassword);
+                privateKey = keyPair.privateKey();
+            } else {
+                // Generate EC key
+                vcrypto::VirgilKeyPair::Type type = ec_key_group_from_param(ecArg.getValue());
+                vcrypto::VirgilKeyPair keyPair = vcrypto::VirgilKeyPair::generate(type, privateKeyPassword);
+                privateKey = keyPair.privateKey();
+            }
+        }
 
-        // // Write private key
-        // virgil::cli::writeBytes(outArg.getValue(), privateKey);
+        // Write private key
+        virgil::cli::writeBytes(outArg.getValue(), privateKey);
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-key-gen. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
@@ -178,23 +193,38 @@ int MAIN(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-// static VirgilKeyPairGenerator::ECKeyGroup ec_key_group_from_param(const std::string &param) {
-//     std::map<std::string, VirgilKeyPairGenerator::ECKeyGroup> ecKeyGroup;
-//     ecKeyGroup["secp192r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP192R1;
-//     ecKeyGroup["secp224r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP224R1;
-//     ecKeyGroup["secp256r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP256R1;
-//     ecKeyGroup["secp384r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP384R1;
-//     ecKeyGroup["secp521r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP521R1;
-//     ecKeyGroup["bp256r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_BP256R1;
-//     ecKeyGroup["bp384r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_BP384R1;
-//     ecKeyGroup["bp512r1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_BP512R1;
-//     ecKeyGroup["secp192k1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP192K1;
-//     ecKeyGroup["secp224k1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP224K1;
-//     ecKeyGroup["secp256k1"] = VirgilKeyPairGenerator::ECKeyGroup_DP_SECP256K1;
+static vcrypto::VirgilKeyPair::Type ec_key_group_from_param(const std::string &param) {
+    std::map<std::string, vcrypto::VirgilKeyPair::Type> ecKeyGroup;
+    ecKeyGroup["secp192r1"] = vcrypto::VirgilKeyPair::Type_EC_SECP192R1;
+    ecKeyGroup["secp224r1"] = vcrypto::VirgilKeyPair::Type_EC_SECP224R1;
+    ecKeyGroup["secp256r1"] = vcrypto::VirgilKeyPair::Type_EC_SECP256R1;
+    ecKeyGroup["secp384r1"] = vcrypto::VirgilKeyPair::Type_EC_SECP384R1;
+    ecKeyGroup["secp521r1"] = vcrypto::VirgilKeyPair::Type_EC_SECP521R1;
+    ecKeyGroup["bp256r1"] = vcrypto::VirgilKeyPair::Type_EC_BP256R1;
+    ecKeyGroup["bp384r1"] = vcrypto::VirgilKeyPair::Type_EC_BP384R1;
+    ecKeyGroup["bp512r1"] = vcrypto::VirgilKeyPair::Type_EC_BP512R1;
+    ecKeyGroup["secp192k1"] = vcrypto::VirgilKeyPair::Type_EC_SECP192K1;
+    ecKeyGroup["secp224k1"] = vcrypto::VirgilKeyPair::Type_EC_SECP224K1;
+    ecKeyGroup["secp256k1"] = vcrypto::VirgilKeyPair::Type_EC_SECP256K1;
 
-//     auto group = ecKeyGroup.find(param);
-//     if (group != ecKeyGroup.end()) {
-//         return group->second;
-//     }
-//     return VirgilKeyPairGenerator::ECKeyGroup_DP_NONE;
-// }
+    auto group = ecKeyGroup.find(param);
+    if (group != ecKeyGroup.end()) {
+        return group->second;
+    }
+
+    return vcrypto::VirgilKeyPair::Type_Default;
+}
+
+static vcrypto::VirgilKeyPair::Type rsa_key_group_from_param(const std::string &param) {
+    std::map<std::string, vcrypto::VirgilKeyPair::Type> ecKeyGroup;
+    ecKeyGroup["rsa3072"] = vcrypto::VirgilKeyPair::Type_RSA_3072;
+    ecKeyGroup["rsa4096"] = vcrypto::VirgilKeyPair::Type_RSA_4096;
+    ecKeyGroup["rsa8192"] = vcrypto::VirgilKeyPair::Type_RSA_8192;
+
+    auto group = ecKeyGroup.find(param);
+    if (group != ecKeyGroup.end()) {
+        return group->second;
+    }
+
+    return vcrypto::VirgilKeyPair::Type_Default;
+}
