@@ -40,13 +40,11 @@
 #include <map>
 #include <stdexcept>
 #include <string>
-#include <set>
 
 #include <tclap/CmdLine.h>
 
 #include <virgil/crypto/VirgilByteArray.h>
 #include <virgil/crypto/VirgilKeyPair.h>
-
 #include <virgil/crypto/foundation/VirgilAsymmetricCipher.h>
 
 #include <cli/version.h>
@@ -93,7 +91,7 @@ int MAIN(int argc, char **argv) {
                 "Generate RSA Private Key:\n"
                 "virgil keygen -o private.key -r 8192\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
@@ -140,7 +138,7 @@ int MAIN(int argc, char **argv) {
                 "\t* rsa3072;\n"
                 "\t* rsa4096;\n"
                 "\t* rsa8192",
-                false, 0, &allowedRSAKey);
+                false, "", &allowedRSAKey);
 
         TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Password to be used for Private"
                 " Key encryption. If omitted Private Key is stored in the plain format.\n"
