@@ -52,11 +52,9 @@
 #include <cli/version.h>
 #include <cli/util.h>
 
-using virgil::crypto::VirgilByteArray;
-
-using virgil::crypto::VirgilStreamCipher;
-using virgil::crypto::stream::VirgilStreamDataSource;
-using virgil::crypto::stream::VirgilStreamDataSink;
+namespace vcrypto = virgil::crypto;
+namespace vsdk = virgil::sdk;
+namespace vcli = virgil::cli;
 
 
 #ifdef SPLIT_CLI
@@ -101,11 +99,11 @@ int MAIN(int argc, char **argv) {
 
         TCLAP::ValueArg<std::string> recipientArg("r", "recipient",
                 "Recipient defined in format:\n"
-                "[pass|id|vkey|email]:<value>\n"
+                "[pass|id|vcard|email]:<value>\n"
                 "where:\n"
                 "if `pass`, then <value> - recipient's password (max length 31 ASCII characters);\n"
-                "if `id`, then <value> - UUID associated with Public Key identifier;\n"
-                "if `vkey`, then <value> - user's Virgil Public Key file stored locally;\n"
+                "if `id`, then <value> - UUID associated with Virgil Card identifier;\n"
+                "if `vcard`, then <value> - user's Virgil Card file stored locally;\n"
                 "if `email`, then <value> - user email associated with Public Key.",
                 true, "", "arg");
 
@@ -118,65 +116,73 @@ int MAIN(int argc, char **argv) {
         cmd.parse(argc, argv);
 
 
-        // auto recipientFormat = virgil::cli::parsePair(recipientArg.getValue());
-        // checkFormatRecipientArg(recipientFormat);
+        auto recipientFormat = vcli::parsePair(recipientArg.getValue());
+        vcli::checkFormatRecipientArg(recipientFormat);
 
-        // // Create cipher
-        // VirgilStreamCipher cipher;
+        // Create cipher
+        vcrypto::VirgilStreamCipher cipher;
 
-        // if(!contentInfoArg.getValue().empty()) {
-        //     // Set content info.
-        //     std::ifstream contentInfoFile(contentInfoArg.getValue(), std::ios::in | std::ios::binary);
-        //     if (!contentInfoFile) {
-        //         throw std::invalid_argument("can not read file: " + contentInfoArg.getValue());
-        //     }
+        if(!contentInfoArg.getValue().empty()) {
+            // Set content info.
+            std::ifstream contentInfoFile(contentInfoArg.getValue(), std::ios::in | std::ios::binary);
+            if (!contentInfoFile) {
+                throw std::invalid_argument("can not read file: " + contentInfoArg.getValue());
+            }
 
-        //     VirgilByteArray contentInfo((std::istreambuf_iterator<char>(contentInfoFile)),
-        //             std::istreambuf_iterator<char>());
-        //     cipher.setContentInfo(contentInfo);
-        // }
+            vcrypto::VirgilByteArray contentInfo((std::istreambuf_iterator<char>(contentInfoFile)),
+                    std::istreambuf_iterator<char>());
+            cipher.setContentInfo(contentInfo);
+        }
 
-        // // Prepare input
-        // std::istream* inStream;
-        // std::ifstream inFile;
-        // if (inArg.getValue().empty() || inArg.getValue() == "-") {
-        //     inStream = &std::cin;
-        // } else {
-        //     inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
-        //     if (!inFile) {
-        //         throw std::invalid_argument("can not read file: " + inArg.getValue());
-        //     }
-        //     inStream = &inFile;
-        // }
+        // Prepare input
+        std::istream* inStream;
+        std::ifstream inFile;
+        if (inArg.getValue().empty() || inArg.getValue() == "-") {
+            inStream = &std::cin;
+        } else {
+            inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
+            if (!inFile) {
+                throw std::invalid_argument("can not read file: " + inArg.getValue());
+            }
+            inStream = &inFile;
+        }
 
-        // // Prepare output
-        // std::ostream* outStream;
-        // std::ofstream outFile;
-        // if (outArg.getValue().empty()) {
-        //     outStream = &std::cout;
-        // } else {
-        //     outFile.open(outArg.getValue(), std::ios::out | std::ios::binary);
-        //     if (!outFile) {
-        //         throw std::invalid_argument("can not write file: " + outArg.getValue());
-        //     }
-        //     outStream = &outFile;
-        // }
+        // Prepare output
+        std::ostream* outStream;
+        std::ofstream outFile;
+        if (outArg.getValue().empty()) {
+            outStream = &std::cout;
+        } else {
+            outFile.open(outArg.getValue(), std::ios::out | std::ios::binary);
+            if (!outFile) {
+                throw std::invalid_argument("can not write file: " + outArg.getValue());
+            }
+            outStream = &outFile;
+        }
 
-        // // Create IO streams
-        // VirgilStreamDataSource dataSource(*inStream);
-        // VirgilStreamDataSink dataSink(*outStream);
+        // Create IO streams
+        vcrypto::stream::VirgilStreamDataSource dataSource(*inStream);
+        vcrypto::stream::VirgilStreamDataSink dataSink(*outStream);
 
-        // std::string type = recipientFormat.first;
-        // std::string value = recipientFormat.second;
+        std::string type = recipientFormat.first;
+        std::string value = recipientFormat.second;
 
-        // if (type == "pass") {
-        //     VirgilByteArray pass = virgil::crypto::str2bytes(value);
-        //     cipher.decryptWithPassword(dataSource, dataSink, pass);
-        // } else  {
+        if (type == "pass") {
+            vcrypto::VirgilByteArray pass = virgil::crypto::str2bytes(value);
+            cipher.decryptWithPassword(dataSource, dataSink, pass);
+        } else  {
+            // Read private key
+            std::string pathToPrivateKeyFile = privateKeyArg.getValue();
+            vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathToPrivateKeyFile);
+            vcrypto::VirgilByteArray privateKeyPassword = vcrypto::str2bytes(privatePasswordArg.getValue());
 
-
-        //     //cipher.decryptWithKey(dataSource, dataSink, publicKeyIdByteArray, privateKey, privateKeyPassword);
-        // }
+            // type = [id|vcard|email]
+            std::vector<std::string> recipientCardsId = vcli::getRecipientCardsId(type, value);
+            for(const auto& recipientCardId : recipientCardsId) {
+                cipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(recipientCardId), privateKey,
+                        privateKeyPassword);
+            }
+        }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
