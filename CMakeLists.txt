@@ -98,9 +98,15 @@ message (STATUS "CLI version: " ${CLI_VERSION})
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
 
+
+set(TOKEN "eyJpZCI6IjFkNzgzNTA1LTk1NGMtNDJhZC1hZThjLWQyOGFiYmNhMGM1NyIsImFwcGxpY2F0aW9uX2NhcmRfaWQiOiIwNGYyY2Y2NS1iZDY2LTQ3N2EtOGFiZi1hMDAyYWY4YjdmZWYiLCJ0dGwiOi0xLCJjdGwiOi0xLCJwcm9sb25nIjowfQ==.MIGZMA0GCWCGSAFlAwQCAgUABIGHMIGEAkAV1PHR3JaDsZBCl+6r/N5R5dATW9tcS4c44SwNeTQkHfEAlNboLpBBAwUtGhQbadRd4N4gxgm31sajEOJIYiGIAkADCz+MncOO74UVEEot5NEaCtvWT7fIW9WaF6JdH47Z7kTp0gAnq67cPbS0NDUyovAqILjmOmg1zAL8A4+ii+zd")
+
 # Configure application token
-set (VIRGIL_ACCESS_TOKEN "dbebfb4230aef5a72b3aaf0ad57ac49f" CACHE STRING
+set (VIRGIL_ACCESS_TOKEN ${TOKEN} CACHE STRING
         "Application specific token acquired from the Virgil Security")
+
+message (STATUS "TOKEN")
+message (STATUS ${TOKEN})
 
 if (NOT VIRGIL_ACCESS_TOKEN)
     message (FATAL_ERROR "VIRGIL_ACCESS_TOKEN configuration is not defined.")

@@ -43,6 +43,6 @@
  * @brief Token that unique identifies your application.
  * @note This constant is configured within CMake.
  */
-extern const std::string VIRGIL_APP_TOKEN;
+extern const std::string VIRGIL_ACCESS_TOKEN;
 
 #endif /* VIRGIL_CLI_COMMON_CONFIG_H */

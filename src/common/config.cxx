@@ -36,4 +36,4 @@
 
 #include <cli/config.h>
 
-const std::string VIRGIL_APP_TOKEN = "@VIRGIL_APP_TOKEN@";
+const std::string VIRGIL_ACCESS_TOKEN = "@VIRGIL_ACCESS_TOKEN@";

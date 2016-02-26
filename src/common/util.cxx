@@ -138,7 +138,7 @@ std::vector<Card> virgil::cli::getRecipientCards(const std::string& type, const 
         const bool includeUnconrimedCard) {
 
     std::vector<Card> recipientCards;
-    ServicesHub servicesHub(VIRGIL_APP_TOKEN);
+    ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
     if (type == "id") {
         recipientCards.push_back(servicesHub.card().get(value));
     } else if (type == "email") {
