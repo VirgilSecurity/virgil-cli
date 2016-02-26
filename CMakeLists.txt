@@ -125,6 +125,9 @@ virgil_add_dependency ("virgil-sdk"
 )
 include_directories (${VIRGIL_SDK_INCLUDE_DIRS})
 
+include (json)
+include_directories (${JSON_INCLUDE_DIRS})
+
 # Use tclap lib
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/ext")
 message (STATUS "TCLAP library: ON")
@@ -152,6 +155,7 @@ target_link_libraries (virgil_cli
 )
 
 add_dependencies (virgil_cli
+    json
     ${VIRGIL_CRYPTO_DEPENDENCIES}
     ${VIRGIL_SDK_DEPENDENCIES}
 )
