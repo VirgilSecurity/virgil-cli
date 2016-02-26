@@ -8,7 +8,7 @@
 
 # SYNOPSIS
 
-**virgil card-revoke** --card_id *arg*, --identity *arg*, --private_key *file*, --private_key_pass *arg*
+**virgil card-revoke** --card_id *arg*, --identity *arg*, [--validation_token *arg*], --private_key *file*, --private_key_pass *arg*
 
 
 # DESCRIPTION
@@ -32,6 +32,10 @@
         where:
         * if `email`, then *value* - user's email.
         * if `email`, then *value* - developer's application.
+
+
+--validation_token *arg*
+:   Validation token
 
 
 --private_key *file*

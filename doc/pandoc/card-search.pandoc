@@ -35,7 +35,7 @@ virgil card-search --identity email:user1_email --include_unconfirmed 1 <user2_c
 --include_unconfirmed *bool*
 : (switch) Показывает либо Карточки с не/подтвержденным identity
 
-<cards_id> *arg*
+<signed_cards_id> *arg*
 :   Signed Cards id. Id карточек подписанных карточкой указанной в identity
 
 
