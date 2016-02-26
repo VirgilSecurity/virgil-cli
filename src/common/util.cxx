@@ -134,14 +134,22 @@ std::string virgil::cli::getDescriptionMessage(const std::string description, st
 
 //-------------------------------------------------------------------------------------
 
-std::vector<Card> virgil::cli::getRecipientCards(const std::string& type, const std::string& value) {
+std::vector<Card> virgil::cli::getRecipientCards(const std::string& type, const std::string& value,
+        const bool includeUnconrimedCard) {
+
     std::vector<Card> recipientCards;
     ServicesHub servicesHub(VIRGIL_APP_TOKEN);
     if (type == "id") {
         recipientCards.push_back(servicesHub.card().get(value));
     } else if (type == "email") {
         Identity identity(value, IdentityType::Email);
-        std::vector<Card> cards = servicesHub.card().search(identity);
+        std::vector<Card> cards;
+        if (!includeUnconrimedCard) {
+            cards = servicesHub.card().search(identity, std::vector<std::string>(),
+                    includeUnconrimedCard);
+        } else {
+            cards = servicesHub.card().search(identity);
+        }
         recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
     } else if (type == "vcard") {
         std::string pathTofile = value;
@@ -168,8 +176,9 @@ std::vector<Card> virgil::cli::getRecipientCards(const std::string& type, const 
     return recipientCards;
 }
 
-std::vector<std::string> virgil::cli::getRecipientCardsId(const std::string& type, const std::string& value) {
-    std::vector<Card> recipientCards = virgil::cli::getRecipientCards(type, value);
+std::vector<std::string> virgil::cli::getRecipientCardsId(const std::string& type, const std::string& value,
+        const bool includeUnconrimedCard) {
+    std::vector<Card> recipientCards = virgil::cli::getRecipientCards(type, value, includeUnconrimedCard);
     std::vector<std::string> recipientCardsId;
     for(const auto& recipientCard : recipientCards) {
         recipientCardsId.push_back(recipientCard.getId());

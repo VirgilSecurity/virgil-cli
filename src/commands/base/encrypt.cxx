@@ -59,13 +59,18 @@ namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
 namespace vcli = virgil::cli;
 
+
+static void checked(const std::vector<std::string>& recipientsData);
+
+
 /**
  * @brief Add recipients from the list to the cipher.
  * @param recipients - array of recipients <type:value>, where type can be [pass|vpk_file|email|phone|domain].
  * @param cipher - recipients added to.
  * @return Number of added recipients.
  */
-static size_t add_recipients(const std::vector<std::string>& recipientsData, vcrypto::VirgilStreamCipher* cipher);
+static size_t add_recipients(const std::vector<std::string>& recipientsData, const bool includeUnconrimedCard,
+        vcrypto::VirgilStreamCipher* cipher);
 
 /**
  * @brief Add recipient to the cipher.
@@ -73,7 +78,7 @@ static size_t add_recipients(const std::vector<std::string>& recipientsData, vcr
  * @param cipher - recipients added to.
  */
 static void add_recipient(const std::string& recipientType, const std::string& recipientValue,
-        vcrypto::VirgilStreamCipher* cipher);
+        const bool includeUnconrimedCard, vcrypto::VirgilStreamCipher* cipher);
 
 
 #ifdef SPLIT_CLI
@@ -100,16 +105,6 @@ int MAIN(int argc, char **argv) {
                 "Encrypt data for user identified by password::\n"
                 "virgil encrypt -i plain.txt -o plain.txt.enc pass:strong_password\n");
 
-        examples.push_back(
-                "Encrypt data for user's identified by configuration file:\n"
-                "virgil encrypt -i plain.txt -o plain.txt.enc -r friends.txt\n"
-                "'friends.txt':\n"
-                "#friends:\n"
-                "email:bob@domain.com\n"
-                "#Tom's public-key-id\n"
-                "id:45979aa4-2fdb-d166-85bc-5fab3ff2b2c2\n"
-                );
-
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
@@ -125,6 +120,9 @@ int MAIN(int argc, char **argv) {
                 "Content info - meta information about encrypted data. If omitted becomes a part of"
                 " the encrypted data.", false, "", "file");
 
+        TCLAP::ValueArg<bool> includeUnconfirmedArg("", "include_unconrimed", "Search Cards with unconfirm "
+                "identity. Default false", false, "", "bool");
+
         TCLAP::UnlabeledMultiArg<std::string> recipientsArg("recipient",
                 "Contains information about one recipient.\n"
                 "Format:\n"
@@ -137,17 +135,20 @@ int MAIN(int argc, char **argv) {
                 false, "recipient", false);
 
         cmd.add(recipientsArg);
+        cmd.add(includeUnconfirmedArg);
         cmd.add(contentInfoArg);
         cmd.add(outArg);
         cmd.add(inArg);
         cmd.parse(argc, argv);
+
+        checked(recipientsArg.getValue());
 
        // Create cipher
         vcrypto::VirgilStreamCipher cipher;
 
        // Add recipients
        size_t addedRecipientsCount = 0;
-       addedRecipientsCount += add_recipients(recipientsArg.getValue(), &cipher);
+       addedRecipientsCount += add_recipients(recipientsArg.getValue(), includeUnconfirmedArg.getValue(), &cipher);
        if (addedRecipientsCount == 0) {
            throw std::invalid_argument("no recipients are defined");
        }
@@ -206,16 +207,22 @@ int MAIN(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
+void checked(const std::vector<std::string>& recipientsData) {
+    for (const auto& recipientData : recipientsData) {
+        auto recipientPair = vcli::parsePair(recipientData);
+        vcli::checkFormatRecipientArg(recipientPair);
+    }
+}
 
-size_t add_recipients(const std::vector<std::string>& recipientsData, vcrypto::VirgilStreamCipher* cipher) {
+size_t add_recipients(const std::vector<std::string>& recipientsData, const bool includeUnconrimedCard,
+        vcrypto::VirgilStreamCipher* cipher) {
     size_t addedRecipientsCount = 0;
     for (const auto& recipientData : recipientsData) {
-        auto recipientPair = virgil::cli::parsePair(recipientData);
-        vcli::checkFormatRecipientArg(recipientPair);
+        auto recipientPair = vcli::parsePair(recipientData);
         std::string recipientType = recipientPair.first;
         std::string recipientValue = recipientPair.second;
         try {
-            add_recipient(recipientType, recipientValue, cipher);
+            add_recipient(recipientType, recipientValue, includeUnconrimedCard, cipher);
         } catch (std::exception& exception) {
             throw std::invalid_argument("can not add recipient. Error " + recipientType +
                     ":" + recipientValue + "\n" + exception.what());
@@ -226,13 +233,14 @@ size_t add_recipients(const std::vector<std::string>& recipientsData, vcrypto::V
 }
 
 void add_recipient(const std::string& recipientType, const std::string& recipientValue,
-        vcrypto::VirgilStreamCipher* cipher) {
+        const bool includeUnconrimedCard, vcrypto::VirgilStreamCipher* cipher) {
     if (recipientType == "pass") {
         vcrypto::VirgilByteArray pwd = virgil::crypto::str2bytes(recipientValue);
         cipher->addPasswordRecipient(pwd);
     } else {
         // Else recipientType [id|vcard|email]
-        std::vector<vsdk::model::Card> recipientsCard = vcli::getRecipientCards(recipientType, recipientValue);
+        std::vector<vsdk::model::Card> recipientsCard = vcli::getRecipientCards(recipientType, recipientValue,
+                includeUnconrimedCard);
         for (const auto& recipientCard : recipientsCard) {
             cipher->addKeyRecipient(
                     vcrypto::str2bytes(recipientCard.getId()),

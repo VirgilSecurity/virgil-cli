@@ -91,6 +91,9 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> signArg("s", "sign", "Digest sign.",
                 true, "", "file");
 
+        TCLAP::ValueArg<bool> includeUnconfirmedArg("", "include_unconrimed", "Search Cards with unconfirm "
+                "identity. Default false", false, "", "bool");
+
         TCLAP::ValueArg<std::string> recipientArg("r", "recipient",
                 "Recipient defined in format:\n"
                 "[id|vcard|email]:<value>\n"
@@ -101,6 +104,7 @@ int MAIN(int argc, char **argv) {
                 true, "", "arg");
 
         cmd.add(recipientArg);
+        cmd.add(includeUnconfirmedArg);
         cmd.add(signArg);
         cmd.add(outArg);
         cmd.add(inArg);
@@ -138,7 +142,8 @@ int MAIN(int argc, char **argv) {
 
         std::string type = recipientFormat.first;
         std::string value = recipientFormat.second;
-        std::vector<vsdk::model::Card> recipientCards = vcli::getRecipientCards(type, value);
+        std::vector<vsdk::model::Card> recipientCards = vcli::getRecipientCards(type, value,
+                includeUnconfirmedArg.getValue());
 
         for(const auto& recipientCard : recipientCards) {
             bool verified = signer.verify(dataSource, sign, recipientCard.getPublicKey().getKey());

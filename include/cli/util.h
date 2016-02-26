@@ -80,9 +80,11 @@ std::string getDescriptionMessage(const std::string description, std::vector<std
 //-------------------------------------------------------------------------------------
 
 
-std::vector<virgil::sdk::model::Card> getRecipientCards(const std::string& type, const std::string& value);
+std::vector<virgil::sdk::model::Card> getRecipientCards(const std::string& type, const std::string& value,
+        const bool includeUnconrimedCard);
 
-std::vector<std::string> getRecipientCardsId(const std::string& type, const std::string& value);
+std::vector<std::string> getRecipientCardsId(const std::string& type, const std::string& value,
+        const bool includeUnconrimedCard);
 
 
 }}

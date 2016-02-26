@@ -163,67 +163,13 @@ void print_usage(std::ostream &out, const char *programName) {
             "verify                      Verify data with Virgil Public Key.\n\n\n"
 
 
-            "KEYS SERVICE COMMANDS:\n"
+            "VIRGIL CARD COMMANDS:\n"
 
-            "public-key-add              Register user's public key on the Virgil\n"
-            "                            Keys service.\n\n"
+            "card-create                 Create card\n\n"
 
-            "public-key-get              Get user's Virgil Public Key from the Virgil\n"
-            "                            Keys service.\n\n"
+            "card-revoke                 Revoke Virgil Card.\n\n"
 
-            "public-key-del              Delete user's Virgil Public Key from the\n"
-            "                            Virgil Keys service.\n\n"
-
-            "public-key-confirm-del      Confirm operation 'delete' of Public Key from\n"
-            "                            the Virgil Keys service.\n\n"
-
-            "public-key-reset            Reset a User’s Public Keys data if the user\n"
-            "                            losts Private Key.\n\n"
-
-            "public-key-confirm-reset    Confirm operation 'reset' of Public Key from\n"
-            "                            the Virgil Keys service.\n\n"
-
-            "public-key-update           Update user's public key on the Virgil\n"
-            "                            Keys service.\n\n\n"
-
-
-            "user-data-add               Add extra user data as email, phone or domain to\n"
-            "                            the existing Public Key.\n\n"
-
-            "user-data-del               Remove extra user data from the Public Key.\n\n"
-
-            "user-data-confirm           Send confirmation code to the Virgil\n"
-            "                            Keys service.\n\n"
-
-            "user-data-reconfirm         Resend confirmation code for given user data\n"
-            "                            identifier\n\n\n"
-
-
-            "PRIVATE KEYS SERVICE COMMANDS:\n"
-
-            "container-create            Virgil’s Private Key storage provides\n"
-            "                            users the container for private keys.\n\n"
-
-            "container-info              Get container-type: easy or normal.\n\n"
-
-            "container-del               Delete existing container object from the Private\n"
-            "                            Key service.\n\n"
-
-            "container-update            Update container password or/and container-type.\n\n"
-
-            "container-reset             Reset container password.\n\n"
-
-            "container-confirm           Confirm password token and re-encrypt Private\n"
-            "                            Key data with the new password.\n\n"
-
-
-            "private-key-add             Add existing Private Key to the Private Keys Service.\n\n"
-
-            "private-key-get             Get Private Key from the Virgil Private\n"
-            "                            Keys service.\n\n"
-
-            "private-key-del             Delete Private Key from the Virgil Private Keys\n"
-            "                            service.\n";
+            "card-search                 Search by criteria\n\n";
 
     out << "USAGE: "  <<  programName << " " << doc << std::endl;
 }
