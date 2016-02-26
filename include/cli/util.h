@@ -38,8 +38,11 @@
 #define VIRGIL_CLI_COMMON_UTIL_H
 
 #include <string>
+#include <vector>
 
 #include <virgil/crypto/VirgilByteArray.h>
+
+#include <virgil/sdk/model/Card.h>
 
 
 namespace virgil { namespace cli {
@@ -50,6 +53,9 @@ void printVersion(std::ostream& out, const char *programName);
 
 //-------------------------------------------------------------------------------------
 
+void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg);
+
+//-------------------------------------------------------------------------------------
 
 virgil::crypto::VirgilByteArray readFileBytes(const std::string& in);
 
@@ -72,6 +78,12 @@ void writeBytes(const std::string& out, const std::string& data);
 std::string getDescriptionMessage(const std::string description, std::vector<std::string> examples);
 
 //-------------------------------------------------------------------------------------
+
+
+std::vector<virgil::sdk::model::Card> getRecipientCards(const std::string& type, const std::string& value);
+
+std::vector<std::string> getRecipientCardsId(const std::string& type, const std::string& value);
+
 
 }}
 
