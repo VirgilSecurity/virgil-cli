@@ -97,7 +97,7 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Recipient's Private Key"
                 " password (max length 31 ASCII characters).", false, "", "arg");
 
-        TCLAP::ValueArg<bool> includeUnconfirmedArg("", "include_unconrimed", "Search Cards with unconfirm "
+        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirm "
                 "identity. Default false", false, "", "arg");
 
         TCLAP::ValueArg<std::string> recipientArg("r", "recipient",
@@ -111,7 +111,7 @@ int MAIN(int argc, char **argv) {
                 true, "", "arg");
 
         cmd.add(recipientArg);
-        cmd.add(includeUnconfirmedArg);
+        cmd.add(unconfirmedArg);
         cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(contentInfoArg);
@@ -182,7 +182,7 @@ int MAIN(int argc, char **argv) {
 
             // type = [id|vcard|email]
             std::vector<std::string> recipientCardsId = vcli::getRecipientCardsId(type, value,
-                    includeUnconfirmedArg.getValue());
+                    unconfirmedArg.getValue());
             for(const auto& recipientCardId : recipientCardsId) {
                 cipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(recipientCardId), privateKey,
                         privateKeyPassword);

@@ -73,7 +73,7 @@ int MAIN(int argc, char **argv) {
 
         std::vector <std::string> examples;
         examples.push_back(
-                "virgil sign -i plain.txt -o plain.txt.sign -k private.key -r email:bob@gmail.com\n"
+                "virgil verify -i plain.txt -s plain.txt.sign -r email:bob@gmail.com\n"
         );
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -91,8 +91,8 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> signArg("s", "sign", "Digest sign.",
                 true, "", "file");
 
-        TCLAP::ValueArg<bool> includeUnconfirmedArg("", "include_unconrimed", "Search Cards with unconfirm "
-                "identity. Default false", false, "", "bool");
+        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirm "
+                "identity. Default false", false, "", "");
 
         TCLAP::ValueArg<std::string> recipientArg("r", "recipient",
                 "Recipient defined in format:\n"
@@ -104,7 +104,7 @@ int MAIN(int argc, char **argv) {
                 true, "", "arg");
 
         cmd.add(recipientArg);
-        cmd.add(includeUnconfirmedArg);
+        cmd.add(unconfirmedArg);
         cmd.add(signArg);
         cmd.add(outArg);
         cmd.add(inArg);
@@ -143,7 +143,7 @@ int MAIN(int argc, char **argv) {
         std::string type = recipientFormat.first;
         std::string value = recipientFormat.second;
         std::vector<vsdk::model::Card> recipientCards = vcli::getRecipientCards(type, value,
-                includeUnconfirmedArg.getValue());
+                unconfirmedArg.getValue());
 
         for(const auto& recipientCard : recipientCards) {
             bool verified = signer.verify(dataSource, sign, recipientCard.getPublicKey().getKey());

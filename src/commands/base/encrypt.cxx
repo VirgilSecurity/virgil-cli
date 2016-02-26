@@ -120,8 +120,8 @@ int MAIN(int argc, char **argv) {
                 "Content info - meta information about encrypted data. If omitted becomes a part of"
                 " the encrypted data.", false, "", "file");
 
-        TCLAP::ValueArg<bool> includeUnconfirmedArg("", "include_unconrimed", "Search Cards with unconfirm "
-                "identity. Default false", false, "", "bool");
+        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirm "
+                "identity. Default false", false, "", "");
 
         TCLAP::UnlabeledMultiArg<std::string> recipientsArg("recipient",
                 "Contains information about one recipient.\n"
@@ -135,7 +135,7 @@ int MAIN(int argc, char **argv) {
                 false, "recipient", false);
 
         cmd.add(recipientsArg);
-        cmd.add(includeUnconfirmedArg);
+        cmd.add(unconfirmedArg);
         cmd.add(contentInfoArg);
         cmd.add(outArg);
         cmd.add(inArg);
@@ -148,7 +148,7 @@ int MAIN(int argc, char **argv) {
 
        // Add recipients
        size_t addedRecipientsCount = 0;
-       addedRecipientsCount += add_recipients(recipientsArg.getValue(), includeUnconfirmedArg.getValue(), &cipher);
+       addedRecipientsCount += add_recipients(recipientsArg.getValue(), unconfirmedArg.getValue(), &cipher);
        if (addedRecipientsCount == 0) {
            throw std::invalid_argument("no recipients are defined");
        }
