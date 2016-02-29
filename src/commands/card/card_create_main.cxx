@@ -69,25 +69,23 @@ int MAIN(int argc, char **argv) {
         std::vector <std::string> examples;
         examples.push_back(
                 "Create Card with confirm identity:\n"
-                "virgil card-create --identity email:user@domain.com --validation_token <token> "
-                "--public_key <path_pub_key> --private_key <path_private_key> --private_key_pass \"STRONG PASS\"\n");
+                "virgil card-create -d email:user@domain.com -t <token> "
+                "--public-key <path_pub_key> -k <path_private_key> -o my_card.vcard\n");
 
         examples.push_back(
                 "Create Card with confirm identity by pub-key-id:\n"
-                "virgil card-create --identity email:user@domain.com --validation_token <token> "
-                "--public_key_id <pub_key_id> --private_key <path_private_key> --private_key_pass \"STRONG PASS\"\n");
-
+                "virgil card-create -d email:user@domain.com -t <token> "
+                "--public-key <path_pub_key> -k <path_private_key> -o my_card.vcard\n");
 
         examples.push_back(
                 "Create Card with unconfirm identity:\n"
-                "virgil card-create --identity email:user@domain.com "
-                "--public_key <path_pub_key> --private_key <path_private_key> --private_key_pass \"STRONG PASS\"\n");
+                "virgil card-create -d email:user@domain.com --public_key <path_pub_key> --k <path_private_key> "
+                "-o my_card.vcard\n");
 
         examples.push_back(
                 "Create Card with unconfirm identity by pub-key-id:\n"
-                "virgil card-create --identity email:user@domain.com "
-                "--public_key_id <pub_key_id> --private_key <path_private_key> --private_key_pass \"STRONG PASS\"\n");
-
+                "virgil card-create -d email:user@domain.com --public-key-id <pub_key_id> --k <path_private_key> "
+                "-o my_card.vcard\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -97,22 +95,22 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Card. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> identityArg("", "identity", "Identity email, phone etc",
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email, phone etc",
                 true, "", "arg");
 
-        TCLAP::ValueArg<std::string> validationTokenArg("", "validation_token", "Validation token",
+        TCLAP::ValueArg<std::string> validationTokenArg("t", "validation-token", "Validation token",
                 false, "", "arg");
 
-        TCLAP::ValueArg<std::string> publicKeyArg("", "public_key", "Public key",
+        TCLAP::ValueArg<std::string> publicKeyArg("", "public-key", "Public key",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("", "public_key_id", "Public key identifier",
+        TCLAP::ValueArg<std::string> publicKeyIdArg("", "public-key-id", "Public key identifier",
                 false, "", "arg");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("", "private_key", "Private key",
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Private key",
                 true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPassArg("", "private_key_pass", "Private key pass",
+        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "private-pwd", "Private key pass",
                 false, "", "arg");
 
         cmd.add(privateKeyPassArg);
@@ -123,8 +121,6 @@ int MAIN(int argc, char **argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-
-        vsdk::ServicesHub servicesHub(VIRGIL_APP_TOKEN);
 
         auto identityPair = vcli::parsePair(identityArg.getValue());
         std::string userEmail = identityPair.second;
@@ -145,27 +141,29 @@ int MAIN(int argc, char **argv) {
         vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privateKeyPassArg.getValue());
         vsdk::Credentials credentials(privateKey, privateKeyPass);
 
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         vsdk::model::Card card;
-
         if (validationTokenArg.isSet()) {
             std::string validation_token = validationTokenArg.getValue();
             vsdk::model::ValidatedIdentity validatedIdentity(validation_token, userEmail,
                     vsdk::model::IdentityType::Email);
 
             if (publicKeyArg.isSet()) {
-                // Создаем валидную карточку
                 card = servicesHub.card().create(validatedIdentity, publicKey, credentials);
+                std::cout << "A card with a confirmed identity has been created." << std::endl;
             } else {
-                // Создаем валидную карточку связанную с уже существующей по pub-id
                 card = servicesHub.card().create(validatedIdentity, publicKeyId, credentials);
+                std::cout << "A card with a confirmed identity, which is connected with already existing one by"
+                        " public-key-id has been created." << std::endl;
             }
         } else {
             if (publicKeyArg.isSet()) {
-                // Создаем невалидную карточку
                 card = servicesHub.card().create(identity, publicKey, credentials);
+                std::cout << "A card with a unconfirmed identity has been created." << std::endl;
             } else {
-                // Создаем невалидную карточку связанную с уже существующей по pub-id
                 card = servicesHub.card().create(identity, publicKeyId, credentials);
+                std::cout << "A card with a unconfirmed identity, which is connected with already existing one by"
+                        " public-key-id, has been created." << std::endl;
             }
         }
 
