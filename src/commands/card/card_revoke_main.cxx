@@ -66,32 +66,32 @@ int MAIN(int argc, char **argv) {
         std::vector <std::string> examples;
         examples.push_back(
                 "Revoke Virgil Card with confirm identity:\n"
-                "virgil card-revoke --card_id <card_id> --identity email:user@domain.com --validation_token <token> "
-                "--private_key <private_key> --private_key_pass <private_key_pass>\n");
+                "virgil card-revoke -a <card_id> -d email:user@domain.com -t <validation_token> "
+                "-k <private_key>\n");
 
         examples.push_back(
                 "Revoke Virgil Card with confirm identity:\n"
-                "virgil card-revoke --card_id <card_id> --identity email:user@domain.com "
-                "--private_key <private_key> --private_key_pass <private_key_pass>\n");
+                "virgil card-revoke -a <card_id> -d email:user@domain.com "
+                "-k <private_key>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> cardIdArg("", "card_id", "Virgil Card identifier",
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier",
                 true, "", "");
 
-        TCLAP::ValueArg<std::string> identityArg("", "identity", "Identity user",
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity user",
                 true, "", "");
 
-        TCLAP::ValueArg<std::string> validationTokenArg("", "validation_token", "Validation token",
+        TCLAP::ValueArg<std::string> validationTokenArg("t", "validation-token", "Validation token",
                 false, "", "");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("", "private_key", "Private key",
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Private key",
                 true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPassArg("", "private_key_pass", "Private key pass",
+        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "private-key-pass", "Private key pass",
                 false, "", "arg");
 
         cmd.add(privateKeyPassArg);
@@ -101,7 +101,7 @@ int MAIN(int argc, char **argv) {
         cmd.add(cardIdArg);
         cmd.parse(argc, argv);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_APP_TOKEN);
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
 
         std::string cardId = cardIdArg.getValue();
 
@@ -115,14 +115,17 @@ int MAIN(int argc, char **argv) {
 
         vsdk::Credentials credentials(privateKey, privateKeyPass);
 
+        std::string messageSuccess = "Card with card-id " + cardIdArg.getValue() + " revoked.";
         if (validationTokenArg.isSet()) {
             std::string validationToken = validationTokenArg.getValue();
             vsdk::model::ValidatedIdentity validatedIdentity(validationToken, userEmail,
                     vsdk::model::IdentityType::Email);
             servicesHub.card().revoke(cardId, validatedIdentity, credentials);
+            std::cout << messageSuccess << std::endl;
         } else {
             vsdk::model::Identity identity(userEmail, vsdk::model::IdentityType::Email);
             servicesHub.card().revoke(cardId, identity, credentials);
+            std::cout << messageSuccess << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {
