@@ -43,6 +43,7 @@
 #include <virgil/crypto/VirgilByteArray.h>
 
 #include <virgil/sdk/model/Card.h>
+#include <virgil/sdk/model/ValidatedIdentity.h>
 
 
 namespace virgil { namespace cli {
@@ -64,6 +65,13 @@ virgil::crypto::VirgilByteArray readFileBytes(const std::string& in);
  * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
  */
 virgil::crypto::VirgilByteArray readInput(const std::string& in);
+
+
+virgil::sdk::model::ValidatedIdentity readValidateIdentity(const std::string& in);
+
+
+virgil::sdk::model::Card readCard(const std::string& in);
+
 
 //-------------------------------------------------------------------------------------
 

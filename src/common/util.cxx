@@ -60,6 +60,8 @@ using virgil::sdk::ServicesHub;
 using virgil::sdk::model::Card;
 using virgil::sdk::model::Identity;
 using virgil::sdk::model::IdentityType;
+using virgil::sdk::model::ValidatedIdentity;
+using virgil::sdk::model::Card;
 using virgil::sdk::io::Marshaller;
 using virgil::sdk::io::cardsFromJson;
 
@@ -97,6 +99,25 @@ VirgilByteArray virgil::cli::readInput(const std::string& in) {
     }
     return readFileBytes(in);
 }
+
+ValidatedIdentity virgil::cli::readValidateIdentity(const std::string& in) {
+    std::ifstream inFile(in, std::ios::in | std::ios::binary);
+    if (!inFile) {
+        throw std::invalid_argument("can not read file: " + in);
+    }
+    std::string validatedIdentityStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+    return Marshaller<ValidatedIdentity>::fromJson(validatedIdentityStr);
+}
+
+Card virgil::cli::readCard(const std::string& in) {
+    std::ifstream inFile(in, std::ios::in | std::ios::binary);
+    if (!inFile) {
+        throw std::invalid_argument("can not read file: " + in);
+    }
+    std::string cardStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+    return Marshaller<Card>::fromJson(cardStr);
+}
+
 
 //-------------------------------------------------------------------------------------
 
