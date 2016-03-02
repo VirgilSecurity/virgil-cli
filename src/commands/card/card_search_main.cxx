@@ -90,8 +90,7 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email, phone etc",
                 true, "", "arg");
 
-        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirm "
-                "identity", false, "", "arg");
+        TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", "Search Cards include unconfirm identity", false);
 
         TCLAP::UnlabeledMultiArg<std::string> signedCardsIdArg("signed-card-id", "Signed card id", false, "card-id",
                 false);
@@ -104,6 +103,8 @@ int MAIN(int argc, char **argv) {
 
 
         auto identityPair = vcli::parsePair(identityArg.getValue());
+        std::string arg = "-d, --identity";
+        vcli::checkFormatIdentity(arg, identityPair.first);
         std::string userEmail = identityPair.second;
         vsdk::model::Identity identity(userEmail, vsdk::model::IdentityType::Email);
 
