@@ -40,14 +40,17 @@
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/sdk/ServicesHub.h>
+#include <virgil/sdk/io/Marshaller.h>
 
 #include <cli/version.h>
 #include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 
-using virgil::crypto::VirgilByteArray;
+namespace vsdk = virgil::sdk;
+namespace vcrypto = virgil::crypto;
+namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
 #define MAIN main
@@ -57,55 +60,61 @@ using virgil::crypto::VirgilByteArray;
 
 int MAIN(int argc, char **argv) {
     try {
-        std::string description = "Get user's Private Key from the Virgil Private Keys service.\n";
+        std::string description = "Confirm identity\n";
 
         std::vector <std::string> examples;
         examples.push_back(
-                "Container type 'easy':\n"
-                "virgil private-key-get -u email:user@domain.com -n container_pwd\n");
+                "Identity confirm:\n"
+                "virgil identity-confirm  -q d6b4abd9-057c-4d01-bdec-7b2ab232e2af -w B4L7O2\n");
 
         examples.push_back(
-                "Container type 'normal':\n"
-                "virgil private-key-get -u email:user@domain.com -n container_pwd -w wrapper_pwd\n");
+                "Identity confirm:\n"
+                "virgil identity-confirm  -q d6b4abd9-057c-4d01-bdec-7b2ab232e2af -w B4L7O2 "
+                "-l 3600 -r 10\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted stdout is used.",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Validated identity. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> userIdArg("u","user-id",
-                "User identifier, associated with container.\n"
-                "Format:\n"
-                "[email]:<value>\n"
-                "where:\n"
-                "\t* if email, then <value> - user email associated with Public Key.\n",
-                true, "","arg" );
+        TCLAP::ValueArg<std::string> actionIdArg("q", "action-id", "Action id.",
+                true, "", "file");
 
-        TCLAP::ValueArg<std::string> containerPaswordArg("n", "container-pwd", "Container password.",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> confirmationCodeArg("w", "confirmation-code", "Confirmation code",
+                true, "", "file");
 
-        TCLAP::ValueArg<std::string> wrapperPaswordArg("w", "wrapper-pwd",
-                "Password is used to encrypt Private Key before it will be send to the."
-                "Virgil Private Keys Service.\n"
-                "Note, MUST be used only if container type is `normal`.\n"
-                "Note, MUST be managed by user, because it can not be reset or recovered.",
-                false, "", "arg");
+        TCLAP::ValueArg<int> timeToliveArg("l", "time-to-live", "Time to live, default 3600.",
+                false, 3600, "int");
 
-        cmd.add(wrapperPaswordArg);
-        cmd.add(containerPaswordArg);
-        cmd.add(userIdArg);
+        TCLAP::ValueArg<int> countToLiveArg("r", "count-to-live", "Count to live, default 10.",
+                false, 50, "int");
+
+        cmd.add(countToLiveArg);
+        cmd.add(timeToliveArg);
+        cmd.add(confirmationCodeArg);
+        cmd.add(actionIdArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+
+        vsdk::model::ValidatedIdentity validatedIdentity =
+            servicesHub.identity().confirm(actionIdArg.getValue(), confirmationCodeArg.getValue(),
+                    timeToliveArg.getValue(), countToLiveArg.getValue());
+
+        std::string validatedIdentityStr =
+            vsdk::io::Marshaller<vsdk::model::ValidatedIdentity>::toJson<4>(validatedIdentity);
+
+        vcli::writeBytes(outArg.getValue(), validatedIdentityStr);
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "private-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "identity-confirm. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "private-key-get. Error: " << exception.what() << std::endl;
+        std::cerr << "identity-confirm. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 
