@@ -40,15 +40,17 @@
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/sdk/ServicesHub.h>
+#include <virgil/sdk/io/Marshaller.h>
 
 #include <cli/version.h>
 #include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 
-using virgil::crypto::VirgilByteArray;
-
+namespace vsdk = virgil::sdk;
+namespace vcrypto = virgil::crypto;
+namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
 #define MAIN main
@@ -58,57 +60,49 @@ using virgil::crypto::VirgilByteArray;
 
 int MAIN(int argc, char **argv) {
     try {
-        std::string description = "Add given Private Key into the Private Keys Service container.\n"
-                "Prerequisite:\n"
-                "Create container, see `virgil container-create`.\n";
+        std::string description = "Add given Private Key into the Private Keys Service.\n"
+                "General statements::\n"
+                "1. Make sure that you have registered and confirmed your account for the Public Keys Service\n"
+                "2. Make sure that you have a public/private key pair and you have already uploaded the public key\n"
+                "to the Public Keys Service\n"
+                "3. Make sure that you have your private key on local machine\n"
+                "4. Make sure that you have registered an application at Virgil Security, Inc.\n";
 
         std::vector <std::string> examples;
         examples.push_back(
-                "Add Private Key to existent container of type `easy`:\n"
-                "virgil private-key-add -k private.key -e email:user@domain.com -n container_password\n");
-
-        examples.push_back(
-                "Add Private Key to existent container of type `normal`:\n"
-                "virgil private-key-add -k private.key -w wrapper_pwd -e email:user@domain.com -n container_password\n");
+                "Add Private Key to :\n"
+                "virgil private-key-add -k private.key -a <card_id>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "Virgil Public Key identifier, associated with given Private Key.\n"
-                "Format:\n"
-                "[id|vkey|email]:<value>\n"
-                "where:\n"
-                "\t* if id, then <value> - UUID associated with Public Key;\n"
-                "\t* if vkey, then <value> - user's Virgil Public Key file stored locally;\n"
-                "\t* if email, then <value> - user email associated with Public Key.\n",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier",
+                true, "", "");
 
-        TCLAP::ValueArg<std::string> containerPaswordArg("n", "container-pwd", "Container password.",
-                true, "", "arg");
-
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key.",
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Private Key",
                 true, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password.",
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password",
                 false, "", "arg");
 
-        TCLAP::ValueArg<std::string> wrapperPaswordArg("w", "wrapper-pwd",
-                "Password is used to encrypt Private Key before it will be send to the\n"
-                "Virgil Private Keys Service.\n"
-                "Note, MUST be used only if container type is `normal`.\n"
-                "Note, MUST be managed by user, because it can not be reset or recovered.",
-                false, "", "arg");
-
-        cmd.add(wrapperPaswordArg);
         cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);
-        cmd.add(containerPaswordArg);
-        cmd.add(publicKeyIdArg);
+        cmd.add(cardIdArg);
         cmd.parse(argc, argv);
 
+        std::string cardId = cardIdArg.getValue();
+
+        std::string pathPrivateKey = privateKeyArg.getValue();
+        vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
+
+        vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privatePasswordArg.getValue());
+        vsdk::Credentials credentials(privateKey, privateKeyPass);
+
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        servicesHub.privateKey().add(cardId, credentials);
+        std::cout << "The private key added to the Private Keys Service" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-key-add. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
