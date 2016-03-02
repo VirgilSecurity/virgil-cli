@@ -35,19 +35,22 @@
  */
 
 #include <iostream>
-#include <string>
 #include <stdexcept>
+#include <string>
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/sdk/ServicesHub.h>
+#include <virgil/sdk/io/Marshaller.h>
 
 #include <cli/version.h>
 #include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 
-using virgil::crypto::VirgilByteArray;
+namespace vsdk = virgil::sdk;
+namespace vcrypto = virgil::crypto;
+namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
 #define MAIN main
@@ -57,16 +60,11 @@ using virgil::crypto::VirgilByteArray;
 
 int MAIN(int argc, char **argv) {
     try {
-        std::string description = "Get user's Private Key from the Virgil Private Keys service.\n";
+        std::string description = "Get the private key into the Private Key Service\n";
 
         std::vector <std::string> examples;
         examples.push_back(
-                "Container type 'easy':\n"
-                "virgil private-key-get -u email:user@domain.com -n container_pwd\n");
-
-        examples.push_back(
-                "Container type 'normal':\n"
-                "virgil private-key-get -u email:user@domain.com -n container_pwd -w wrapper_pwd\n");
+                "virgil private-key-get -a <card_id> -f <validated_identity.txt> -o private.vkey\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -76,30 +74,24 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> userIdArg("u","user-id",
-                "User identifier, associated with container.\n"
-                "Format:\n"
-                "[email]:<value>\n"
-                "where:\n"
-                "\t* if email, then <value> - user email associated with Public Key.\n",
-                true, "","arg" );
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier",
+                true, "", "");
 
-        TCLAP::ValueArg<std::string> containerPaswordArg("n", "container-pwd", "Container password.",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identities", "Validated identity",
+                true, "", "file");
 
-        TCLAP::ValueArg<std::string> wrapperPaswordArg("w", "wrapper-pwd",
-                "Password is used to encrypt Private Key before it will be send to the."
-                "Virgil Private Keys Service.\n"
-                "Note, MUST be used only if container type is `normal`.\n"
-                "Note, MUST be managed by user, because it can not be reset or recovered.",
-                false, "", "arg");
-
-        cmd.add(wrapperPaswordArg);
-        cmd.add(containerPaswordArg);
-        cmd.add(userIdArg);
+        cmd.add(validatedIdentityArg);
+        cmd.add(cardIdArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
+        std::string cardId = cardIdArg.getValue();
+        vsdk::model::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityArg.getValue());
+
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        vsdk::model::PrivateKey privateKey = servicesHub.privateKey().get(cardId, validatedIdentity);
+        std::string privateKeyStr = vsdk::io::Marshaller<vsdk::model::PrivateKey>::toJson<4>(privateKey);
+        vcli::writeBytes(outArg.getValue(), privateKeyStr);
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
