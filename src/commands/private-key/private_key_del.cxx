@@ -40,14 +40,17 @@
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/sdk/ServicesHub.h>
+#include <virgil/sdk/io/Marshaller.h>
 
 #include <cli/version.h>
 #include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 
-using virgil::crypto::VirgilByteArray;
+namespace vsdk = virgil::sdk;
+namespace vcrypto = virgil::crypto;
+namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
 #define MAIN main
@@ -57,45 +60,42 @@ using virgil::crypto::VirgilByteArray;
 
 int MAIN(int argc, char **argv) {
     try {
-       std::string description =
-            "Delete a Private Key from the Virgil Private Keys service.\n";
+        std::string description = "Delete the private key into the Private Key Service\n";
 
         std::vector <std::string> examples;
         examples.push_back(
-                "virgil private-key-del -e email:user@domain.com -n container_pwd -k private.key\n"
-                );
+                "virgil private-key-del -k private.key -a <card_id>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
-
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "Virgil Public Key identifier, associated with given Private Key.\n"
-                "Format:\n"
-                "[id|vkey|email]:<value>\n"
-                "where:\n"
-                "\t* if id, then <value> - UUID associated with Public Key;\n"
-                "\t* if vkey, then <value> - user's Virgil Public Key file stored locally;\n"
-                "\t* if email, then <value> - user email associated with Public Key.\n",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier",
+                true, "", "");
 
-        TCLAP::ValueArg<std::string> containerPaswordArg("n", "container-pwd", "Container password.",
-                true, "", "arg");
-
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key.",
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Private Key",
                 true, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password.",
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password",
                 false, "", "arg");
 
         cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);
-        cmd.add(containerPaswordArg);
-        cmd.add(publicKeyIdArg);
+        cmd.add(cardIdArg);
         cmd.parse(argc, argv);
 
+        std::string cardId = cardIdArg.getValue();
+
+        std::string pathPrivateKey = privateKeyArg.getValue();
+        vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
+
+        vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privatePasswordArg.getValue());
+        vsdk::Credentials credentials(privateKey, privateKeyPass);
+
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        servicesHub.privateKey().del(cardId, credentials);
+        std::cout << "The private key deleted into the Private Keys Service" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-key-del. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
