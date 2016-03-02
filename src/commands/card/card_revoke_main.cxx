@@ -80,10 +80,10 @@ int MAIN(int argc, char **argv) {
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
         TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier",
-                true, "", "");
+                true, "", "arg");
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity user",
-                true, "", "");
+                true, "", "arg");
 
         TCLAP::ValueArg<std::string> validationTokenArg("t", "validation-token", "Validation token",
                 false, "", "");
