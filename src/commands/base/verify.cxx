@@ -149,10 +149,10 @@ int MAIN(int argc, char **argv) {
             bool verified = signer.verify(dataSource, sign, recipientCard.getPublicKey().getKey());
             std::string recipientCardId = recipientCard.getId();
             if (verified) {
-                vcli::writeBytes(outArg.getValue(), recipientCardId + " success");
+                vcli::writeBytes(outArg.getValue(), "card-id " + recipientCardId + " - success");
                 return EXIT_SUCCESS;
             } else {
-                vcli::writeBytes(outArg.getValue(), recipientCardId + " failure");
+                vcli::writeBytes(outArg.getValue(), "card-id " + recipientCardId + " - failure");
                 return EXIT_FAILURE;
             }
         }
