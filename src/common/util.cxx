@@ -83,6 +83,14 @@ void virgil::cli::checkFormatRecipientArg(const std::pair<std::string, std::stri
     }
 }
 
+void virgil::cli::checkFormatIdentity(const std::string& args, const std::string& type) {
+    if (type != "email") {
+        throw std::invalid_argument(
+                    args + " invalid type format: " + type + ". Expected format: '<key>:<value>'. "
+                    "Where <key> = [email].");
+    }
+}
+
 //-------------------------------------------------------------------------------------
 
 VirgilByteArray virgil::cli::readFileBytes(const std::string& in) {

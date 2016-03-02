@@ -56,6 +56,8 @@ void printVersion(std::ostream& out, const char *programName);
 
 void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg);
 
+void checkFormatIdentity(const std::string& args, const std::string& type);
+
 //-------------------------------------------------------------------------------------
 
 virgil::crypto::VirgilByteArray readFileBytes(const std::string& in);
