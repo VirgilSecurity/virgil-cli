@@ -69,22 +69,22 @@ int MAIN(int argc, char **argv) {
         std::vector <std::string> examples;
         examples.push_back(
                 "Create Card with confirm identity:\n"
-                "virgil card-create -d email:user@domain.com -t <token> "
+                "virgil card-create -f <validated_identity.txt> "
                 "--public-key <path_pub_key> -k <path_private_key> -o my_card.vcard\n");
 
         examples.push_back(
                 "Create Card with confirm identity by pub-key-id:\n"
-                "virgil card-create -d email:user@domain.com -t <token> "
-                "--public-key <path_pub_key> -k <path_private_key> -o my_card.vcard\n");
+                "virgil card-create -f <validated_identity.txt> "
+                "-e <pub_key_id> -k <path_private_key> -o my_card.vcard\n");
 
         examples.push_back(
                 "Create Card with unconfirm identity:\n"
-                "virgil card-create -d email:user@domain.com --public_key <path_pub_key> --k <path_private_key> "
+                "virgil card-create -d email:user@domain.com --public_key <path_pub_key> -k <path_private_key> "
                 "-o my_card.vcard\n");
 
         examples.push_back(
                 "Create Card with unconfirm identity by pub-key-id:\n"
-                "virgil card-create -d email:user@domain.com --public-key-id <pub_key_id> --k <path_private_key> "
+                "virgil card-create -d email:user@domain.com -e <pub_key_id> -k <path_private_key> "
                 "-o my_card.vcard\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -98,13 +98,13 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email, phone etc",
                 true, "", "arg");
 
-        TCLAP::ValueArg<std::string> validationTokenArg("t", "validation-token", "Validation token",
-                false, "", "arg");
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identities", "Validated identity",
+                true, "", "file");
 
         TCLAP::ValueArg<std::string> publicKeyArg("", "public-key", "Public key",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("", "public-key-id", "Public key identifier",
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public key identifier",
                 false, "", "arg");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Private key",
@@ -116,15 +116,9 @@ int MAIN(int argc, char **argv) {
         cmd.add(privateKeyPassArg);
         cmd.add(privateKeyArg);
         cmd.xorAdd(publicKeyArg, publicKeyIdArg);
-        cmd.add(validationTokenArg);
-        cmd.add(identityArg);
+        cmd.xorAdd(identityArg, validatedIdentityArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
-
-
-        auto identityPair = vcli::parsePair(identityArg.getValue());
-        std::string userEmail = identityPair.second;
-        vsdk::model::Identity identity(userEmail, vsdk::model::IdentityType::Email);
 
         vcrypto::VirgilByteArray publicKey;
         std::string publicKeyId;
@@ -143,28 +137,45 @@ int MAIN(int argc, char **argv) {
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         vsdk::model::Card card;
-        if (validationTokenArg.isSet()) {
-            std::string validation_token = validationTokenArg.getValue();
-            vsdk::model::ValidatedIdentity validatedIdentity(validation_token, userEmail,
-                    vsdk::model::IdentityType::Email);
+        if (validatedIdentityArg.isSet()) {
+            vsdk::model::ValidatedIdentity validatedIdentity =
+                    vcli::readValidateIdentity(validatedIdentityArg.getValue());
 
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(validatedIdentity, publicKey, credentials);
-                std::cout << "A card with a confirmed identity has been created." << std::endl;
+                if (outArg.isSet()) {
+                    std::cout << "A card with a confirmed identity has been created." << std::endl;
+                }
             } else {
                 card = servicesHub.card().create(validatedIdentity, publicKeyId, credentials);
-                std::cout << "A card with a confirmed identity, which is connected with already existing one by"
-                        " public-key-id has been created." << std::endl;
+                if (outArg.isSet()) {
+                    std::cout << "A card with a confirmed identity, which is connected with already existing one by"
+                            " public-key-id has been created." << std::endl;
+                }
             }
+
         } else {
+            // identityArg.isSet
+            auto identityPair = vcli::parsePair(identityArg.getValue());
+            // check identity type: email
+            std::string arg = "-d, --identity";
+            vcli::checkFormatIdentity(arg, identityPair.first);
+            std::string userEmail = identityPair.second;
+            vsdk::model::Identity identity(userEmail, vsdk::model::IdentityType::Email);
+
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(identity, publicKey, credentials);
-                std::cout << "A card with a unconfirmed identity has been created." << std::endl;
+                if (outArg.isSet()) {
+                    std::cout << "A card with a unconfirmed identity has been created." << std::endl;
+                }
             } else {
                 card = servicesHub.card().create(identity, publicKeyId, credentials);
-                std::cout << "A card with a unconfirmed identity, which is connected with already existing one by"
-                        " public-key-id, has been created." << std::endl;
+                if (outArg.isSet()) {
+                    std::cout << "A card with a unconfirmed identity, which is connected with already existing one by"
+                            " public-key-id, has been created." << std::endl;
+                }
             }
+
         }
 
         std::string cardStr = vsdk::io::Marshaller<vsdk::model::Card>::toJson<4>(card);
