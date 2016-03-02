@@ -34,18 +34,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <fstream>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/sdk/ServicesHub.h>
+#include <virgil/sdk/io/Marshaller.h>
 
 #include <cli/version.h>
 #include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+
+namespace vsdk = virgil::sdk;
+namespace vcrypto = virgil::crypto;
+namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
 #define MAIN main
@@ -60,50 +65,30 @@ int MAIN(int argc, char **argv) {
 
         std::vector <std::string> examples;
         examples.push_back(
-                "Get pure Virgil Public Key:\n"
-                "virgil public-key-get -o virgil_pub.key -e email:user@domain.com\n"
-                );
-
-        examples.push_back(
-                "Get Virgil Public Key with associated user data:\n"
-                "virgil public-key-get -o virgil_pub.key -e email:user@domain.com -k private.key\n"
-                );
+                "Get Virgil Public Key:\n"
+                "virgil public-key-get -o public.vkey -e <public_key_id> \n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
-
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Output Virgil Public Key. If omitted stdout is used.",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted stdout is used.",
                 false, "", "file");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id",
-                "Virgil Public Key identifier, associated with given Private Key.\n"
-                "Format:\n"
-                "[id|vkey|email]:<value>\n"
-                "where:\n"
-                "\t* if id, then <value> - UUID associated with Public Key;\n"
-                "\t* if vkey, then <value> - user's Virgil Public Key file stored locally;\n"
-                "\t* if email, then <value> - user email associated with Public Key.\n",
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n",
                 true, "", "arg");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key. If specified then all"
-                " user data associated with Virgil Public Key will be provided.",
-                false , "", "file");
-
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password.",
-                false, "", "arg");
-
-        cmd.add(privatePasswordArg);
-        cmd.add(privateKeyArg);
         cmd.add(publicKeyIdArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        std::string publicKeyId = publicKeyIdArg.getValue();
 
-
-
+        vsdk::model::PublicKey publicKey = servicesHub.publicKey().get(publicKeyId);
+        std::string publicKeyStr = vsdk::io::Marshaller<vsdk::model::PublicKey>::toJson<4>(publicKey);
+        vcli::writeBytes(outArg.getValue(), publicKeyStr);
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "public-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
