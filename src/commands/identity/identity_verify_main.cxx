@@ -57,25 +57,22 @@ namespace vcli = virgil::cli;
 #define MAIN identity_verify_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
         std::string description = "Verify identity\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "Verify identity:\n"
-                "virgil identity-verify -d email:user@domain.com\n");
+        std::vector<std::string> examples;
+        examples.push_back("Verify identity:\n"
+                           "virgil identity-verify -d email:user@domain.com\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Action id. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Action id. If omitted stdout is used.", false, "", "file");
 
         cmd.add(outArg);
         cmd.add(identityArg);
@@ -85,11 +82,14 @@ int MAIN(int argc, char **argv) {
         std::string arg = "-d, --identity";
         vcli::checkFormatIdentity(arg, identityPair.first);
         std::string userEmail = identityPair.second;
-        vsdk::model::Identity identity(userEmail, vsdk::model::IdentityType::Email);
+        vsdk::dto::Identity identity(userEmail, vsdk::models::IdentityModel::Type::Email);
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         std::string actionId = servicesHub.identity().verify(identity);
         vcli::writeBytes(outArg.getValue(), actionId);
+
+        std::cout << "An Identity with email:" << userEmail << " verified" << std::endl;
+        std::cout << "Теперь вы можете подтвердить Identity коммандой identity-confirm" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "identity-verify. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

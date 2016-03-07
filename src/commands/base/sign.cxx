@@ -53,36 +53,32 @@ namespace vcrypto = virgil::crypto;
 namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
-    #define MAIN main
+#define MAIN main
 #else
-    #define MAIN sign_main
+#define MAIN sign_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
-       std::string description = "Sign data with given user's Private Key.\n";
+        std::string description = "Sign data with given user's Private Key.\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "virgil sign -i plain.txt -o plain.txt.sign -k private.key\n"
-        );
+        std::vector<std::string> examples;
+        examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k private.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be signed. If omitted stdin is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be signed. If omitted stdin is used.", false, "",
+                                           "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Digest sign. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Digest sign. If omitted stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private Key.",
-                true, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private Key.", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Signer's Private Key password.",
-                false, "", "arg");
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Signer's Private Key password.", false, "",
+                                                        "arg");
 
         cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);
@@ -116,6 +112,8 @@ int MAIN(int argc, char **argv) {
 
         // Prepare output. Write sign to the output.
         vcli::writeBytes(outArg.getValue(), sign);
+
+        std::cout << "File signing" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "sing. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

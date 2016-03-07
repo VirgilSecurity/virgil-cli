@@ -58,47 +58,45 @@ namespace vcli = virgil::cli;
 #define MAIN identity_validate_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Validated identity\n";
+        std::string description = "Validating identity\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "Validated identity:\n"
-                "virgil identity-valid -f <validated-identity.txt>\n");
+        std::vector<std::string> examples;
+        examples.push_back("Validated identity:\n"
+                           "virgil identity-valid -f <validated-identity.txt>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identities", "Validated identity",
-                true, "", "file");
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identities", "Validated identity", true, "",
+                                                          "file");
 
         cmd.add(validatedIdentityArg);
         cmd.parse(argc, argv);
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
-        vsdk::model::ValidatedIdentity validatedIdentity =
-                vcli::readValidateIdentity(validatedIdentityArg.getValue());
+        vsdk::dto::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityArg.getValue());
 
         bool validateToken = servicesHub.identity().validate(validatedIdentity);
         std::string validatedIdentityStr =
-            vsdk::io::Marshaller<vsdk::model::ValidatedIdentity>::toJson<4>(validatedIdentity);
+            vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
 
         if (validateToken) {
-            std::cout  << "Validation Token is valid!" << std::endl;
-            std::cout  << validatedIdentityStr << std::endl;
+            std::cout << "Validation Token is valid!" << std::endl;
+            std::cout << validatedIdentityStr << std::endl;
         } else {
-            std::cout  << "Validation Token is NOT valid!" << std::endl;
-            std::cout  << validatedIdentityStr << std::endl;
+            std::cout << "Validation Token is NOT valid!" << std::endl;
+            std::cout << validatedIdentityStr << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "private-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "identity-valid. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "private-key-get. Error: " << exception.what() << std::endl;
+        std::cerr << "identity-valid. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

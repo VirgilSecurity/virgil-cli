@@ -58,27 +58,24 @@ namespace vcli = virgil::cli;
 #define MAIN private_key_get_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
         std::string description = "Get the private key into the Private Key Service\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "virgil private-key-get -a <card_id> -f <validated_identity.txt> -o private.vkey\n");
+        std::vector<std::string> examples;
+        examples.push_back("virgil private-key-get -a <card_id> -f <validated_identity.txt> -o private.vkey\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier",
-                true, "", "");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "");
 
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identities", "Validated identity",
-                true, "", "file");
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identities", "Validated identity", true, "",
+                                                          "file");
 
         cmd.add(validatedIdentityArg);
         cmd.add(cardIdArg);
@@ -86,12 +83,15 @@ int MAIN(int argc, char **argv) {
         cmd.parse(argc, argv);
 
         std::string cardId = cardIdArg.getValue();
-        vsdk::model::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityArg.getValue());
+        vsdk::dto::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityArg.getValue());
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
-        vsdk::model::PrivateKey privateKey = servicesHub.privateKey().get(cardId, validatedIdentity);
-        std::string privateKeyStr = vsdk::io::Marshaller<vsdk::model::PrivateKey>::toJson<4>(privateKey);
+        vsdk::models::PrivateKeyModel privateKey = servicesHub.privateKey().get(cardId, validatedIdentity);
+        std::string privateKeyStr = vsdk::io::Marshaller<vsdk::models::PrivateKeyModel>::toJson<4>(privateKey);
         vcli::writeBytes(outArg.getValue(), privateKeyStr);
+
+        std::cout << "Private key связанный с Карточкой имеющий card-id:" << cardIdArg.getValue() << " получен"
+                  << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

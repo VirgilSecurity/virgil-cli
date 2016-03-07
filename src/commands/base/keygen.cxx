@@ -56,13 +56,12 @@ namespace vcli = virgil::cli;
 /**
   * @brief Convert string representation of the Elliptic Curve group to the appropriate constant.
   */
-static vcrypto::VirgilKeyPair::Type ec_key_group_from_param(const std::string &param);
+static vcrypto::VirgilKeyPair::Type ec_key_group_from_param(const std::string& param);
 
 /**
  * @brief Convert string representation of the RSA group to the appropriate constant.
  */
-static vcrypto::VirgilKeyPair::Type rsa_key_group_from_param(const std::string &param);
-
+static vcrypto::VirgilKeyPair::Type rsa_key_group_from_param(const std::string& param);
 
 #ifdef SPLIT_CLI
 #define MAIN main
@@ -70,34 +69,29 @@ static vcrypto::VirgilKeyPair::Type rsa_key_group_from_param(const std::string &
 #define MAIN keygen_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
         std::string description = "Generate Elliptic Curve Private Key or RSA Private Key.\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "Generate Elliptic 512-bits Brainpool Curve Private Key(default):\n"
-                "virgil keygen -o private.key\n");
+        std::vector<std::string> examples;
+        examples.push_back("Generate Elliptic 512-bits Brainpool Curve Private Key(default):\n"
+                           "virgil keygen -o private.key\n");
 
-        examples.push_back(
-                "Generate Elliptic Curve Private Key with password protection:\n"
-                "virgil keygen -o private.key -p strong_private_key_password\n");
+        examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
+                           "virgil keygen -o private.key -p strong_private_key_password\n");
 
-        examples.push_back(
-                "Generate Elliptic 521-bits NIST Curve Private Key:\n"
-                "virgil keygen -o private.key -e secp521r1\n");
+        examples.push_back("Generate Elliptic 521-bits NIST Curve Private Key:\n"
+                           "virgil keygen -o private.key -e secp521r1\n");
 
-        examples.push_back(
-                "Generate RSA Private Key:\n"
-                "virgil keygen -o private.key -r 8192\n");
+        examples.push_back("Generate RSA Private Key:\n"
+                           "virgil keygen -o private.key -r 8192\n");
 
         std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Private key. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Private key. If omitted stdout is used.", false, "", "file");
 
         std::vector<std::string> ec_key;
         ec_key.push_back("bp256r1");
@@ -113,20 +107,19 @@ int MAIN(int argc, char **argv) {
         ec_key.push_back("secp256k1");
         TCLAP::ValuesConstraint<std::string> allowedEcKey(ec_key);
 
-        TCLAP::ValueArg<std::string> ecArg("e", "ec",
-                "Generate elliptic curve key with one of the following curves:\n"
-                "\t* bp256r1 - 256-bits Brainpool curve;\n"
-                "\t* bp384r1 - 384-bits Brainpool curve;\n"
-                "\t* bp512r1 - 512-bits Brainpool curve (default);\n"
-                "\t* secp192r1 - 192-bits NIST curve;\n"
-                "\t* secp224r1 - 224-bits NIST curve;\n"
-                "\t* secp256r1 - 256-bits NIST curve;\n"
-                "\t* secp384r1 - 384-bits NIST curve;\n"
-                "\t* secp521r1 - 521-bits NIST curve;\n"
-                "\t* secp192k1 - 192-bits \"Koblitz\" curve;\n"
-                "\t* secp224k1 - 224-bits \"Koblitz\" curve;\n"
-                "\t* secp256k1 - 256-bits \"Koblitz\" curve.\n",
-                false, "", &allowedEcKey);
+        TCLAP::ValueArg<std::string> ecArg("e", "ec", "Generate elliptic curve key with one of the following curves:\n"
+                                                      "\t* bp256r1 - 256-bits Brainpool curve;\n"
+                                                      "\t* bp384r1 - 384-bits Brainpool curve;\n"
+                                                      "\t* bp512r1 - 512-bits Brainpool curve (default);\n"
+                                                      "\t* secp192r1 - 192-bits NIST curve;\n"
+                                                      "\t* secp224r1 - 224-bits NIST curve;\n"
+                                                      "\t* secp256r1 - 256-bits NIST curve;\n"
+                                                      "\t* secp384r1 - 384-bits NIST curve;\n"
+                                                      "\t* secp521r1 - 521-bits NIST curve;\n"
+                                                      "\t* secp192k1 - 192-bits \"Koblitz\" curve;\n"
+                                                      "\t* secp224k1 - 224-bits \"Koblitz\" curve;\n"
+                                                      "\t* secp256k1 - 256-bits \"Koblitz\" curve.\n",
+                                           false, "", &allowedEcKey);
 
         std::vector<std::string> rsa_key;
         rsa_key.push_back("rsa3072");
@@ -135,14 +128,16 @@ int MAIN(int argc, char **argv) {
         TCLAP::ValuesConstraint<std::string> allowedRSAKey(rsa_key);
 
         TCLAP::ValueArg<std::string> rsaArg("r", "rsa", "Generate RSA key with one following pos:\n"
-                "\t* rsa3072;\n"
-                "\t* rsa4096;\n"
-                "\t* rsa8192",
-                false, "", &allowedRSAKey);
+                                                        "\t* rsa3072;\n"
+                                                        "\t* rsa4096;\n"
+                                                        "\t* rsa8192",
+                                            false, "", &allowedRSAKey);
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Password to be used for Private"
-                " Key encryption. If omitted Private Key is stored in the plain format.\n"
-                "Note, that password max length is 31 ASCII characters.", false, "", "arg");
+        TCLAP::ValueArg<std::string> privatePasswordArg(
+            "p", "key-pwd", "Password to be used for Private"
+                            " Key encryption. If omitted Private Key is stored in the plain format.\n"
+                            "Note, that password max length is 31 ASCII characters.",
+            false, "", "arg");
 
         cmd.add(privatePasswordArg);
         cmd.add(rsaArg);
@@ -180,18 +175,20 @@ int MAIN(int argc, char **argv) {
         // Write private key
         virgil::cli::writeBytes(outArg.getValue(), privateKey);
 
+        std::cout << "Private key generated" << std::endl;
+
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "private-key-gen. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "key-gen. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "private-key-gen. Error: " << exception.what() << std::endl;
+        std::cerr << "key-gen. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;
 }
 
-static vcrypto::VirgilKeyPair::Type ec_key_group_from_param(const std::string &param) {
+static vcrypto::VirgilKeyPair::Type ec_key_group_from_param(const std::string& param) {
     std::map<std::string, vcrypto::VirgilKeyPair::Type> ecKeyGroup;
     ecKeyGroup["secp192r1"] = vcrypto::VirgilKeyPair::Type_EC_SECP192R1;
     ecKeyGroup["secp224r1"] = vcrypto::VirgilKeyPair::Type_EC_SECP224R1;
@@ -213,7 +210,7 @@ static vcrypto::VirgilKeyPair::Type ec_key_group_from_param(const std::string &p
     return vcrypto::VirgilKeyPair::Type_Default;
 }
 
-static vcrypto::VirgilKeyPair::Type rsa_key_group_from_param(const std::string &param) {
+static vcrypto::VirgilKeyPair::Type rsa_key_group_from_param(const std::string& param) {
     std::map<std::string, vcrypto::VirgilKeyPair::Type> ecKeyGroup;
     ecKeyGroup["rsa3072"] = vcrypto::VirgilKeyPair::Type_RSA_3072;
     ecKeyGroup["rsa4096"] = vcrypto::VirgilKeyPair::Type_RSA_4096;

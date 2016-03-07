@@ -42,61 +42,55 @@
 
 #include <virgil/crypto/VirgilByteArray.h>
 
-#include <virgil/sdk/model/Card.h>
-#include <virgil/sdk/model/ValidatedIdentity.h>
+#include <virgil/sdk/models/CardModel.h>
+#include <virgil/sdk/dto/ValidatedIdentity.h>
 
+namespace virgil {
+namespace cli {
 
-namespace virgil { namespace cli {
+    //-------------------------------------------------------------------------------------
 
-//-------------------------------------------------------------------------------------
+    void printVersion(std::ostream& out, const char* programName);
 
-void printVersion(std::ostream& out, const char *programName);
+    //-------------------------------------------------------------------------------------
 
-//-------------------------------------------------------------------------------------
+    void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg);
 
-void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg);
+    void checkFormatIdentity(const std::string& args, const std::string& type);
 
-void checkFormatIdentity(const std::string& args, const std::string& type);
+    //-------------------------------------------------------------------------------------
 
-//-------------------------------------------------------------------------------------
+    virgil::crypto::VirgilByteArray readFileBytes(const std::string& in);
 
-virgil::crypto::VirgilByteArray readFileBytes(const std::string& in);
+    /**
+     * @brief Read bytes from the given source.
+     * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
+     */
+    virgil::crypto::VirgilByteArray readInput(const std::string& in);
 
-/**
- * @brief Read bytes from the given source.
- * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
- */
-virgil::crypto::VirgilByteArray readInput(const std::string& in);
+    virgil::sdk::dto::ValidatedIdentity readValidateIdentity(const std::string& in);
 
+    virgil::sdk::models::CardModel readCard(const std::string& in);
 
-virgil::sdk::model::ValidatedIdentity readValidateIdentity(const std::string& in);
+    //-------------------------------------------------------------------------------------
 
+    /**
+     * @brief Write bytes to the given destination.
+     * @param out - if empty or equal to "-" then 'stdout' is used, otherwise - path to file.
+     */
+    void writeBytes(const std::string& out, const virgil::crypto::VirgilByteArray& data);
+    void writeBytes(const std::string& out, const std::string& data);
 
-virgil::sdk::model::Card readCard(const std::string& in);
+    std::string getDescriptionMessage(const std::string description, std::vector<std::string> examples);
 
+    //-------------------------------------------------------------------------------------
 
-//-------------------------------------------------------------------------------------
+    std::vector<virgil::sdk::models::CardModel> getRecipientCards(const std::string& type, const std::string& value,
+                                                                  const bool includeUnconrimedCard);
 
-/**
- * @brief Write bytes to the given destination.
- * @param out - if empty or equal to "-" then 'stdout' is used, otherwise - path to file.
- */
-void writeBytes(const std::string& out, const virgil::crypto::VirgilByteArray& data);
-void writeBytes(const std::string& out, const std::string& data);
-
-
-std::string getDescriptionMessage(const std::string description, std::vector<std::string> examples);
-
-//-------------------------------------------------------------------------------------
-
-
-std::vector<virgil::sdk::model::Card> getRecipientCards(const std::string& type, const std::string& value,
-        const bool includeUnconrimedCard);
-
-std::vector<std::string> getRecipientCardsId(const std::string& type, const std::string& value,
-        const bool includeUnconrimedCard);
-
-
-}}
+    std::vector<std::string> getRecipientCardsId(const std::string& type, const std::string& value,
+                                                 const bool includeUnconrimedCard);
+}
+}
 
 #endif /* VIRGIL_CLI_COMMON_UTIL_H */

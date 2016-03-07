@@ -58,38 +58,31 @@ namespace vcli = virgil::cli;
 #define MAIN card_get_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
         std::string description = "Get user's Virgil Card/Cards from the Virgil Keys service\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "Get Virgil Card by card-id:\n"
-                "virgil card-get -a <card-id>\n");
+        std::vector<std::string> examples;
+        examples.push_back("Получаем Карточку по card-id:\n"
+                           "virgil card-get -a <card-id>\n");
 
-        examples.push_back(
-                "Get Virgil Cars:\n"
-                "virgil card-get -a <card-id> -e <public-key-id> -k <private_key>\n");
+        examples.push_back("Получаем Карты связанные по public-key-id:\n"
+                           "virgil card-get -a <card-id> -e <public-key-id> -k <private_key>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Card. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Card. If omitted stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n",
-                false, "", "arg");
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", false, "", "arg");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Private key",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", false, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "private-key-pass", "Private key pass",
-                false, "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "key-pwd", "Private key pass", false, "", "arg");
 
         cmd.add(privateKeyPassArg);
         cmd.add(privateKeyArg);
@@ -106,21 +99,25 @@ int MAIN(int argc, char **argv) {
             vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privateKeyPassArg.getValue());
             vsdk::Credentials credentials(privateKey, privateKeyPass);
 
-            std::vector<vsdk::model::Card> cards = servicesHub.card().get(publicKeyIdArg.getValue(),
-                    cardIdArg.getValue(), credentials);
+            std::vector<vsdk::models::CardModel> cards =
+                servicesHub.card().get(publicKeyIdArg.getValue(), cardIdArg.getValue(), credentials);
             std::string cardsStr = vsdk::io::cardsToJson(cards, 4);
             vcli::writeBytes(outArg.getValue(), cardsStr);
+
+            std::cout << "Карточки связанные public-key-id:" << publicKeyIdArg.getValue() << " получены" << std::endl;
         } else {
-            vsdk::model::Card card = servicesHub.card().get(cardIdArg.getValue());
-            std::string cardStr = vsdk::io::Marshaller<vsdk::model::Card>::toJson<4>(card);
+            vsdk::models::CardModel card = servicesHub.card().get(cardIdArg.getValue());
+            std::string cardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(card);
             vcli::writeBytes(outArg.getValue(), cardStr);
+
+            std::cout << "Карточка c card-id:" << cardIdArg.getValue() << " получена" << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "private-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "private-key-get. Error: " << exception.what() << std::endl;
+        std::cerr << "card-get. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

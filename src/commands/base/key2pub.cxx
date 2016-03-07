@@ -50,7 +50,7 @@ namespace vcli = virgil::cli;
 /**
  * @brief Returns whether underling data is ASN.1 structure or not.
  */
-inline bool is_asn1 (const vcrypto::VirgilByteArray& data) {
+inline bool is_asn1(const vcrypto::VirgilByteArray& data) {
     return data.size() > 0 && data[0] == 0x30;
 }
 
@@ -60,45 +60,43 @@ inline bool is_asn1 (const vcrypto::VirgilByteArray& data) {
 #define MAIN key2pub_main
 #endif
 
-int MAIN(int argc, char **argv) {
-   try {
+int MAIN(int argc, char** argv) {
+    try {
         std::string description = "Extract Public Key from the Private Key.\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "virgil key2pub -i private.key -o public.key\n");
+        std::vector<std::string> examples;
+        examples.push_back("virgil key2pub -i private.key -o public.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Private key. If omitted stdin is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", "Private key. If omitted stdin is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Public key. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Public key. If omitted stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password.",
-                false, "", "arg");
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password.", false, "", "arg");
 
         cmd.add(privatePasswordArg);
         cmd.add(outArg);
         cmd.add(inArg);
         cmd.parse(argc, argv);
 
-         // Prepare input. Read private key.
-         vcrypto::VirgilByteArray privateKey = virgil::cli::readInput(inArg.getValue());
+        // Prepare input. Read private key.
+        vcrypto::VirgilByteArray privateKey = virgil::cli::readInput(inArg.getValue());
 
-         // Extract public key.
-         vcrypto::foundation::VirgilAsymmetricCipher cipher;
-         cipher.setPrivateKey(privateKey, virgil::crypto::str2bytes(privatePasswordArg.getValue()));
+        // Extract public key.
+        vcrypto::foundation::VirgilAsymmetricCipher cipher;
+        cipher.setPrivateKey(privateKey, virgil::crypto::str2bytes(privatePasswordArg.getValue()));
 
-        vcrypto::VirgilByteArray publicKey = is_asn1(privateKey) ?
-                 cipher.exportPublicKeyToDER() : cipher.exportPublicKeyToPEM();
+        vcrypto::VirgilByteArray publicKey =
+            is_asn1(privateKey) ? cipher.exportPublicKeyToDER() : cipher.exportPublicKeyToPEM();
 
-         // Prepare output. Output public key
-         virgil::cli::writeBytes(outArg.getValue(), publicKey);
+        // Prepare output. Output public key
+        virgil::cli::writeBytes(outArg.getValue(), publicKey);
+
+        std::cout << "Public key extracted from private key" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "key2pub. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

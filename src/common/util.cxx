@@ -54,22 +54,14 @@
 
 using nlohmann::json;
 
-using virgil::crypto::VirgilByteArray;
-
-using virgil::sdk::ServicesHub;
-using virgil::sdk::model::Card;
-using virgil::sdk::model::Identity;
-using virgil::sdk::model::IdentityType;
-using virgil::sdk::model::ValidatedIdentity;
-using virgil::sdk::model::Card;
-using virgil::sdk::io::Marshaller;
-using virgil::sdk::io::cardsFromJson;
+namespace vsdk = virgil::sdk;
+namespace vcrypto = virgil::crypto;
 
 typedef std::pair<std::string, std::string> PairStringString;
 
-
-void virgil::cli::printVersion(std::ostream& out, const char *programName) {
-    out << programName << "  " << "version: "<< virgil::cli_version() << std::endl;
+void virgil::cli::printVersion(std::ostream& out, const char* programName) {
+    out << programName << "  "
+        << "version: " << virgil::cli_version() << std::endl;
 }
 
 //-------------------------------------------------------------------------------------
@@ -77,59 +69,56 @@ void virgil::cli::printVersion(std::ostream& out, const char *programName) {
 void virgil::cli::checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
     if (type != "pass" && type != "id" && type != "vcard" && type != "email") {
-        throw std::invalid_argument(
-                    "invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                     "Where <key> = [pass|id|vcard|email]");
+        throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
+                                                                     "Where <key> = [pass|id|vcard|email]");
     }
 }
 
 void virgil::cli::checkFormatIdentity(const std::string& args, const std::string& type) {
     if (type != "email") {
-        throw std::invalid_argument(
-                    args + " invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                    "Where <key> = [email].");
+        throw std::invalid_argument(args + " invalid type format: " + type + ". Expected format: '<key>:<value>'. "
+                                                                             "Where <key> = [email].");
     }
 }
 
 //-------------------------------------------------------------------------------------
 
-VirgilByteArray virgil::cli::readFileBytes(const std::string& in) {
+vcrypto::VirgilByteArray virgil::cli::readFileBytes(const std::string& in) {
     std::ifstream inFile(in, std::ios::in | std::ios::binary);
     if (!inFile) {
         throw std::invalid_argument("can not read file: " + in);
     }
-    return VirgilByteArray((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+    return vcrypto::VirgilByteArray((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
 }
 
-VirgilByteArray virgil::cli::readInput(const std::string& in) {
-    if(in.empty() || in == "-") {
-        return VirgilByteArray((std::istreambuf_iterator<char>(std::cin)), std::istreambuf_iterator<char>());
+vcrypto::VirgilByteArray virgil::cli::readInput(const std::string& in) {
+    if (in.empty() || in == "-") {
+        return vcrypto::VirgilByteArray((std::istreambuf_iterator<char>(std::cin)), std::istreambuf_iterator<char>());
     }
     return readFileBytes(in);
 }
 
-ValidatedIdentity virgil::cli::readValidateIdentity(const std::string& in) {
+vsdk::dto::ValidatedIdentity virgil::cli::readValidateIdentity(const std::string& in) {
     std::ifstream inFile(in, std::ios::in | std::ios::binary);
     if (!inFile) {
         throw std::invalid_argument("can not read file: " + in);
     }
     std::string validatedIdentityStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-    return Marshaller<ValidatedIdentity>::fromJson(validatedIdentityStr);
+    return vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::fromJson(validatedIdentityStr);
 }
 
-Card virgil::cli::readCard(const std::string& in) {
+vsdk::models::CardModel virgil::cli::readCard(const std::string& in) {
     std::ifstream inFile(in, std::ios::in | std::ios::binary);
     if (!inFile) {
         throw std::invalid_argument("can not read file: " + in);
     }
     std::string cardStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-    return Marshaller<Card>::fromJson(cardStr);
+    return vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(cardStr);
 }
-
 
 //-------------------------------------------------------------------------------------
 
-void virgil::cli::writeBytes(const std::string& out, const VirgilByteArray& data) {
+void virgil::cli::writeBytes(const std::string& out, const vcrypto::VirgilByteArray& data) {
     if (out.empty()) {
         std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(std::cout));
         std::cout << std::endl;
@@ -163,22 +152,17 @@ std::string virgil::cli::getDescriptionMessage(const std::string description, st
 
 //-------------------------------------------------------------------------------------
 
-std::vector<Card> virgil::cli::getRecipientCards(const std::string& type, const std::string& value,
-        const bool includeUnconrimedCard) {
+std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const std::string& type, const std::string& value,
+                                                                    const bool includeUnconrimedCard) {
 
-    std::vector<Card> recipientCards;
-    ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+    std::vector<vsdk::models::CardModel> recipientCards;
+    vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
     if (type == "id") {
         recipientCards.push_back(servicesHub.card().get(value));
     } else if (type == "email") {
-        Identity identity(value, IdentityType::Email);
-        std::vector<Card> cards;
-        if (!includeUnconrimedCard) {
-            cards = servicesHub.card().search(identity, std::vector<std::string>(),
-                    includeUnconrimedCard);
-        } else {
-            cards = servicesHub.card().search(identity);
-        }
+        vsdk::dto::Identity identity(value, vsdk::models::IdentityModel::Type::Email);
+        std::vector<vsdk::models::CardModel> cards;
+        cards = servicesHub.card().search(identity, includeUnconrimedCard);
         recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
     } else if (type == "vcard") {
         std::string pathTofile = value;
@@ -192,10 +176,11 @@ std::vector<Card> virgil::cli::getRecipientCards(const std::string& type, const 
 
         json tmp = json::parse(undefinedCardJsonStr);
         if (tmp.is_object()) {
-            Card card = Marshaller<Card>::fromJson(undefinedCardJsonStr);
+            vsdk::models::CardModel card =
+                vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(undefinedCardJsonStr);
             recipientCards.push_back(card);
         } else if (tmp.is_array()) {
-            std::vector<Card> cards = cardsFromJson(undefinedCardJsonStr);
+            std::vector<vsdk::models::CardModel> cards = vsdk::io::cardsFromJson(undefinedCardJsonStr);
             recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
         } else {
             // exception
@@ -206,10 +191,11 @@ std::vector<Card> virgil::cli::getRecipientCards(const std::string& type, const 
 }
 
 std::vector<std::string> virgil::cli::getRecipientCardsId(const std::string& type, const std::string& value,
-        const bool includeUnconrimedCard) {
-    std::vector<Card> recipientCards = virgil::cli::getRecipientCards(type, value, includeUnconrimedCard);
+                                                          const bool includeUnconrimedCard) {
+    std::vector<vsdk::models::CardModel> recipientCards =
+        virgil::cli::getRecipientCards(type, value, includeUnconrimedCard);
     std::vector<std::string> recipientCardsId;
-    for(const auto& recipientCard : recipientCards) {
+    for (const auto& recipientCard : recipientCards) {
         recipientCardsId.push_back(recipientCard.getId());
     }
     return recipientCardsId;

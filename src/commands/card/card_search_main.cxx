@@ -60,40 +60,40 @@ namespace vcli = virgil::cli;
 #define MAIN card_search_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Create card.\n";
+        std::string description = "Search a Virgil Card from the Virgil Keys service \n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "Search Virgil Cards with confirm identity:\n"
-                "virgil card-search -d email:user_email");
+        std::vector<std::string> examples;
+        examples.push_back("Search Virgil Cards with confirm identity:\n"
+                           "virgil card-search -d email:user_email");
 
-        examples.push_back(
-                "Search Virgil Cards with unconfirm identity:\n"
-                "virgil card-search -d email:user_email -u 1");
+        examples.push_back("Search Virgil Cards include unconfirm identity:\n"
+                           "virgil card-search -d email:user_email -u");
 
         examples.push_back(
-                "Search Virgil Cards with confirm identity signed other Cards <user1_card_id> <user2_card_id>:\n"
-                "virgil card-search -d email:user_email -u 1 "
-                "<user1_card_id> <user1_card_id>");
+            "Search Virgil Cards with confirm identity signed other Cards <user1_card_id> <user2_card_id>:\n"
+            "virgil card-search -d email:user_email "
+            "<user1_card_id> <user1_card_id>");
 
+        examples.push_back(
+            "Search Virgil Cards with unconfirm identity signed other Cards <user1_card_id> <user2_card_id>:\n"
+            "virgil card-search -d email:user_email -u "
+            "<user1_card_id> <user1_card_id>");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Cards. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Cards. If omitted stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email, phone etc",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
 
         TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", "Search Cards include unconfirm identity", false);
 
         TCLAP::UnlabeledMultiArg<std::string> signedCardsIdArg("signed-card-id", "Signed card id", false, "card-id",
-                false);
+                                                               false);
 
         cmd.add(signedCardsIdArg);
         cmd.add(unconfirmedArg);
@@ -101,29 +101,31 @@ int MAIN(int argc, char **argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-
         auto identityPair = vcli::parsePair(identityArg.getValue());
         std::string arg = "-d, --identity";
         vcli::checkFormatIdentity(arg, identityPair.first);
         std::string userEmail = identityPair.second;
-        vsdk::model::Identity identity(userEmail, vsdk::model::IdentityType::Email);
+        vsdk::dto::Identity identity(userEmail, vsdk::models::IdentityModel::Type::Email);
 
-        bool includeUnconfirmed = false;
-        if (unconfirmedArg.isSet()) {
-            includeUnconfirmed = unconfirmedArg.getValue();
-        }
+        bool includeUnconfirmed = unconfirmedArg.getValue();
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
-        std::vector<vsdk::model::Card> foundCards;
+        std::vector<vsdk::models::CardModel> foundCards;
         if (signedCardsIdArg.isSet()) {
             std::vector<std::string> signedCardsId = signedCardsIdArg.getValue();
-            foundCards = servicesHub.card().search(identity, signedCardsId, includeUnconfirmed);
+            foundCards = servicesHub.card().search(identity, includeUnconfirmed, signedCardsId);
         } else {
-            foundCards = servicesHub.card().search(identity, std::vector<std::string>(), includeUnconfirmed);
+            foundCards = servicesHub.card().search(identity, includeUnconfirmed);
         }
 
         std::string foundCardsStr = vsdk::io::cardsToJson(foundCards, 4);
         vcli::writeBytes(outArg.getValue(), foundCardsStr);
+
+        if (foundCards.empty()) {
+            std::cout << "Cards by email: " << userEmail << " не найдены" << std::endl;
+        } else {
+            std::cout << "Cards by email: " << userEmail << " получены" << std::endl;
+        }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "card-search. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

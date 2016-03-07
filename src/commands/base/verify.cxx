@@ -46,7 +46,7 @@
 #include <virgil/crypto/VirgilStreamSigner.h>
 #include <virgil/crypto/stream/VirgilStreamDataSource.h>
 
-#include <virgil/sdk/model/Card.h>
+#include <virgil/sdk/models/CardModel.h>
 
 #include <cli/version.h>
 #include <cli/pair.h>
@@ -62,46 +62,41 @@ namespace vcli = virgil::cli;
 #define MAIN verify_main
 #endif
 
-
 static void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg);
 
-
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
         std::string description = "Verify data and signature with given user's identifier"
-                " or with it Virgil Card.\n";
+                                  " or with it Virgil Card.\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "virgil verify -i plain.txt -s plain.txt.sign -r email:bob@gmail.com\n"
-        );
+        std::vector<std::string> examples;
+        examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r email:bob@gmail.com\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be verified. If omitted stdin is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be verified. If omitted stdin is used.", false, "",
+                                           "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out",
-                "Verification result: success | failure. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg(
+            "o", "out", "Verification result: success | failure. If omitted stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> signArg("s", "sign", "Digest sign.",
-                true, "", "file");
+        TCLAP::ValueArg<std::string> signArg("s", "sign", "Digest sign.", true, "", "file");
 
         TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirm "
-                "identity. Default false", false, "", "");
+                                                                 "identity. Default false",
+                                             false, "", "");
 
-        TCLAP::ValueArg<std::string> recipientArg("r", "recipient",
-                "Recipient defined in format:\n"
-                "[id|vcard|email]:<value>\n"
-                "where:\n"
-                "if `id`, then <value> - UUID associated with Virgil Card identifier;\n"
-                "if `vcard`, then <value> - user's Virgil Card file stored locally;\n"
-                "if `email`, then <value> - user email associated with Public Key.",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> recipientArg(
+            "r", "recipient", "Recipient defined in format:\n"
+                              "[id|vcard|email]:<value>\n"
+                              "where:\n"
+                              "if `id`, then <value> - UUID associated with Virgil Card identifier;\n"
+                              "if `vcard`, then <value> - user's Virgil Card file stored locally;\n"
+                              "if `email`, then <value> - user email associated with Public Key.",
+            true, "", "arg");
 
         cmd.add(recipientArg);
         cmd.add(unconfirmedArg);
@@ -134,7 +129,6 @@ int MAIN(int argc, char **argv) {
         if (!signFile) {
             throw std::invalid_argument("can not read file: " + signArg.getValue());
         }
-
         vcrypto::VirgilByteArray sign((std::istreambuf_iterator<char>(signFile)), std::istreambuf_iterator<char>());
 
         // Create signer
@@ -142,10 +136,10 @@ int MAIN(int argc, char **argv) {
 
         std::string type = recipientFormat.first;
         std::string value = recipientFormat.second;
-        std::vector<vsdk::model::Card> recipientCards = vcli::getRecipientCards(type, value,
-                unconfirmedArg.getValue());
+        std::vector<vsdk::models::CardModel> recipientCards =
+            vcli::getRecipientCards(type, value, unconfirmedArg.getValue());
 
-        for(const auto& recipientCard : recipientCards) {
+        for (const auto& recipientCard : recipientCards) {
             bool verified = signer.verify(dataSource, sign, recipientCard.getPublicKey().getKey());
             std::string recipientCardId = recipientCard.getId();
             if (verified) {
@@ -158,10 +152,10 @@ int MAIN(int argc, char **argv) {
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "verify. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "Error: " << exception.what() << std::endl;
+        std::cerr << "verify. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -171,9 +165,7 @@ int MAIN(int argc, char **argv) {
 void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
     if (type != "id" && type != "vcard" && type != "email") {
-        throw std::invalid_argument(
-                    "invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                     "Where <key> = [id|vcard|email]");
+        throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
+                                                                     "Where <key> = [id|vcard|email]");
     }
 }
-

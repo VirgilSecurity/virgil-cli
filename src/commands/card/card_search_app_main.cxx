@@ -58,29 +58,27 @@ namespace vcli = virgil::cli;
 #define MAIN card_search_app_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Get user's Private Key from the Virgil Private Keys service.\n";
+        std::string description = "Search an Application Virgil Card from the Virgil Keys service.\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "Search application cards:\n"
-                "virgil card-search-app -c <app_name>\n");
+        std::vector<std::string> examples;
+        examples.push_back("Search application cards:\n"
+                           "virgil card-search-app -c <app_name>\n");
 
-        examples.push_back(
-                "Search all application cards:\n"
-                "virgil card-search-app -c \"*\"\n");
+        examples.push_back("Get all application cards:\n"
+                           "virgil card-search-app -c \"*\"\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Application cards. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Application cards. If omitted stdout is used.", false, "",
+                                            "file");
 
-        TCLAP::ValueArg<std::string> applicationNameArg("c","application-name",
-                "Application name, name = '*' - get all Cards\n", true, "","arg" );
+        TCLAP::ValueArg<std::string> applicationNameArg(
+            "c", "application-name", "Application name, name = '*' - get all Cards\n", true, "", "arg");
 
         cmd.add(applicationNameArg);
         cmd.add(outArg);
@@ -89,9 +87,15 @@ int MAIN(int argc, char **argv) {
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         std::string appName = "com.virgilsecurity." + applicationNameArg.getValue();
 
-        std::vector<vsdk::model::Card> appCards = servicesHub.card().searchApp(appName);
+        std::vector<vsdk::models::CardModel> appCards = servicesHub.card().searchApp(appName);
         std::string appCardsStr = virgil::sdk::io::cardsToJson(appCards, 4);
         vcli::writeBytes(outArg.getValue(), appCardsStr);
+
+        if (appCards.empty()) {
+            std::cout << "Application card by name: " << applicationNameArg.getValue() << " не найден" << std::endl;
+        } else {
+            std::cout << "Application card by name: " << applicationNameArg.getValue() << " получена" << std::endl;
+        }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "card-search-app. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

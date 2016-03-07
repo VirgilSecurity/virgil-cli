@@ -58,27 +58,23 @@ namespace vcli = virgil::cli;
 #define MAIN private_key_del_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
         std::string description = "Delete the private key into the Private Key Service\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "virgil private-key-del -k private.key -a <card_id>\n");
+        std::vector<std::string> examples;
+        examples.push_back("virgil private-key-del -k private.key -a <card_id>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier",
-                true, "", "");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Private Key",
-                true, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password",
-                false, "", "arg");
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password", false, "", "arg");
 
         cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);

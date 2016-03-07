@@ -45,44 +45,44 @@
 #include <cli/version.h>
 #include <cli/util.h>
 
-typedef int (*main_func)(int argc, char **argv);
+typedef int (*main_func)(int argc, char** argv);
 
 // simple-action
-int keygen_main(int argc, char **argv);
-int key2pub_main(int argc, char **argv);
-int encrypt_main(int argc, char **argv);
-int decrypt_main(int argc, char **argv);
-int sign_main(int argc, char **argv);
-int verify_main(int argc, char **argv);
+int keygen_main(int argc, char** argv);
+int key2pub_main(int argc, char** argv);
+int encrypt_main(int argc, char** argv);
+int decrypt_main(int argc, char** argv);
+int sign_main(int argc, char** argv);
+int verify_main(int argc, char** argv);
 
 // module-action
-int identity_verify_main(int argc, char **argv);
-int identity_confirm_main(int argc, char **argv);
-int identity_validate_main(int argc, char **argv);
+int identity_verify_main(int argc, char** argv);
+int identity_confirm_main(int argc, char** argv);
+int identity_validate_main(int argc, char** argv);
 
-int card_create_main(int argc, char **argv);
-int card_get_main(int argc, char **argv);
-int card_search_main(int argc, char **argv);
-int card_search_app_main(int argc, char **argv);
-int card_sign_main(int argc, char **argv);
-int card_unsign_main(int argc, char **argv);
-int card_revoke_main(int argc, char **argv);
+int card_create_main(int argc, char** argv);
+int card_get_main(int argc, char** argv);
+int card_search_main(int argc, char** argv);
+int card_search_app_main(int argc, char** argv);
+int card_sign_main(int argc, char** argv);
+int card_unsign_main(int argc, char** argv);
+int card_revoke_main(int argc, char** argv);
 
-int public_key_get_main(int argc, char **argv);
-int public_key_revoke_main(int argc, char **argv);
+int public_key_get_main(int argc, char** argv);
+int public_key_revoke_main(int argc, char** argv);
 
-int private_key_add_main(int argc, char **argv);
-int private_key_get_main(int argc, char **argv);
-int private_key_del_main(int argc, char **argv);
+int private_key_add_main(int argc, char** argv);
+int private_key_get_main(int argc, char** argv);
+int private_key_del_main(int argc, char** argv);
 
+static void print_usage(std::ostream& out, const char* programName);
 
-static void print_usage(std::ostream &out, const char *programName);
-
-
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     // Parse arguments.
     if (argc < 2) {
-        std::cerr << "Error: " << " Required argument missing: " << "command" << std::endl;
+        std::cerr << "Error: "
+                  << " Required argument missing: "
+                  << "command" << std::endl;
         print_usage(std::cerr, argv[0]);
         return EXIT_FAILURE;
     }
@@ -129,49 +129,74 @@ int main(int argc, char **argv) {
     if (module != commandsMap.end()) {
         module->second(argc - 1, argv + 1);
     } else {
-        std::cerr << "Error: " << "command '" << firstArg << "' not found" << std::endl;
+        std::cerr << "Error: "
+                  << "command '" << firstArg << "' not found" << std::endl;
         return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;
 }
 
-void print_usage(std::ostream &out, const char *programName) {
-    std::string doc =
-            "command [command_opts] [command_args]\n"
-            "DESCRIPTION:\n"
-            "The 'virgil' program is a command line tool for using Virgil Security\n"
-            "stack functionality:\n"
-            "encrypt, decrypt, sign and verify data;\n"
-            "interact with Virgil Keys Service;\n"
-            "interact with Virgil Private Keys Service.\n\n"
+void print_usage(std::ostream& out, const char* programName) {
+    std::string doc = "command [command_opts] [command_args]\n"
+                      "DESCRIPTION:\n"
+                      "The 'virgil' program is a command line tool for using Virgil Security\n"
+                      "stack functionality:\n"
+                      "encrypt, decrypt, sign and verify data;\n"
+                      "interact with Virgil Keys Service;\n"
+                      "interact with Virgil Private Keys Service.\n\n"
 
-            "COMMON COMMANDS:\n"
+                      "COMMON COMMANDS:\n"
 
-            "keygen                      Generate private key with given parameters.\n\n"
+                      "keygen                      Generate private key with given parameters.\n\n"
 
-            "key2pub                     Extract Public Key from the Private Key.\n\n"
+                      "key2pub                     Extract Public Key from the Private Key.\n\n"
 
-            "encrypt                     Encrypt data for given recipients which can be\n"
-            "                            defined by Virgil Public Keys and by passwords.\n\n"
+                      "encrypt                     Encrypt data for given recipients which can be\n"
+                      "                            defined by Virgil Public Keys and by passwords.\n\n"
 
-            "decrypt                     Decrypt data for given recipient which can be\n"
-            "                            defined by Virgil Public Key or by password.\n\n"
+                      "decrypt                     Decrypt data for given recipient which can be\n"
+                      "                            defined by Virgil Public Key or by password.\n\n"
 
-            "sign                        Sign data with Private Key.\n\n"
+                      "sign                        Sign data with Private Key.\n\n"
 
-            "verify                      Verify data with Virgil Public Key.\n\n\n"
+                      "verify                      Verify data with Virgil Public Key.\n\n\n"
 
+                      "VIRGIL CARD COMMANDS:\n"
 
-            "VIRGIL CARD COMMANDS:\n"
+                      "card-create                 Create card\n\n"
 
-            "card-create                 Create card\n\n"
+                      "card-revoke                 Revoke Card\n\n"
 
-            "card-revoke                 Revoke Virgil Card.\n\n"
+                      "card-search                 Search by criteria\n\n"
 
-            "card-search                 Search by criteria\n\n";
+                      "card-search-app             Search an Application Card\n\n"
 
-    out << "USAGE: "  <<  programName << " " << doc << std::endl;
+                      "card-sign                   Sign a Card\n\n"
+
+                      "card-unsign                 Unsign the Card\n\n\n"
+
+                      "PUBCLIC KEY COMMANDS:\n"
+
+                      "public-key-revoke           Revoce Public Key\n\n"
+
+                      "public-key-get              Get public key\n\n\n"
+
+                      "PRIVATE KEY COMMANDS:\n"
+
+                      "public-key-revoke           Revoce Public Key\n\n"
+
+                      "public-key-get              Get public key\n\n\n"
+
+                      "IDENTITY COMMANDS:\n"
+
+                      "identity-verify             Identity verify\n\n"
+
+                      "identity-confirm            Identity confirm\n\n"
+
+                      "identity-valid              Identity valid\n\n\n";
+
+    out << "USAGE: " << programName << " " << doc << std::endl;
 }
 
 #endif /* SPLIT_CLI */

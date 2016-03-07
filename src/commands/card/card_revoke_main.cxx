@@ -59,45 +59,38 @@ namespace vcli = virgil::cli;
 #define MAIN card_revoke_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
         std::string description = "Revoke Virgil Card from the Virgil Public Key service.\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "Revoke Virgil Card with confirm identity:\n"
-                "virgil card-revoke -a <card_id> -d email:user@domain.com -t <validation_token> "
-                "-k <private_key>\n");
+        std::vector<std::string> examples;
+        examples.push_back("Revoke Virgil Card with confirm identity:\n"
+                           "virgil card-revoke -a <card_id> -f <validated-identities.file> "
+                           "-k <private_key>\n");
 
-        examples.push_back(
-                "Revoke Virgil Card with confirm identity:\n"
-                "virgil card-revoke -a <card_id> -d email:user@domain.com "
-                "-k <private_key>\n");
+        examples.push_back("Revoke Virgil Card with confirm identity:\n"
+                           "virgil card-revoke -a <card_id> -d email:user@domain.com "
+                           "-k <private_key>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity user",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity user", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> validationTokenArg("t", "validation-token", "Validation token",
-                false, "", "");
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identities", "Validated identity", true, "",
+                                                          "file");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Private key",
-                true, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "private-key-pass", "Private key pass",
-                false, "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "key-pwd", "Private key pass", false, "", "arg");
 
         cmd.add(privateKeyPassArg);
         cmd.add(privateKeyArg);
-        cmd.add(validationTokenArg);
-        cmd.add(identityArg);
+        cmd.xorAdd(validatedIdentityArg, identityArg);
         cmd.add(cardIdArg);
         cmd.parse(argc, argv);
 
@@ -106,6 +99,9 @@ int MAIN(int argc, char **argv) {
         std::string cardId = cardIdArg.getValue();
 
         auto identityPair = vcli::parsePair(identityArg.getValue());
+        // check identity type: email
+        std::string arg = "-d, --identity";
+        vcli::checkFormatIdentity(arg, identityPair.first);
         std::string userEmail = identityPair.second;
 
         std::string pathPrivateKey = privateKeyArg.getValue();
@@ -116,14 +112,14 @@ int MAIN(int argc, char **argv) {
         vsdk::Credentials credentials(privateKey, privateKeyPass);
 
         std::string messageSuccess = "Card with card-id " + cardIdArg.getValue() + " revoked.";
-        if (validationTokenArg.isSet()) {
-            std::string validationToken = validationTokenArg.getValue();
-            vsdk::model::ValidatedIdentity validatedIdentity(validationToken, userEmail,
-                    vsdk::model::IdentityType::Email);
+        if (validatedIdentityArg.isSet()) {
+            vsdk::dto::ValidatedIdentity validatedIdentity =
+                vcli::readValidateIdentity(validatedIdentityArg.getValue());
+
             servicesHub.card().revoke(cardId, validatedIdentity, credentials);
             std::cout << messageSuccess << std::endl;
         } else {
-            vsdk::model::Identity identity(userEmail, vsdk::model::IdentityType::Email);
+            vsdk::dto::Identity identity(userEmail, vsdk::models::IdentityModel::Type::Email);
             servicesHub.card().revoke(cardId, identity, credentials);
             std::cout << messageSuccess << std::endl;
         }

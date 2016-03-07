@@ -106,9 +106,8 @@ function (virgil_add_dependency module target includes libraries)
         set (CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
             -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-            -DENABLE_TESTING:BOOL=OFF
-            -DVIRGIL_EXAMPLES:BOOL=OFF
-            -DDOXYGEN_EXCLUDE_PRIVATE=OFF
+            -DENABLE_STAGING_ENV=ON
+            -DINSTALL_EXT_LIBS=ON
         )
 
         if (CMAKE_PREFIX_PATH)
@@ -131,7 +130,7 @@ function (virgil_add_dependency module target includes libraries)
         if (NOT TARGET ${VIRGIL}_project)
             ExternalProject_Add (${VIRGIL}_project
                 GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil-sdk-cpp.git"
-                GIT_TAG "v3-create"
+                GIT_TAG "release"
                 PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil-sdk"
                 CMAKE_ARGS ${CMAKE_ARGS}
             )
@@ -141,7 +140,9 @@ function (virgil_add_dependency module target includes libraries)
         ExternalProject_Get_Property (${VIRGIL}_project INSTALL_DIR)
 
         set (VIRGIL_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}virgil_sdk${CMAKE_STATIC_LIBRARY_SUFFIX})
+
         set (REST_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}restless${CMAKE_STATIC_LIBRARY_SUFFIX})
+
         set (VIRGIL_INCLUDE_DIR "${INSTALL_DIR}/include")
         set (VIRGIL_LIBRARIES "${INSTALL_DIR}/lib/${VIRGIL_LIBRARY_NAME};${INSTALL_DIR}/lib/${REST_LIBRARY_NAME}")
 

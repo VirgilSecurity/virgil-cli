@@ -38,7 +38,7 @@
 
 namespace virgil {
 
-const char * cli_version() {
+const char* cli_version() {
     return "@CLI_VERSION@";
 }
 

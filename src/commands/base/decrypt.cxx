@@ -56,59 +56,58 @@ namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
 namespace vcli = virgil::cli;
 
-
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
 #define MAIN decrypt_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Decrypt data with given password or given Private Key.\n";
+        std::string description = "Decrypt data with given password or given Private Key + Virgil Card.\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "Decrypt data for user identified by password:\n"
-                "virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r pass:strong_password\n");
+        std::vector<std::string> examples;
+        examples.push_back("Decrypt data for user identified by password:\n"
+                           "virgil decrypt -i plain.txt.enc -o plain.txt -r pass:strong_password\n");
 
-        examples.push_back(
-                "Decrypt data for Bob identified by his key [id|vkey|email]:\n"
-                "virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r email:bob@domain.com\n");
+        examples.push_back("Decrypt data for Bob identified by his key [id|vcard|email]:\n"
+                           "virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r email:bob@domain.com\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be decrypted. If omitted stdin is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be decrypted. If omitted stdin is used.", false, "",
+                                           "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Decrypted data. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Decrypted data. If omitted stdout is used.", false, "",
+                                            "file");
 
-        TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info", "Content info. Use this option if"
-                " content info is not embedded in the encrypted data.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info",
+                                                    "Content info. Use this option if"
+                                                    " content info is not embedded in the encrypted data.",
+                                                    false, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Recipient's Private Ksey.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Recipient's Private Key"
-                " password (max length 31 ASCII characters).", false, "", "arg");
+        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key"
+                                                                        " password (max length 31 ASCII characters).",
+                                                        false, "", "arg");
 
         TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirm "
-                "identity. Default false", false, "", "arg");
+                                                                 "identity. Default false",
+                                             false, "", "arg");
 
-        TCLAP::ValueArg<std::string> recipientArg("r", "recipient",
-                "Recipient defined in format:\n"
-                "[pass|id|vcard|email]:<value>\n"
-                "where:\n"
-                "if `pass`, then <value> - recipient's password (max length 31 ASCII characters);\n"
-                "if `id`, then <value> - UUID associated with Virgil Card identifier;\n"
-                "if `vcard`, then <value> - user's Virgil Card file stored locally;\n"
-                "if `email`, then <value> - user email associated with Public Key.",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> recipientArg(
+            "r", "recipient", "Recipient defined in format:\n"
+                              "[pass|id|vcard|email]:<value>\n"
+                              "where:\n"
+                              "if `pass`, then <value> - recipient's password (max length 31 ASCII characters);\n"
+                              "if `id`, then <value> - UUID associated with Virgil Card identifier;\n"
+                              "if `vcard`, then <value> - user's Virgil Card file stored locally;\n"
+                              "if `email`, then <value> - user email associated with Public Key.",
+            true, "", "arg");
 
         cmd.add(recipientArg);
         cmd.add(unconfirmedArg);
@@ -119,14 +118,13 @@ int MAIN(int argc, char **argv) {
         cmd.add(inArg);
         cmd.parse(argc, argv);
 
-
         auto recipientFormat = vcli::parsePair(recipientArg.getValue());
         vcli::checkFormatRecipientArg(recipientFormat);
 
         // Create cipher
         vcrypto::VirgilStreamCipher cipher;
 
-        if(!contentInfoArg.getValue().empty()) {
+        if (!contentInfoArg.getValue().empty()) {
             // Set content info.
             std::ifstream contentInfoFile(contentInfoArg.getValue(), std::ios::in | std::ios::binary);
             if (!contentInfoFile) {
@@ -134,7 +132,7 @@ int MAIN(int argc, char **argv) {
             }
 
             vcrypto::VirgilByteArray contentInfo((std::istreambuf_iterator<char>(contentInfoFile)),
-                    std::istreambuf_iterator<char>());
+                                                 std::istreambuf_iterator<char>());
             cipher.setContentInfo(contentInfo);
         }
 
@@ -174,26 +172,32 @@ int MAIN(int argc, char **argv) {
         if (type == "pass") {
             vcrypto::VirgilByteArray pass = virgil::crypto::str2bytes(value);
             cipher.decryptWithPassword(dataSource, dataSink, pass);
-        } else  {
+
+            std::cout << "Файл расшифрован паролем" << std::endl;
+
+        } else {
+            // type = [id|vcard|email]
             // Read private key
             std::string pathToPrivateKeyFile = privateKeyArg.getValue();
             vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathToPrivateKeyFile);
             vcrypto::VirgilByteArray privateKeyPassword = vcrypto::str2bytes(privatePasswordArg.getValue());
 
-            // type = [id|vcard|email]
-            std::vector<std::string> recipientCardsId = vcli::getRecipientCardsId(type, value,
-                    unconfirmedArg.getValue());
-            for(const auto& recipientCardId : recipientCardsId) {
+            std::vector<std::string> recipientCardsId =
+                vcli::getRecipientCardsId(type, value, unconfirmedArg.getValue());
+
+            for (const auto& recipientCardId : recipientCardsId) {
                 cipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(recipientCardId), privateKey,
-                        privateKeyPassword);
+                                      privateKeyPassword);
             }
+
+            std::cout << "Файл расшифрован private key" << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "decrypt. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "Error: " << exception.what() << std::endl;
+        std::cerr << "decrypt. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

@@ -58,26 +58,23 @@ namespace vcli = virgil::cli;
 #define MAIN public_key_get_main
 #endif
 
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
-      std::string description =
-            "Get Virgil Public Key from the Virgil Keys service.\n";
+        std::string description = "Get Virgil Public Key from the Virgil Keys service.\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "Get Virgil Public Key:\n"
-                "virgil public-key-get -o public.vkey -e <public_key_id> \n");
+        std::vector<std::string> examples;
+        examples.push_back("Get Virgil Public Key:\n"
+                           "virgil public-key-get -o public.vkey -e <public_key_id> \n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted stdout is used.",
-                false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted stdout is used.", false, "",
+                                            "file");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", true, "", "arg");
 
         cmd.add(publicKeyIdArg);
         cmd.add(outArg);
@@ -86,9 +83,11 @@ int MAIN(int argc, char **argv) {
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         std::string publicKeyId = publicKeyIdArg.getValue();
 
-        vsdk::model::PublicKey publicKey = servicesHub.publicKey().get(publicKeyId);
-        std::string publicKeyStr = vsdk::io::Marshaller<vsdk::model::PublicKey>::toJson<4>(publicKey);
+        vsdk::models::PublicKeyModel publicKey = servicesHub.publicKey().get(publicKeyId);
+        std::string publicKeyStr = vsdk::io::Marshaller<vsdk::models::PublicKeyModel>::toJson<4>(publicKey);
         vcli::writeBytes(outArg.getValue(), publicKeyStr);
+
+        std::cout << "Public key по public-key-id:" << publicKeyIdArg.getValue() << " получен" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "public-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

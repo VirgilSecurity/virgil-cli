@@ -63,48 +63,40 @@ namespace vcli = virgil::cli;
 
 static void checkFormatRecipientArg(const std::string& type);
 
-
-int MAIN(int argc, char **argv) {
+int MAIN(int argc, char** argv) {
     try {
         std::string description =
-                "Revoke a chain of cards with (un)confirmed identities connected by public-key-id from "
-                "Virgil Keys Service.\n";
+            "Revoke a chain of cards with (un)confirmed identities connected by public-key-id from "
+            "Virgil Keys Service.\n";
 
-        std::vector <std::string> examples;
-        examples.push_back(
-                "Revoke a chain of cards with confirmed identities connected by public-key-id from "
-                "Virgil Keys Service:\n"
-                "virgil public-key-revoke -e <public_key_id> -a <card_id> -k <private_key>"
-                " -f <validated-identities-file>");
+        std::vector<std::string> examples;
+        examples.push_back("Revoke a chain of cards with confirmed identities connected by public-key-id from "
+                           "Virgil Keys Service:\n"
+                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k <private_key>"
+                           " -f <validated-identities-file>");
 
-        examples.push_back(
-                "Revoke a chain of cards with confirmed identities connected by public-key-id from "
-                "Virgil Keys Service:\n"
-                "virgil public-key-revoke -e <public_key_id> -a <card_id> -k <private_key>"
-                " -z <identities-file>");
+        examples.push_back("Revoke a chain of cards with confirmed identities connected by public-key-id from "
+                           "Virgil Keys Service:\n"
+                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k <private_key>"
+                           " -z <identities-file>");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier",
-                true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "arg");
 
-        TCLAP::MultiArg<std::string> identityArg("d", "identity", "Identity user",
-                true, "arg");
+        TCLAP::MultiArg<std::string> identityArg("d", "identity", "Identity user", true, "arg");
 
-        TCLAP::MultiArg<std::string> validatedIdentityArg("f", "validated-identities", "ValidatedIdentity",
-                true, "file");
+        TCLAP::MultiArg<std::string> validatedIdentityArg("f", "validated-identities", "ValidatedIdentity", true,
+                                                          "file");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "private-key", "Private key",
-                true, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "private-pwd", "Private key pass",
-                false, "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "key-pwd", "Private key pass", false, "", "arg");
 
         cmd.add(privateKeyPassArg);
         cmd.add(privateKeyArg);
@@ -122,36 +114,38 @@ int MAIN(int argc, char **argv) {
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
 
         if (validatedIdentityArg.isSet()) {
-            std::vector<vsdk::model::ValidatedIdentity> validatedIdentities;
+            std::vector<vsdk::dto::ValidatedIdentity> validatedIdentities;
             std::vector<std::string> validatedIdentityFiles = validatedIdentityArg.getValue();
-            for(const auto& validatedIdentityFile : validatedIdentityFiles) {
-                vsdk::model::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityFile);
+            for (const auto& validatedIdentityFile : validatedIdentityFiles) {
+                vsdk::dto::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityFile);
                 validatedIdentities.push_back(validatedIdentity);
             }
 
             servicesHub.publicKey().revoke(publicKeyIdArg.getValue(), validatedIdentities, cardIdArg.getValue(),
-                    credentials);
+                                           credentials);
         } else {
             // identityArg.isSet
             std::vector<std::string> identitiesStr = identityArg.getValue();
-            std::vector<vsdk::model::Identity> identities;
-            for(const auto& identityStr : identitiesStr) {
+            std::vector<vsdk::dto::Identity> identities;
+            for (const auto& identityStr : identitiesStr) {
                 auto identityPair = vcli::parsePair(identityStr);
                 std::string recipientType = identityPair.first;
                 std::string recipientValue = identityPair.second;
 
                 checkFormatRecipientArg(recipientType);
 
-                vsdk::model::IdentityType identityType = vsdk::model::fromString(recipientType);
-                vsdk::model::Identity identity(recipientValue, identityType);
+                vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
+                vsdk::dto::Identity identity(recipientValue, identityType);
 
                 identities.push_back(identity);
             }
 
             servicesHub.publicKey().revokeNotValid(publicKeyIdArg.getValue(), identities, cardIdArg.getValue(),
-                    credentials);
+                                                   credentials);
         }
 
+        std::string messageSuccess = "Card with public-key-id:" + publicKeyIdArg.getValue() + " revoked";
+        std::cout << messageSuccess;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "public-key-revoke. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
@@ -166,8 +160,7 @@ int MAIN(int argc, char **argv) {
 
 void checkFormatRecipientArg(const std::string& type) {
     if (type != "email") {
-        throw std::invalid_argument(
-                    "invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                     "Where <key> = [email]");
+        throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
+                                                                     "Where <key> = [email]");
     }
 }
