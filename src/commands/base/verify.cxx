@@ -72,6 +72,8 @@ int MAIN(int argc, char** argv) {
         std::vector<std::string> examples;
         examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r email:bob@gmail.com\n");
 
+        examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r pub-key:public.vkey\n");
+
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
@@ -91,11 +93,12 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> recipientArg(
             "r", "recipient", "Recipient defined in format:\n"
-                              "[id|vcard|email]:<value>\n"
+                              "[id|vcard|email|pub-key]:<value>\n"
                               "where:\n"
                               "if `id`, then <value> - UUID associated with Virgil Card identifier;\n"
                               "if `vcard`, then <value> - user's Virgil Card file stored locally;\n"
-                              "if `email`, then <value> - user email associated with Public Key.",
+                              "if `email`, then <value> - user email associated with Public Key.\n"
+                              "if `pub-key`, then <value> - user Public Key.\n",
             true, "", "arg");
 
         cmd.add(recipientArg);
@@ -136,20 +139,37 @@ int MAIN(int argc, char** argv) {
 
         std::string type = recipientFormat.first;
         std::string value = recipientFormat.second;
-        std::vector<vsdk::models::CardModel> recipientCards =
-            vcli::getRecipientCards(type, value, unconfirmedArg.getValue());
 
-        for (const auto& recipientCard : recipientCards) {
-            bool verified = signer.verify(dataSource, sign, recipientCard.getPublicKey().getKey());
-            std::string recipientCardId = recipientCard.getId();
+        if (type == "pub-key") {
+            std::string pathToPublicKey = value;
+            vcrypto::VirgilByteArray publicKey = vcli::readFileBytes(pathToPublicKey);
+
+            bool verified = signer.verify(dataSource, sign, publicKey);
             if (verified) {
-                vcli::writeBytes(outArg.getValue(), "card-id " + recipientCardId + " - success");
+                vcli::writeBytes(outArg.getValue(), "success");
                 return EXIT_SUCCESS;
             } else {
-                vcli::writeBytes(outArg.getValue(), "card-id " + recipientCardId + " - failure");
+                vcli::writeBytes(outArg.getValue(), "failure");
                 return EXIT_FAILURE;
             }
+
+        } else {
+            std::vector<vsdk::models::CardModel> recipientCards =
+                vcli::getRecipientCards(type, value, unconfirmedArg.getValue());
+
+            for (const auto& recipientCard : recipientCards) {
+                bool verified = signer.verify(dataSource, sign, recipientCard.getPublicKey().getKey());
+                std::string recipientCardId = recipientCard.getId();
+                if (verified) {
+                    vcli::writeBytes(outArg.getValue(), "card-id " + recipientCardId + " - success");
+                    return EXIT_SUCCESS;
+                } else {
+                    vcli::writeBytes(outArg.getValue(), "card-id " + recipientCardId + " - failure");
+                    return EXIT_FAILURE;
+                }
+            }
         }
+
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "verify. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
@@ -164,8 +184,8 @@ int MAIN(int argc, char** argv) {
 
 void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
-    if (type != "id" && type != "vcard" && type != "email") {
+    if (type != "id" && type != "vcard" && type != "email" && type != "pub-key") {
         throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [id|vcard|email]");
+                                                                     "Where <key> = [id|vcard|email|pub-key]");
     }
 }
