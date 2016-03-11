@@ -175,9 +175,9 @@ if (MSVC)
     install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
 endif (MSVC)
 
-if (UNIX)
-    install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
-endif (UNIX)
+# if (UNIX)
+#     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
+# endif (UNIX)
 
 # Pack
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY
