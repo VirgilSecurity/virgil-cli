@@ -41,6 +41,7 @@
 
 #include <tclap/CmdLine.h>
 
+#include <virgil/crypto/VirgilKeyPair.h>
 #include <virgil/crypto/VirgilByteArray.h>
 
 #include <virgil/sdk/ServicesHub.h>
@@ -66,20 +67,20 @@ int MAIN(int argc, char** argv) {
         std::string description = "Create card.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Create Card with confirm identity:\n"
+        examples.push_back("Create Card with confirmed identity:\n"
                            "virgil card-create -f <validated_identity.txt> "
                            "--public-key <path_pub_key> -k <path_private_key> -o my_card.vcard\n");
 
-        examples.push_back("Create Card with confirm identity by pub-key-id:\n"
+        examples.push_back("Create Card with confirmed identity by pub-key-id:\n"
                            "virgil card-create -f <validated_identity.txt> "
                            "-e <pub_key_id> -k <path_private_key> -o my_card.vcard\n");
 
         examples.push_back(
-            "Create Card with unconfirm identity:\n"
+            "Create Card with unconfirmed identity:\n"
             "virgil card-create -d email:user@domain.com --public_key <path_pub_key> -k <path_private_key> "
             "-o my_card.vcard\n");
 
-        examples.push_back("Create Card with unconfirm identity by pub-key-id:\n"
+        examples.push_back("Create Card with unconfirmed identity by pub-key-id:\n"
                            "virgil card-create -d email:user@domain.com -e <pub_key_id> -k <path_private_key> "
                            "-o my_card.vcard\n");
 
@@ -88,7 +89,7 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Card. If omitted stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Card. If omitted, stdout is used.", false, "", "file");
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
 
@@ -101,29 +102,31 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "key-pwd", "Private key pass", false, "", "arg");
-
-        cmd.add(privateKeyPassArg);
         cmd.add(privateKeyArg);
         cmd.xorAdd(publicKeyArg, publicKeyIdArg);
         cmd.xorAdd(identityArg, validatedIdentityArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
+        std::string pathPrivateKey = privateKeyArg.getValue();
+        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
+        vcrypto::VirgilByteArray privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+
         vcrypto::VirgilByteArray publicKey;
         std::string publicKeyId;
         if (publicKeyArg.isSet()) {
             std::string pathPublicKey = publicKeyArg.getValue();
             publicKey = vcli::readFileBytes(pathPublicKey);
+            if (!vcrypto::VirgilKeyPair::isKeyPairMatch(publicKey, privateKey, privateKeyPassword)) {
+                throw std::runtime_error("Public key and Private key doesn't math to each other");
+            }
+
         } else {
+            // publicKeyId.isSet
             publicKeyId = publicKeyIdArg.getValue();
         }
 
-        std::string pathPrivateKey = privateKeyArg.getValue();
-        vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-
-        vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privateKeyPassArg.getValue());
-        vsdk::Credentials credentials(privateKey, privateKeyPass);
+        vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         vsdk::models::CardModel card;
@@ -142,18 +145,19 @@ int MAIN(int argc, char** argv) {
         } else {
             // identityArg.isSet
             auto identityPair = vcli::parsePair(identityArg.getValue());
-            // check identity type: email
+            std::string recipientType = identityPair.first;
+            std::string recipientValue = identityPair.second;
             std::string arg = "-d, --identity";
-            vcli::checkFormatIdentity(arg, identityPair.first);
-            std::string userEmail = identityPair.second;
-            vsdk::dto::Identity identity(userEmail, vsdk::models::IdentityModel::Type::Email);
+            vcli::checkFormatIdentity(arg, recipientType);
+            vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
+            vsdk::dto::Identity identity(recipientValue, identityType);
 
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(identity, publicKey, credentials);
-                std::cout << "A card with a unconfirmed identity has been created." << std::endl;
+                std::cout << "A card with an unconfirmed identity has been created." << std::endl;
             } else {
                 card = servicesHub.card().create(identity, publicKeyId, credentials);
-                std::cout << "A card with a unconfirmed identity, which is connected with already existing one by"
+                std::cout << "A card with an unconfirmed identity, which is connected with already existing one by"
                              " public-key-id, has been created."
                           << std::endl;
             }

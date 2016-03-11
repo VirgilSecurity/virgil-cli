@@ -67,35 +67,36 @@ static void checkFormatRecipientArg(const std::pair<std::string, std::string>& p
 int MAIN(int argc, char** argv) {
     try {
         std::string description = "Verify data and signature with given user's identifier"
-                                  " or with it Virgil Card.\n";
+                                  " or with its Virgil Card.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r email:bob@gmail.com\n");
+        examples.push_back("Virgil verify -i plain.txt -s plain.txt.sign -r email:bob@gmail.com\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be verified. If omitted stdin is used.", false, "",
+        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be verified. If omitted, stdin is used.", false, "",
                                            "file");
 
         TCLAP::ValueArg<std::string> outArg(
-            "o", "out", "Verification result: success | failure. If omitted stdout is used.", false, "", "file");
+            "o", "out", "Verification result: success | failure. If omitted, stdout is used.", false, "", "file");
 
         TCLAP::ValueArg<std::string> signArg("s", "sign", "Digest sign.", true, "", "file");
 
-        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirm "
-                                                                 "identity. Default false",
+        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirmed "
+                                                                 "identity. False by default.",
                                              false, "", "");
 
         TCLAP::ValueArg<std::string> recipientArg(
             "r", "recipient", "Recipient defined in format:\n"
-                              "[id|vcard|email]:<value>\n"
+                              "[id|vcard|email|pub-key]:<value>\n"
                               "where:\n"
-                              "if `id`, then <value> - UUID associated with Virgil Card identifier;\n"
-                              "if `vcard`, then <value> - user's Virgil Card file stored locally;\n"
-                              "if `email`, then <value> - user email associated with Public Key.",
+                              "\t* if id, then <value> - recipient's UUID associated with Virgil Card identifier;\n"
+                              "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
+                              "\t* if email, then <value> - recipient's email;\n"
+                              "\t* if pub-key, then <value> - recipient's Public Key.\n",
             true, "", "arg");
 
         cmd.add(recipientArg);
@@ -116,7 +117,7 @@ int MAIN(int argc, char** argv) {
         } else {
             inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
             if (!inFile) {
-                throw std::invalid_argument("can not read file: " + inArg.getValue());
+                throw std::invalid_argument("cannot read file: " + inArg.getValue());
             }
             inStream = &inFile;
         }
@@ -127,7 +128,7 @@ int MAIN(int argc, char** argv) {
         // Read sign
         std::ifstream signFile(signArg.getValue(), std::ios::in | std::ios::binary);
         if (!signFile) {
-            throw std::invalid_argument("can not read file: " + signArg.getValue());
+            throw std::invalid_argument("cannot read file: " + signArg.getValue());
         }
         vcrypto::VirgilByteArray sign((std::istreambuf_iterator<char>(signFile)), std::istreambuf_iterator<char>());
 
@@ -136,17 +137,43 @@ int MAIN(int argc, char** argv) {
 
         std::string type = recipientFormat.first;
         std::string value = recipientFormat.second;
-        std::vector<vsdk::models::CardModel> recipientCards =
-            vcli::getRecipientCards(type, value, unconfirmedArg.getValue());
 
-        for (const auto& recipientCard : recipientCards) {
-            bool verified = signer.verify(dataSource, sign, recipientCard.getPublicKey().getKey());
-            std::string recipientCardId = recipientCard.getId();
+        if (value == "pub-key") {
+            std::string pathToPublicKeyFile = value;
+            vcrypto::VirgilByteArray publicKey = vcli::readPublicKey(pathToPublicKeyFile);
+            bool verified = signer.verify(dataSource, sign, publicKey);
             if (verified) {
-                vcli::writeBytes(outArg.getValue(), "card-id " + recipientCardId + " - success");
+                vcli::writeBytes(outArg.getValue(), "success");
                 return EXIT_SUCCESS;
             } else {
-                vcli::writeBytes(outArg.getValue(), "card-id " + recipientCardId + " - failure");
+                vcli::writeBytes(outArg.getValue(), "failure");
+                return EXIT_FAILURE;
+            }
+
+        } else {
+            std::vector<vsdk::models::CardModel> recipientCards =
+                vcli::getRecipientCards(type, value, unconfirmedArg.getValue());
+
+            std::vector<std::string> verifiedInfo;
+            size_t countVerifiedFailure = 0;
+            for (const auto& recipientCard : recipientCards) {
+                bool verified = signer.verify(dataSource, sign, recipientCard.getPublicKey().getKey());
+                std::string recipientCardId = recipientCard.getId();
+                if (verified) {
+                    verifiedInfo.push_back("card-id " + recipientCardId + " - success\n");
+                } else {
+                    ++countVerifiedFailure;
+                    verifiedInfo.push_back("card-id " + recipientCardId + " - failure\n");
+                }
+            }
+
+            std::string info;
+            for (const auto& vi : verifiedInfo) {
+                info += vi;
+            }
+            vcli::writeBytes(outArg.getValue(), info);
+
+            if (countVerifiedFailure == recipientCards.size()) {
                 return EXIT_FAILURE;
             }
         }
@@ -164,8 +191,8 @@ int MAIN(int argc, char** argv) {
 
 void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
-    if (type != "id" && type != "vcard" && type != "email") {
+    if (type != "id" && type != "vcard" && type != "email" && type != "pub-key") {
         throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [id|vcard|email]");
+                                                                     "Where <key> = [id|vcard|email|pub-key]");
     }
 }

@@ -63,10 +63,10 @@ int MAIN(int argc, char** argv) {
         std::string description = "Get user's Virgil Card/Cards from the Virgil Keys service\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Получаем Карточку по card-id:\n"
-                           "virgil card-get -a <card-id>\n");
+        examples.push_back("Receive a Card by card-id:\n"
+                           "Virgil card-get -a <card-id>\n");
 
-        examples.push_back("Получаем Карты связанные по public-key-id:\n"
+        examples.push_back("Receive the Cards connected by public-key-id:\n"
                            "virgil card-get -a <card-id> -e <public-key-id> -k <private_key>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -74,7 +74,7 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Card. If omitted stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Card. If omitted, stdout is used.", false, "", "file");
 
         TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "arg");
 
@@ -82,9 +82,6 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", false, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "key-pwd", "Private key pass", false, "", "arg");
-
-        cmd.add(privateKeyPassArg);
         cmd.add(privateKeyArg);
         cmd.add(publicKeyIdArg);
         cmd.add(cardIdArg);
@@ -95,8 +92,7 @@ int MAIN(int argc, char** argv) {
         if (publicKeyIdArg.isSet() && privateKeyArg.isSet()) {
             std::string pathPrivateKey = privateKeyArg.getValue();
             vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-
-            vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privateKeyPassArg.getValue());
+            vcrypto::VirgilByteArray privateKeyPass = vcli::setPrivateKeyPass(privateKey);
             vsdk::Credentials credentials(privateKey, privateKeyPass);
 
             std::vector<vsdk::models::CardModel> cards =
@@ -104,13 +100,14 @@ int MAIN(int argc, char** argv) {
             std::string cardsStr = vsdk::io::cardsToJson(cards, 4);
             vcli::writeBytes(outArg.getValue(), cardsStr);
 
-            std::cout << "Карточки связанные public-key-id:" << publicKeyIdArg.getValue() << " получены" << std::endl;
+            std::cout << "Cards connected by public-key-id:" << publicKeyIdArg.getValue() << " have been received"
+                      << std::endl;
         } else {
             vsdk::models::CardModel card = servicesHub.card().get(cardIdArg.getValue());
             std::string cardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(card);
             vcli::writeBytes(outArg.getValue(), cardStr);
 
-            std::cout << "Карточка c card-id:" << cardIdArg.getValue() << " получена" << std::endl;
+            std::cout << "A Card with card-id:" << cardIdArg.getValue() << " has been received" << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {

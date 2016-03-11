@@ -78,10 +78,10 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be decrypted. If omitted stdin is used.", false, "",
+        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be decrypted. If omitted, stdin is used.", false, "",
                                            "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Decrypted data. If omitted stdout is used.", false, "",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Decrypted data. If omitted, stdout is used.", false, "",
                                             "file");
 
         TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info",
@@ -91,27 +91,23 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key"
-                                                                        " password (max length 31 ASCII characters).",
-                                                        false, "", "arg");
-
-        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirm "
-                                                                 "identity. Default false",
+        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirmed "
+                                                                 "identity. False by default.",
                                              false, "", "arg");
 
         TCLAP::ValueArg<std::string> recipientArg(
             "r", "recipient", "Recipient defined in format:\n"
-                              "[pass|id|vcard|email]:<value>\n"
+                              "[pass|id|vcard|email|pub-key]:<value>\n"
                               "where:\n"
-                              "if `pass`, then <value> - recipient's password (max length 31 ASCII characters);\n"
-                              "if `id`, then <value> - UUID associated with Virgil Card identifier;\n"
-                              "if `vcard`, then <value> - user's Virgil Card file stored locally;\n"
-                              "if `email`, then <value> - user email associated with Public Key.",
+                              "\t* if pass, then <value> - recipient's password;\n"
+                              "\t* if id, then <value> - recipient's UUID associated with Virgil Card identifier;\n"
+                              "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
+                              "\t* if email, then <value> - recipient's email;\n"
+                              "\t* if pub-key, then <value> - recipient's Public Key.\n",
             true, "", "arg");
 
         cmd.add(recipientArg);
         cmd.add(unconfirmedArg);
-        cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(contentInfoArg);
         cmd.add(outArg);
@@ -128,7 +124,7 @@ int MAIN(int argc, char** argv) {
             // Set content info.
             std::ifstream contentInfoFile(contentInfoArg.getValue(), std::ios::in | std::ios::binary);
             if (!contentInfoFile) {
-                throw std::invalid_argument("can not read file: " + contentInfoArg.getValue());
+                throw std::invalid_argument("cannot read file: " + contentInfoArg.getValue());
             }
 
             vcrypto::VirgilByteArray contentInfo((std::istreambuf_iterator<char>(contentInfoFile)),
@@ -144,7 +140,7 @@ int MAIN(int argc, char** argv) {
         } else {
             inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
             if (!inFile) {
-                throw std::invalid_argument("can not read file: " + inArg.getValue());
+                throw std::invalid_argument("cannot read file: " + inArg.getValue());
             }
             inStream = &inFile;
         }
@@ -157,7 +153,7 @@ int MAIN(int argc, char** argv) {
         } else {
             outFile.open(outArg.getValue(), std::ios::out | std::ios::binary);
             if (!outFile) {
-                throw std::invalid_argument("can not write file: " + outArg.getValue());
+                throw std::invalid_argument("cannot write file: " + outArg.getValue());
             }
             outStream = &outFile;
         }
@@ -173,24 +169,44 @@ int MAIN(int argc, char** argv) {
             vcrypto::VirgilByteArray pass = virgil::crypto::str2bytes(value);
             cipher.decryptWithPassword(dataSource, dataSink, pass);
 
-            std::cout << "Файл расшифрован паролем" << std::endl;
+            std::cout << "File has been decrypted with a password" << std::endl;
 
         } else {
-            // type = [id|vcard|email]
+            // type = [pub-key|id|vcard|email]
             // Read private key
             std::string pathToPrivateKeyFile = privateKeyArg.getValue();
-            vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathToPrivateKeyFile);
-            vcrypto::VirgilByteArray privateKeyPassword = vcrypto::str2bytes(privatePasswordArg.getValue());
+            vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathToPrivateKeyFile);
+            vcrypto::VirgilByteArray privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
 
-            std::vector<std::string> recipientCardsId =
-                vcli::getRecipientCardsId(type, value, unconfirmedArg.getValue());
+            if (type == "pub-key") {
+                std::cout << "Введите recepient identifier ассоциируемый с этим public key" << std::endl;
+                std::string recipientId;
+                std::cin >> recipientId;
 
-            for (const auto& recipientCardId : recipientCardsId) {
-                cipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(recipientCardId), privateKey,
+                cipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(recipientId), privateKey,
                                       privateKeyPassword);
-            }
+            } else {
+                // type = [id|vcard|email]
+                std::vector<std::string> recipientCardsId =
+                    vcli::getRecipientCardsId(type, value, unconfirmedArg.getValue());
 
-            std::cout << "Файл расшифрован private key" << std::endl;
+                size_t countErrorDecryptWithKey = 0;
+                for (const auto& recipientCardId : recipientCardsId) {
+                    try {
+                        cipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(recipientCardId), privateKey,
+                                              privateKeyPassword);
+                    } catch (std::exception& exception) {
+                        ++countErrorDecryptWithKey;
+                        std::cerr << "decrypt. Warning: " << exception.what() << std::endl;
+                    }
+                }
+
+                if (countErrorDecryptWithKey == recipientCardsId.size()) {
+                    throw std::runtime_error("Невозможно расшифровать файл:\n"
+                                             "card-id или/и private key не подходит.\n");
+                }
+                std::cout << "File has been decrypted with a private key" << std::endl;
+            }
         }
 
     } catch (TCLAP::ArgException& exception) {

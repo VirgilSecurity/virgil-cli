@@ -61,8 +61,6 @@ namespace vcli = virgil::cli;
 #define MAIN public_key_revoke_main
 #endif
 
-static void checkFormatRecipientArg(const std::string& type);
-
 int MAIN(int argc, char** argv) {
     try {
         std::string description =
@@ -96,9 +94,6 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "key-pwd", "Private key pass", false, "", "arg");
-
-        cmd.add(privateKeyPassArg);
         cmd.add(privateKeyArg);
         cmd.xorAdd(validatedIdentityArg, identityArg);
         cmd.add(cardIdArg);
@@ -107,8 +102,7 @@ int MAIN(int argc, char** argv) {
 
         std::string pathPrivateKey = privateKeyArg.getValue();
         vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-
-        vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privateKeyPassArg.getValue());
+        vcrypto::VirgilByteArray privateKeyPass = vcli::setPrivateKeyPass(privateKey);
         vsdk::Credentials credentials(privateKey, privateKeyPass);
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
@@ -131,12 +125,11 @@ int MAIN(int argc, char** argv) {
                 auto identityPair = vcli::parsePair(identityStr);
                 std::string recipientType = identityPair.first;
                 std::string recipientValue = identityPair.second;
-
-                checkFormatRecipientArg(recipientType);
+                std::string arg = "-d, --identity";
+                vcli::checkFormatIdentity(arg, recipientType);
 
                 vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
                 vsdk::dto::Identity identity(recipientValue, identityType);
-
                 identities.push_back(identity);
             }
 
@@ -144,7 +137,7 @@ int MAIN(int argc, char** argv) {
                                                    credentials);
         }
 
-        std::string messageSuccess = "Card with public-key-id:" + publicKeyIdArg.getValue() + " revoked";
+        std::string messageSuccess = "Card with public-key-id:" + publicKeyIdArg.getValue() + " has been revoked";
         std::cout << messageSuccess;
 
     } catch (TCLAP::ArgException& exception) {
@@ -156,11 +149,4 @@ int MAIN(int argc, char** argv) {
     }
 
     return EXIT_SUCCESS;
-}
-
-void checkFormatRecipientArg(const std::string& type) {
-    if (type != "email") {
-        throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [email]");
-    }
 }

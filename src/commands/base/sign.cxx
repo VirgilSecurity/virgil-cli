@@ -63,24 +63,20 @@ int MAIN(int argc, char** argv) {
         std::string description = "Sign data with given user's Private Key.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k private.key\n");
+        examples.push_back("Virgil sign -i plain.txt -o plain.txt.sign -k private.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be signed. If omitted stdin is used.", false, "",
+        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be signed. If omitted, stdin is used.", false, "",
                                            "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Digest sign. If omitted stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Digest sign. If omitted, stdout is used.", false, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private Key.", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Signer's Private Key password.", false, "",
-                                                        "arg");
-
-        cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(outArg);
         cmd.add(inArg);
@@ -94,14 +90,14 @@ int MAIN(int argc, char** argv) {
         } else {
             inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
             if (!inFile) {
-                throw std::invalid_argument("can not read file: " + inArg.getValue());
+                throw std::invalid_argument("cannot read file: " + inArg.getValue());
             }
             inStream = &inFile;
         }
 
         // Read private key
         vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(privateKeyArg.getValue());
-        vcrypto::VirgilByteArray privateKeyPassword = vcrypto::str2bytes(privatePasswordArg.getValue());
+        vcrypto::VirgilByteArray privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
 
         // Create signer
         vcrypto::VirgilStreamSigner signer;

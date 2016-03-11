@@ -48,6 +48,18 @@
 namespace virgil {
 namespace cli {
 
+    std::string inputShadow();
+
+    /**
+     * @brief Set private key pass if need. Private key pass asks the user.
+     * @param privateKey - user private key
+     */
+    virgil::crypto::VirgilByteArray setPrivateKeyPass(const virgil::crypto::VirgilByteArray& privateKey);
+
+    bool isPublicKeyModel(const std::string& publicKey);
+
+    bool isPrivateKeyModel(const std::string& privateKey);
+
     //-------------------------------------------------------------------------------------
 
     void printVersion(std::ostream& out, const char* programName);
@@ -71,6 +83,18 @@ namespace cli {
     virgil::sdk::dto::ValidatedIdentity readValidateIdentity(const std::string& in);
 
     virgil::sdk::models::CardModel readCard(const std::string& in);
+
+    /**
+     * @brief Read public key from the public key model or public key byte array source
+     * @param in - path to file.
+     */
+    virgil::crypto::VirgilByteArray readPublicKey(const std::string& in);
+
+    /**
+     * @brief Read private key from the private key model or private key byte array source
+     * @param in - path to file.
+     */
+    virgil::crypto::VirgilByteArray readPrivateKey(const std::string& in);
 
     //-------------------------------------------------------------------------------------
 

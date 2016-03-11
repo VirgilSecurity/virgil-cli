@@ -60,7 +60,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Delete the private key into the Private Key Service\n";
+        std::string description = "Delete the Private key from the Private Key Service\n";
 
         std::vector<std::string> examples;
         examples.push_back("virgil private-key-del -k private.key -a <card_id>\n");
@@ -74,9 +74,6 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password", false, "", "arg");
-
-        cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(cardIdArg);
         cmd.parse(argc, argv);
@@ -85,13 +82,12 @@ int MAIN(int argc, char** argv) {
 
         std::string pathPrivateKey = privateKeyArg.getValue();
         vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-
-        vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privatePasswordArg.getValue());
+        vcrypto::VirgilByteArray privateKeyPass = vcli::setPrivateKeyPass(privateKey);
         vsdk::Credentials credentials(privateKey, privateKeyPass);
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         servicesHub.privateKey().del(cardId, credentials);
-        std::cout << "The private key deleted into the Private Keys Service" << std::endl;
+        std::cout << "The Private key has been deleted from the Private Keys Service" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-key-del. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

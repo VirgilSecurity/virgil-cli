@@ -60,21 +60,21 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Search an Application Virgil Card from the Virgil Keys service.\n";
+        std::string description = "Search for an Application Virgil Card from the Virgil Keys service.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Search application cards:\n"
-                           "virgil card-search-app -c <app_name>\n");
+        examples.push_back("Search for application cards:\n"
+                           "Virgil card-search-app -c <app_name>\n");
 
         examples.push_back("Get all application cards:\n"
-                           "virgil card-search-app -c \"*\"\n");
+                           "Virgil card-search-app -c \"*\"\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Application cards. If omitted stdout is used.", false, "",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Application cards. If omitted, stdout is used.", false, "",
                                             "file");
 
         TCLAP::ValueArg<std::string> applicationNameArg(
@@ -92,9 +92,11 @@ int MAIN(int argc, char** argv) {
         vcli::writeBytes(outArg.getValue(), appCardsStr);
 
         if (appCards.empty()) {
-            std::cout << "Application card by name: " << applicationNameArg.getValue() << " не найден" << std::endl;
+            std::cout << "Application card by name: " << applicationNameArg.getValue() << " hasn't been found"
+                      << std::endl;
         } else {
-            std::cout << "Application card by name: " << applicationNameArg.getValue() << " получена" << std::endl;
+            std::cout << "Application card by name: " << applicationNameArg.getValue() << " has been received"
+                      << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {

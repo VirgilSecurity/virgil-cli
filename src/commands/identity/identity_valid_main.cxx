@@ -55,7 +55,7 @@ namespace vcli = virgil::cli;
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN identity_validate_main
+#define MAIN identity_valid_main
 #endif
 
 int MAIN(int argc, char** argv) {
@@ -85,10 +85,10 @@ int MAIN(int argc, char** argv) {
             vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
 
         if (validateToken) {
-            std::cout << "Validation Token is valid!" << std::endl;
+            std::cout << "Validation Token is valid" << std::endl;
             std::cout << validatedIdentityStr << std::endl;
         } else {
-            std::cout << "Validation Token is NOT valid!" << std::endl;
+            std::cout << "Validation Token is not valid" << std::endl;
             std::cout << validatedIdentityStr << std::endl;
         }
 

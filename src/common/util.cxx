@@ -41,9 +41,15 @@
 #include <stdexcept>
 #include <vector>
 
+#ifndef WIN32
+#include <termios.h>
+#include <unistd.h>
+#endif
+
 #include <json.hpp>
 
 #include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/crypto/VirgilKeyPair.h>
 
 #include <virgil/sdk/ServicesHub.h>
 #include <virgil/sdk/io/Marshaller.h>
@@ -59,6 +65,79 @@ namespace vcrypto = virgil::crypto;
 
 typedef std::pair<std::string, std::string> PairStringString;
 
+static void setStdinEcho(bool enable) {
+#ifdef WIN32
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD mode;
+    GetConsoleMode(hStdin, &mode);
+    if (!enable) {
+        mode &= ~ENABLE_ECHO_INPUT;
+    } else {
+        mode |= ENABLE_ECHO_INPUT;
+    }
+    SetConsoleMode(hStdin, mode);
+
+#else
+    struct termios tty;
+    tcgetattr(STDIN_FILENO, &tty);
+    if (!enable) {
+        tty.c_lflag &= ~ECHO;
+    } else {
+        tty.c_lflag |= ECHO;
+    }
+
+    (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+#endif
+}
+
+std::string virgil::cli::inputShadow() {
+    setStdinEcho(false);
+    std::string str;
+    std::cin >> str;
+    setStdinEcho(true);
+    return str;
+}
+
+vcrypto::VirgilByteArray virgil::cli::setPrivateKeyPass(const vcrypto::VirgilByteArray& privateKey) {
+    if (vcrypto::VirgilKeyPair::isPrivateKeyEncrypted(privateKey)) {
+        std::string privateKeyPass;
+        std::cout << "Enter private key password:" << std::endl;
+        privateKeyPass = inputShadow();
+        vcrypto::VirgilByteArray privateKeyPassByteArray = vcrypto::str2bytes(privateKeyPass);
+        if (vcrypto::VirgilKeyPair::checkPrivateKeyPassword(privateKey, privateKeyPassByteArray)) {
+            return privateKeyPassByteArray;
+        } else {
+            throw std::runtime_error("private key pass is invalid");
+        }
+    }
+    return vcrypto::VirgilByteArray();
+}
+
+bool virgil::cli::isPublicKeyModel(const std::string& publicKey) {
+    std::istringstream iss(publicKey);
+    std::string firstLine;
+    std::getline(iss, firstLine);
+    try {
+        json tmp = json::parse(publicKey);
+        return tmp.is_object() && tmp.find("id") != tmp.end() && tmp.find("public_key") != tmp.end() &&
+               tmp.find("created_at") != tmp.end();
+    } catch (std::exception& exception) {
+        return false;
+    }
+}
+
+bool virgil::cli::isPrivateKeyModel(const std::string& privateKey) {
+    std::istringstream iss(privateKey);
+    std::string firstLine;
+    std::getline(iss, firstLine);
+    try {
+        json tmp = json::parse(privateKey);
+        return tmp.is_object() && tmp.find("private_key") != tmp.end() && tmp.find("virgil_card_id") != tmp.end();
+    } catch (std::exception& exception) {
+        return false;
+    }
+}
+
 void virgil::cli::printVersion(std::ostream& out, const char* programName) {
     out << programName << "  "
         << "version: " << virgil::cli_version() << std::endl;
@@ -68,9 +147,9 @@ void virgil::cli::printVersion(std::ostream& out, const char* programName) {
 
 void virgil::cli::checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
-    if (type != "pass" && type != "id" && type != "vcard" && type != "email") {
+    if (type != "pass" && type != "id" && type != "vcard" && type != "email" && type != "pub-key") {
         throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [pass|id|vcard|email]");
+                                                                     "Where <key> = [pass|id|vcard|email|pub-key]");
     }
 }
 
@@ -101,7 +180,7 @@ vcrypto::VirgilByteArray virgil::cli::readInput(const std::string& in) {
 vsdk::dto::ValidatedIdentity virgil::cli::readValidateIdentity(const std::string& in) {
     std::ifstream inFile(in, std::ios::in | std::ios::binary);
     if (!inFile) {
-        throw std::invalid_argument("can not read file: " + in);
+        throw std::invalid_argument("cannot read file: " + in);
     }
     std::string validatedIdentityStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
     return vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::fromJson(validatedIdentityStr);
@@ -110,10 +189,47 @@ vsdk::dto::ValidatedIdentity virgil::cli::readValidateIdentity(const std::string
 vsdk::models::CardModel virgil::cli::readCard(const std::string& in) {
     std::ifstream inFile(in, std::ios::in | std::ios::binary);
     if (!inFile) {
-        throw std::invalid_argument("can not read file: " + in);
+        throw std::invalid_argument("cannot read file: " + in);
     }
     std::string cardStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
     return vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(cardStr);
+}
+
+virgil::crypto::VirgilByteArray virgil::cli::readPublicKey(const std::string& in) {
+    vcrypto::VirgilByteArray publicKey;
+    std::string pathToPublicKeyFile = in;
+    std::ifstream inFile(pathToPublicKeyFile, std::ios::in | std::ios::binary);
+    if (!inFile) {
+        throw std::invalid_argument("cannot read file: " + pathToPublicKeyFile);
+    }
+    std::string publicKeyStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+
+    if (virgil::cli::isPublicKeyModel(publicKeyStr)) {
+        vsdk::models::PublicKeyModel publicKeyModel =
+            vsdk::io::Marshaller<vsdk::models::PublicKeyModel>::fromJson(publicKeyStr);
+        publicKey = publicKeyModel.getKey();
+    } else {
+        publicKey = vcrypto::str2bytes(publicKeyStr);
+    }
+    return publicKey;
+}
+
+virgil::crypto::VirgilByteArray virgil::cli::readPrivateKey(const std::string& in) {
+    vcrypto::VirgilByteArray privateKey;
+    std::string pathToPrivateKeyFile = in;
+    std::ifstream inFile(pathToPrivateKeyFile, std::ios::in | std::ios::binary);
+    if (!inFile) {
+        throw std::invalid_argument("cannot read file: " + pathToPrivateKeyFile);
+    }
+    std::string privateKeyStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+    if (virgil::cli::isPrivateKeyModel(privateKeyStr)) {
+        vsdk::models::PrivateKeyModel privateKeyModel =
+            vsdk::io::Marshaller<vsdk::models::PrivateKeyModel>::fromJson(privateKeyStr);
+        privateKey = privateKeyModel.getKey();
+    } else {
+        privateKey = vcrypto::str2bytes(privateKeyStr);
+    }
+    return privateKey;
 }
 
 //-------------------------------------------------------------------------------------
@@ -127,7 +243,7 @@ void virgil::cli::writeBytes(const std::string& out, const vcrypto::VirgilByteAr
 
     std::ofstream outFile(out, std::ios::out | std::ios::binary);
     if (!outFile) {
-        throw std::invalid_argument("can not write file: " + out);
+        throw std::invalid_argument("cannot write file: " + out);
     }
     std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(outFile));
 }
@@ -168,22 +284,26 @@ std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const std::s
         std::string pathTofile = value;
         std::ifstream inFile(pathTofile, std::ios::in | std::ios::binary);
         if (!inFile) {
-            throw std::invalid_argument("can not read file: " + pathTofile);
+            throw std::invalid_argument("cannot read file: " + pathTofile);
         }
 
         // in file may be card or cards
         std::string undefinedCardJsonStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+        try {
+            json tmp = json::parse(undefinedCardJsonStr);
+            if (tmp.is_object()) {
+                vsdk::models::CardModel card =
+                    vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(undefinedCardJsonStr);
+                recipientCards.push_back(card);
+            } else if (tmp.is_array()) {
+                std::vector<vsdk::models::CardModel> cards = vsdk::io::cardsFromJson(undefinedCardJsonStr);
+                recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
+            } else {
+                throw std::runtime_error("Can't parse " + pathTofile + " .");
+            }
 
-        json tmp = json::parse(undefinedCardJsonStr);
-        if (tmp.is_object()) {
-            vsdk::models::CardModel card =
-                vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(undefinedCardJsonStr);
-            recipientCards.push_back(card);
-        } else if (tmp.is_array()) {
-            std::vector<vsdk::models::CardModel> cards = vsdk::io::cardsFromJson(undefinedCardJsonStr);
-            recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
-        } else {
-            // exception
+        } catch (std::exception& exception) {
+            throw std::runtime_error("Can't parse " + pathTofile + " .");
         }
     }
 

@@ -60,7 +60,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Get the private key into the Private Key Service\n";
+        std::string description = "Get the Private key from the Private Key Service\n";
 
         std::vector<std::string> examples;
         examples.push_back("virgil private-key-get -a <card_id> -f <validated_identity.txt> -o private.vkey\n");
@@ -70,7 +70,7 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted, stdout is used.", false, "", "file");
 
         TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "");
 
@@ -90,8 +90,8 @@ int MAIN(int argc, char** argv) {
         std::string privateKeyStr = vsdk::io::Marshaller<vsdk::models::PrivateKeyModel>::toJson<4>(privateKey);
         vcli::writeBytes(outArg.getValue(), privateKeyStr);
 
-        std::cout << "Private key связанный с Карточкой имеющий card-id:" << cardIdArg.getValue() << " получен"
-                  << std::endl;
+        std::cout << "Private key connected with the Card containing card-id:" << cardIdArg.getValue()
+                  << " has been received" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

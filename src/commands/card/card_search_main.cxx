@@ -62,35 +62,35 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Search a Virgil Card from the Virgil Keys service \n";
+        std::string description = "Search for a Virgil Card from the Virgil Keys service\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Search Virgil Cards with confirm identity:\n"
-                           "virgil card-search -d email:user_email");
+        examples.push_back("Search for Virgil Cards with confirmed identity:\n"
+                           "Virgil card-search -d email:user_email\n");
 
-        examples.push_back("Search Virgil Cards include unconfirm identity:\n"
-                           "virgil card-search -d email:user_email -u");
-
-        examples.push_back(
-            "Search Virgil Cards with confirm identity signed other Cards <user1_card_id> <user2_card_id>:\n"
-            "virgil card-search -d email:user_email "
-            "<user1_card_id> <user1_card_id>");
+        examples.push_back("Search for Virgil Cards which include unconfirmed identity:\n"
+                           "Virgil card-search -d email:user_email -u\n");
 
         examples.push_back(
-            "Search Virgil Cards with unconfirm identity signed other Cards <user1_card_id> <user2_card_id>:\n"
-            "virgil card-search -d email:user_email -u "
-            "<user1_card_id> <user1_card_id>");
+            "Search for Virgil Cards with confirmed identity signed with other Cards <user1_card_id> <user2_card_id>:\n"
+            "Virgil card-search -d email:user_email "
+            "<user1_card_id> <user1_card_id>\n");
+
+        examples.push_back("Search for Virgil Cards with unconfirmed identity signed with other Cards <user1_card_id> "
+                           "<user2_card_id>:\n"
+                           "Virgil card-search -d email:user_email -u "
+                           "<user1_card_id> <user1_card_id>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Cards. If omitted stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Cards. If omitted, stdout is used.", false, "", "file");
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
 
-        TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", "Search Cards include unconfirm identity", false);
+        TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", "Search Cards include unconfirmed identity", false);
 
         TCLAP::UnlabeledMultiArg<std::string> signedCardsIdArg("signed-card-id", "Signed card id", false, "card-id",
                                                                false);
@@ -102,10 +102,13 @@ int MAIN(int argc, char** argv) {
         cmd.parse(argc, argv);
 
         auto identityPair = vcli::parsePair(identityArg.getValue());
+        std::string recipientType = identityPair.first;
+        std::string recipientValue = identityPair.second;
         std::string arg = "-d, --identity";
-        vcli::checkFormatIdentity(arg, identityPair.first);
-        std::string userEmail = identityPair.second;
-        vsdk::dto::Identity identity(userEmail, vsdk::models::IdentityModel::Type::Email);
+        vcli::checkFormatIdentity(arg, recipientType);
+
+        vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
+        vsdk::dto::Identity identity(recipientValue, identityType);
 
         bool includeUnconfirmed = unconfirmedArg.getValue();
 
@@ -122,9 +125,9 @@ int MAIN(int argc, char** argv) {
         vcli::writeBytes(outArg.getValue(), foundCardsStr);
 
         if (foundCards.empty()) {
-            std::cout << "Cards by email: " << userEmail << " не найдены" << std::endl;
+            std::cout << "Cards by email: " << recipientValue << " haven't been found." << std::endl;
         } else {
-            std::cout << "Cards by email: " << userEmail << " получены" << std::endl;
+            std::cout << "Cards by email: " << recipientValue << " have been received." << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {

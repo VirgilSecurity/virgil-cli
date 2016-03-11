@@ -75,23 +75,23 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Generate Elliptic 512-bits Brainpool Curve Private Key(default):\n"
-                           "virgil keygen -o private.key\n");
+                           "Virgil keygen -o private.key\n");
 
         examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
-                           "virgil keygen -o private.key -p strong_private_key_password\n");
+                           "Virgil keygen -o private.key -p strong_private_key_password\n");
 
         examples.push_back("Generate Elliptic 521-bits NIST Curve Private Key:\n"
-                           "virgil keygen -o private.key -e secp521r1\n");
+                           "Virgil keygen -o private.key -e secp521r1\n");
 
         examples.push_back("Generate RSA Private Key:\n"
-                           "virgil keygen -o private.key -r 8192\n");
+                           "Virgil keygen -o private.key -r 8192\n");
 
         std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Private key. If omitted stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Private key. If omitted, stdout is used.", false, "", "file");
 
         std::vector<std::string> ec_key;
         ec_key.push_back("bp256r1");
@@ -127,17 +127,13 @@ int MAIN(int argc, char** argv) {
         rsa_key.push_back("rsa8192");
         TCLAP::ValuesConstraint<std::string> allowedRSAKey(rsa_key);
 
-        TCLAP::ValueArg<std::string> rsaArg("r", "rsa", "Generate RSA key with one following pos:\n"
+        TCLAP::ValueArg<std::string> rsaArg("r", "rsa", "Generate RSA key with one of the following positions:\n"
                                                         "\t* rsa3072;\n"
                                                         "\t* rsa4096;\n"
                                                         "\t* rsa8192",
                                             false, "", &allowedRSAKey);
 
-        TCLAP::ValueArg<std::string> privatePasswordArg(
-            "p", "key-pwd", "Password to be used for Private"
-                            " Key encryption. If omitted Private Key is stored in the plain format.\n"
-                            "Note, that password max length is 31 ASCII characters.",
-            false, "", "arg");
+        TCLAP::SwitchArg privatePasswordArg("p", "key-pwd", "Password to be used for Private Key encryption.", false);
 
         cmd.add(privatePasswordArg);
         cmd.add(rsaArg);
@@ -150,13 +146,23 @@ int MAIN(int argc, char** argv) {
             throw std::invalid_argument("-e, --ec and -r, --rsa parameters are both specified");
         }
 
-        vcrypto::VirgilByteArray privateKeyPassword = vcrypto::str2bytes(privatePasswordArg.getValue());
-        vcrypto::VirgilByteArray privateKey;
+        vcrypto::VirgilByteArray privateKeyPassword;
+        if (privatePasswordArg.isSet()) {
+            std::cout << "Enter private key pass:" << std::endl;
+            std::string pass;
+            pass = vcli::inputShadow();
+            // std::cout << "pass = " << pass << std::endl;
+            privateKeyPassword = vcrypto::str2bytes(pass);
+        }
 
+        std::cout << std::endl;
+        std::cout << "A Private key generating.." << std::endl;
+
+        vcrypto::VirgilByteArray privateKey;
         if (!ecArg.isSet() && !rsaArg.isSet()) {
             // Generate EC key
             // bp512r1 - 512-bits Brainpool curve (default)
-            vcrypto::VirgilKeyPair keyPair;
+            vcrypto::VirgilKeyPair keyPair(privateKeyPassword);
             privateKey = keyPair.privateKey();
         } else {
             if (rsaArg.isSet()) {
@@ -175,7 +181,7 @@ int MAIN(int argc, char** argv) {
         // Write private key
         virgil::cli::writeBytes(outArg.getValue(), privateKey);
 
-        std::cout << "Private key generated" << std::endl;
+        std::cout << "Private key has been generated" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "key-gen. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

@@ -44,6 +44,8 @@
 
 #include <tclap/CmdLine.h>
 
+#include <json.hpp>
+
 #include <virgil/crypto/VirgilByteArray.h>
 #include <virgil/crypto/VirgilStreamCipher.h>
 #include <virgil/crypto/stream/VirgilStreamDataSource.h>
@@ -54,6 +56,8 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+
+using nlohmann::json;
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
@@ -91,43 +95,48 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Encrypt data for Bob identified by email:\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n");
+                           "Virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n");
+
+        examples.push_back("Encrypt data by public key + recepient identifier:\n"
+                           "Virgil encrypt -i plain.txt -o plain.txt.enc pub-key:public.key\n"
+                           "Затем нужно ввести recepient identifier.\n");
 
         examples.push_back("Encrypt data for Bob and Tom identified by emails:\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com\n");
+                           "Virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com\n");
 
         examples.push_back("Encrypt data for user identified by password::\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc pass:strong_password\n");
+                           "Virgil encrypt -i plain.txt -o plain.txt.enc pass:strong_password\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be encrypted. If omitted stdin is used.", false, "",
+        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be encrypted. If omitted, stdin is used.", false, "",
                                            "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Encrypted data. If omitted stdout is used.", false, "",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Encrypted data. If omitted, stdout is used.", false, "",
                                             "file");
 
         TCLAP::ValueArg<std::string> contentInfoArg(
-            "c", "content-info", "Content info - meta information about encrypted data. If omitted becomes a part of"
+            "c", "content-info", "Content info - meta information about encrypted data. If omitted, becomes a part of"
                                  " the encrypted data.",
             false, "", "file");
 
-        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirm "
-                                                                 "identity. Default false",
+        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirmed "
+                                                                 "identity. False by fefault.",
                                              false, "", "");
 
         TCLAP::UnlabeledMultiArg<std::string> recipientsArg(
             "recipient", "Contains information about one recipient.\n"
                          "Format:\n"
-                         "[pass|id|vcard|email]:<value>\n"
+                         "[pass|id|vcard|email|pub-key]:<value>\n"
                          "where:\n"
                          "\t* if pass, then <value> - recipient's password;\n"
-                         "\t* if id, then <value> - recipient's Virgil Card identifier;\n"
+                         "\t* if id, then <value> - recipient's UUID associated with Virgil\n\t Card identifier;\n"
                          "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
-                         "\t* if email, then <value> - recipient's email;\n",
+                         "\t* if email, then <value> - recipient's email;\n"
+                         "\t* if pub-key, then <value> - recipient's Public Key.\n",
             false, "recipient", false);
 
         cmd.add(recipientsArg);
@@ -157,7 +166,7 @@ int MAIN(int argc, char** argv) {
         } else {
             inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
             if (!inFile) {
-                throw std::invalid_argument("can not read file: " + inArg.getValue());
+                throw std::invalid_argument("cannot read file: " + inArg.getValue());
             }
             inStream = &inFile;
         }
@@ -170,7 +179,7 @@ int MAIN(int argc, char** argv) {
         } else {
             outFile.open(outArg.getValue(), std::ios::out | std::ios::binary);
             if (!outFile) {
-                throw std::invalid_argument("can not write file: " + outArg.getValue());
+                throw std::invalid_argument("cannot write file: " + outArg.getValue());
             }
             outStream = &outFile;
         }
@@ -186,13 +195,13 @@ int MAIN(int argc, char** argv) {
         if (!embedContentInfo) {
             std::ofstream contentInfoFile(contentInfoArg.getValue(), std::ios::out | std::ios::binary);
             if (!contentInfoFile) {
-                throw std::invalid_argument("can not write file: " + contentInfoArg.getValue());
+                throw std::invalid_argument("cannot write file: " + contentInfoArg.getValue());
             }
             vcrypto::VirgilByteArray contentInfo = cipher.getContentInfo();
             std::copy(contentInfo.begin(), contentInfo.end(), std::ostreambuf_iterator<char>(contentInfoFile));
         }
 
-        std::cout << "Файл зашифрован" << std::endl;
+        std::cout << "File has been encrypted" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "encrypt. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
@@ -222,7 +231,7 @@ size_t add_recipients(const std::vector<std::string>& recipientsData, const bool
         try {
             add_recipient(recipientType, recipientValue, includeUnconrimedCard, cipher);
         } catch (std::exception& exception) {
-            throw std::invalid_argument("can not add recipient. Error " + recipientType + ":" + recipientValue + "\n" +
+            throw std::invalid_argument("cannot add recipient. Error " + recipientType + ":" + recipientValue + "\n" +
                                         exception.what());
         }
         ++addedRecipientsCount;
@@ -235,6 +244,19 @@ void add_recipient(const std::string& recipientType, const std::string& recipien
     if (recipientType == "pass") {
         vcrypto::VirgilByteArray pwd = virgil::crypto::str2bytes(recipientValue);
         cipher->addPasswordRecipient(pwd);
+    } else if (recipientType == "pub-key") {
+        std::string pathToPublicKeyFile = recipientValue;
+        vcrypto::VirgilByteArray publicKey = vcli::readPublicKey(pathToPublicKeyFile);
+        std::cout << "Введите recepient identifier с которым будет связан public key,\n"
+                     "если это public key уже загруженный на Virgil Keys Services\n"
+                     " посредством создания Карточки 'virgil card-create' введите card-id.\n"
+                     "Это позволит сделать 'virgil decrypt' указывая email.\n"
+                  << std::endl;
+
+        std::string recipientId;
+        std::cin >> recipientId;
+        cipher->addKeyRecipient(vcrypto::str2bytes(recipientId), publicKey);
+
     } else {
         // Else recipientType [id|vcard|email]
         std::vector<vsdk::models::CardModel> recipientsCard =

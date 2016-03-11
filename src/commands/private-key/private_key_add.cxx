@@ -66,7 +66,7 @@ int MAIN(int argc, char** argv) {
             "1. Make sure that you have registered and confirmed your account for the Public Keys Service\n"
             "2. Make sure that you have a public/private key pair and you have already uploaded the public key\n"
             "to the Public Keys Service\n"
-            "3. Make sure that you have your private key on local machine\n"
+            "3. Make sure that you have your private key saved locally\n"
             "4. Make sure that you have registered an application at Virgil Security, Inc.\n";
 
         std::vector<std::string> examples;
@@ -81,9 +81,6 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password", false, "", "arg");
-
-        cmd.add(privatePasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(cardIdArg);
         cmd.parse(argc, argv);
@@ -92,13 +89,12 @@ int MAIN(int argc, char** argv) {
 
         std::string pathPrivateKey = privateKeyArg.getValue();
         vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-
-        vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privatePasswordArg.getValue());
+        vcrypto::VirgilByteArray privateKeyPass = vcli::setPrivateKeyPass(privateKey);
         vsdk::Credentials credentials(privateKey, privateKeyPass);
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         servicesHub.privateKey().add(cardId, credentials);
-        std::cout << "The private key added to the Private Keys Service" << std::endl;
+        std::cout << "Private key has been added to the Private Keys Service" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-key-add. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

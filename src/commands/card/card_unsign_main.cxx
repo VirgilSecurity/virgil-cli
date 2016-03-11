@@ -64,7 +64,7 @@ int MAIN(int argc, char** argv) {
         std::string description = "Unsign Card\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Alice unsign Bob:\n"
+        examples.push_back("Alice unsign data for Bob:\n"
                            "virgil card-unsign --signer <alice.vcard> --signed <bob.vcard> -k alice-private.vkey\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -72,15 +72,12 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> signerArg("s", "signer", "Signer Card", true, "", "file");
+        TCLAP::ValueArg<std::string> signerArg("s", "signer", "Signer's Card", true, "", "file");
 
         TCLAP::ValueArg<std::string> signedArg("z", "signed", "Signed Card", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer Private key", true, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "key-pwd", "Signer Private key pass", false, "", "arg");
-
-        cmd.add(privateKeyPassArg);
         cmd.add(privateKeyArg);
         cmd.add(signedArg);
         cmd.add(signerArg);
@@ -91,15 +88,14 @@ int MAIN(int argc, char** argv) {
 
         std::string pathPrivateKey = privateKeyArg.getValue();
         vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-
-        vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privateKeyPassArg.getValue());
+        vcrypto::VirgilByteArray privateKeyPass = vcli::setPrivateKeyPass(privateKey);
         vsdk::Credentials credentials(privateKey, privateKeyPass);
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         servicesHub.card().unsign(signedCard.getId(), signerCard.getId(), credentials);
 
-        std::cout << "Карточка с card-id: " << signerCard.getId()
-                  << " отписала Карточку с card-id: " << signedCard.getId() << std::endl;
+        std::cout << "Card with card-id: " << signerCard.getId()
+                  << " has been used to unsign the Card with card-id: " << signedCard.getId() << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "card-unsign. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

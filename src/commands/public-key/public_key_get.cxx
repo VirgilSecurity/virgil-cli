@@ -71,7 +71,7 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted stdout is used.", false, "",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted, stdout is used.", false, "",
                                             "file");
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", true, "", "arg");
@@ -87,7 +87,7 @@ int MAIN(int argc, char** argv) {
         std::string publicKeyStr = vsdk::io::Marshaller<vsdk::models::PublicKeyModel>::toJson<4>(publicKey);
         vcli::writeBytes(outArg.getValue(), publicKeyStr);
 
-        std::cout << "Public key по public-key-id:" << publicKeyIdArg.getValue() << " получен" << std::endl;
+        std::cout << "Public key by public-key-id:" << publicKeyIdArg.getValue() << " has been received" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "public-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

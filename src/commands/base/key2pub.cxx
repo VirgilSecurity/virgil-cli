@@ -72,23 +72,21 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Private key. If omitted stdin is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", "Private key. If omitted, stdin is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Public key. If omitted stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Public key. If omitted, stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> privatePasswordArg("p", "key-pwd", "Private Key password.", false, "", "arg");
-
-        cmd.add(privatePasswordArg);
         cmd.add(outArg);
         cmd.add(inArg);
         cmd.parse(argc, argv);
 
         // Prepare input. Read private key.
         vcrypto::VirgilByteArray privateKey = virgil::cli::readInput(inArg.getValue());
+        vcrypto::VirgilByteArray privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
 
         // Extract public key.
         vcrypto::foundation::VirgilAsymmetricCipher cipher;
-        cipher.setPrivateKey(privateKey, virgil::crypto::str2bytes(privatePasswordArg.getValue()));
+        cipher.setPrivateKey(privateKey, privateKeyPassword);
 
         vcrypto::VirgilByteArray publicKey =
             is_asn1(privateKey) ? cipher.exportPublicKeyToDER() : cipher.exportPublicKeyToPEM();
@@ -96,7 +94,7 @@ int MAIN(int argc, char** argv) {
         // Prepare output. Output public key
         virgil::cli::writeBytes(outArg.getValue(), publicKey);
 
-        std::cout << "Public key extracted from private key" << std::endl;
+        std::cout << "Public Key has been extracted from the Private Key" << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "key2pub. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

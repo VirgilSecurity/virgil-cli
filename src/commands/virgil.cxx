@@ -56,9 +56,8 @@ int sign_main(int argc, char** argv);
 int verify_main(int argc, char** argv);
 
 // module-action
-int identity_verify_main(int argc, char** argv);
 int identity_confirm_main(int argc, char** argv);
-int identity_validate_main(int argc, char** argv);
+int identity_valid_main(int argc, char** argv);
 
 int card_create_main(int argc, char** argv);
 int card_get_main(int argc, char** argv);
@@ -81,7 +80,7 @@ int main(int argc, char** argv) {
     // Parse arguments.
     if (argc < 2) {
         std::cerr << "Error: "
-                  << " Required argument missing: "
+                  << " Required argument is missing: "
                   << "command" << std::endl;
         print_usage(std::cerr, argv[0]);
         return EXIT_FAILURE;
@@ -106,9 +105,8 @@ int main(int argc, char** argv) {
     commandsMap["verify"] = &verify_main;
 
     // module-action
-    commandsMap["identity-verify"] = &identity_verify_main;
     commandsMap["identity-confirm"] = &identity_confirm_main;
-    commandsMap["identity-validate"] = &identity_validate_main;
+    commandsMap["identity-valid"] = &identity_valid_main;
 
     commandsMap["card-create"] = &card_create_main;
     commandsMap["card-get"] = &card_get_main;
@@ -178,23 +176,21 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "PUBCLIC KEY COMMANDS:\n"
 
-                      "public-key-revoke           Revoce Public Key\n\n"
+                      "public-key-revoke           Revoke Public Key\n\n"
 
-                      "public-key-get              Get public key\n\n\n"
+                      "public-key-get              Get Public Key\n\n\n"
 
                       "PRIVATE KEY COMMANDS:\n"
 
-                      "public-key-revoke           Revoce Public Key\n\n"
+                      "public-key-revoke           Revoke Public Key\n\n"
 
-                      "public-key-get              Get public key\n\n\n"
+                      "public-key-get              Get Public Key\n\n\n"
 
                       "IDENTITY COMMANDS:\n"
 
-                      "identity-verify             Identity verify\n\n"
+                      "identity-confirm            Confirm Identity\n\n"
 
-                      "identity-confirm            Identity confirm\n\n"
-
-                      "identity-valid              Identity valid\n\n\n";
+                      "identity-valid              Validate Identity\n\n\n";
 
     out << "USAGE: " << programName << " " << doc << std::endl;
 }

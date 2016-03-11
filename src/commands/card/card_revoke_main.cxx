@@ -64,11 +64,11 @@ int MAIN(int argc, char** argv) {
         std::string description = "Revoke Virgil Card from the Virgil Public Key service.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Revoke Virgil Card with confirm identity:\n"
+        examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
                            "virgil card-revoke -a <card_id> -f <validated-identities.file> "
                            "-k <private_key>\n");
 
-        examples.push_back("Revoke Virgil Card with confirm identity:\n"
+        examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
                            "virgil card-revoke -a <card_id> -d email:user@domain.com "
                            "-k <private_key>\n");
 
@@ -86,9 +86,6 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPassArg("p", "key-pwd", "Private key pass", false, "", "arg");
-
-        cmd.add(privateKeyPassArg);
         cmd.add(privateKeyArg);
         cmd.xorAdd(validatedIdentityArg, identityArg);
         cmd.add(cardIdArg);
@@ -98,17 +95,9 @@ int MAIN(int argc, char** argv) {
 
         std::string cardId = cardIdArg.getValue();
 
-        auto identityPair = vcli::parsePair(identityArg.getValue());
-        // check identity type: email
-        std::string arg = "-d, --identity";
-        vcli::checkFormatIdentity(arg, identityPair.first);
-        std::string userEmail = identityPair.second;
-
         std::string pathPrivateKey = privateKeyArg.getValue();
         vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-
-        vcrypto::VirgilByteArray privateKeyPass = vcrypto::str2bytes(privateKeyPassArg.getValue());
-
+        vcrypto::VirgilByteArray privateKeyPass = vcli::setPrivateKeyPass(privateKey);
         vsdk::Credentials credentials(privateKey, privateKeyPass);
 
         std::string messageSuccess = "Card with card-id " + cardIdArg.getValue() + " revoked.";
@@ -119,7 +108,14 @@ int MAIN(int argc, char** argv) {
             servicesHub.card().revoke(cardId, validatedIdentity, credentials);
             std::cout << messageSuccess << std::endl;
         } else {
-            vsdk::dto::Identity identity(userEmail, vsdk::models::IdentityModel::Type::Email);
+            auto identityPair = vcli::parsePair(identityArg.getValue());
+            std::string recipientType = identityPair.first;
+            std::string recipientValue = identityPair.second;
+            std::string arg = "-d, --identity";
+            vcli::checkFormatIdentity(arg, recipientType);
+            vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
+            vsdk::dto::Identity identity(recipientValue, identityType);
+
             servicesHub.card().revoke(cardId, identity, credentials);
             std::cout << messageSuccess << std::endl;
         }
