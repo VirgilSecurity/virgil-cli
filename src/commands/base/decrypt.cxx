@@ -91,10 +91,6 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key.", false, "", "file");
 
-        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirmed "
-                                                                 "identity. False by default.",
-                                             false, "", "arg");
-
         TCLAP::ValueArg<std::string> recipientArg(
             "r", "recipient", "Recipient defined in format:\n"
                               "[pass|id|vcard|email|pub-key]:<value>\n"
@@ -107,7 +103,6 @@ int MAIN(int argc, char** argv) {
             true, "", "arg");
 
         cmd.add(recipientArg);
-        cmd.add(unconfirmedArg);
         cmd.add(privateKeyArg);
         cmd.add(contentInfoArg);
         cmd.add(outArg);
@@ -187,8 +182,10 @@ int MAIN(int argc, char** argv) {
                                       privateKeyPassword);
             } else {
                 // type = [id|vcard|email]
+                // if recipient email:<value>, then a download Virgil Card with confirmed identity
+                bool includeUnconrimedCard = false;
                 std::vector<std::string> recipientCardsId =
-                    vcli::getRecipientCardsId(type, value, unconfirmedArg.getValue());
+                    vcli::getRecipientCardsId(type, value, includeUnconrimedCard);
 
                 size_t countErrorDecryptWithKey = 0;
                 for (const auto& recipientCardId : recipientCardsId) {

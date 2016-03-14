@@ -85,10 +85,6 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> signArg("s", "sign", "Digest sign.", true, "", "file");
 
-        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirmed "
-                                                                 "identity. False by default.",
-                                             false, "", "");
-
         TCLAP::ValueArg<std::string> recipientArg(
             "r", "recipient", "Recipient defined in format:\n"
                               "[id|vcard|email|pub-key]:<value>\n"
@@ -100,7 +96,6 @@ int MAIN(int argc, char** argv) {
             true, "", "arg");
 
         cmd.add(recipientArg);
-        cmd.add(unconfirmedArg);
         cmd.add(signArg);
         cmd.add(outArg);
         cmd.add(inArg);
@@ -151,8 +146,11 @@ int MAIN(int argc, char** argv) {
             }
 
         } else {
+            // type [id|vcard|email]
+            // if recipient email:<value>, then download a Virgil Card with confirmed identity
+            bool includeUnconrimedCard = false;
             std::vector<vsdk::models::CardModel> recipientCards =
-                vcli::getRecipientCards(type, value, unconfirmedArg.getValue());
+                vcli::getRecipientCards(type, value, includeUnconrimedCard);
 
             std::vector<std::string> verifiedInfo;
             size_t countVerifiedFailure = 0;

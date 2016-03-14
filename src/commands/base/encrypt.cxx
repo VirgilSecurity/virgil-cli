@@ -123,10 +123,6 @@ int MAIN(int argc, char** argv) {
                                  " the encrypted data.",
             false, "", "file");
 
-        TCLAP::ValueArg<bool> unconfirmedArg("u", "unconfirmed", "Search Cards with unconfirmed "
-                                                                 "identity. False by fefault.",
-                                             false, "", "");
-
         TCLAP::UnlabeledMultiArg<std::string> recipientsArg(
             "recipient", "Contains information about one recipient.\n"
                          "Format:\n"
@@ -140,7 +136,6 @@ int MAIN(int argc, char** argv) {
             false, "recipient", false);
 
         cmd.add(recipientsArg);
-        cmd.add(unconfirmedArg);
         cmd.add(contentInfoArg);
         cmd.add(outArg);
         cmd.add(inArg);
@@ -153,7 +148,10 @@ int MAIN(int argc, char** argv) {
 
         // Add recipients
         size_t addedRecipientsCount = 0;
-        addedRecipientsCount += add_recipients(recipientsArg.getValue(), unconfirmedArg.getValue(), &cipher);
+
+        // if recipient email:<value>, then download a Virgil Card with confirmed identity
+        bool includeUnconrimedCard = false;
+        addedRecipientsCount += add_recipients(recipientsArg.getValue(), includeUnconrimedCard, &cipher);
         if (addedRecipientsCount == 0) {
             throw std::invalid_argument("no recipients are defined");
         }
