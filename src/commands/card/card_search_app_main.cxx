@@ -74,8 +74,8 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Application cards. If omitted, stdout is used.", false, "",
-                                            "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
+                "arg");
 
         TCLAP::ValueArg<std::string> applicationNameArg(
             "c", "application-name", "Application name, name = '*' - get all Cards\n", true, "", "arg");
@@ -88,16 +88,30 @@ int MAIN(int argc, char** argv) {
         std::string appName = "com.virgilsecurity." + applicationNameArg.getValue();
 
         std::vector<vsdk::models::CardModel> appCards = servicesHub.card().searchApp(appName);
-        std::string appCardsStr = virgil::sdk::io::cardsToJson(appCards, 4);
-        vcli::writeBytes(outArg.getValue(), appCardsStr);
-
         if (appCards.empty()) {
-            std::cout << "Application card by name: " << applicationNameArg.getValue() << " hasn't been found"
-                      << std::endl;
-        } else {
-            std::cout << "Application card by name: " << applicationNameArg.getValue() << " has been received"
-                      << std::endl;
+            std::cout << "Cards by name: " << applicationNameArg.getValue() << " haven't been found." << std::endl;
+            return EXIT_FAILURE;
         }
+
+        std::string pathTofolder = outArg.getValue();
+        if (pathTofolder.empty()) {
+            for(auto&& appCard : appCards) {
+                std::string appCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(appCard);
+                vcli::writeBytes(pathTofolder, appCardStr);
+            }
+        } else {
+            for(auto&& appCard : appCards) {
+                std::string identity = appCard.getCardIdentity().getValue();
+                std::string cardId = appCard.getId();
+
+                std::string fileName = identity + "-id-" + appCard.getId() + ".vcard";
+                std::string appCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(appCard);
+                vcli::writeBytes(pathTofolder + "/" + fileName, appCardStr);
+            }
+        }
+
+        std::cout << "По заданному application name:" << applicationNameArg.getValue() << " получено "
+                  << appCards.size() << " Карт." << std::endl;
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "card-search-app. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
