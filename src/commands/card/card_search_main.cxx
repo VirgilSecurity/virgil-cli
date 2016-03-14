@@ -66,19 +66,19 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Search for Virgil Cards with confirmed identity:\n"
-                           "Virgil card-search -d email:user_email\n");
+                           "Virgil card-search -d email:alice@gmail.com -o alice/\n");
 
         examples.push_back("Search for Virgil Cards which include unconfirmed identity:\n"
-                           "Virgil card-search -d email:user_email -u\n");
+                           "Virgil card-search -d email:alice@gmail.com -u alice-with-unconfirmed-identity/\n");
 
         examples.push_back(
             "Search for Virgil Cards with confirmed identity signed with other Cards <user1_card_id> <user2_card_id>:\n"
-            "Virgil card-search -d email:user_email "
+            "Virgil card-search -d email:alice@gmail.com "
             "<user1_card_id> <user1_card_id>\n");
 
         examples.push_back("Search for Virgil Cards with unconfirmed identity signed with other Cards <user1_card_id> "
                            "<user2_card_id>:\n"
-                           "Virgil card-search -d email:user_email -u "
+                           "Virgil card-search -d email:alice@gmail.com -u "
                            "<user1_card_id> <user1_card_id>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -86,7 +86,8 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Cards. If omitted, stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
+                "arg");
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
 
@@ -121,13 +122,50 @@ int MAIN(int argc, char** argv) {
             foundCards = servicesHub.card().search(identity, includeUnconfirmed);
         }
 
-        std::string foundCardsStr = vsdk::io::cardsToJson(foundCards, 4);
-        vcli::writeBytes(outArg.getValue(), foundCardsStr);
-
         if (foundCards.empty()) {
             std::cout << "Cards by email: " << recipientValue << " haven't been found." << std::endl;
+            return EXIT_FAILURE;
+        }
+
+        size_t countCardUnconfirmedIdentity = 0;
+        for(auto&& foundCard : foundCards) {
+            if (!foundCard.isConfirmed()) {
+                ++countCardUnconfirmedIdentity;
+            }
+        }
+
+        std::string pathTofolder = outArg.getValue();
+        if (pathTofolder.empty()) {
+            for(auto&& foundCard : foundCards) {
+                std::string foundCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(foundCard);
+                vcli::writeBytes(pathTofolder, foundCardStr);
+            }
         } else {
-            std::cout << "Cards by email: " << recipientValue << " have been received." << std::endl;
+            for(auto&& foundCard : foundCards) {
+                std::string identity = foundCard.getCardIdentity().getValue();
+                std::string cardId = foundCard.getId();
+                std::string isConfirmed;
+                if (foundCard.isConfirmed()) {
+                    isConfirmed = "confirmed";
+                } else {
+                    isConfirmed = "unconfirmed";
+                }
+
+                std::string fileName = identity + "-" + isConfirmed + "-id-" + foundCard.getId() + ".vcard";
+                std::string foundCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(foundCard);
+                vcli::writeBytes(pathTofolder + "/" + fileName, foundCardStr);
+            }
+        }
+
+        if (includeUnconfirmed) {
+            std::cout << "По заданному email:" << recipientValue << " получено " << countCardUnconfirmedIdentity
+                      << " Карт с неподтвержденным identity и " << foundCards.size() - countCardUnconfirmedIdentity
+                      << " с подтвержденным identity." << std::endl;
+
+        } else {
+            std::cout << "По заданному email:" << recipientValue << " получено "
+                      << foundCards.size() - countCardUnconfirmedIdentity << " с подтвержденным identity."
+                      << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {
