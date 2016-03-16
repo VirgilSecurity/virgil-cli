@@ -4,49 +4,46 @@
 
 # NAME
 
-**private-key-get** -- get the Private Key from Private Key Service
+**private-key-get** -- get the Private Key from the Private Key Service
 
 # SYNOPSIS
 
-**virgil private-key-get** --card_id *arg*, --identity *arg*, --validation_token *arg*
+**virgil private-key-get**  [-o *file*] -a ** -f *file* [--] [--version] [-h]
 
 
 # DESCRIPTION
 
-Get the Private Key from Private Key Service
+Get the Private Key from the Private Key Service
 
 
 # OPTIONS
 
---card_id *arg*
-:   (required) Public key identifier
+    -o *file*,  --out *file*
+     Private Key. If omitted, stdout is used
 
+    -a **,  --card-id **
+     (required)  Virgil Card identifier
 
--e *arg*, \--identity *arg*
-:   (required) Virgil Card identifier.
+    -f *file*,  --validated-identities *file*
+     (required)  Validated identity
 
-    Format:
-        [email]:<value>
-        [application]:<value>
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
 
-        where:
-        * if `email`, then *value* - user's email.
-        * if `email`, then *value* - developer's application.
+    --version
+     Displays version information and exits
 
-
---validation_token *arg*
-:   (required) Validation token.
-
+    -h,  --help
+     Displays usage information and exits
 
 
 # EXAMPLES
 
-virgil private-key-get --card_id <card_id> --identity email:user@domain.com --validation_token <token>
+        virgil private-key-get -a *card_id* -f validated_identity.txt -o private.vkey
 
 
 # SEE ALSO
 
-[`keygen(1)`]()
-[`private-key-add(1)`]()
-[`identity-verify(1)`]()
+[`keygen(1)`]()\
+[`private-key-add(1)`]()\
 [`identity-confirm(1)`]()

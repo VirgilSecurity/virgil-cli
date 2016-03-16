@@ -8,39 +8,59 @@
 
 # SYNOPSIS
 
-**virgil verify** [--in *file*] [--out *file*] --sign *file* --public-key-id *arg*
+**virgil verify** [-i *file*] [-o *file*] -s *file* -r *arg* [--] [--version] [-h]
+
 
 # DESCRIPTION
 
-Verify data and signature with given user's identifier or with it Virgil Public Key.
+Verify data and signature with given user's identifier or with its Public Key.
+
 
 # OPTIONS
 
--i *file*,  \--in *file*
-:   Data to be verified. If omitted stdin is used.
+    -i *file*,  --in *file*
+     Data to be verified. If omitted, stdin is used
 
--o *file*,  \--out *file*
-:   Verification result: `success` | `failure`. If omitted stdout is used.
+    -o *file*,  --out *file*
+     Verification result: success | failure. If omitted, stdout is used
 
--s *file*, \--sign *file*
-:   (required) Digest sign.
+    -s *file*,  --sign *file*
+     (required)  Digest sign
 
--e *arg*, \--public-key-id *arg*
-:   (required)  Sign owner, defined in format:
+    -r *arg*,  --recipient *arg*
+     (required)  Recipient defined in format:
 
-        [id|vkey|email]:<value>
+     [id|vcard|email|pub-key]:<value*
 
-    where:
+     where:
 
-    * if `id`, then <value> - signers's Virgil Public Key identifier;
-    * if `vkey`, then *value* - signers's Virgil Public Key file stored locally;
-    * if `email`, then *value* - signers's email.
+        * if id, then *value* - recipient's UUID associated with Virgil Card
+     identifier;
+
+        * if vcard, then *value* - recipient's Virgil Card file
+
+          stored locally;
+
+        * if email, then *value* - recipient's email;
+
+        * if pub-key, then *value* - recipient's Public Key
+
+
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
+
+    --version
+     Displays version information and exits
+
+    -h,  --help
+     Displays usage information and exits
 
 
 # EXAMPLES
 
-        virgil verify -i plain.txt -s plain.txt.sign -e email:user@domain.com
+        virgil verify -i plain.txt -s plain.txt.sign -r email:bob@gmail.com
+
 
 # SEE ALSO
 
-[`sign(1)`](https://github.com/VirgilSecurity/virgil-cli/blob/v2.0.0/doc/markdown/sign.1.md)
+[`sign(1)`]()

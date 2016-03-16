@@ -4,98 +4,88 @@
 
 # NAME
 
-**card-create** -- создание Карточки.
+**card-create** -- create a Card
+
 
 # SYNOPSIS
 
-**virgil card-create** --identity *arg*, [--validation_token *arg*], [--public_key *file*], [--public_key_id *arg*],
-    --private_key *file*
+**virgil card-create** {--public-key *file*|-e *arg*} {-d *arg*|-f *file*} [-o *file*] -k *file* [--] [--version] [-h]
 
 
 # DESCRIPTION
 
-Confirm Identity - это identity ( email, phone, etc ), который прошел следующие эндпоинты
-**identity-verify** - для получения confirmation_code на почту.
-**identity-confirm** - для подтверждения identity, получаем validation_token.
+Virgil Card is a base of building the net of trust between users.
+There are two types of Cards:
+1. with a confirmed identity. *validated_identity* is required, it can be obtained in
+[`identity-confirm(1)`]()
+2. with an unconfirmed identity.
 
-validation_token - токен для дополнительной защиты таких операций, как:
-**public-key-revoke** - удаление цепочки карточек/карточки по pub id
-**card-revoke** - удаление одной карточки по card-id
-**card-create** - создание Confirm Card
+A Card with a confirmed Identity guarantees that a user with given email has been checked.
 
-1. Создание новой Карточки с confirm Identintity
-2. Добавление нового Identity к уже созданной карточки. Будет создано еще одна
-карточка, которая связана с _родительской_ по public-key-id.
-Создание связи с уже созданной Карточкой с confirm Identity по public key id.
-Внимание:
-Public Key + Private Key + Private Key Pass должны совпадать
-
-3. Создание новой Карточки с UNconfirm Identity
-4. Добавление нового Identity к уже созданной карточки все так же, как и (2)
-
-Внимание:
-Карточку с UNconfirm Identity нельзя превратить в Карточку с Валидным Identity.
-Лучше не создавать связи между Карточками с confirm и UNconfirm Identity.
+A Card with an unconfirmed Identity lets use Public Keys Service infrastructure while staying anonymous.
+There is _no way_ to turn a Card with an unconfirmed Identity into a Card with a confirmed Identity!
 
 
-Создание Карточки с подтвержденным Identity.
-Подтвержденный Identity - это прохождение таких шагов:
-1. [`identity-verify(1)`]()
-2. [`identity-confirm(1)`]()
+Connections between Cards can be created. Model many-to-many is implemented in PKI.
+It means that we can have Cards with:\
+1. one Public Key and *different* Identities;\
+1. one Public Key and *one* identity;\
+1. different Public Keys and *different* Identities;\
+1. different Public Keys and *one* Identity;\
+1. one Public Key and *one* Identity connected with public-key-id;\
+1. one Public Key and *different* identities connected with public-key-id.
 
 
 # OPTIONS
 
--e *arg*, \--identity *arg*
-:   (required) Virgil Card identifier.
+    --public-key *file*
+    (OR required)  Public key
+     -- OR --
+    -e *arg*,  --public-key-id *arg*
+    (OR required)  Public key identifier
 
-    Format:
-        [email]:<value>
+    -d *arg*,  --identity *arg*
+    (OR required)  Identity: email
+     -- OR --
+    -f *file*,  --validated-identities *file*
+    (OR required)  Validated identity
 
-        where:
-        * if `email`, then *value* - user's email.
+    -o *file*,  --out *file*
+    Virgil Card. If omitted, stdout is used.
 
+    -k *file*,  --key *file*
+    (required)  Private key
 
--t *arg*, \--validation_token *arg*
-:   Validation Token
+    --,  --ignore_rest
+    Ignores the rest of the labeled arguments following this flag.
 
+    --version
+    Displays version information and exits.
 
---public_key *file*
-:   Public Key.
-
-
---public_key_id *arg*
-:   Public key identifier
-
---private_key *file*
-:   Private Key.
-
-
---private_key_pass *arg*
-:   Private Key password.
+    -h,  --help
+    Displays usage information and exits.
 
 
 # EXAMPLES
 
-1. Confrim Identity
+1. Create a Card with a confirmed Identity
 
-    virgil card-create --identity email:user@domain.com --validation_token <token> --public_key <path_pub_key> --private_key <path_private_key> --private_key_pass "STRONG PASS"
+        virgil card-create -f validated-identity.txt --public-key public.key -k private.key -o my_card.vcard
 
-2. Создание связи с уже созданной Валидной Карточкой
+1. Create a connection with an already existing Card with a confirmed Identity by public-key-id
 
-    virgil card-create --identity email:user@domain.com --validation_token <token> --public_key_id <pub_key_id> --private_key <path_private_key> --private_key_pass "STRONG PASS"
+        virgil card-create -f validated-identity.txt --public-key-id *public_key_id* -k private.key -o my_card.vcard
 
-3. UnConfrim Identity
+1. Create a Card with an unconfirmed Identity
 
-    virgil card-create --identity email:user@domain.com --public_key <path_pub_key> --private_key <path_private_key> --private_key_pass "STRONG PASS"
+        virgil card-create -d email:anonim@gmail.com --public-key public.key -k private.key -o my_card.vcard
 
-4. Создание связи с уже созданной Не_Валидной Карточкой
+1. Create a connection with an already existing Card with an unconfirmed Identity by public-key-id
 
-    virgil card-create --identity email:user@domain.com --public_key_id <pub_key_id> --private_key <path_private_key> --private_key_pass "STRONG PASS"
+        virgil card-create -d email:anonim@gmail.com --public-key-id *public_key_id* -k private.key -o my_card.vcard
 
 
 # SEE ALSO
 
-[`keygen(1)`]()
-[`identity-verify(1)`]()
+[`keygen(1)`](),\
 [`identity-confirm(1)`]()

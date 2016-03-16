@@ -4,68 +4,63 @@
 
 # NAME
 
-**public-key-revoke** -- отзывает Карточку с сервиса Public Key Service
+**public-key-revoke** -- revoke the Card from the Public Keys Service
+
 
 # SYNOPSIS
 
-**virgil public-key-revoke** --public_key_id *arg*, --card_id *arg*, --identity *arg*, [--validation_token *arg*],
-    --private_key *arg*, --private_key_pass *arg*
+**virgil public-key-revoke**  {-f *file* ... |-d *arg* ... } -e *arg* -a *arg* -k *file* [--] [--version] [-h]
 
 
 # DESCRIPTION
 
-Отзываем цепочку карточек связанных public key id с сервиса Public Key Service
+Revoke a group of Cards from the Public Keys Service connected by public-key-id + card-id of one of the Cards from the group
 
 
 # OPTIONS
 
---public_key_id *arg*
-: Public Key id, который служат связывающим звеном
+    -f *file*,  --validated-identities *file*  (accepted multiple times)
+     (OR required)  ValidatedIdentity
+         -- OR --
+    -d *arg*,  --identity *arg*  (accepted multiple times)
+     (OR required)  Identity user
 
 
---card_id *arg*
-:   Card identifier
+    -e *arg*,  --public-key-id *arg*
+     (required)  Public Key identifier
 
 
--e *arg*, \--identity *arg*
-:   (multiple) (required) Virgil Card identifier.
+    -a *arg*,  --card-id *arg*
+     (required)  Virgil Card identifier одной из Карточек в цепочки
 
-    Format:
-        [email]:<value>
-        [application]:<value>
+    -k *file*,  --key *file*
+     (required)  Private key
 
-        where:
-        * if `email`, then *value* - user's email.
-        * if `email`, then *value* - developer's application.
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
 
+    --version
+     Displays version information and exits
 
---validation_token *arg*
-:   (multiple) (required) Validation token
-
-
---private_key *file*
-: Private Key
-
-
---private_key_pass *arg*
-: Private Key pass
+    -h,  --help
+     Displays usage information and exits
 
 
 # EXAMPLES
 
-1. revoke цепочки карточек с валидным identity связанных public key id
+1. Revoke a group of Cards with confirmed Identities connected by public-key-id from the Public Keys Service:
 
-virgil public-key-revoke --public_key_id <public_key_id> --card_id <card_id> --private_key <private_key>
-    --private_key_pass <private_key_pass> --identity email:user_email_1@domain.com --validation_token <token_email_1>
-    --identity email:user_email_2@domain.com --validation_token <token_email_2>
+        virgil public-key-revoke -e *public_key_id* -a *card_id* -k private.key -f validated-identity.txt
 
-2. revoke цепочки карточек с невалидным identity связанных public key id
 
-virgil public-key-revoke --public_key_id <public_key_id> --card_id <card_id> --private_key <private_key>
-    --private_key_pass <private_key_pass> --identity email:user_email_1@domain.com --identity email:user_email_2@domain.com
+1. Revoke a group of Cards with unconfirmed Identities connected by public-key-id from the Public Keys Service:
+
+        virgil public-key-revoke -e *public_key_id* -a *card_id* -k private.key -d email:user1@domain.com
+            -d email:user2@domain.com
 
 
 # SEE ALSO
-[`virgil(1)`]()
-[`card-create(1)`]()
+
+[`virgil(1)`]()\
+[`card-create(1)`]()\
 [`public-key-revoke(1)`]()

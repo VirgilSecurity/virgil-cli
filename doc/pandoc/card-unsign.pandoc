@@ -4,44 +4,47 @@
 
 # NAME
 
-**card-unsign** -- снятие подписи с карточки
+**card-unsign** -- remove a signature from a Card
+
 
 # SYNOPSIS
 
-**virgil card-unsign** --signed_card_id *arg*, --signer_card_id *arg*, --private_key *file*
-    [--private_key_pass *arg*]
+**virgil card-unsign**  -s *file* -z *file* -k *file* [--] [--version] [-h]
+
 
 # DESCRIPTION
 
-Снятие подписи с карточки.
+Remove a signature from an already signed Card
 
 
 # OPTIONS
 
---signed_card_id *arg*
-:   card id карточки с которой снимаем подпись.
+    -s *file*,  --signer *file*
+     (required)  Signer's Card
 
+    -z *file*,  --signed *file*
+     (required)  Signed Card
 
---signer_card_id *arg*
-:   card id карточки осуществившей подпись
+    -k *file*,  --key *file*
+     (required)  Signer's Private key
 
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
 
---private_key *file*
-: Private Key signer
+    --version
+     Displays version information and exits
 
-
---private_key_pass
-: Private Key pass signer
+    -h,  --help
+     Displays usage information and exits
 
 
 # EXAMPLES
 
-User1 снимает подпись карточки user2
+1. Alice unsigns Bob's Card:
 
-virgil card-unsign --signed_card_id <user2_card_id> --signer_card_id <user1_card_id>
-    --private_key <user1_private_key> --private_key_pass <user1_private_key_pass>
+        virgil card-unsign -s alice.vcard -z bob.vcard -k alice/private.vkey
 
 
 # SEE ALSO
-[`virgil(1)`]()
-[`unsign(1)`]()
+[`virgil(1)`]()\
+[`card-sign(1)`]()

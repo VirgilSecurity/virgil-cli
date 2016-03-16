@@ -4,62 +4,57 @@
 
 # NAME
 
-**card-revoke** -- отзывает Карточку с сервиса Public Key Service
+**card-revoke** -- revoke Card from the Public Keys Service
 
 # SYNOPSIS
 
-**virgil card-revoke** --card_id *arg*, --identity *arg*, [--validation_token *arg*], --private_key *file*, --private_key_pass *arg*
+**virgil card-revoke** {-f *file*|-d *arg*} -a *arg* -k *file* [--] [--version] [-h]
 
 
 # DESCRIPTION
 
-Отзывает Карточку с сервиса Public Key Service
+Revoke a Card from the Public Keys Service
 
 
 # OPTIONS
 
---card_id *arg*
-:   Card identifier
+    -f *file*,  --validated-identities *file*
+     (OR required)  Validated identity
+         -- OR --
+    -d *arg*,  --identity *arg*
+     (OR required)  Identity user
 
 
--e *arg*, \--identity *arg*
-:   (required) Virgil Card identifier.
+    -a *arg*,  --card-id *arg*
+     (required)  Virgil Card identifier
 
-    Format:
-        [email]:<value>
-        [application]:<value>
+    -k *file*,  --key *file*
+     (required)  Private key
 
-        where:
-        * if `email`, then *value* - user's email.
-        * if `email`, then *value* - developer's application.
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
 
+    --version
+     Displays version information and exits
 
---validation_token *arg*
-:   Validation token
-
-
---private_key *file*
-: Private Key
-
-
---private_key_pass *arg*
-: Private Key pass
+    -h,  --help
+     Displays usage information and exits
 
 
 # EXAMPLES
 
-1. revoke карточки с валидным identity
+1. Revoke Virgil Card with a confirmed identity:
 
-virgil card-revoke --card_id <card_id> --identity email:user@domain.com --validation_token <token>
-    --private_key <private_key> --private_key_pass <private_key_pass>
+        virgil card-revoke -a *card_id* -f *validated-identities.txt -k private.key
 
 
-2. revoke карточки с невалидным identity
+1. Revoke Virgil Card with a confirmed identity:
 
-virgil card-revoke --card_id <card_id> --identity email:user@domain.com --private_key <private_key> --private_key_pass <private_key_pass>
+        virgil card-revoke -a *card_id* -d email:user@domain.com -k private.key
 
 
 # SEE ALSO
-[`virgil(1)`]()
-[`card-create(1)`]()
+
+[`virgil(1)`]()\
+[`card-create(1)`]()\
 [`public-key-revoke(1)`]()

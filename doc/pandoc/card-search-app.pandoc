@@ -4,36 +4,44 @@
 
 # NAME
 
-**card-search-app** -- поиск application cards
+**card-search-app** -- search for application Cards
 
 # SYNOPSIS
 
-**virgil card-search-app** --identity *arg*
+**virgil card-search-app**  [-o <arg>] -c <arg> [--] [--version] [-h]
 
 # DESCRIPTION
 
-Поиск application cards
+Search for application Cards
+
 
 # OPTIONS
 
--e *arg*, \--identity *arg*
-:   (required) Virgil Card identifier.
+    -o *file*,  --out *file*
+     Application cards. If omitted, stdout is used
 
-    Format:
-        [application]:<value>
+    -c *arg*,  --application-name *arg*
+     (required) Application name, if application name = '*' - get all Application Cards from Public Keys Service
 
-        where:
-        * if `application`, then *value* - developer name.
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
+
+    --version
+     Displays version information and exits
+
+    -h,  --help
+     Displays usage information and exits
 
 
 # EXAMPLES
 
-Ищем карточку приложения по ее имени. Шаблон имени
-    com.virgilsecurity.<application_name>
+1. Search for application Cards:
 
-Если задать сom.virgilsecurity.<*> вернет все созданные application cards.
+        virgil card-search-app -c *app_name* -o app_cards/
 
-virgil card-search-app --identity application:<application_name>
+1. Return all application Card:
+
+        virgil card-search-app -c "*" -o all_app_cards/
 
 
 # SEE ALSO

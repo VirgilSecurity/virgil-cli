@@ -4,48 +4,51 @@
 
 # NAME
 
-**card-sign** -- подпись карточки
+**card-sign** -- sign a Card
+
 
 # SYNOPSIS
 
-**virgil card-sign** --signer_card_id *arg*, --signed_card_hash *arg*, --signed_card_id *arg*, --private_key *file*
-    [--private_key_pass *arg*]
+**virgil card-sign** [-o *file*] -s *file* -b *file* -k *file* [--] [--version] [-h]
+
 
 # DESCRIPTION
 
-Подпись карточки. Подписывая карточку вы строете модель доверия.
+Sign a Card. You are building a model of trust by signing the Card
 
 
 # OPTIONS
 
---signer_card_id *arg*
-:   card id карточки, которая осуществляет подпись
+    -o *file*,  --out *file*
+     Card Sign. If omitted, stdout is used
 
+    -s *file*,  --signer *file*
+     (required)  Signer's Card
 
---signed_card_hash
- :   card hash карты, которую подписываем
+    -b *file*,  --to-be-signed *file*
+     (required)  Card to be signed
 
+    -k *file*,  --key *file*
+     (required)  Signer's Private key
 
---signed_card_id *arg*
-:   card id чью карточку подписываем
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
 
+    --version
+     Displays version information and exits
 
---private_key *file*
-: Private Key signer
-
-
---private_key_pass
-: Private Key pass signer
+    -h,  --help
+     Displays usage information and exits
 
 
 # EXAMPLES
 
-User1 подписывает карточку user2
+1. Alice is signing Bob's Card:
 
-virgil card-sign --signer_card_id<user1_card_id> --signed_card_hash <user2_card_hash> --signed_card_id <user2_card_id>
-    --private_key <signer_private_key> --private_key_pass <signer_private_key_pass>
+    virgil card-sign -s alice.vcard -b bob.vcard -k alice/private.key
 
 
 # SEE ALSO
-[`virgil(1)`]()
-[`unsign(1)`]()
+[`virgil(1)`]()\
+[`unsign(1)`]()\
+[`card-search(1)`]()

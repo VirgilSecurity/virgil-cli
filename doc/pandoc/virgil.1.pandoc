@@ -1,10 +1,10 @@
 % VIRGIL(1) Virgil Security CLI (2.0.0) | Virgil
-% (c) Virgil Security Inc
+% (c) Virgil Security, Inc.
 % December 07, 2015
 
 # NAME
 
-**virgil** -- command line tool for using Virgil Security full stack functionality
+**virgil** -- command line tool for using Virgil Security full stack functionality.
 
 # SYNOPSIS
 
@@ -12,16 +12,17 @@
 
 # DESCRIPTION
 
-The **virgil** program is a command line tool for using Virgil Security stack functionality:
+The **Virgil** program is a command line tool for using Virgil Security stack functionality:
 
   * encrypt, decrypt, sign and verify data;
   * interact with Virgil Keys Service;
   * interact with Virgil Private Keys Service.
 
+
 # COMMON COMMANDS
 
 **keygen**
-:   Generate Private Key with a given parameters.
+:   Generate Private Key with given parameters.
 
 **key2pub**
 :   Extract Public Key from the Private Key.
@@ -40,19 +41,18 @@ The **virgil** program is a command line tool for using Virgil Security stack fu
 
 
 # IDENTITY SERVICE COMMANDS
-**identity-verify**
-:   Initiates the process to verify the Identity.
-Передача email на который придет confirmation_code.
-
 
 **identity-confirm**
-:   Confirms the identity from the **identity-verify** step to obtain an identity confirmation token.
-Подтверждение the Identity ( почта, которую дали в identity-verify ) confirmation code.
-Return validation_token, который нужен для создания Card; card-revoke; public-key-revoke
+:   Confirmation of the Identity.
+Returns validation_token which is required for operations with Cards and confirmed identity:\
+1. [`card-create(1)`](../markdown/card-create.1.md);\
+1. [`card-revoke(1)`](../markdown/card-revoke.1.md);\
+1. [`public-key-revoke(1)`](../markdown/public-key-revoke).
+
 
 **identity-validate**
 :   Validates the passed token.
-Проверяем валидность validation_token. На нем стоит ограничение по времени, кол-ву использований
+Checks whether validation_token is valid. It has time and usage limits.
 
 
 # KEYS SERVICE COMMANDS
@@ -62,16 +62,15 @@ Return validation_token, который нужен для создания Card;
 
 **public-key-revoke**
 :   Revoke Public Key’s data.
-В рамках модели один-ко-многим у нас могут быть карточки, которые имеют один Public Key Id.
-Вместо точечного удаление каждой карты с одинаковым Публичным Ключом мы можем удалить скопом все
-так как они связаны Public Key Id.
+Within one-to-many model we can have Cards with a single Public key and connected with public-key-id.
+Instead of deleting every Card one at a time we can delete all the Cards connected with Public Key ID.
 
 
 # VIRGIL CARD SERVICE COMMANDS
 
 **card-create**
 :   Create a Virgil Card.
-Создание Карточки с подтвержденным Identity. Это означает identity-verify; identity-confirm
+Creates a Card with a confirmed Identity. This means identity-verify; identity-confirm.
 
 
 **card-get**
@@ -79,10 +78,9 @@ Return validation_token, который нужен для создания Card;
 
 
 **card-search**
-:   Search for Cards.
-1. Ищет нужную карточку по email.
-2. А также позволяет найти карточку подписанную другими карточками.
-relations - тут ids карточек, которые подписали искомую карту для поиска.
+:   Search Card by email, search with criteria:\
+1. Including Cards with unconfirmed Identity;\
+1. Search for Cards which have signed some other Cards.\
 
 
 **card-search-app**
@@ -90,29 +88,24 @@ relations - тут ids карточек, которые подписали ис�
 
 
 **card-sign**
-:   Sign a Virgil Card.
-Мы можем выразить доверие другой карте сделав ее подпись.
-
+:   Sign a Virgil Card. We can start trusting another Card by signing it.
 
 **card-unsign**
 :   Untrust a Virgil Card
-Отменить подпись уже подписанной карточки.
+Cancel sign of an already signed Card.
 
 
 **card-revoke**
-:   Revoke a Virgil Card
-Точечное удаление карточки.
+:   Revoke a Virgil Card by card-id.
 
 
 # PRIVATE KEYS SERVICE COMMANDS
 
-**private-key-stash**
-:   Stash existing Private Key to the Private Keys Service.
-Загрузка Приватного Ключа на Сервис Приватных Ключей
+**private-key-add**
+:   Add existing Private Key to the Private Keys Service.
 
 **private-key-get**
-:   Get Private Key from the Virgil Private Keys service.
-
+:   Get Private Key from the Virgil Private Keys Service.
 
 **private-key-del**
 :   Delete Private Key object from the Private Keys Service.
@@ -120,21 +113,23 @@ relations - тут ids карточек, которые подписали ис�
 
 # SEE ALSO
 
-[`keygen(1)`](), \
-[`key2pub(1)`](), \
-[`encrypt(1)`](), \
-[`decrypt(1)`](), \
-[`sign(1)`](), \
-[`verify(1)`](), \
-[`public-key-get(1)`](), \
-[`public-key-revoke(1)`](), \
-[`card-create(1)`](), \
-[`card-get(1)`](), \
-[`card-search(1)`](), \
-[`card-search-app(1)`](), \
-[`card-trust(1)`](), \
-[`card-untrust(1)`](), \
-[`card-revoke(1)`](), \
-[`private-key-stash(1)`](), \
-[`private-key-get(1)`](), \
-[`private-key-del(1)`]()
+[`keygen(1)`](../markdown/keygen.1.md),\
+[`key2pub(1)`](../markdown/key2pub.1.md),\
+[`encrypt(1)`](../markdown/encrypt.1.md),\
+[`decrypt(1)`](../markdown/decrypt.1.md),\
+[`sign(1)`](../markdown/sign.1.md),\
+[`verify(1)`](../markdown/verify.1.md),\
+[`identity-confirm(1)`](../markdown/identity-confirm.1.md),\
+[`identity-valid(1)`](../markdown/identity-valid.1.md),\
+[`public-key-get(1)`](../markdown/public-key-get.1.md),\
+[`public-key-revoke(1)`](../markdown/public-key-revoke.1.md),\
+[`card-create(1)`](../markdown/card-create.1.md),\
+[`card-get(1)`](../markdown/card-get.1.md),\
+[`card-search(1)`](../markdown/card-search.1.md),\
+[`card-search-app(1)`](../markdown/card-search-app.1.md),\
+[`card-trust(1)`](../markdown/card-trust.1.md),\
+[`card-untrust(1)`](../markdown/card-untrust.1.md),\
+[`card-revoke(1)`](../markdown/card-revoke.1.md),\
+[`private-key-add(1)`](../markdown/private-key-add.1.md),\
+[`private-key-get(1)`](../markdown/private-key-get.1.md),\
+[`private-key-del(1)`](../markdown/private-key-del.1.md)

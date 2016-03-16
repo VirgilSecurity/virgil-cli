@@ -4,39 +4,42 @@
 
 # NAME
 
-**private-key-del** -- delete the private key in Private Key Service
+**private-key-del** -- delete the Private Key from the Private Keys Service
 
 # SYNOPSIS
 
-**virgil private-key-del** --card_id *arg*, --private_key *file*, --private-key-pass *arg*
+**virgil private-key-del** -a *arg* -k *file* [--] [--version] [-h]
 
 
 # DESCRIPTION
 
- Delete the private key in Private Key Service
+Delete the Private Key from the Private Keys Service.
 
 
 # OPTIONS
 
---card_id *arg*
-:   Public key identifier
+    -a *arg*,  --card-id *arg*
+     (required)  Virgil Card identifier
 
+    -k *file*,  --key *file*
+     (required)  Private Key
 
---private_key *file*
-:   Private Key.
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
 
+    --version
+     Displays version information and exits
 
---private_key_pass *arg*
-:   Private Key password.
+    -h,  --help
+     Displays usage information and exits
 
 
 # EXAMPLES
 
-virgil private-key-del --card_id <card_id> --private_key <private_key> --private_key_pass <private_key_pass>
+        virgil private-key-del -k private.key -a *card_id*
 
 
 # SEE ALSO
 
-[`keygen(1)`]()
-[`identity-verify(1)`]()
+[`keygen(1)`]()\
 [`identity-confirm(1)`]()

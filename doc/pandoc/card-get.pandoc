@@ -4,78 +4,55 @@
 
 # NAME
 
-**card-get** -- возвращение Карточки/Карту
+**card-get** -- return Card(s)
 
 # SYNOPSIS
 
-**virgil card-get** [--identity *arg*], [--card_id *arg*],[--public_key_id *arg*], [--private_key *file*],
-    [--private_key_pas *arg*]
-
+**virgil card-get** [-o *arg*] -a *arg* [-e *arg*] [-k *file*] [--] [--version] [-h]
 
 # DESCRIPTION
 
-Возвращение Карточки, карточек связанных по pub key id
+Return a Card by card-id or a group of Cards connected with public-key-id
 
 
 # OPTIONS
 
--e *arg*, \--identity *arg*
-:   (required) Virgil Card identifier.
+    -o *arg*,  --out *arg*
+     Folder where Virgil Cards will be saved
 
-    Format:
-        [email]:<value>
-        [application]:<value>
+    -a *arg*,  --card-id *arg*
+     (required)  Virgil Card identifier
 
-        where:
-        * if `email`, then *value* - user's email.
-        * if `email`, then *value* - developer's application.
+    -e *arg*,  --public-key-id *arg*
+     Public Key identifier
 
 
---card_id *arg*
-:   Card identifier
+    -k *file*,  --key *file*
+     Private key
 
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
 
---public_key_id *arg*
-: Public Key identifier
+    --version
+     Displays version information and exits
 
-
---private_key *file*
-: Private Key
-
-
---private_key_pass
-: Private Key pass
+    -h,  --help
+     Displays usage information and exits
 
 
 # EXAMPLES
 
-1. Возвращение Карточек связанных между собой public-key-id
+1. Return a Card by card-id:
 
-virgil card-get --public_key_id <pub_key_id>, --card_id <card_id>, --private_key <path_private_key>
-    --private_key_pass <private_key_pass>
+        virgil card-get -a *card_id*
 
+1. Return a group of Cards connected with public-key-id, card-id belongs to one of the Cards:
 
-2. Возвращение Карточки по card-id
-
-virgil card-get --card_id <card_id>
-
-
-3. Возвращение Карточки по identity ( email, phone etc )
-
-virgil card-get --identity email:user@domain.com
-
-
-4. Возвращение application card
-
-virgil card-get --identity application:com.virgilsecurity.gmail
-
-Всех Карт на Сервисе
-
-virgil card-get --identity application:"com.virgilsecurity.*"
-
-
+        virgil card-get -a *card_id* -e *public_key_id* -k private.key
 
 # SEE ALSO
 
-[`virgil(1)`]()
-[`card-create(1)`]()
+[`virgil(1)`]()\
+[`card-create(1)`]()\
+[`card-search(1)`]()\
+[`card-search-app(1)`]()

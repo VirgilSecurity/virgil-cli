@@ -4,45 +4,78 @@
 
 # NAME
 
-**identity-confirm** -- confirms the identity from the **identity-verify** step to obtain an identity confirmation token
+**identity-confirm** -- confirm an Identity
 
 
 # SYNOPSIS
 
-**virgil identity-confirm** --action_id *arg*, --confirmation_code *arg*, [--time_to_live *arg*],
-[--count_to_live *arg*]
+**virgil identity-confirm** [-o *file*] -d *arg* [-l *int*] [-r *int*] [--] [--version] [-h]
 
 
 # DESCRIPTION
 
-Developer invokes **identity-confirm** endpoint with the *confirmation_code* sent to the email and
-*action_id* from the previous step *identity-verify*.
+It is required to pass **identity-confirm** if you want
+to confirm your Identity so that other people can be sure
+that a received signature, encrypted data came from you.
+After entering your email *confirmation_code* will be sent
+to you, you have to enter it to receive a validated-identity.
+**validated-identity** consists of *validation_token* and your
+Identity. It is required for the following operations:\
+1. create a Card with a confirmed Identity;\
+1. revoke a Card, a group of Cards;\
+1. get a Private key from the Private Keys Service.
 
 
 # OPTIONS
--a *arg*, \--action_id *arg*
-:   (required) Action id.
 
--k *arg*, \--confirmation_code *arg*
-:   (required) Confirmation code.
+    -o *file*,  --out *file*
+     Validated identity. If omitted, stdout is used
 
--t *arg*, \--time_to_live
-:   Ограничение validation_token по времени.
+    -d *arg*,  --identity *arg*
+     (required)  Identity email
 
--c *arg*, \--count_to_live
-:   Ограничение validation_token по кол-ву запросов.
+    -l *int*,  --time-to-live *int*
+     Time limit for validation-token,  by default = 3600
+
+    -r *int*,  --count-to-live *int*
+     Requests number limit for validation-token, by default = 10.
+     All requests where validation-token is used except *identity-valid* are counted.
+
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
+
+    --version
+     Displays version information and exits
+
+    -h,  --help
+     Displays usage information and exits
 
 
 # RETURN VALUE
 
-On success, validation_token is returned. On error, throw exeption.
-Описать, что такое validation_token и для чего применяется.
+On success, *validated identity model*:
+
+    {
+        "type": "email",
+        "value": "alice@gmail.com",
+        "validation_token": *validation_token*
+    }
+
+is returned. On error, throw exeption.
 
 
 # EXAMPLES
 
-        virgil identity-verify -a d6b4abd9-057c-4d01-bdec-7b2ab232e2af -k B4L7O2
+1. Identity confirmation with requests number limit = 10 and time validity limit = 3600:
+
+        virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt
+
+1. Identity confirmation with requests number limit = 1 and time validity limit = 60:
+
+        virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt -l 60 -r 1
 
 # SEE ALSO
 
-[`identity-verify(1)`]()
+[`card-create(1)`]()\
+[`card-revoke(1)`]()\
+[`private-key-get(1)`]()

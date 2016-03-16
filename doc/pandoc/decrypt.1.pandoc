@@ -8,51 +8,74 @@
 
 # SYNOPSIS
 
-**virgil decrypt** [--in *file*] [--out *file*] [--content-info *file*] [--key *file* [--key-pwd *arg*]] --recipient *arg*
+**virgil decrypt** [-i *file*] [-o *file*] [-c *file*] [-k *file*] -r *arg* [--] [--version] [-h]
 
 # DESCRIPTION
 
-Decrypt data with given password or given Private Key.
+Decrypt data with given password or given Private Key + recipient-id.
+recipient-id is an identifier which is connected with Public Key.
+If a *sender* has a Card, his recipient-id is Card's id. Also Public Key
+is saved in the Card.
+
+
 
 # OPTIONS
 
--i *file*, \--in *file*
-:   Data to be decrypted. If omitted stdin is used.
+    -i *file*,  --in *file*
+     Data to be decrypted. If omitted, stdin is used
 
--o *file*, \--out *file*
-:   Decrypted data. If omitted stdout is used.
+    -o *file*,  --out *file*
+     Decrypted data. If omitted, stdout is used
 
--c *file*, \--content-info *file*
-:   Content info. Use this option to specify explicit content info if it not embedded in the encrypted data.
+    -c *file*,  --content-info *file*
+     Content info. Use this option if content info is not embedded in the
+     encrypted data
 
--k *file*, \--key *file*
-:   Recipient's Private Key.
+    -k *file*,  --key *file*
+     Private Key.
 
--p *arg*, \--key-pwd *arg*
-:   Recipient's Private Key password (max length 31 ASCII characters).
+    -r *arg*,  --recipient *arg*
+     (required)  Recipient defined in format:
 
--r *arg*, \--recipient *arg*
-:   (required) Recipient defined in format:
+     [pass|id|vcard|email|pub-key]:<value*
 
-        [pass|id|vkey|email]:<value>
+     where:
 
-    where:
+        * if pass, then *value* - recipient's password;
 
-    * if `pass`, then *value* - recipient's password (max length 31 ASCII characters);
-    * if `id`, then <value> - UUID associated with Virgil Public Key identifier;
-    * if `vkey`, then *value* - recipient's Virgil Public Key file stored locally.
-    * if `email`, then *value* - recipient's email;
+        * if id, then *value* - recipient's UUID associated with Virgil Card
+     identifier;
+
+        * if vcard, then *value* - recipient's Virgil Card file
+
+          stored locally;
+
+        * if email, then *value* - recipient's email;
+
+        * if pub-key, then *value* - recipient's Public Key
+
+
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
+
+    --version
+     Displays version information and exits
+
+    -h,  --help
+     Displays usage information and exits
+
 
 # EXAMPLES
-
-1. Decrypt data for user identified by email:
-
-        virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r email:user@domain.com
 
 1. Decrypt data for user identified by password:
 
         virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r pass:strong_password
 
+1. Decrypt data for Bob identified by his Public Key + recipient-id [id|vcard|email]:
+
+        virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r email:bob@domain.com
+
+
 # SEE ALSO
 
-[`encrypt(1)`](https://github.com/VirgilSecurity/virgil-cli/blob/v2.0.0/doc/markdown/encrypt.1.md)
+[`encrypt(1)`]()

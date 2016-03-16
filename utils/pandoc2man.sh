@@ -57,5 +57,5 @@ do
         outdir=$2
         mkdir -p "$outdir"
     fi
-    pandoc -s -t man "$i" -o "$outdir/$filename"
+    pandoc --reference-links -s -S -t man "$i" -o "$outdir/$filename"
 done

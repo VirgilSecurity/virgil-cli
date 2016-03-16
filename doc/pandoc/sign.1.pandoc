@@ -8,25 +8,33 @@
 
 # SYNOPSIS
 
-**virgil sign** [--in *file*] [--out *file*] --key *file* [--key-pwd *arg*]
+**virgil sign** [-i *file*] [-o *file*] -k *file* [--] [--version] [-h]
 
 # DESCRIPTION
 
 Sign data with given user's Private Key.
 
+
 # OPTIONS
 
--i *file*, \--in *file*
-:   Data to be signed. If omitted stdin is used.
+    -i *file*,  --in *file*
+     Data to be signed. If omitted, stdin is used
 
--o *file*, \--out *file*
-:   Digest sign. If omitted stdout is used.
+    -o *file*,  --out *file*
+     Digest sign. If omitted, stdout is used
 
--k *file*, \--key *file*
-:   (required) Signer's Private Key.
+    -k *file*,  --key *file*
+     (required)  Signer's Private Key
 
--p *arg*, \--key-pwd *arg*
-:   Signer's Private Key password.
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag
+
+    --version
+     Displays version information and exits
+
+    -h,  --help
+     Displays usage information and exits
+
 
 # EXAMPLES
 
@@ -34,4 +42,4 @@ Sign data with given user's Private Key.
 
 # SEE ALSO
 
-[`verify(1)`](https://github.com/VirgilSecurity/virgil-cli/blob/v2.0.0/doc/markdown/verify.1.md)
+[`verify(1)`]()
