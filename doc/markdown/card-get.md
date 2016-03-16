@@ -55,7 +55,7 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`virgil(1)`]()  
-[`card-create(1)`]()  
-[`card-search(1)`]()  
-[`card-search-app(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md)  
+[`card-create(1)`](../markdown/card-create.1.md)  
+[`card-search(1)`](../markdown/card-search.1.md)  
+[`card-search-app(1)`](../markdown/card-search-app.1.md)

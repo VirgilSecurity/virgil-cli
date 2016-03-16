@@ -42,4 +42,4 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`identity-confirm(1)`]()
+[`identity-confirm(1)`](../markdown/identity-confirm.1.md)

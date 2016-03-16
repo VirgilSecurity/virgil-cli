@@ -95,4 +95,4 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`key2pub(1)`]()
+[`key2pub(1)`](../markdown/key2pub.1.md)

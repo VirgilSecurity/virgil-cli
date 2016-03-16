@@ -45,5 +45,5 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`virgil(1)`]()  
-[`card-sign(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md)  
+[`card-sign(1)`](../markdown/card-sign.1.md)

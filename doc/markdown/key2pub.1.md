@@ -40,4 +40,4 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`keygen(1)`]()
+[`keygen(1)`](../markdown/keygen.1.md)

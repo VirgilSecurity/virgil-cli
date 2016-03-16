@@ -63,4 +63,4 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`sign(1)`]()
+[`sign(1)`](../markdown/sign.1.md)

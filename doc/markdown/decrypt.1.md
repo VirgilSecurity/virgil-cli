@@ -78,4 +78,4 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`encrypt(1)`]()
+[`encrypt(1)`](../markdown/encrypt.1.md)

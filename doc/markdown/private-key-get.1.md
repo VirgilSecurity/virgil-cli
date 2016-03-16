@@ -43,6 +43,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`keygen(1)`]()  
-[`private-key-add(1)`]()  
-[`identity-confirm(1)`]()
+[`keygen(1)`](../markdown/keygen.1.md)  
+[`private-key-add(1)`](../markdown/private-key-add.1.md)  
+[`identity-confirm(1)`](../markdown/identity-confirm.1.md)

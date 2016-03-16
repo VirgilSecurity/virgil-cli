@@ -77,6 +77,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`card-create(1)`]()  
-[`card-revoke(1)`]()  
-[`private-key-get(1)`]()
+[`card-create(1)`](../markdown/card-create.1.md)  
+[`card-revoke(1)`](../markdown/card-revoke.1.md)  
+[`private-key-get(1)`](../markdown/private-key-get.1.md)

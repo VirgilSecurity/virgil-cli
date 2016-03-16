@@ -48,6 +48,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`virgil(1)`]()  
-[`unsign(1)`]()  
-[`card-search(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md)  
+[`card-unsign(1)`](../markdown/card-unsign.1.md)  
+[`card-search(1)`](../markdown/card-search.1.md)

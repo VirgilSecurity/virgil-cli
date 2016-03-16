@@ -61,6 +61,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`virgil(1)`]()  
-[`card-create(1)`]()  
-[`public-key-revoke(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md)  
+[`card-create(1)`](../markdown/card-create.1.md)  
+[`public-key-revoke(1)`](../markdown/public-key-revoke.1.md)

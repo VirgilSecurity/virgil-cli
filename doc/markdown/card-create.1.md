@@ -15,7 +15,8 @@ DESCRIPTION
 Virgil Card is a base of building the net of trust between users. There
 are two types of Cards: 1. with a confirmed identity.
 *validated\_identity* is required, it can be obtained in
-[`identity-confirm(1)`]() 2. with an unconfirmed identity.
+[`identity-confirm(1)`](../markdown/identity-confirm.1.md) 2. with an
+unconfirmed identity.
 
 A Card with a confirmed Identity guarantees that a user with given email
 has been checked.
@@ -88,5 +89,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`keygen(1)`](),  
-[`identity-confirm(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md)  
+[`keygen(1)`](../markdown/keygen.1.md),  
+[`identity-confirm(1)`](../markdown/identity-confirm.1.md)

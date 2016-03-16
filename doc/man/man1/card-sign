@@ -48,14 +48,14 @@ virgil card\-sign \-s alice.vcard \-b bob.vcard \-k alice/private.key
 .RE
 .SH SEE ALSO
 .PP
-\f[C]virgil(1)\f[] ()
+\f[C]virgil(1)\f[] (../markdown/virgil.1.md)
 .PD 0
 .P
 .PD
-\f[C]unsign(1)\f[] ()
+\f[C]card\-unsign(1)\f[] (../markdown/card-unsign.1.md)
 .PD 0
 .P
 .PD
-\f[C]card\-search(1)\f[] ()
+\f[C]card\-search(1)\f[] (../markdown/card-search.1.md)
 .SH AUTHORS
 (c) Virgil Security Inc.

@@ -43,4 +43,4 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`verify(1)`]()
+[`verify(1)`](../markdown/verify.1.md)

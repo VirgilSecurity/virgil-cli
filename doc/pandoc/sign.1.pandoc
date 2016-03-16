@@ -42,4 +42,4 @@ Sign data with given user's Private Key.
 
 # SEE ALSO
 
-[`verify(1)`]()
+[`verify(1)`](../markdown/verify.1.md)

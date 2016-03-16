@@ -41,5 +41,5 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`keygen(1)`]()  
-[`identity-confirm(1)`]()
+[`keygen(1)`](../markdown/keygen.1.md)  
+[`identity-confirm(1)`](../markdown/identity-confirm.1.md)

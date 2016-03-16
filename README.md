@@ -169,7 +169,7 @@ Public Key.
 
 
 ## Manuals
-See manual pages [here](https://github.com/VirgilSecurity/virgil-cli/blob/v1.0.0/doc/markdown/virgil.1.md).
+See manual pages [here](doc/markdown/virgil.1.md).
 
 
 ## License
