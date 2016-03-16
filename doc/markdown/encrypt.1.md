@@ -87,4 +87,5 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`decrypt(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md),  
+[`decrypt(1)`](../markdown/decrypt.1.md)

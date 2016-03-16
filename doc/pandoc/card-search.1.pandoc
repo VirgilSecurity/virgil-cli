@@ -52,14 +52,14 @@ Search for Cards by email using filters:
 
         virgil card-search -d email:alice@gmail.com -o alice/ -u
 
-1. Search for Cards with an email, which have signed ( [`card-sign(1)`]() ) the Cards with card-id
+1. Search for Cards with an email, which have signed ( [`card-sign(1)`](../markdown/card-sign.1.md) ) the Cards with card-id
 
         virgil card-search -d email:alice@gmail.com -u *user1_card_id* *user2_card_id*
 
 
 # SEE ALSO
 
-[`virgil(1)`]()\
-[`card-create(1)`]()\
-[`card-get(1)`]()\
-[`card-sign(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md),\
+[`card-create(1)`](../markdown/card-create.1.md),\
+[`card-get(1)`](../markdown/card-get.1.md),\
+[`card-sign(1)`](../markdown/card-sign.1.md)

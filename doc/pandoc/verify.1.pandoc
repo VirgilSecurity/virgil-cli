@@ -63,4 +63,5 @@ Verify data and signature with given user's identifier or with its Public Key.
 
 # SEE ALSO
 
-[`sign(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md),\
+[`sign(1)`](../markdown/sign.1.md)

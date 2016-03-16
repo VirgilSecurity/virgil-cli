@@ -48,4 +48,7 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`keygen(1)`]() [`identity-confirm(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md),  
+[`private-key-del(1)`](../markdown/private-key-del.1.md),  
+[`keygen(1)`](../markdown/keygen.1.md),  
+[`identity-confirm(1)`](../markdown/identity-confirm.1.md)

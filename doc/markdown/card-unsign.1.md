@@ -1,30 +1,27 @@
 NAME
 ====
 
-**card-sign** -- sign a Card
+**card-unsign** -- remove a signature from a Card
 
 SYNOPSIS
 ========
 
-**virgil card-sign** \[-o *file*\] -s *file* -b *file* -k *file* \[--\]
+**virgil card-unsign** -s *file* -z *file* -k *file* \[--\]
 \[--version\] \[-h\]
 
 DESCRIPTION
 ===========
 
-Sign a Card. You are building a model of trust by signing the Card
+Remove a signature from an already signed Card
 
 OPTIONS
 =======
 
-    -o *file*,  --out *file*
-     Card Sign. If omitted, stdout is used
-
     -s *file*,  --signer *file*
      (required)  Signer's Card
 
-    -b *file*,  --to-be-signed *file*
-     (required)  Card to be signed
+    -z *file*,  --signed *file*
+     (required)  Signed Card
 
     -k *file*,  --key *file*
      (required)  Signer's Private key
@@ -41,13 +38,12 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Alice is signing Bob's Card:
+1.  Alice unsigns Bob's Card:
 
-    virgil card-sign -s alice.vcard -b bob.vcard -k alice/private.key
+        virgil card-unsign -s alice.vcard -z bob.vcard -k alice/private.vkey
 
 SEE ALSO
 ========
 
-[`virgil(1)`]()  
-[`unsign(1)`]()  
-[`card-search(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md),  
+[`card-sign(1)`](../markdown/card-sign.1.md)

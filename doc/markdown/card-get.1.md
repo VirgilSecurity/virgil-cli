@@ -1,21 +1,22 @@
-% PUBLIC-KEY-ADD(1) Virgil Security CLI (2.0.0) | Virgil
-% (c) Virgil Security Inc
-% February 29, 2016
-
-# NAME
+NAME
+====
 
 **card-get** -- return Card(s)
 
-# SYNOPSIS
+SYNOPSIS
+========
 
-**virgil card-get** [-o *arg*] -a *arg* [-e *arg*] [-k *file*] [--] [--version] [-h]
+**virgil card-get** \[-o *arg*\] -a *arg* \[-e *arg*\] \[-k *file*\]
+\[--\] \[--version\] \[-h\]
 
-# DESCRIPTION
+DESCRIPTION
+===========
 
-Return a Card by card-id or a group of Cards connected with public-key-id
+Return a Card by card-id or a group of Cards connected with
+public-key-id
 
-
-# OPTIONS
+OPTIONS
+=======
 
     -o *arg*,  --out *arg*
      Folder where Virgil Cards will be saved
@@ -39,20 +40,22 @@ Return a Card by card-id or a group of Cards connected with public-key-id
     -h,  --help
      Displays usage information and exits
 
+EXAMPLES
+========
 
-# EXAMPLES
-
-1. Return a Card by card-id:
+1.  Return a Card by card-id:
 
         virgil card-get -a *card_id*
 
-1. Return a group of Cards connected with public-key-id, card-id belongs to one of the Cards:
+2.  Return a group of Cards connected with public-key-id, card-id
+    belongs to one of the Cards:
 
         virgil card-get -a *card_id* -e *public_key_id* -k private.key
 
-# SEE ALSO
+SEE ALSO
+========
 
-[`virgil(1)`]()\
-[`card-create(1)`]()\
-[`card-search(1)`]()\
-[`card-search-app(1)`]()
+[`virgil(1)`](../markdown/virgil.1.md),  
+[`card-create(1)`](../markdown/card-create.1.md),  
+[`card-search(1)`](../markdown/card-search.1.md),  
+[`card-search-app(1)`](../markdown/card-search-app.1.md)

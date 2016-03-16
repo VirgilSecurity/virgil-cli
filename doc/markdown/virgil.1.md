@@ -50,7 +50,7 @@ Confirmation of the Identity. Returns validation\_token which is
 required for operations with Cards and confirmed identity:  
 1. [`card-create(1)`](../markdown/card-create.1.md);  
 1. [`card-revoke(1)`](../markdown/card-revoke.1.md);  
-1. [`public-key-revoke(1)`](../markdown/public-key-revoke).
+1. [`public-key-revoke(1)`](../markdown/public-key-revoke.1.md).
 
 **identity-validate**  
 Validates the passed token. Checks whether validation\_token is valid.
@@ -124,8 +124,8 @@ SEE ALSO
 [`card-get(1)`](../markdown/card-get.1.md),  
 [`card-search(1)`](../markdown/card-search.1.md),  
 [`card-search-app(1)`](../markdown/card-search-app.1.md),  
-[`card-trust(1)`](../markdown/card-trust.1.md),  
-[`card-untrust(1)`](../markdown/card-untrust.1.md),  
+[`card-sign(1)`](../markdown/card-sign.1.md),  
+[`card-unsign(1)`](../markdown/card-unsign.1.md),  
 [`card-revoke(1)`](../markdown/card-revoke.1.md),  
 [`private-key-add(1)`](../markdown/private-key-add.1.md),  
 [`private-key-get(1)`](../markdown/private-key-get.1.md),  
