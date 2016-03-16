@@ -78,4 +78,5 @@ EXAMPLES
 SEE ALSO
 ========
 
+[`virgil(1)`](../markdown/virgil.1.md),  
 [`encrypt(1)`](../markdown/encrypt.1.md)

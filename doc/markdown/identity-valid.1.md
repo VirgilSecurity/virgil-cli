@@ -42,4 +42,5 @@ EXAMPLES
 SEE ALSO
 ========
 
+[`virgil(1)`](../markdown/virgil.1.md),  
 [`identity-confirm(1)`](../markdown/identity-confirm.1.md)

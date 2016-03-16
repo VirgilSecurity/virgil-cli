@@ -1,24 +1,23 @@
-% CARD-SEARCH(1) Virgil Security CLI (2.0.0) | Virgil
-% (c) Virgil Security Inc
-% February 29, 2016
-
-# NAME
+NAME
+====
 
 **card-search** -- search for Card(s) by Identity using filters
 
-# SYNOPSIS
+SYNOPSIS
+========
 
-**virgil card-search** [-o *arg*] -d *arg* [-u] [--] [--version] [-h] *card-id* ...
+**virgil card-search** \[-o *arg*\] -d *arg* \[-u\] \[--\] \[--version\]
+\[-h\] *card-id* ...
 
+DESCRIPTION
+===========
 
-# DESCRIPTION
+Search for Cards by email using filters: 1. by signed Cards with
+*signed-card-id*; 1. including Cards with an unconfirmed Identity into
+the search.
 
-Search for Cards by email using filters:
-1. by signed Cards with *signed-card-id*;
-1. including Cards with an unconfirmed Identity into the search.
-
-
-# OPTIONS
+OPTIONS
+=======
 
     -o *arg*,  --out *arg*
      Folder where Virgil Cards will be saved
@@ -41,25 +40,28 @@ Search for Cards by email using filters:
     *card-id*  (accepted multiple times)
      Signed card id
 
+EXAMPLES
+========
 
-# EXAMPLES
-
-1. Search for Cards with a confirmed Identity:
+1.  Search for Cards with a confirmed Identity:
 
         virgil card-search -d email:alice@gmail.com -o alice/
 
-1.  Search for Cards with a confirmed Identity and uncorfirmaed Identity.
+2.  Search for Cards with a confirmed Identity and
+    uncorfirmaed Identity.
 
         virgil card-search -d email:alice@gmail.com -o alice/ -u
 
-1. Search for Cards with an email, which have signed ( [`card-sign(1)`](../markdown/card-sign.1.md) ) the Cards with card-id
+3.  Search for Cards with an email, which have signed (
+    [`card-sign(1)`](../markdown/card-sign.1.md) ) the Cards with
+    card-id
 
         virgil card-search -d email:alice@gmail.com -u *user1_card_id* *user2_card_id*
 
+SEE ALSO
+========
 
-# SEE ALSO
-
-[`virgil(1)`](../markdown/virgil.1.md)\
-[`card-create(1)`](../markdown/card-create.1.md)\
-[`card-get(1)`](../markdown/card-get.1.md)\
+[`virgil(1)`](../markdown/virgil.1.md),  
+[`card-create(1)`](../markdown/card-create.1.md),  
+[`card-get(1)`](../markdown/card-get.1.md),  
 [`card-sign(1)`](../markdown/card-sign.1.md)

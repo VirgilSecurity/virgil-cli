@@ -89,6 +89,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`virgil(1)`](../markdown/virgil.1.md)  
+[`virgil(1)`](../markdown/virgil.1.md),  
 [`keygen(1)`](../markdown/keygen.1.md),  
 [`identity-confirm(1)`](../markdown/identity-confirm.1.md)

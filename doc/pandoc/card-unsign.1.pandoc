@@ -1,21 +1,23 @@
-NAME
-====
+% CARD-UNSIGN(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
 
 **card-unsign** -- remove a signature from a Card
 
-SYNOPSIS
-========
 
-**virgil card-unsign** -s *file* -z *file* -k *file* \[--\]
-\[--version\] \[-h\]
+# SYNOPSIS
 
-DESCRIPTION
-===========
+**virgil card-unsign**  -s *file* -z *file* -k *file* [--] [--version] [-h]
+
+
+# DESCRIPTION
 
 Remove a signature from an already signed Card
 
-OPTIONS
-=======
+
+# OPTIONS
 
     -s *file*,  --signer *file*
      (required)  Signer's Card
@@ -35,15 +37,14 @@ OPTIONS
     -h,  --help
      Displays usage information and exits
 
-EXAMPLES
-========
 
-1.  Alice unsigns Bob's Card:
+# EXAMPLES
+
+1. Alice unsigns Bob's Card:
 
         virgil card-unsign -s alice.vcard -z bob.vcard -k alice/private.vkey
 
-SEE ALSO
-========
 
-[`virgil(1)`](../markdown/virgil.1.md)  
+# SEE ALSO
+[`virgil(1)`](../markdown/virgil.1.md),\
 [`card-sign(1)`](../markdown/card-sign.1.md)

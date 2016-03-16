@@ -41,7 +41,7 @@ EXAMPLES
 SEE ALSO
 ========
 
-[`virgil(1)`](../markdown/virgil.1.md)  
-[`card-get(1)`](../markdown/card-get.1.md)  
-[`card-search(1)`](../markdown/card-search.1.md)  
+[`virgil(1)`](../markdown/virgil.1.md),  
+[`card-get(1)`](../markdown/card-get.1.md),  
+[`card-search(1)`](../markdown/card-search.1.md),  
 [`card-create(1)`](../markdown/card-create.1.md)

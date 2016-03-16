@@ -63,4 +63,5 @@ EXAMPLES
 SEE ALSO
 ========
 
+[`virgil(1)`](../markdown/virgil.1.md),  
 [`sign(1)`](../markdown/sign.1.md)
