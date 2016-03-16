@@ -133,7 +133,7 @@ int MAIN(int argc, char** argv) {
         std::string type = recipientFormat.first;
         std::string value = recipientFormat.second;
 
-        if (value == "pub-key") {
+        if (type == "pub-key") {
             std::string pathToPublicKeyFile = value;
             vcrypto::VirgilByteArray publicKey = vcli::readPublicKey(pathToPublicKeyFile);
             bool verified = signer.verify(dataSource, sign, publicKey);
