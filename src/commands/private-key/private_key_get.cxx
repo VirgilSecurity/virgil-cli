@@ -63,7 +63,8 @@ int MAIN(int argc, char** argv) {
         std::string description = "Get the Private key from the Private Key Service\n";
 
         std::vector<std::string> examples;
-        examples.push_back("virgil private-key-get -a <card_id> -f <validated_identity.txt> -o private.vkey\n");
+        examples.push_back(
+            "virgil private-key-get -a <card_id> -f alice/validated_identity.txt -o alice/private.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -72,9 +73,9 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted, stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "");
 
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identities", "Validated identity", true, "",
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", true, "",
                                                           "file");
 
         cmd.add(validatedIdentityArg);

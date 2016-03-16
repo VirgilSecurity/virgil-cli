@@ -70,7 +70,7 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key", true, "", "file");
 

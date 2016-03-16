@@ -63,12 +63,12 @@ int MAIN(int argc, char** argv) {
         std::string description = "Confirm identity\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Identity confirm:\n"
-                           "Virgil identity-confirm  -d email:user@domain.com -o validated-identity.txt\n");
+        examples.push_back("Identity confirmation with requests number limit = 10 and time validity limit = 3600:\n"
+                           "virgil identity-confirm  -d email:alice@domain.com -o alice/validated-identity.txt\n");
 
-        examples.push_back("Identity confirm:\n"
-                           "Virgil identity-confirm -d email:user@domain.com -l 3600 -r 10 -o "
-                           "validated-identity.txt\n");
+        examples.push_back("Identity confirmation with requests number limit = 1 and time validity limit = 60:\n"
+                           "virgil identity-confirm -d email:alice@domain.com -l 3600 -r 10 -o "
+                           "alice/validated-identity.txt\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

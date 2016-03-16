@@ -64,8 +64,8 @@ int MAIN(int argc, char** argv) {
         std::string description = "Unsign Card\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Alice unsign data for Bob:\n"
-                           "virgil card-unsign --signer <alice.vcard> --signed <bob.vcard> -k alice-private.vkey\n");
+        examples.push_back("Alice unsigns Bob's Card:\n"
+                           "virgil card-unsign --signer alice.vcard --signed bob.vcard -k alice/private.vkey\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

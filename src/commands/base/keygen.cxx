@@ -75,16 +75,16 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Generate Elliptic 512-bits Brainpool Curve Private Key(default):\n"
-                           "Virgil keygen -o private.key\n");
+                           "virgil keygen -o alice/private.key\n");
 
         examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
-                           "Virgil keygen -o private.key -p strong_private_key_password\n");
+                           "virgil keygen -o alice/private.key -p\n");
 
         examples.push_back("Generate Elliptic 521-bits NIST Curve Private Key:\n"
-                           "Virgil keygen -o private.key -e secp521r1\n");
+                           "virgil keygen -o alice/private.key -e secp521r1\n");
 
         examples.push_back("Generate RSA Private Key:\n"
-                           "Virgil keygen -o private.key -r 8192\n");
+                           "virgil keygen -o alice/private.key -r rsa8192\n");
 
         std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
 

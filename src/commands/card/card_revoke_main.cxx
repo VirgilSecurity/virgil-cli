@@ -65,23 +65,23 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
-                           "virgil card-revoke -a <card_id> -f <validated-identities.file> "
-                           "-k <private_key>\n");
+                           "virgil card-revoke -a <card_id> -f alice/validated-identities.file "
+                           "-k alice/private.key\n");
 
         examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
                            "virgil card-revoke -a <card_id> -d email:user@domain.com "
-                           "-k <private_key>\n");
+                           "-k alice/private.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity user", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identities", "Validated identity", true, "",
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", true, "",
                                                           "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");

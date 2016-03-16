@@ -65,18 +65,18 @@ int MAIN(int argc, char** argv) {
     try {
         std::string description =
             "Revoke a chain of cards with (un)confirmed identities connected by public-key-id from "
-            "Virgil Keys Service.\n";
+            "virgil Keys Service.\n";
 
         std::vector<std::string> examples;
         examples.push_back("Revoke a chain of cards with confirmed identities connected by public-key-id from "
-                           "Virgil Keys Service:\n"
-                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k <private_key>"
-                           " -f <validated-identities-file>");
+                           "virgil Keys Service:\n"
+                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key"
+                           " -f alice/validated-identity.txt\n");
 
-        examples.push_back("Revoke a chain of cards with confirmed identities connected by public-key-id from "
-                           "Virgil Keys Service:\n"
-                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k <private_key>"
-                           " -z <identities-file>");
+        examples.push_back("Revoke a chain of cards with unconfirmed identities connected by public-key-id from "
+                           "virgil Keys Service:\n"
+                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key"
+                           " -d email:user@domain.com\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -85,12 +85,11 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
         TCLAP::MultiArg<std::string> identityArg("d", "identity", "Identity user", true, "arg");
 
-        TCLAP::MultiArg<std::string> validatedIdentityArg("f", "validated-identities", "ValidatedIdentity", true,
-                                                          "file");
+        TCLAP::MultiArg<std::string> validatedIdentityArg("f", "validated-identity", "ValidatedIdentity", true, "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 

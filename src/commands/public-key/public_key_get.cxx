@@ -64,14 +64,14 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Get Virgil Public Key:\n"
-                           "virgil public-key-get -o public.vkey -e <public_key_id> \n");
+                           "virgil public-key-get -o alice/public.key -e <public_key_id> \n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted, stdout is used.", false, "",
+        TCLAP::ValueArg<std::string> outArg("o", "out", "virgil Public Key. If omitted, stdout is used.", false, "",
                                             "file");
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", true, "", "arg");

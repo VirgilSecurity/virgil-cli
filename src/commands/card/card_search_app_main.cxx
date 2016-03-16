@@ -60,14 +60,14 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Search for an Application Virgil Card from the Virgil Keys service.\n";
+        std::string description = "Search for application Cards.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Search for application cards:\n"
-                           "Virgil card-search-app -c <app_name>\n");
+        examples.push_back("Search for application Cards:\n"
+                           "virgil card-search-app -c <app_name>\n");
 
         examples.push_back("Get all application cards:\n"
-                           "Virgil card-search-app -c \"*\"\n");
+                           "virgil card-search-app -c \"*\"\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -75,7 +75,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
-                "arg");
+                                            "arg");
 
         TCLAP::ValueArg<std::string> applicationNameArg(
             "c", "application-name", "Application name, name = '*' - get all Cards\n", true, "", "arg");
@@ -95,12 +95,12 @@ int MAIN(int argc, char** argv) {
 
         std::string pathTofolder = outArg.getValue();
         if (pathTofolder.empty()) {
-            for(auto&& appCard : appCards) {
+            for (auto&& appCard : appCards) {
                 std::string appCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(appCard);
                 vcli::writeBytes(pathTofolder, appCardStr);
             }
         } else {
-            for(auto&& appCard : appCards) {
+            for (auto&& appCard : appCards) {
                 std::string identity = appCard.getCardIdentity().getValue();
                 std::string cardId = appCard.getId();
 

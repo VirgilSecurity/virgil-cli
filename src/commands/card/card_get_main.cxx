@@ -64,10 +64,11 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Receive a Card by card-id:\n"
-                           "Virgil card-get -a <card-id> -o cards/\n");
+                           "virgil card-get -a <card-id> -o cards/\n");
 
-        examples.push_back("Receive the Cards connected by public-key-id:\n"
-                           "virgil card-get -a <card-id> -e <public-key-id> -k <private_key> -o cards/\n");
+        examples.push_back(
+            "Return a group of Cards connected with public-key-id, card-id belongs to one of the Cards:\n"
+            "virgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -75,9 +76,9 @@ int MAIN(int argc, char** argv) {
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
-                "arg");
+                                            "arg");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", false, "", "arg");
 
@@ -107,12 +108,12 @@ int MAIN(int argc, char** argv) {
 
             std::string pathTofolder = outArg.getValue();
             if (pathTofolder.empty()) {
-                for(auto&& foundCard : foundCards) {
+                for (auto&& foundCard : foundCards) {
                     std::string foundCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(foundCard);
                     vcli::writeBytes(pathTofolder, foundCardStr);
                 }
             } else {
-                for(auto&& foundCard : foundCards) {
+                for (auto&& foundCard : foundCards) {
                     std::string identity = foundCard.getCardIdentity().getValue();
                     std::string cardId = foundCard.getId();
 

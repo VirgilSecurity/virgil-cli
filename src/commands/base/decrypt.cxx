@@ -70,8 +70,8 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Decrypt data for user identified by password:\n"
                            "virgil decrypt -i plain.txt.enc -o plain.txt -r pass:strong_password\n");
 
-        examples.push_back("Decrypt data for Bob identified by his key [id|vcard|email]:\n"
-                           "virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r email:bob@domain.com\n");
+        examples.push_back("Decrypt data for Bob identified by his Public Key + recipient-id [id|vcard|email]:\n"
+                           "virgil decrypt -i plain.txt.enc -o plain.txt -k bob/private.key -r email:bob@domain.com\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

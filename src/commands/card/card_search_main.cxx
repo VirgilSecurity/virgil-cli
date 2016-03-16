@@ -65,20 +65,15 @@ int MAIN(int argc, char** argv) {
         std::string description = "Search for a Virgil Card from the Virgil Keys service\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Search for Virgil Cards with confirmed identity:\n"
-                           "Virgil card-search -d email:alice@gmail.com -o alice/\n");
+        examples.push_back("Search for Virgil Cards with a confirmed Identity:\n"
+                           "virgil card-search -d email:alice@gmail.com -o alice/\n");
 
-        examples.push_back("Search for Virgil Cards which include unconfirmed identity:\n"
-                           "Virgil card-search -d email:alice@gmail.com -u alice-with-unconfirmed-identity/\n");
+        examples.push_back("Search for Cards with a confirmed Identity and uncorfirmaed Identity:\n"
+                           "virgil card-search -d email:alice@gmail.com -u alice-with-unconfirmed-identity/\n");
 
-        examples.push_back(
-            "Search for Virgil Cards with confirmed identity signed with other Cards <user1_card_id> <user2_card_id>:\n"
-            "Virgil card-search -d email:alice@gmail.com "
-            "<user1_card_id> <user1_card_id>\n");
-
-        examples.push_back("Search for Virgil Cards with unconfirmed identity signed with other Cards <user1_card_id> "
-                           "<user2_card_id>:\n"
-                           "Virgil card-search -d email:alice@gmail.com -u "
+        examples.push_back("Search for Cards with an email, which have signed `card-sign' the"
+                           " Cards with card-id:\n"
+                           "virgil card-search -d email:alice@gmail.com -u "
                            "<user1_card_id> <user1_card_id>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -87,7 +82,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
-                "arg");
+                                            "arg");
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
 
@@ -128,7 +123,7 @@ int MAIN(int argc, char** argv) {
         }
 
         size_t countCardUnconfirmedIdentity = 0;
-        for(auto&& foundCard : foundCards) {
+        for (auto&& foundCard : foundCards) {
             if (!foundCard.isConfirmed()) {
                 ++countCardUnconfirmedIdentity;
             }
@@ -136,12 +131,12 @@ int MAIN(int argc, char** argv) {
 
         std::string pathTofolder = outArg.getValue();
         if (pathTofolder.empty()) {
-            for(auto&& foundCard : foundCards) {
+            for (auto&& foundCard : foundCards) {
                 std::string foundCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(foundCard);
                 vcli::writeBytes(pathTofolder, foundCardStr);
             }
         } else {
-            for(auto&& foundCard : foundCards) {
+            for (auto&& foundCard : foundCards) {
                 std::string identity = foundCard.getCardIdentity().getValue();
                 std::string cardId = foundCard.getId();
                 std::string isConfirmed;
@@ -164,8 +159,7 @@ int MAIN(int argc, char** argv) {
 
         } else {
             std::cout << "По заданному email:" << recipientValue << " получено "
-                      << foundCards.size() - countCardUnconfirmedIdentity << " с подтвержденным identity."
-                      << std::endl;
+                      << foundCards.size() - countCardUnconfirmedIdentity << " с подтвержденным identity." << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {

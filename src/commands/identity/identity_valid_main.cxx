@@ -60,18 +60,18 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Validating identity\n";
+        std::string description = "Check 'validated-identity' received by 'identity-confirm'\n";
 
         std::vector<std::string> examples;
         examples.push_back("Validated identity:\n"
-                           "virgil identity-valid -f <validated-identity.txt>\n");
+                           "virgil identity-valid -f alice/validated-identity.txt\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identities", "Validated identity", true, "",
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", true, "",
                                                           "file");
 
         cmd.add(validatedIdentityArg);
@@ -90,6 +90,7 @@ int MAIN(int argc, char** argv) {
         } else {
             std::cout << "Validation Token is not valid" << std::endl;
             std::cout << validatedIdentityStr << std::endl;
+            return EXIT_FAILURE;
         }
 
     } catch (TCLAP::ArgException& exception) {

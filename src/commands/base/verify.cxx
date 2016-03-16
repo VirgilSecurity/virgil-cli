@@ -70,7 +70,7 @@ int MAIN(int argc, char** argv) {
                                   " or with its Virgil Card.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Virgil verify -i plain.txt -s plain.txt.sign -r email:bob@gmail.com\n");
+        examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r email:bob@gmail.com\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

@@ -160,7 +160,7 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "verify                      Verify data with Virgil Public Key.\n\n\n"
 
-                      "VIRGIL CARD COMMANDS:\n"
+                      "virgil CARD COMMANDS:\n"
 
                       "card-create                 Create card\n\n"
 

@@ -94,18 +94,18 @@ int MAIN(int argc, char** argv) {
                                   " either by the password, or by the Virgil Card Key.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Encrypt data for Bob identified by email:\n"
-                           "Virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n");
+        examples.push_back("Alice encrypts the data for Bob using his email:\n"
+                           "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n");
 
-        examples.push_back("Encrypt data by public key + recepient identifier:\n"
-                           "Virgil encrypt -i plain.txt -o plain.txt.enc pub-key:public.key\n"
-                           "Затем нужно ввести recepient identifier.\n");
+        examples.push_back("Alice encrypts the data for Bob and Tom using their emails:\n"
+                           "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com\n");
 
-        examples.push_back("Encrypt data for Bob and Tom identified by emails:\n"
-                           "Virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com\n");
+        examples.push_back("Alice encrypts the data with a password:\n"
+                           "virgil encrypt -i plain.txt -o plain.txt.enc pass:strong_password\n");
 
-        examples.push_back("Encrypt data for user identified by password::\n"
-                           "Virgil encrypt -i plain.txt -o plain.txt.enc pass:strong_password\n");
+        examples.push_back("Alice encrypts the data with a combination of Public Key + recipient-id."
+                           "You will be asked to enter recipient-id:\n"
+                           "virgil encrypt -i plain.txt -o plain.txt.enc pub-key:public.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -245,11 +245,7 @@ void add_recipient(const std::string& recipientType, const std::string& recipien
     } else if (recipientType == "pub-key") {
         std::string pathToPublicKeyFile = recipientValue;
         vcrypto::VirgilByteArray publicKey = vcli::readPublicKey(pathToPublicKeyFile);
-        std::cout << "Введите recepient identifier с которым будет связан public key,\n"
-                     "если это public key уже загруженный на Virgil Keys Services\n"
-                     " посредством создания Карточки 'virgil card-create' введите card-id.\n"
-                     "Это позволит сделать 'virgil decrypt' указывая email.\n"
-                  << std::endl;
+        std::cout << "Enter recipient-id:" << std::endl;
 
         std::string recipientId;
         std::cin >> recipientId;

@@ -70,14 +70,14 @@ int MAIN(int argc, char** argv) {
             "4. Make sure that you have registered an application at Virgil Security, Inc.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Add Private Key to :\n"
+        examples.push_back("Add Private Key to Private Keys Service:\n"
                            "virgil private-key-add -k private.key -a <card_id>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key", true, "", "file");
 
