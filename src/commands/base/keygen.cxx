@@ -105,6 +105,7 @@ int MAIN(int argc, char** argv) {
         ec_key.push_back("secp192k1");
         ec_key.push_back("secp224k1");
         ec_key.push_back("secp256k1");
+        ec_key.push_back("сurve25519");
         TCLAP::ValuesConstraint<std::string> allowedEcKey(ec_key);
 
         TCLAP::ValueArg<std::string> ecArg("e", "ec", "Generate elliptic curve key with one of the following curves:\n"
@@ -118,7 +119,9 @@ int MAIN(int argc, char** argv) {
                                                       "\t* secp521r1 - 521-bits NIST curve;\n"
                                                       "\t* secp192k1 - 192-bits \"Koblitz\" curve;\n"
                                                       "\t* secp224k1 - 224-bits \"Koblitz\" curve;\n"
-                                                      "\t* secp256k1 - 256-bits \"Koblitz\" curve.\n",
+                                                      "\t* secp256k1 - 256-bits \"Koblitz\" curve;\n"
+                                                      "\t* сurve25519 - Curve25519.\n",
+
                                            false, "", &allowedEcKey);
 
         std::vector<std::string> rsa_key;
@@ -207,6 +210,7 @@ static vcrypto::VirgilKeyPair::Type ec_key_group_from_param(const std::string& p
     ecKeyGroup["secp192k1"] = vcrypto::VirgilKeyPair::Type_EC_SECP192K1;
     ecKeyGroup["secp224k1"] = vcrypto::VirgilKeyPair::Type_EC_SECP224K1;
     ecKeyGroup["secp256k1"] = vcrypto::VirgilKeyPair::Type_EC_SECP256K1;
+    ecKeyGroup["сurve25519"] = vcrypto::VirgilKeyPair::Type_EC_M255;
 
     auto group = ecKeyGroup.find(param);
     if (group != ecKeyGroup.end()) {
