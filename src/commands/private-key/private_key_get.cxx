@@ -78,6 +78,9 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", true, "",
                                                           "file");
 
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
         cmd.add(validatedIdentityArg);
         cmd.add(cardIdArg);
         cmd.add(outArg);
@@ -91,8 +94,10 @@ int MAIN(int argc, char** argv) {
         std::string privateKeyStr = vsdk::io::Marshaller<vsdk::models::PrivateKeyModel>::toJson<4>(privateKey);
         vcli::writeBytes(outArg.getValue(), privateKeyStr);
 
-        std::cout << "Private key connected with the Card containing card-id:" << cardIdArg.getValue()
-                  << " has been received" << std::endl;
+        if (verboseArg.isSet()) {
+            std::cout << "Private key connected with the Card containing card-id:" << cardIdArg.getValue()
+                      << " has been received" << std::endl;
+        }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "private-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

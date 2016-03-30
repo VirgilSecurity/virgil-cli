@@ -73,7 +73,7 @@ int MAIN(int argc, char** argv) {
 
         examples.push_back("Search for Cards with an email, which have signed `card-sign' the"
                            " Cards with card-id:\n"
-                           "virgil card-search -d email:alice@gmail.com -u "
+                           "virgil card-search -d email:alice@gmail.com "
                            "<user1_card_id> <user1_card_id>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -88,10 +88,13 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", "Search Cards include unconfirmed identity", false);
 
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
         TCLAP::UnlabeledMultiArg<std::string> signedCardsIdArg("signed-card-id", "Signed card id", false, "card-id",
                                                                false);
 
         cmd.add(signedCardsIdArg);
+        cmd.add(verboseArg);
         cmd.add(unconfirmedArg);
         cmd.add(identityArg);
         cmd.add(outArg);
@@ -118,7 +121,9 @@ int MAIN(int argc, char** argv) {
         }
 
         if (foundCards.empty()) {
-            std::cout << "Cards by email: " << recipientValue << " haven't been found." << std::endl;
+            if (verboseArg.isSet()) {
+                std::cout << "Cards by email: " << recipientValue << " haven't been found." << std::endl;
+            }
             return EXIT_FAILURE;
         }
 
@@ -153,13 +158,17 @@ int MAIN(int argc, char** argv) {
         }
 
         if (includeUnconfirmed) {
-            std::cout << "По заданному email:" << recipientValue << " получено " << countCardUnconfirmedIdentity
-                      << " Карт с неподтвержденным identity и " << foundCards.size() - countCardUnconfirmedIdentity
-                      << " с подтвержденным identity." << std::endl;
-
+            if (verboseArg.isSet()) {
+                std::cout << "По заданному email:" << recipientValue << " получено " << countCardUnconfirmedIdentity
+                          << " Карт с неподтвержденным identity и " << foundCards.size() - countCardUnconfirmedIdentity
+                          << " с подтвержденным identity." << std::endl;
+            }
         } else {
-            std::cout << "По заданному email:" << recipientValue << " получено "
-                      << foundCards.size() - countCardUnconfirmedIdentity << " с подтвержденным identity." << std::endl;
+            if (verboseArg.isSet()) {
+                std::cout << "По заданному email:" << recipientValue << " получено "
+                          << foundCards.size() - countCardUnconfirmedIdentity << " с подтвержденным identity."
+                          << std::endl;
+            }
         }
 
     } catch (TCLAP::ArgException& exception) {

@@ -63,11 +63,11 @@ int MAIN(int argc, char** argv) {
         std::string description = "Confirm identity\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Identity confirmation with requests number limit = 10 and time validity limit = 3600:\n"
+        examples.push_back("Identity confirmation with requests number limit = 2 and time validity limit = 3600:\n"
                            "virgil identity-confirm  -d email:alice@domain.com -o alice/validated-identity.txt\n");
 
-        examples.push_back("Identity confirmation with requests number limit = 1 and time validity limit = 60:\n"
-                           "virgil identity-confirm -d email:alice@domain.com -l 3600 -r 10 -o "
+        examples.push_back("Identity confirmation with requests number limit = 10 and time validity limit = 60:\n"
+                           "virgil identity-confirm -d email:alice@domain.com -t 60 -c 10 -o "
                            "alice/validated-identity.txt\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -78,42 +78,96 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Validated identity. If omitted, stdout is used.", false, "",
                                             "file");
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email", true, "", "arg");
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email", false, "", "arg");
 
-        TCLAP::ValueArg<int> timeToliveArg("l", "time-to-live", "Time to live, by default = 3600.", false, 3600, "int");
+        TCLAP::ValueArg<std::string> actionIdArg("", "action-id", "Action id.", false, "", "arg");
 
-        TCLAP::ValueArg<int> countToLiveArg("r", "count-to-live", "Count to live, by default = 10.", false, 10, "int");
+        TCLAP::ValueArg<std::string> confirmationCodeArg("", "confirmation-code", "Confirmation code", false, "",
+                                                         "arg");
 
+        TCLAP::ValueArg<int> timeToliveArg("t", "time-to-live", "Time to live, by default = 3600.", false, 3600, "int");
+
+        TCLAP::ValueArg<int> countToLiveArg("c", "count-to-live", "Count to live, by default = 10.", false, 2, "int");
+
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
         cmd.add(countToLiveArg);
         cmd.add(timeToliveArg);
+        cmd.add(confirmationCodeArg);
+        cmd.add(actionIdArg);
         cmd.add(identityArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
 
-        auto identityPair = vcli::parsePair(identityArg.getValue());
-        std::string recipientType = identityPair.first;
-        std::string recipientValue = identityPair.second;
-        std::string arg = "-d, --identity";
-        vcli::checkFormatIdentity(arg, recipientType);
+        std::string actionId;
+        std::string confirmationCode;
+        vsdk::dto::ValidatedIdentity validatedIdentity;
+        if (!actionIdArg.isSet() && !confirmationCodeArg.isSet()) {
+            std::string recipientType;
+            std::string recipientValue;
+            if (identityArg.isSet()) {
+                auto identityPair = vcli::parsePair(identityArg.getValue());
+                recipientType = identityPair.first;
+                recipientValue = identityPair.second;
+                std::string arg = "-d, --identity";
+                vcli::checkFormatIdentity(arg, recipientType);
+            } else {
+                throw std::invalid_argument("-d, --identity -- is not set");
+            }
 
-        vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
-        vsdk::dto::Identity identity(recipientValue, identityType);
+            vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
+            vsdk::dto::Identity identity(recipientValue, identityType);
 
-        std::string actionId = servicesHub.identity().verify(identity);
-        std::cout << "Enter confirmation code which was sent on you identity - " << recipientType << ":"
-                  << recipientValue << std::endl;
-        std::string confirmationCode = vcli::inputShadow();
-        vsdk::dto::ValidatedIdentity validatedIdentity = servicesHub.identity().confirm(
-            actionId, confirmationCode, timeToliveArg.getValue(), countToLiveArg.getValue());
+            if (verboseArg.isSet()) {
+                std::cout << "Send confirmation-code to " << recipientValue << std::endl;
+            }
+            std::string actionId = servicesHub.identity().verify(identity);
 
-        std::string validatedIdentityStr =
-            vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
+            std::cout << "Enter confirmation code which was sent on you identity - " << recipientType << ":"
+                      << recipientValue << std::endl;
 
-        vcli::writeBytes(outArg.getValue(), validatedIdentityStr);
+            std::string confirmationCode = vcli::inputShadow();
 
-        std::cout << "An Identity " << recipientType << ":" << recipientValue << " is confirmed" << std::endl;
+            if (verboseArg.isSet()) {
+                std::cout << "Confirme identity " << recipientValue << std::endl;
+            }
+            validatedIdentity = servicesHub.identity().confirm(actionId, confirmationCode, timeToliveArg.getValue(),
+                                                               countToLiveArg.getValue());
+
+            std::string validatedIdentityStr =
+                vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
+
+            vcli::writeBytes(outArg.getValue(), validatedIdentityStr);
+
+            if (verboseArg.isSet()) {
+                std::cout << "An Identity " << recipientType << ":" << recipientValue << " is confirmed" << std::endl;
+            }
+        } else if (actionIdArg.isSet() && confirmationCodeArg.isSet()) {
+            // !actionIdArg.isSet() && confirmationCodeArg.isSet()
+            actionId = actionIdArg.getValue();
+            confirmationCode = confirmationCodeArg.getValue();
+
+            if (verboseArg.isSet()) {
+                std::cout << "Confirme identity with action-id:" << actionId << std::endl;
+            }
+            validatedIdentity = servicesHub.identity().confirm(actionId, confirmationCode, timeToliveArg.getValue(),
+                                                               countToLiveArg.getValue());
+
+            std::string validatedIdentityStr =
+                vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
+
+            vcli::writeBytes(outArg.getValue(), validatedIdentityStr);
+
+            if (verboseArg.isSet()) {
+                std::cout << "An Identity with action-id " << actionId << " is confirmed" << std::endl;
+            }
+
+        } else {
+            throw std::invalid_argument("--action-id and --confirmation-code must always together");
+        }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "identity-confirm. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

@@ -76,6 +76,9 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", true, "", "arg");
 
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
         cmd.add(publicKeyIdArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
@@ -87,7 +90,10 @@ int MAIN(int argc, char** argv) {
         std::string publicKeyStr = vsdk::io::Marshaller<vsdk::models::PublicKeyModel>::toJson<4>(publicKey);
         vcli::writeBytes(outArg.getValue(), publicKeyStr);
 
-        std::cout << "Public key by public-key-id:" << publicKeyIdArg.getValue() << " has been received" << std::endl;
+        if (verboseArg.isSet()) {
+            std::cout << "Public key by public-key-id:" << publicKeyIdArg.getValue() << " has been received"
+                      << std::endl;
+        }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "public-key-get. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

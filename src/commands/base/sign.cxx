@@ -77,6 +77,13 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private Key.", true, "", "file");
 
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
+
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
+        cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(outArg);
         cmd.add(inArg);
@@ -96,8 +103,13 @@ int MAIN(int argc, char** argv) {
         }
 
         // Read private key
-        vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(privateKeyArg.getValue());
-        vcrypto::VirgilByteArray privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(privateKeyArg.getValue());
+        vcrypto::VirgilByteArray privateKeyPassword;
+        if (privateKeyPasswordArg.isSet()) {
+            privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
+        } else {
+            privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+        }
 
         // Create signer
         vcrypto::VirgilStreamSigner signer;
@@ -109,8 +121,9 @@ int MAIN(int argc, char** argv) {
         // Prepare output. Write sign to the output.
         vcli::writeBytes(outArg.getValue(), sign);
 
-        std::cout << "File signing" << std::endl;
-
+        if (verboseArg.isSet()) {
+            std::cout << "File signing" << std::endl;
+        }
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "sing. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;

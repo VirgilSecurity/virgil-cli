@@ -104,6 +104,13 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
+
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
+        cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
         cmd.xorAdd(publicKeyArg, publicKeyIdArg);
         cmd.xorAdd(identityArg, validatedIdentityArg);
@@ -112,7 +119,12 @@ int MAIN(int argc, char** argv) {
 
         std::string pathPrivateKey = privateKeyArg.getValue();
         vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
-        vcrypto::VirgilByteArray privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+        vcrypto::VirgilByteArray privateKeyPassword;
+        if (privateKeyPasswordArg.isSet()) {
+            privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
+        } else {
+            privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+        }
 
         vcrypto::VirgilByteArray publicKey;
         std::string publicKeyId;
@@ -137,12 +149,16 @@ int MAIN(int argc, char** argv) {
                 vcli::readValidateIdentity(validatedIdentityArg.getValue());
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(validatedIdentity, publicKey, credentials);
-                std::cout << "A card with a confirmed identity has been created." << std::endl;
+                if (verboseArg.isSet()) {
+                    std::cout << "A card with a confirmed identity has been created." << std::endl;
+                }
             } else {
                 card = servicesHub.card().create(validatedIdentity, publicKeyId, credentials);
-                std::cout << "A card with a confirmed identity, which is connected with already existing one by"
-                             " public-key-id has been created."
-                          << std::endl;
+                if (verboseArg.isSet()) {
+                    std::cout << "A card with a confirmed identity, which is connected with already existing one by"
+                                 " public-key-id has been created."
+                              << std::endl;
+                }
             }
         } else {
             // identityArg.isSet
@@ -156,12 +172,16 @@ int MAIN(int argc, char** argv) {
 
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(identity, publicKey, credentials);
-                std::cout << "A card with an unconfirmed identity has been created." << std::endl;
+                if (verboseArg.isSet()) {
+                    std::cout << "A card with an unconfirmed identity has been created." << std::endl;
+                }
             } else {
                 card = servicesHub.card().create(identity, publicKeyId, credentials);
-                std::cout << "A card with an unconfirmed identity, which is connected with already existing one by"
-                             " public-key-id, has been created."
-                          << std::endl;
+                if (verboseArg.isSet()) {
+                    std::cout << "A card with an unconfirmed identity, which is connected with already existing one by"
+                                 " public-key-id, has been created."
+                              << std::endl;
+                }
             }
         }
 

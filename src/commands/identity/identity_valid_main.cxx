@@ -74,6 +74,9 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", true, "",
                                                           "file");
 
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
         cmd.add(validatedIdentityArg);
         cmd.parse(argc, argv);
 
@@ -84,13 +87,15 @@ int MAIN(int argc, char** argv) {
         std::string validatedIdentityStr =
             vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
 
-        if (validateToken) {
-            std::cout << "Validation Token is valid" << std::endl;
-            std::cout << validatedIdentityStr << std::endl;
-        } else {
-            std::cout << "Validation Token is not valid" << std::endl;
-            std::cout << validatedIdentityStr << std::endl;
-            return EXIT_FAILURE;
+        if (verboseArg.isSet()) {
+            if (validateToken) {
+                std::cout << "Validation Token is valid" << std::endl;
+                std::cout << validatedIdentityStr << std::endl;
+            } else {
+                std::cout << "Validation Token is not valid" << std::endl;
+                std::cout << validatedIdentityStr << std::endl;
+                return EXIT_FAILURE;
+            }
         }
 
     } catch (TCLAP::ArgException& exception) {

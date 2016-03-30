@@ -78,6 +78,13 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private key", true, "", "file");
 
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
+
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
+        cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(signedArg);
         cmd.add(signerArg);
@@ -87,15 +94,22 @@ int MAIN(int argc, char** argv) {
         vsdk::models::CardModel signedCard = vcli::readCard(signedArg.getValue());
 
         std::string pathPrivateKey = privateKeyArg.getValue();
-        vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-        vcrypto::VirgilByteArray privateKeyPass = vcli::setPrivateKeyPass(privateKey);
-        vsdk::Credentials credentials(privateKey, privateKeyPass);
+        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
+        vcrypto::VirgilByteArray privateKeyPassword;
+        if (privateKeyPasswordArg.isSet()) {
+            privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
+        } else {
+            privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+        }
+        vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         servicesHub.card().unsign(signedCard.getId(), signerCard.getId(), credentials);
 
-        std::cout << "Card with card-id: " << signerCard.getId()
-                  << " has been used to unsign the Card with card-id: " << signedCard.getId() << std::endl;
+        if (verboseArg.isSet()) {
+            std::cout << "Card with card-id: " << signerCard.getId()
+                      << " has been used to unsign the Card with card-id: " << signedCard.getId() << std::endl;
+        }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "card-unsign. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

@@ -64,7 +64,6 @@ namespace vcli = virgil::cli;
 
 static void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg);
 
-
 int MAIN(int argc, char** argv) {
     try {
         std::string description = "Decrypt data with given password or given Private Key + Virgil Card.\n";
@@ -94,17 +93,24 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key.", false, "", "file");
 
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
+
         TCLAP::ValueArg<std::string> recipientArg(
             "r", "recipient", "Recipient defined in format:\n"
-                              "[pass|id|vcard|email|pub-key]:<value>\n"
+                              "[password|id|vcard|email]:<value>\n"
                               "where:\n"
-                              "\t* if pass, then <value> - recipient's password;\n"
+                              "\t* if password, then <value> - recipient's password;\n"
                               "\t* if id, then <value> - recipient's UUID associated with Virgil Card identifier;\n"
                               "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
                               "\t* if email, then <value> - recipient's email;\n",
             true, "", "arg");
 
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
         cmd.add(recipientArg);
+        cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(contentInfoArg);
         cmd.add(outArg);
@@ -162,22 +168,28 @@ int MAIN(int argc, char** argv) {
         std::string type = recipientFormat.first;
         std::string value = recipientFormat.second;
 
-        if (type == "pass") {
+        if (type == "password") {
             vcrypto::VirgilByteArray pass = virgil::crypto::str2bytes(value);
             cipher.decryptWithPassword(dataSource, dataSink, pass);
 
-            std::cout << "File has been decrypted with a password" << std::endl;
-
+            if (verboseArg.isSet()) {
+                std::cout << "File has been decrypted with a password" << std::endl;
+            }
         } else {
-            // type = [pub-key|id|vcard|email]
+            // type = [id|vcard|email]
             // Read private key
             std::string pathToPrivateKeyFile = privateKeyArg.getValue();
             vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathToPrivateKeyFile);
-            vcrypto::VirgilByteArray privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+
+            vcrypto::VirgilByteArray privateKeyPassword;
+            if (privateKeyPasswordArg.isSet()) {
+                privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
+            } else {
+                privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+            }
 
             // type = [id|vcard|email]
             // if recipient email:<value>, then a download Virgil Card with confirmed identity
-
             if (type == "id") {
                 std::string recipientCardId = value;
                 cipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(recipientCardId), privateKey,
@@ -186,8 +198,7 @@ int MAIN(int argc, char** argv) {
             }
 
             bool includeUnconrimedCard = false;
-            std::vector<std::string> recipientCardsId =
-                vcli::getRecipientCardsId(type, value, includeUnconrimedCard);
+            std::vector<std::string> recipientCardsId = vcli::getRecipientCardsId(type, value, includeUnconrimedCard);
 
             size_t countErrorDecryptWithKey = 0;
             for (const auto& recipientCardId : recipientCardsId) {
@@ -196,7 +207,9 @@ int MAIN(int argc, char** argv) {
                                           privateKeyPassword);
                 } catch (std::exception& exception) {
                     ++countErrorDecryptWithKey;
-                    std::cerr << "decrypt. Warning: " << exception.what() << std::endl;
+                    if (verboseArg.isSet()) {
+                        std::cout << "decrypt. Warning: " << exception.what() << std::endl;
+                    }
                 }
             }
 
@@ -204,7 +217,10 @@ int MAIN(int argc, char** argv) {
                 throw std::runtime_error("Невозможно расшифровать файл:\n"
                                          "card-id или/и private key не подходит.\n");
             }
-            std::cout << "File has been decrypted with a private key" << std::endl;
+
+            if (verboseArg.isSet()) {
+                std::cout << "File has been decrypted with a private key" << std::endl;
+            }
         }
 
     } catch (TCLAP::ArgException& exception) {
@@ -220,8 +236,8 @@ int MAIN(int argc, char** argv) {
 
 void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
-    if (type != "pass" && type != "id" && type != "vcard" && type != "email") {
+    if (type != "password" && type != "id" && type != "vcard" && type != "email") {
         throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [pass|id|vcard|email]");
+                                                                     "Where <key> = [password|id|vcard|email]");
     }
 }

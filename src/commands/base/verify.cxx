@@ -87,14 +87,17 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> recipientArg(
             "r", "recipient", "Recipient defined in format:\n"
-                              "[id|vcard|email|pub-key]:<value>\n"
+                              "[id|vcard|email|pubkey]:<value>\n"
                               "where:\n"
                               "\t* if id, then <value> - recipient's UUID associated with Virgil Card identifier;\n"
                               "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
                               "\t* if email, then <value> - recipient's email;\n"
-                              "\t* if pub-key, then <value> - recipient's Public Key.\n",
+                              "\t* if pubkey, then <value> - recipient's Public Key.\n",
             true, "", "arg");
 
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
         cmd.add(recipientArg);
         cmd.add(signArg);
         cmd.add(outArg);
@@ -133,7 +136,7 @@ int MAIN(int argc, char** argv) {
         std::string type = recipientFormat.first;
         std::string value = recipientFormat.second;
 
-        if (type == "pub-key") {
+        if (type == "pubkey") {
             std::string pathToPublicKeyFile = value;
             vcrypto::VirgilByteArray publicKey = vcli::readPublicKey(pathToPublicKeyFile);
             bool verified = signer.verify(dataSource, sign, publicKey);
@@ -144,7 +147,6 @@ int MAIN(int argc, char** argv) {
                 vcli::writeBytes(outArg.getValue(), "failure");
                 return EXIT_FAILURE;
             }
-
         } else {
             // type [id|vcard|email]
             // if recipient email:<value>, then download a Virgil Card with confirmed identity
@@ -189,8 +191,8 @@ int MAIN(int argc, char** argv) {
 
 void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
-    if (type != "id" && type != "vcard" && type != "email" && type != "pub-key") {
+    if (type != "id" && type != "vcard" && type != "email" && type != "pubkey") {
         throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [id|vcard|email|pub-key]");
+                                                                     "Where <key> = [id|vcard|email|pubkey]");
     }
 }

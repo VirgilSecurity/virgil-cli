@@ -105,7 +105,7 @@ int MAIN(int argc, char** argv) {
 
         examples.push_back("Alice encrypts the data with a combination of Public Key + recipient-id."
                            "You will be asked to enter recipient-id:\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc pub-key:public.key\n");
+                           "virgil encrypt -i plain.txt -o plain.txt.enc pubkey:public.key:ForBob\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -126,15 +126,19 @@ int MAIN(int argc, char** argv) {
         TCLAP::UnlabeledMultiArg<std::string> recipientsArg(
             "recipient", "Contains information about one recipient.\n"
                          "Format:\n"
-                         "[pass|id|vcard|email|pub-key]:<value>\n"
+                         "[password|id|vcard|email|pubkey]:<value>\n"
                          "where:\n"
-                         "\t* if pass, then <value> - recipient's password;\n"
+                         "\t* if password, then <value> - recipient's password;\n"
                          "\t* if id, then <value> - recipient's UUID associated with Virgil\n\t Card identifier;\n"
-                         "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
+                         "\t* if vcard, then <value> - recipient's the Virgil Card file\n\t  stored locally;\n"
                          "\t* if email, then <value> - recipient's email;\n"
-                         "\t* if pub-key, then <value> - recipient's Public Key.\n",
+                         "\t* if pubkey, then <value> - recipient's Public Key + identifier, for example:\n"
+                         " pubkey:bob/public.key:ForBob.\n",
             false, "recipient", false);
 
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
         cmd.add(recipientsArg);
         cmd.add(contentInfoArg);
         cmd.add(outArg);
@@ -199,7 +203,9 @@ int MAIN(int argc, char** argv) {
             std::copy(contentInfo.begin(), contentInfo.end(), std::ostreambuf_iterator<char>(contentInfoFile));
         }
 
-        std::cout << "File has been encrypted" << std::endl;
+        if (verboseArg.isSet()) {
+            std::cout << "File has been encrypted" << std::endl;
+        }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "encrypt. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
@@ -239,18 +245,16 @@ size_t add_recipients(const std::vector<std::string>& recipientsData, const bool
 
 void add_recipient(const std::string& recipientType, const std::string& recipientValue,
                    const bool includeUnconrimedCard, vcrypto::VirgilStreamCipher* cipher) {
-    if (recipientType == "pass") {
+    if (recipientType == "password") {
         vcrypto::VirgilByteArray pwd = virgil::crypto::str2bytes(recipientValue);
         cipher->addPasswordRecipient(pwd);
-    } else if (recipientType == "pub-key") {
-        std::string pathToPublicKeyFile = recipientValue;
-        vcrypto::VirgilByteArray publicKey = vcli::readPublicKey(pathToPublicKeyFile);
-        std::cout << "Enter recipient-id:" << std::endl;
-
-        std::string recipientId;
-        std::cin >> recipientId;
+    } else if (recipientType == "pubkey") {
+        //  public.key:<recipient-id>
+        auto pubkeyRecipientId = vcli::parsePair(recipientValue);
+        std::string pathToPublicKeyFile = pubkeyRecipientId.first;
+        std::string recipientId = pubkeyRecipientId.second;
+        auto publicKey = vcli::readFileBytes(pathToPublicKeyFile);
         cipher->addKeyRecipient(vcrypto::str2bytes(recipientId), publicKey);
-
     } else {
         // Else recipientType [id|vcard|email]
         std::vector<vsdk::models::CardModel> recipientsCard =

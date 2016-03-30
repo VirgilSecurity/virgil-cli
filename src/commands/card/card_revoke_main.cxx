@@ -69,8 +69,7 @@ int MAIN(int argc, char** argv) {
                            "-k alice/private.key\n");
 
         examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
-                           "virgil card-revoke -a <card_id> -d email:user@domain.com "
-                           "-k alice/private.key\n");
+                           "virgil card-revoke -a <card_id> -k alice/private.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -79,15 +78,20 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity user", true, "", "arg");
-
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", true, "",
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", false, "",
                                                           "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
+
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
+        cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
-        cmd.xorAdd(validatedIdentityArg, identityArg);
+        cmd.add(validatedIdentityArg);
         cmd.add(cardIdArg);
         cmd.parse(argc, argv);
 
@@ -96,9 +100,14 @@ int MAIN(int argc, char** argv) {
         std::string cardId = cardIdArg.getValue();
 
         std::string pathPrivateKey = privateKeyArg.getValue();
-        vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-        vcrypto::VirgilByteArray privateKeyPass = vcli::setPrivateKeyPass(privateKey);
-        vsdk::Credentials credentials(privateKey, privateKeyPass);
+        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
+        vcrypto::VirgilByteArray privateKeyPassword;
+        if (privateKeyPasswordArg.isSet()) {
+            privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
+        } else {
+            privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+        }
+        vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
         std::string messageSuccess = "Card with card-id " + cardIdArg.getValue() + " revoked.";
         if (validatedIdentityArg.isSet()) {
@@ -106,18 +115,16 @@ int MAIN(int argc, char** argv) {
                 vcli::readValidateIdentity(validatedIdentityArg.getValue());
 
             servicesHub.card().revoke(cardId, validatedIdentity, credentials);
-            std::cout << messageSuccess << std::endl;
+            if (verboseArg.isSet()) {
+                std::cout << messageSuccess << std::endl;
+            }
         } else {
-            auto identityPair = vcli::parsePair(identityArg.getValue());
-            std::string recipientType = identityPair.first;
-            std::string recipientValue = identityPair.second;
-            std::string arg = "-d, --identity";
-            vcli::checkFormatIdentity(arg, recipientType);
-            vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
-            vsdk::dto::Identity identity(recipientValue, identityType);
-
+            auto card = servicesHub.card().get(cardId);
+            vsdk::dto::Identity identity(card.getCardIdentity().getValue(), card.getCardIdentity().getType());
             servicesHub.card().revoke(cardId, identity, credentials);
-            std::cout << messageSuccess << std::endl;
+            if (verboseArg.isSet()) {
+                std::cout << messageSuccess << std::endl;
+            }
         }
 
     } catch (TCLAP::ArgException& exception) {

@@ -84,6 +84,13 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", false, "", "file");
 
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
+
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
+        cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(publicKeyIdArg);
         cmd.add(cardIdArg);
@@ -93,16 +100,24 @@ int MAIN(int argc, char** argv) {
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         if (publicKeyIdArg.isSet() && privateKeyArg.isSet()) {
             std::string pathPrivateKey = privateKeyArg.getValue();
-            vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-            vcrypto::VirgilByteArray privateKeyPass = vcli::setPrivateKeyPass(privateKey);
-            vsdk::Credentials credentials(privateKey, privateKeyPass);
+            vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
+            vcrypto::VirgilByteArray privateKeyPassword;
+            if (privateKeyPasswordArg.isSet()) {
+                privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
+            } else {
+                privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+            }
+            vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
             std::vector<vsdk::models::CardModel> foundCards =
                 servicesHub.card().get(publicKeyIdArg.getValue(), cardIdArg.getValue(), credentials);
 
             if (foundCards.empty()) {
-                std::cout << "Cards by card-id: " << cardIdArg.getValue()
-                          << " and public-key-id: " << publicKeyIdArg.getValue() << " haven't been found." << std::endl;
+                if (verboseArg.isSet()) {
+                    std::cout << "Cards by card-id: " << cardIdArg.getValue()
+                              << " and public-key-id: " << publicKeyIdArg.getValue() << " haven't been found."
+                              << std::endl;
+                }
                 return EXIT_FAILURE;
             }
 
@@ -122,15 +137,13 @@ int MAIN(int argc, char** argv) {
                     vcli::writeBytes(pathTofolder + "/" + fileName, foundCardStr);
                 }
             }
-
-            std::cout << "Cards by card-id: " << cardIdArg.getValue()
-                      << " and public-key-id: " << publicKeyIdArg.getValue() << " have been found." << std::endl;
         } else {
             vsdk::models::CardModel card = servicesHub.card().get(cardIdArg.getValue());
             std::string cardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(card);
             vcli::writeBytes(outArg.getValue(), cardStr);
-
-            std::cout << "A Card with card-id:" << cardIdArg.getValue() << " has been received" << std::endl;
+            if (verboseArg.isSet()) {
+                std::cout << "A Card with card-id:" << cardIdArg.getValue() << " has been received" << std::endl;
+            }
         }
 
     } catch (TCLAP::ArgException& exception) {

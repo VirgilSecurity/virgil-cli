@@ -64,9 +64,8 @@ int MAIN(int argc, char** argv) {
         std::string description = "Sign a Card\n";
 
         std::vector<std::string> examples;
-        examples.push_back(
-            "Alice is signing Bob's Card:\n"
-            "virgil card-sign -s alice.vcard -b bob.vcard -k alice/private.vkey\n");
+        examples.push_back("Alice is signing Bob's Card:\n"
+                           "virgil card-sign -s alice.vcard -b bob.vcard -k alice/private.vkey\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -81,6 +80,13 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private key", true, "", "file");
 
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
+
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
+        cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
         cmd.add(toBeSignedArg);
         cmd.add(signerArg);
@@ -91,9 +97,14 @@ int MAIN(int argc, char** argv) {
         vsdk::models::CardModel toBeSignedCard = vcli::readCard(toBeSignedArg.getValue());
 
         std::string pathPrivateKey = privateKeyArg.getValue();
-        vcrypto::VirgilByteArray privateKey = vcli::readFileBytes(pathPrivateKey);
-        vcrypto::VirgilByteArray privateKeyPass = vcli::setPrivateKeyPass(privateKey);
-        vsdk::Credentials credentials(privateKey, privateKeyPass);
+        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
+        vcrypto::VirgilByteArray privateKeyPassword;
+        if (privateKeyPasswordArg.isSet()) {
+            privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
+        } else {
+            privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+        }
+        vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
         vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
         vsdk::models::SignModel cardSign =
@@ -102,8 +113,10 @@ int MAIN(int argc, char** argv) {
         std::string cardSignStr = vsdk::io::Marshaller<vsdk::models::SignModel>::toJson<4>(cardSign);
         vcli::writeBytes(outArg.getValue(), cardSignStr);
 
-        std::cout << "Card with card-id: " << signerCard.getId()
-                  << " has been used to sign the Card with card-id: " << toBeSignedCard.getId() << std::endl;
+        if (verboseArg.isSet()) {
+            std::cout << "Card with card-id: " << signerCard.getId()
+                      << " has been used to sign the Card with card-id: " << toBeSignedCard.getId() << std::endl;
+        }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "card-sign. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;

@@ -80,6 +80,9 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> applicationNameArg(
             "c", "application-name", "Application name, name = '*' - get all Cards\n", true, "", "arg");
 
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+
+        cmd.add(verboseArg);
         cmd.add(applicationNameArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
@@ -89,7 +92,9 @@ int MAIN(int argc, char** argv) {
 
         std::vector<vsdk::models::CardModel> appCards = servicesHub.card().searchApp(appName);
         if (appCards.empty()) {
-            std::cout << "Cards by name: " << applicationNameArg.getValue() << " haven't been found." << std::endl;
+            if (verboseArg.isSet()) {
+                std::cout << "Cards by name: " << applicationNameArg.getValue() << " haven't been found." << std::endl;
+            }
             return EXIT_FAILURE;
         }
 
@@ -110,9 +115,10 @@ int MAIN(int argc, char** argv) {
             }
         }
 
-        std::cout << "По заданному application name:" << applicationNameArg.getValue() << " получено "
-                  << appCards.size() << " Карт." << std::endl;
-
+        if (verboseArg.isSet()) {
+            std::cout << "По заданному application name:" << applicationNameArg.getValue() << " получено "
+                      << appCards.size() << " Карт." << std::endl;
+        }
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "card-search-app. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;

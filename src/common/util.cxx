@@ -53,6 +53,7 @@
 
 #include <virgil/sdk/ServicesHub.h>
 #include <virgil/sdk/io/Marshaller.h>
+#include <virgil/sdk/models/PrivateKeyModel.h>
 
 #include <cli/config.h>
 #include <cli/version.h>
@@ -93,6 +94,7 @@ static void setStdinEcho(bool enable) {
 std::string virgil::cli::inputShadow() {
     setStdinEcho(false);
     std::string str;
+    std::cin >> std::ws;
     std::cin >> str;
     setStdinEcho(true);
     return str;
@@ -147,9 +149,9 @@ void virgil::cli::printVersion(std::ostream& out, const char* programName) {
 
 void virgil::cli::checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
-    if (type != "pass" && type != "id" && type != "vcard" && type != "email" && type != "pub-key") {
+    if (type != "password" && type != "id" && type != "vcard" && type != "email" && type != "pubkey") {
         throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [pass|id|vcard|email|pub-key]");
+                                                                     "Where <key> = [password|id|vcard|email|pubkey]");
     }
 }
 
@@ -170,11 +172,16 @@ vcrypto::VirgilByteArray virgil::cli::readFileBytes(const std::string& in) {
     return vcrypto::VirgilByteArray((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
 }
 
-vcrypto::VirgilByteArray virgil::cli::readInput(const std::string& in) {
+std::string virgil::cli::readInput(const std::string& in) {
     if (in.empty() || in == "-") {
-        return vcrypto::VirgilByteArray((std::istreambuf_iterator<char>(std::cin)), std::istreambuf_iterator<char>());
+        return std::string((std::istreambuf_iterator<char>(std::cin)), std::istreambuf_iterator<char>());
+    } else {
+        std::ifstream inFile(in, std::ios::in | std::ios::binary);
+        if (!inFile) {
+            throw std::invalid_argument("can not read file: " + in);
+        }
+        return std::string((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
     }
-    return readFileBytes(in);
 }
 
 vsdk::dto::ValidatedIdentity virgil::cli::readValidateIdentity(const std::string& in) {

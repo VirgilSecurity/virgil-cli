@@ -56,6 +56,7 @@ int sign_main(int argc, char** argv);
 int verify_main(int argc, char** argv);
 
 // module-action
+int identity_verify_main(int argc, char** argv);
 int identity_confirm_main(int argc, char** argv);
 int identity_valid_main(int argc, char** argv);
 
@@ -105,6 +106,7 @@ int main(int argc, char** argv) {
     commandsMap["verify"] = &verify_main;
 
     // module-action
+    commandsMap["identity-verify"] = &identity_verify_main;
     commandsMap["identity-confirm"] = &identity_confirm_main;
     commandsMap["identity-valid"] = &identity_valid_main;
 
@@ -188,9 +190,11 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "IDENTITY COMMANDS:\n"
 
-                      "identity-confirm            Confirm Identity\n\n"
+                      "identity-verify             Verify a Identity\n\n"
 
-                      "identity-valid              Validate Identity\n\n\n";
+                      "identity-confirm            Confirm the Identity\n\n"
+
+                      "identity-valid              Validate the Identity\n\n\n";
 
     out << "USAGE: " << programName << " " << doc << std::endl;
 }

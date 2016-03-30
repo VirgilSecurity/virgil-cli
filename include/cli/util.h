@@ -78,7 +78,7 @@ namespace cli {
      * @brief Read bytes from the given source.
      * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
      */
-    virgil::crypto::VirgilByteArray readInput(const std::string& in);
+    std::string readInput(const std::string& in);
 
     virgil::sdk::dto::ValidatedIdentity readValidateIdentity(const std::string& in);
 
