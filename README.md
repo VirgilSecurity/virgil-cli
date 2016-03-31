@@ -12,8 +12,8 @@
         - [Verify data](#verify-data)
     - [Using virgil-cli with committing to services](#using-virgil-cli-wit-committing-to-services)
         - [Create a Virgil Card](#create-a-virgil-card)
-        - [Encrypt/decrypt](#encrypt/decrypt)
-        - [Sign/verify](#sign/verify)
+        - [Encrypt and decrypt data](#encrypt-and-decrypt)
+        - [Sign and verify data](#sign-and-verify)
 - [Build: Unix](#build-unix)
     - [Toolchain](#unix-toolchain)
     - [Build steps](#unix-build-steps)
@@ -63,20 +63,20 @@ Generate Elliptic Curve Private Key or RSA Private Key.
         virgil key2pub -i private.key -o public.key
 
 
-### Encrypt
+### Encrypt data
 
     virgil encrypt -i plain.txt -o plain.txt.enc pubkey:alice-vs/public.key:ForAlice
 
-### Decrypt
+### Decrypt data
 
     virgil decrypt -i plain.txt.enc -k alice-vs/private.key -r id:ForAlice
 
-### Sign
+### Sign data
 
     virgil sign -i plain.txt -o plain.txt.sign -k alice-vs/private.key
 
 
-### Verify
+### Verify data
 
     virgil verify -i plain.txt -s plain.txt.sign -r pubkey:alice-vs/public.key
 
@@ -97,7 +97,7 @@ Generate Elliptic Curve Private Key or RSA Private Key.
         virgil card-create -f alice-vs/validated-identity.txt --public-key alice-vs/public.key -k alice-vs/private.key -o alice-vs/alice-vs.vcard
 
 
-## Encrypt/decrypt
+## Encrypt and decrypt data
 1. Encrypt
 Encrypt data for Bob identified by email:
 
@@ -114,7 +114,7 @@ Bob decrypts the data on his side:
         virgil encrypt -i plain.txt -o plain.txt.enc email:bob-vs@mailinator.com email:tom-vs@mailinator.com
 
 
-## Sign/verify
+## Sign and verify
 1. Sign. Alice signs data
 
         virgil sign -i plain.txt -o plain.txt.sign -k alice-vs/private.key
@@ -123,7 +123,7 @@ Bob decrypts the data on his side:
 
         virgil verify -i plain.txt -s plain.txt.sign -r email:alice-vs@mailinator.com
 
-## Unix Build
+## Build Unix
 
 ### Toolchain
 *   [CMake](http://www.cmake.org/) (accessible in command prompt). Minimum version: 3.2.
@@ -158,7 +158,7 @@ Bob decrypts the data on his side:
         virgil --version
 
 
-## Windows MSVC Build
+## Build Windows MSVC
 
 ### Toolchain
 *   [Visual Studio 2015](https://www.visualstudio.com/)
