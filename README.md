@@ -4,11 +4,16 @@
 
 - [Motivation](#motivation)
 - [Quickstart](#quickstart)
-    - [Generate Keys](#generate-keys)
-    - [Encrypt data](#encrypt-data)
-    - [Decrypt data](#decrypt-data)
-    - [Sign data](#sign-data)
-    - [Verify data](#verify-data)
+    - [Using virgil-cli without committing to services](#using-virgil-cli-without-committing-to-services)
+        - [Generate Keys](#generate-keys)
+        - [Encrypt data](#encrypt-data)
+        - [Decrypt data](#decrypt-data)
+        - [Sign data](#sign-data)
+        - [Verify data](#verify-data)
+    - [Using virgil-cli with committing to services](#using-virgil-cli-wit-committing-to-services)
+        - [Create a Virgil Card](#create-a-virgil-card)
+        - [Encrypt/decrypt](#encrypt/decrypt)
+        - [Sign/verify](#sign/verify)
 - [Build: Unix](#build-unix)
     - [Toolchain](#unix-toolchain)
     - [Build steps](#unix-build-steps)
@@ -20,6 +25,8 @@
 - [Contacts](#contacts)
 
 
+## Quickstart
+
 ## Motivation
 The **virgil** program is a command line tool for using Virgil Security
 stack functionality:
@@ -29,69 +36,92 @@ stack functionality:
 -   interact with Virgil Private Keys Service.
 
 
-## Quickstart
+## Using virgil-cli without committing to services
 
-## Generate Keys
+### Generate Keys
+
 Generate Elliptic Curve Private Key or RSA Private Key.
 
-1.  Generate Elliptic 512-bits Brainpool Curve Private Key(default):
+1.  Generate Elliptic 384-bits NIST Curve Private Key(default):
 
         virgil keygen -o private.key
 
-2.  Generate Elliptic Curve Private Key with password protection:
+1.  Generate Elliptic Curve Private Key with password protection:
 
-        virgil keygen -o private.key -p
+        virgil keygen -o private.key -p STRONGPASS
 
-3.  Generate Elliptic 521-bits NIST Curve Private Key:
+1.  Generate Elliptic 521-bits NIST Curve Private Key:
 
         virgil keygen -o private.key -e secp521r1
 
-4.  Generate RSA Private Key:
+1.  Generate RSA Private Key:
 
         virgil keygen -r rsa8192 -o private.key
 
+1.  Extracted a Public Key from the Private Key
 
-## Encrypt data
-Encrypt data for given recipients. Recipient can be represented either
-by the password, or by the Virgil Public Key.
-
-1.  Encrypt data for Bob identified by email:
-
-        virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com
-
-2.  Encrypt data for Bob and Tom identified by emails:
-
-        virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com
-
-3.  Encrypt data for user identified by password:
-
-        virgil encrypt -i plain.txt -o plain.txt.enc pass:strong_password
+        virgil key2pub -i private.key -o public.key
 
 
-## Decrypt data
-Decrypt data with given password or given Private Key.
+### Encrypt
 
-1.  Decrypt data for user identified by email:
+    virgil encrypt -i plain.txt -o plain.txt.enc pubkey:alice-vs/public.key:ForAlice
 
-        virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r email:user@domain.com
+### Decrypt
 
-2.  Decrypt data for user identified by password:
+    virgil decrypt -i plain.txt.enc -k alice-vs/private.key -r id:ForAlice
 
-        virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r pass:strong_password
+### Sign
 
-
-## Sign data
-Sign data with given user's Private Key.
-
-        virgil sign -i plain.txt -o plain.txt.sign -k private.key
+    virgil sign -i plain.txt -o plain.txt.sign -k alice-vs/private.key
 
 
-## Verify data
-Verify data and signature with given user's identifier or with it Virgil
-Public Key.
+### Verify
 
-        virgil verify -i plain.txt -s plain.txt.sign -e email:user@domain.com
+    virgil verify -i plain.txt -s plain.txt.sign -r pubkey:alice-vs/public.key
 
+
+<br>
+
+
+## Using virgil-cli with committing to services
+
+### Create a Virgil Card
+
+1. Confirming Identity:
+
+        virgil identity-confirm -d email:alice-vs@mailinator.com -o alice-vs/validated-identity.txt
+
+1.  Create a Virgil Card:
+
+        virgil card-create -f alice-vs/validated-identity.txt --public-key alice-vs/public.key -k alice-vs/private.key -o alice-vs/alice-vs.vcard
+
+
+## Encrypt/decrypt
+1. Encrypt
+Encrypt data for Bob identified by email:
+
+        virgil encrypt -i plain.txt -o plain.txt.enc email:bob-vs@mailinator.com
+
+1. Decrypt
+Bob decrypts the data on his side:
+
+        virgil decrypt -i plain.txt.enc -k bob-vs/private.key -r vcard:bob-vs/bob-vs.vcard
+
+1.  Encrypt for multiple recipients.
+    Encrypt data for Bob and Tom identified by emails:
+
+        virgil encrypt -i plain.txt -o plain.txt.enc email:bob-vs@mailinator.com email:tom-vs@mailinator.com
+
+
+## Sign/verify
+1. Sign. Alice signs data
+
+        virgil sign -i plain.txt -o plain.txt.sign -k alice-vs/private.key
+
+1. Verify. Bob verifies Alice's signature
+
+        virgil verify -i plain.txt -s plain.txt.sign -r email:alice-vs@mailinator.com
 
 ## Unix Build
 
@@ -177,4 +207,5 @@ BSD 3-Clause. See [LICENSE](https://github.com/VirgilSecurity/virgil-cli/blob/ma
 
 
 ## Contacts
+
 Email: <support@virgilsecurity.com>
