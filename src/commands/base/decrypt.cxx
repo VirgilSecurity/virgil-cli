@@ -214,8 +214,8 @@ int MAIN(int argc, char** argv) {
             }
 
             if (countErrorDecryptWithKey == recipientCardsId.size()) {
-                throw std::runtime_error("Невозможно расшифровать файл:\n"
-                                         "card-id или/и private key не подходит.\n");
+                throw std::runtime_error("File can’t be decrypted:\n"
+                                         "wrong card-id or/and private key.\n");
             }
 
             if (verboseArg.isSet()) {

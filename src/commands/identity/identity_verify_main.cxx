@@ -93,7 +93,7 @@ int MAIN(int argc, char** argv) {
 
         if (verboseArg.isSet()) {
             std::cout << "An Identity with email:" << userEmail << " verified" << std::endl;
-            std::cout << "Теперь вы можете подтвердить Identity коммандой identity-confirm" << std::endl;
+            std::cout << "Now you can confirm the Identity with a command identity-confirm" << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {

@@ -72,18 +72,20 @@ int MAIN(int argc, char** argv) {
         std::string description = "Generate Elliptic Curve or RSA Private Key.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Generate Elliptic 384-bits NIST Curve Private Key (default):\n"
-                           "virgil keygen -o alice/private.key\n");
+        examples.push_back(
+            "Generate Elliptic 384-bits NIST Curve Private Key(default), your password will be requested:\n"
+            "virgil keygen -o alice/private.key\n");
 
-        examples.push_back("Generate Elliptic Curve Private Key with password (shadow input) protection:\n"
-                           "virgil keygen -o alice/private.key -p\n");
+        examples.push_back(
+            "Generate Elliptic Curve Private Key with password protection, your password will be requested:\n"
+            "virgil keygen -o alice/private.key\n");
 
-        examples.push_back("Generate Elliptic Curve Private Key with password (not shadow input) protection:\n"
-                           "virgil keygen -o alice/private.key --password-key STRONGPASS\n");
+        examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
+                           "virgil keygen -o alice/private.key -p STRONGPASS\n");
 
-        examples.push_back("Generate Elliptic Curve Private Key with password (not shadow input) protection "
+        examples.push_back("Generate Elliptic Curve Private Key with password protection "
                            "with detailed information:\n"
-                           "virgil keygen -o alice/private.key --password-key STRONGPASS --VERBOSE\n");
+                           "virgil keygen -o alice/private.key -p STRONGPASS --VERBOSE\n");
 
         examples.push_back("Generate Elliptic 521-bits NIST Curve Private Key:\n"
                            "virgil keygen -o alice/private.key -a secp521r1\n");

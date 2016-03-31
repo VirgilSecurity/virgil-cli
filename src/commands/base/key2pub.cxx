@@ -71,6 +71,9 @@ int MAIN(int argc, char** argv) {
         std::vector<std::string> examples;
         examples.push_back("virgil key2pub -i private.key -o public.key\n");
 
+        examples.push_back(
+            "virgil key2pub -i private.key -o public.key -p STRONGPASS\n");
+
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.

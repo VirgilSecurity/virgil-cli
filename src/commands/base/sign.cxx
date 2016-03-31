@@ -65,6 +65,8 @@ int MAIN(int argc, char** argv) {
         std::vector<std::string> examples;
         examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key\n");
 
+        examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key -p STRONGPASS\n");
+
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.

@@ -116,7 +116,7 @@ int MAIN(int argc, char** argv) {
         }
 
         if (verboseArg.isSet()) {
-            std::cout << "По заданному application name:" << applicationNameArg.getValue() << " получено "
+            std::cout << "For the entered application name:" << applicationNameArg.getValue() << " have been received "
                       << appCards.size() << " Карт." << std::endl;
         }
     } catch (TCLAP::ArgException& exception) {
