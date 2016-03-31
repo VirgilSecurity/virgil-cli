@@ -15,11 +15,11 @@
         - [Encrypt and decrypt data](#encrypt-and-decrypt)
         - [Sign and verify data](#sign-and-verify)
 - [Build: Unix](#build-unix)
-    - [Toolchain](#unix-toolchain)
-    - [Build steps](#unix-build-steps)
+    - [Unix toolchain](#unix-toolchain)
+    - [Unix build steps](#unix-build-steps)
 - [Build: Windows MSVC](#build-windows-msvc)
-    - [Toolchain](#windows-msvc-toolchain)
-    - [Build steps](#windows-msvc-build-steps)
+    - [Windows MSVC toolchain](#windows-msvc-toolchain)
+    - [Windows MSVC build steps](#windows-msvc-build-steps)
 - [Manuals](#manuals)
 - [License](#license)
 - [Contacts](#contacts)
@@ -125,14 +125,14 @@ Bob decrypts the data on his side:
 
 ## Build Unix
 
-### Toolchain
+###  Unix toolchain
 *   [CMake](http://www.cmake.org/) (accessible in command prompt). Minimum version: 3.2.
 *   [Git](http://git-scm.com/) (accessible in command prompt).
 *   [Python](https://www.python.org/) (accessible in command prompt). Minimum version: 2.7.
 *   [Python YAML](http://pyyaml.org/).
 *   [libcurl](http://curl.haxx.se/libcurl/).
 
-### Build steps
+### Unix build steps
 1.   Open terminal
 
 1.   Clone project
@@ -160,7 +160,7 @@ Bob decrypts the data on his side:
 
 ## Build Windows MSVC
 
-### Toolchain
+### Windows MSVC toolchain
 *   [Visual Studio 2015](https://www.visualstudio.com/)
 *   [CMake](http://www.cmake.org/) (accessible in command prompt). Minimum version: 3.2.
 *   [Git](http://git-scm.com/) (accessible in command prompt).
@@ -169,7 +169,7 @@ Bob decrypts the data on his side:
 *   [NSIS](http://nsis.sourceforge.net/).
 
 
-### Build steps
+### Windows MSVC build steps
 1.   Open `Visual Studio Command Prompt`
 
 1.   Clone project
