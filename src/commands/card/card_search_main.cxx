@@ -159,9 +159,10 @@ int MAIN(int argc, char** argv) {
 
         if (includeUnconfirmed) {
             if (verboseArg.isSet()) {
-                std::cout << "For the entered email:" << recipientValue << " have been received " << countCardUnconfirmedIdentity
-                          << " Cards with unconfirmed Identity and " << foundCards.size() - countCardUnconfirmedIdentity
-                          << "  with confirmed Identity." << std::endl;
+                std::cout << "For the entered email:" << recipientValue << " have been received "
+                          << countCardUnconfirmedIdentity << " Cards with unconfirmed Identity and "
+                          << foundCards.size() - countCardUnconfirmedIdentity << "  with confirmed Identity."
+                          << std::endl;
             }
         } else {
             if (verboseArg.isSet()) {

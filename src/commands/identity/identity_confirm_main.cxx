@@ -74,7 +74,6 @@ int MAIN(int argc, char** argv) {
                            "virgil identity-confirm  --action-id <action_id> --confirmation-code <code>"
                            " -o alice/validated-identity.txt\n");
 
-
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
