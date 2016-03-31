@@ -8,8 +8,8 @@
 Service
 .SH SYNOPSIS
 .PP
-\f[B]virgil private\-key\-add\f[] \-a \-k [\-p ] [\-V] [\[en]]
-[\[en]version] [\-h]
+\f[B]virgil private\-key\-add\f[] \-a \f[I]arg\f[] \-k \f[I]file\f[]
+[\-p \f[I]arg\f[]] [\-V] [\[en]] [\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 General statements:
@@ -28,13 +28,13 @@ Inc (https://developer.virgilsecurity.com/account/signup).
 .IP
 .nf
 \f[C]
-\-a\ <arg>,\ \ \-\-card\-id\ <arg>
+\-a\ *arg*,\ \ \-\-card\-id\ *arg*
 \ (required)\ \ virgil\ Card\ identifier
 
-\-k\ <file>,\ \ \-\-key\ <file>
+\-k\ *file*,\ \ \-\-key\ *file*
 \ (required)\ \ Private\ Key
 
-\-p\ <arg>,\ \ \-\-private\-key\-password\ <arg>
+\-p\ *arg*,\ \ \-\-private\-key\-password\ *arg*
 \ Password\ to\ be\ used\ for\ Private\ Key\ encryption.
 
 \-V,\ \ \-\-VERBOSE

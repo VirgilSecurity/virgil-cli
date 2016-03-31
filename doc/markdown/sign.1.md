@@ -6,7 +6,7 @@ NAME
 SYNOPSIS
 ========
 
-**virgil sign** \[-i <file>\] \[-o <file>\] -k <file> \[-p <arg>\]
+**virgil sign** \[-i *file*\] \[-o *file*\] -k *file* \[-p *arg*\]
 \[-V\] \[--\] \[--version\] \[-h\]
 
 DESCRIPTION
@@ -17,16 +17,16 @@ Sign data with given user's Private Key.
 OPTIONS
 =======
 
-    -i <file>,  --in <file>
+    -i *file*,  --in *file*
      Data to be signed. If omitted, stdin is used.
 
-    -o <file>,  --out <file>
+    -o *file*,  --out *file*
      Digest sign. If omitted, stdout is used.
 
-    -k <file>,  --key <file>
+    -k *file*,  --key *file*
      (required)  Signer's Private Key.
 
-    -p <arg>,  --private-key-password <arg>
+    -p *arg*,  --private-key-password *arg*
      Password to be used for Private Key encryption.
 
     -V,  --VERBOSE

@@ -7,8 +7,8 @@
 \f[B]verify\f[] \[en] verify data and signature
 .SH SYNOPSIS
 .PP
-\f[B]virgil verify\f[] [\-i ] [\-o ] \-s \-r [\-V] [\[en]]
-[\[en]version] [\-h]
+\f[B]virgil verify\f[] [\-i \f[I]file\f[]] [\-o \f[I]file\f[]] \-s
+\f[I]file\f[] \-r \f[I]arg\f[] [\-V] [\[en]] [\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 Verify data and signature with given user's identifier or with its
@@ -17,32 +17,32 @@ Public Key.
 .IP
 .nf
 \f[C]
-\-i\ <file>,\ \ \-\-in\ <file>
+\-i\ *file*,\ \ \-\-in\ *file*
 \ Data\ to\ be\ verified.\ If\ omitted,\ stdin\ is\ used.
 
-\-o\ <file>,\ \ \-\-out\ <file>
+\-o\ *file*,\ \ \-\-out\ *file*
 \ Verification\ result:\ success\ |\ failure.\ If\ omitted,\ stdout\ is\ used.
 
-\-s\ <file>,\ \ \-\-sign\ <file>
+\-s\ *file*,\ \ \-\-sign\ *file*
 \ (required)\ \ Digest\ sign.
 
-\-r\ <arg>,\ \ \-\-recipient\ <arg>
+\-r\ *arg*,\ \ \-\-recipient\ *arg*
 \ (required)\ \ Recipient\ defined\ in\ format:
 
-\ [id|vcard|email|pubkey]:<value>
+\ [id|vcard|email|pubkey]:<value*
 
 \ where:
 
-\ \ \ \ *\ if\ id,\ then\ <value>\ \-\ recipient\[aq]s\ UUID\ associated\ with\ Virgil\ Card
+\ \ \ \ *\ if\ id,\ then\ *value*\ \-\ recipient\[aq]s\ UUID\ associated\ with\ Virgil\ Card
 \ identifier;
 
-\ \ \ \ *\ if\ vcard,\ then\ <value>\ \-\ recipient\[aq]s\ Virgil\ Card/Cards\ file
+\ \ \ \ *\ if\ vcard,\ then\ *value*\ \-\ recipient\[aq]s\ Virgil\ Card/Cards\ file
 
 \ \ \ \ \ \ stored\ locally;
 
-\ \ \ \ *\ if\ email,\ then\ <value>\ \-\ recipient\[aq]s\ email;
+\ \ \ \ *\ if\ email,\ then\ *value*\ \-\ recipient\[aq]s\ email;
 
-\ \ \ \ *\ if\ pubkey,\ then\ <value>\ \-\ recipient\[aq]s\ Public\ Key.
+\ \ \ \ *\ if\ pubkey,\ then\ *value*\ \-\ recipient\[aq]s\ Public\ Key.
 
 
 \-V,\ \ \-\-VERBOSE

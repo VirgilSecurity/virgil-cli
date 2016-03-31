@@ -7,9 +7,9 @@
 \f[B]identity\-confirm\f[] \[en] confirm an Identity
 .SH SYNOPSIS
 .PP
-\f[B]virgil identity\-confirm\f[] [\-o ] [\-d ] [\[en]action\-id
-][\[en]confirmation\-code ] [\-t ] [\-c ] [\-V][\[en]] [\[en]version]
-[\-h]
+\f[B]virgil identity\-confirm\f[] [\-o \f[I]file\f[]] [\-d \f[I]arg\f[]]
+[\[en]action\-id \f[I]arg\f[]][\[en]confirmation\-code \f[I]arg\f[]]
+[\-t \f[I]int\f[]] [\-c \f[I]int\f[]] [\-V][\[en]] [\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 It is required to pass \f[B]identity\-confirm\f[] if you want to confirm
@@ -39,22 +39,22 @@ get a Private key from the Private Keys Service.
 .IP
 .nf
 \f[C]
-\-o\ <file>,\ \ \-\-out\ <file>
+\-o\ *file*,\ \ \-\-out\ *file*
 \ Validated\ identity.\ If\ omitted,\ stdout\ is\ used.
 
-\-d\ <arg>,\ \ \-\-identity\ <arg>
+\-d\ *arg*,\ \ \-\-identity\ *arg*
 \ Identity\ email
 
-\-\-action\-id\ <arg>
+\-\-action\-id\ *arg*
 \ Action\ id.
 
-\-\-confirmation\-code\ <arg>
+\-\-confirmation\-code\ *arg*
 \ Confirmation\ code
 
-\-t\ <int>,\ \ \-\-time\-to\-live\ <int>
+\-t\ *int*,\ \ \-\-time\-to\-live\ *int*
 \ Time\ to\ live,\ by\ default\ =\ 3600.
 
-\-c\ <int>,\ \ \-\-count\-to\-live\ <int>
+\-c\ *int*,\ \ \-\-count\-to\-live\ *int*
 \ Count\ to\ live,\ by\ default\ =\ 10.
 
 \-V,\ \ \-\-VERBOSE
@@ -116,7 +116,7 @@ limit = 3600:
 .IP
 .nf
 \f[C]
-virgil\ identity\-confirm\ \ \-\-action\-id\ <action_id>\ \-\-confirmation\-code\ <code>\ \-o\ alice/validated\-identity.txt
+virgil\ identity\-confirm\ \ \-\-action\-id\ *action_id*\ \-\-confirmation\-code\ *code*\ \-o\ alice/validated\-identity.txt
 \f[]
 .fi
 .RE

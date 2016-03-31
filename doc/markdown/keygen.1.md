@@ -6,11 +6,11 @@ NAME
 SYNOPSIS
 ========
 
-**virgil keygen** \[-o <file>\] \[-a
-<bp256r1|bp384r1|bp512r1|secp192r1|secp224r1
-           |secp256r1|secp384r1|secp521r1|secp192k1|secp224k1|secp256k1
-           |rsa3072|rsa4096|rsa8192>\] \[-p <arg>\] \[-V\] \[--\]
-\[--version\] \[-h\]
+**virgil keygen** \[-o *file*\] \[-a
+*bp256r1|bp384r1|bp512r1|secp192r1|secp224r1
+|secp256r1|secp384r1|secp521r1|secp192k1|secp224k1|secp256k1
+|rsa3072|rsa4096|rsa8192*\] \[-p *arg*\] \[-V\] \[--\] \[--version\]
+\[-h\]
 
 DESCRIPTION
 ===========
@@ -20,14 +20,14 @@ Generate Elliptic Curve Private Key or RSA Private Key.
 OPTIONS
 =======
 
-    -o <file>,  --out <file>
+    -o *file*,  --out *file*
      Private key. If omitted, stdout is used.
 
-    -a <bp256r1|bp384r1|bp512r1|secp192r1|secp224r1|secp256r1|secp384r1
-      |secp521r1|secp192k1|secp224k1|secp256k1|rsa3072|rsa4096|rsa8192>,
-      --algorithm <bp256r1|bp384r1|bp512r1|secp192r1|secp224r1|secp256r1
+    -a *bp256r1|bp384r1|bp512r1|secp192r1|secp224r1|secp256r1|secp384r1
+      |secp521r1|secp192k1|secp224k1|secp256k1|rsa3072|rsa4096|rsa8192*,
+      --algorithm *bp256r1|bp384r1|bp512r1|secp192r1|secp224r1|secp256r1
       |secp384r1|secp521r1|secp192k1|secp224k1|secp256k1|rsa3072|rsa4096
-      |rsa8192>
+      |rsa8192*
      Generate elliptic curve key or RSA key with oneof the following
      positions:
 
@@ -59,7 +59,7 @@ OPTIONS
 
         * rsa8192 - 8192-bits "RSA" key
 
-    -p <arg>,  --private-key-password <arg>
+    -p *arg*,  --private-key-password *arg*
      Password to be used for Private Key encryption.
 
     -V,  --VERBOSE

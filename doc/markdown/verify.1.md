@@ -6,7 +6,7 @@ NAME
 SYNOPSIS
 ========
 
-**virgil verify** \[-i <file>\] \[-o <file>\] -s <file> -r <arg> \[-V\]
+**virgil verify** \[-i *file*\] \[-o *file*\] -s *file* -r *arg* \[-V\]
 \[--\] \[--version\] \[-h\]
 
 DESCRIPTION
@@ -18,32 +18,32 @@ Public Key.
 OPTIONS
 =======
 
-    -i <file>,  --in <file>
+    -i *file*,  --in *file*
      Data to be verified. If omitted, stdin is used.
 
-    -o <file>,  --out <file>
+    -o *file*,  --out *file*
      Verification result: success | failure. If omitted, stdout is used.
 
-    -s <file>,  --sign <file>
+    -s *file*,  --sign *file*
      (required)  Digest sign.
 
-    -r <arg>,  --recipient <arg>
+    -r *arg*,  --recipient *arg*
      (required)  Recipient defined in format:
 
-     [id|vcard|email|pubkey]:<value>
+     [id|vcard|email|pubkey]:<value*
 
      where:
 
-        * if id, then <value> - recipient's UUID associated with Virgil Card
+        * if id, then *value* - recipient's UUID associated with Virgil Card
      identifier;
 
-        * if vcard, then <value> - recipient's Virgil Card/Cards file
+        * if vcard, then *value* - recipient's Virgil Card/Cards file
 
           stored locally;
 
-        * if email, then <value> - recipient's email;
+        * if email, then *value* - recipient's email;
 
-        * if pubkey, then <value> - recipient's Public Key.
+        * if pubkey, then *value* - recipient's Public Key.
 
 
     -V,  --VERBOSE

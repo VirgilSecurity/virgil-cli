@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil encrypt** \[-i <file>\] \[-o <file>\] \[-c <file>\] \[-V\]
-\[--\] \[--version\] \[-h\] <recipient> ...
+**virgil encrypt** \[-i *file*\] \[-o *file*\] \[-c *file*\] \[-V\]
+\[--\] \[--version\] \[-h\] *recipient* ...
 
 DESCRIPTION
 ===========
@@ -20,13 +20,13 @@ the Card's id. Also Public Keys is saved in the Card.
 OPTIONS
 =======
 
-    -i <file>,  --in <file>
+    -i *file*,  --in *file*
      Data to be encrypted. If omitted, stdin is used.
 
-    -o <file>,  --out <file>
+    -o *file*,  --out *file*
      Encrypted data. If omitted, stdout is used.
 
-    -c <file>,  --content-info <file>
+    -c *file*,  --content-info *file*
      Content info - meta information about encrypted data. If omitted,
      becomes a part of the encrypted data.
 
@@ -42,28 +42,28 @@ OPTIONS
     -h,  --help
      Displays usage information and exits.
 
-    <recipient>  (accepted multiple times)
+    *recipient*  (accepted multiple times)
      Contains information about one recipient.
 
      Format:
 
-     [password|id|vcard|email|pubkey]:<value>
+     [password|id|vcard|email|pubkey]:<value*
 
      where:
 
-        * if password, then <value> - recipient's password;
+        * if password, then *value* - recipient's password;
 
-        * if id, then <value> - recipient's UUID associated with Virgil
+        * if id, then *value* - recipient's UUID associated with Virgil
 
          Card identifier;
 
-        * if vcard, then <value> - recipient's the Virgil Card file
+        * if vcard, then *value* - recipient's the Virgil Card file
 
           stored locally;
 
-        * if email, then <value> - recipient's email;
+        * if email, then *value* - recipient's email;
 
-        * if pubkey, then <value> - recipient's Public Key + identifier, for
+        * if pubkey, then *value* - recipient's Public Key + identifier, for
      example:
 
      pubkey:bob/public.key:ForBob.

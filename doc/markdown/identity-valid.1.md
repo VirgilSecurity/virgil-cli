@@ -7,7 +7,7 @@ NAME
 SYNOPSIS
 ========
 
-**virgil identity-valid** -f <file> \[-V\] \[--\] \[--version\] \[-h\]
+**virgil identity-valid** -f *file* \[-V\] \[--\] \[--version\] \[-h\]
 
 DESCRIPTION
 ===========
@@ -17,7 +17,7 @@ Check *validated-identity* received by *identity-confirm*
 OPTIONS
 =======
 
-    -f <file>,  --validated-identity <file>
+    -f *file*,  --validated-identity *file*
      (required)  Validated identity
 
     -V,  --VERBOSE

@@ -7,8 +7,8 @@
 \f[B]card\-search\f[] \[en] search for Card(s) by Identity using filters
 .SH SYNOPSIS
 .PP
-\f[B]virgil card\-search\f[] [\-o ] \-d [\-u] [\-V] [\[en]]
-[\[en]version] [\-h] \&...
+\f[B]virgil card\-search\f[] [\-o \f[I]arg\f[]] \-d \f[I]arg\f[] [\-u]
+[\-V] [\[en]] [\[en]version] [\-h] \f[I]card\-id\f[] \&...
 .SH DESCRIPTION
 .PP
 Search for Cards by email using filters: 1.
@@ -18,10 +18,10 @@ including Cards with an unconfirmed Identity into the search.
 .IP
 .nf
 \f[C]
-\-o\ <arg>,\ \ \-\-out\ <arg>
+\-o\ *arg*,\ \ \-\-out\ *arg*
 \ Folder\ in\ which\ will\ be\ saved\ a\ Virgil\ Cards
 
-\-d\ <arg>,\ \ \-\-identity\ <arg>
+\-d\ *arg*,\ \ \-\-identity\ *arg*
 \ (required)\ \ Identity:\ email
 
 \-u,\ \ \-\-unconfirmed
@@ -39,7 +39,7 @@ including Cards with an unconfirmed Identity into the search.
 \-h,\ \ \-\-help
 \ Displays\ usage\ information\ and\ exits.
 
-<card\-id>\ \ (accepted\ multiple\ times)
+*card\-id*\ \ (accepted\ multiple\ times)
 \ Signed\ card\ id
 \f[]
 .fi

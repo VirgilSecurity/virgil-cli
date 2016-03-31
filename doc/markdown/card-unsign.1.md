@@ -6,7 +6,7 @@ NAME
 SYNOPSIS
 ========
 
-**virgil card-unsign** -s <file> -z <file> -k <file> \[-p <arg>\] \[-V\]
+**virgil card-unsign** -s *file* -z *file* -k *file* \[-p *arg*\] \[-V\]
 \[--\]\[--version\] \[-h\]
 
 DESCRIPTION
@@ -17,16 +17,16 @@ Remove a signature from an already signed Card
 OPTIONS
 =======
 
-    -s <file>,  --signer <file>
+    -s *file*,  --signer *file*
      (required)  Signer's Card
 
-    -z <file>,  --signed <file>
+    -z *file*,  --signed *file*
      (required)  Signed Card
 
-    -k <file>,  --key <file>
+    -k *file*,  --key *file*
      (required)  Signer's Private key
 
-    -p <arg>,  --private-key-password <arg>
+    -p *arg*,  --private-key-password *arg*
      Password to be used for Private Key encryption.
 
     -V,  --VERBOSE

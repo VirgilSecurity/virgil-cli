@@ -6,7 +6,7 @@ NAME
 SYNOPSIS
 ========
 
-**virgil public-key-get** \[-o <file>\] -e <arg> \[-V\] \[--\]
+**virgil public-key-get** \[-o *file*\] -e *arg* \[-V\] \[--\]
 \[--version\] \[-h\]
 
 DESCRIPTION
@@ -17,10 +17,10 @@ Return the Public Key by Public Key id
 OPTIONS
 =======
 
-    -o <file>,  --out <file>
+    -o *file*,  --out *file*
      virgil Public Key. If omitted, stdout is used.
 
-    -e <arg>,  --public-key-id <arg>
+    -e *arg*,  --public-key-id *arg*
      (required)  Public Key identifier
 
 

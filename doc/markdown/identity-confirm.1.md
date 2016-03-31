@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil identity-confirm** \[-o <file>\] \[-d <arg>\] \[--action-id
-<arg>\]\[--confirmation-code <arg>\] \[-t <int>\] \[-c <int>\]
+**virgil identity-confirm** \[-o *file*\] \[-d *arg*\] \[--action-id
+*arg*\]\[--confirmation-code *arg*\] \[-t *int*\] \[-c *int*\]
 \[-V\]\[--\] \[--version\] \[-h\]
 
 DESCRIPTION
@@ -27,22 +27,22 @@ operations:
 OPTIONS
 =======
 
-    -o <file>,  --out <file>
+    -o *file*,  --out *file*
      Validated identity. If omitted, stdout is used.
 
-    -d <arg>,  --identity <arg>
+    -d *arg*,  --identity *arg*
      Identity email
 
-    --action-id <arg>
+    --action-id *arg*
      Action id.
 
-    --confirmation-code <arg>
+    --confirmation-code *arg*
      Confirmation code
 
-    -t <int>,  --time-to-live <int>
+    -t *int*,  --time-to-live *int*
      Time to live, by default = 3600.
 
-    -c <int>,  --count-to-live <int>
+    -c *int*,  --count-to-live *int*
      Count to live, by default = 10.
 
     -V,  --VERBOSE
@@ -86,7 +86,7 @@ EXAMPLES
 3.  Identity confirmation with requests number limit = 2 and time
     validity limit = 3600:
 
-        virgil identity-confirm  --action-id <action_id> --confirmation-code <code> -o alice/validated-identity.txt
+        virgil identity-confirm  --action-id *action_id* --confirmation-code *code* -o alice/validated-identity.txt
 
 SEE ALSO
 ========

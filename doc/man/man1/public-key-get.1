@@ -7,8 +7,8 @@
 \f[B]public\-key\-get\f[] \[en] return Public Key
 .SH SYNOPSIS
 .PP
-\f[B]virgil public\-key\-get\f[] [\-o ] \-e [\-V] [\[en]] [\[en]version]
-[\-h]
+\f[B]virgil public\-key\-get\f[] [\-o \f[I]file\f[]] \-e \f[I]arg\f[]
+[\-V] [\[en]] [\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 Return the Public Key by Public Key id
@@ -16,10 +16,10 @@ Return the Public Key by Public Key id
 .IP
 .nf
 \f[C]
-\-o\ <file>,\ \ \-\-out\ <file>
+\-o\ *file*,\ \ \-\-out\ *file*
 \ virgil\ Public\ Key.\ If\ omitted,\ stdout\ is\ used.
 
-\-e\ <arg>,\ \ \-\-public\-key\-id\ <arg>
+\-e\ *arg*,\ \ \-\-public\-key\-id\ *arg*
 \ (required)\ \ Public\ Key\ identifier
 
 

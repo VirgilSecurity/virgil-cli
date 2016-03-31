@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil card-search** \[-o <arg>\] -d <arg> \[-u\] \[-V\] \[--\]
-\[--version\] \[-h\] <card-id> ...
+**virgil card-search** \[-o *arg*\] -d *arg* \[-u\] \[-V\] \[--\]
+\[--version\] \[-h\] *card-id* ...
 
 DESCRIPTION
 ===========
@@ -19,10 +19,10 @@ the search.
 OPTIONS
 =======
 
-    -o <arg>,  --out <arg>
+    -o *arg*,  --out *arg*
      Folder in which will be saved a Virgil Cards
 
-    -d <arg>,  --identity <arg>
+    -d *arg*,  --identity *arg*
      (required)  Identity: email
 
     -u,  --unconfirmed
@@ -40,7 +40,7 @@ OPTIONS
     -h,  --help
      Displays usage information and exits.
 
-    <card-id>  (accepted multiple times)
+    *card-id*  (accepted multiple times)
      Signed card id
 
 EXAMPLES

@@ -6,7 +6,7 @@ NAME
 SYNOPSIS
 ========
 
-**virgil key2pub** \[-i <file>\] \[-o <file>\] \[-p <arg>\] \[-V\]
+**virgil key2pub** \[-i *file*\] \[-o *file*\] \[-p *arg*\] \[-V\]
 \[--\] \[--version\] \[-h\]
 
 DESCRIPTION
@@ -17,13 +17,13 @@ Get Public Key from the given Private Key
 OPTIONS
 =======
 
-    -i <file>,  --in <file>
+    -i *file*,  --in *file*
      Private key. If omitted, stdin is used.
 
-    -o <file>,  --out <file>
+    -o *file*,  --out *file*
      Public key. If omitted, stdout is used.
 
-    -p <arg>,  --private-key-password <arg>
+    -p *arg*,  --private-key-password *arg*
      Password to be used for Private Key encryption.
 
     -V,  --VERBOSE

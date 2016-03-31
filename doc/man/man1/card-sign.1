@@ -7,7 +7,8 @@
 \f[B]card\-sign\f[] \[en] sign a Card
 .SH SYNOPSIS
 .PP
-\f[B]virgil card\-sign\f[] [\-o ] \-s \-b \-k [\-p ] [\-V] [\[en]]
+\f[B]virgil card\-sign\f[] [\-o \f[I]file\f[]] \-s \f[I]file\f[] \-b
+\f[I]file\f[] \-k \f[I]file\f[] [\-p \f[I]arg\f[]] [\-V] [\[en]]
 [\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
@@ -17,19 +18,19 @@ You are building a model of trust by signing the Card
 .IP
 .nf
 \f[C]
-\-o\ <file>,\ \ \-\-out\ <file>
+\-o\ *file*,\ \ \-\-out\ *file*
 \ Card\ Sign.\ If\ omitted,\ stdout\ is\ used.
 
-\-s\ <file>,\ \ \-\-signer\ <file>
+\-s\ *file*,\ \ \-\-signer\ *file*
 \ (required)\ \ Signer\[aq]s\ Card
 
-\-b\ <file>,\ \ \-\-to\-be\-signed\ <file>
+\-b\ *file*,\ \ \-\-to\-be\-signed\ *file*
 \ (required)\ \ Card\ to\ be\ signed.
 
-\-k\ <file>,\ \ \-\-key\ <file>
+\-k\ *file*,\ \ \-\-key\ *file*
 \ (required)\ \ Signer\[aq]s\ Private\ key
 
-\-p\ <arg>,\ \ \-\-private\-key\-password\ <arg>
+\-p\ *arg*,\ \ \-\-private\-key\-password\ *arg*
 \ Password\ to\ be\ used\ for\ Private\ Key\ encryption.
 
 \-V,\ \ \-\-VERBOSE

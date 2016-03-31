@@ -8,8 +8,8 @@
 Key Service
 .SH SYNOPSIS
 .PP
-\f[B]virgil private\-key\-get\f[] [\-o ] \-a <> \-f [\-V] [\[en]]
-[\[en]version] [\-h]
+\f[B]virgil private\-key\-get\f[] [\-o \f[I]file\f[]] \-a ** \-f
+\f[I]file\f[] [\-V] [\[en]] [\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 Get the Private Key from the Private Key Service
@@ -17,13 +17,13 @@ Get the Private Key from the Private Key Service
 .IP
 .nf
 \f[C]
-\-o\ <file>,\ \ \-\-out\ <file>
+\-o\ *file*,\ \ \-\-out\ *file*
 \ Private\ Key.\ If\ omitted,\ stdout\ is\ used.
 
-\-a\ <>,\ \ \-\-card\-id\ <>
+\-a\ **,\ \ \-\-card\-id\ **
 \ (required)\ \ virgil\ Card\ identifier
 
-\-f\ <file>,\ \ \-\-validated\-identity\ <file>
+\-f\ *file*,\ \ \-\-validated\-identity\ *file*
 \ (required)\ \ Validated\ identity
 
 \-V,\ \ \-\-VERBOSE

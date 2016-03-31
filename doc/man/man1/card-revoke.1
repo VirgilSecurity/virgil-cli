@@ -7,8 +7,8 @@
 \f[B]card\-revoke\f[] \[en] revoke Card from the Public Keys Service
 .SH SYNOPSIS
 .PP
-\f[B]virgil card\-revoke\f[] \-a [\-f ] \-k [\-p ] [\-V] [\[en]]
-[\[en]version] [\-h]
+\f[B]virgil card\-revoke\f[] \-a \f[I]arg\f[] [\-f \f[I]file\f[]] \-k
+\f[I]file\f[] [\-p \f[I]arg\f[]] [\-V] [\[en]] [\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 Revoke a Card from the Public Keys Service
@@ -16,16 +16,16 @@ Revoke a Card from the Public Keys Service
 .IP
 .nf
 \f[C]
-\-a\ <arg>,\ \ \-\-card\-id\ <arg>
+\-a\ *arg*,\ \ \-\-card\-id\ *arg*
 \ (required)\ \ virgil\ Card\ identifier
 
-\-f\ <file>,\ \ \-\-validated\-identity\ <file>
+\-f\ *file*,\ \ \-\-validated\-identity\ *file*
 \ Validated\ identity
 
-\-k\ <file>,\ \ \-\-key\ <file>
+\-k\ *file*,\ \ \-\-key\ *file*
 \ (required)\ \ Private\ key
 
-\-p\ <arg>,\ \ \-\-private\-key\-password\ <arg>
+\-p\ *arg*,\ \ \-\-private\-key\-password\ *arg*
 \ Password\ to\ be\ used\ for\ Private\ Key\ encryption.
 
 \-V,\ \ \-\-VERBOSE

@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil card-get** \[-o <arg>\] -a <arg> \[-e <arg>\] \[-k <file>\]
-\[-p <arg>\] \[-V\] \[--\] \[--version\] \[-h\]
+**virgil card-get** \[-o *arg*\] -a *arg* \[-e *arg*\] \[-k *file*\]
+\[-p *arg*\] \[-V\] \[--\] \[--version\] \[-h\]
 
 DESCRIPTION
 ===========
@@ -18,20 +18,20 @@ public-key-id
 OPTIONS
 =======
 
-    -o <arg>,  --out <arg>
+    -o *arg*,  --out *arg*
      Folder in which will be saved a Virgil Cards
 
-    -a <arg>,  --card-id <arg>
+    -a *arg*,  --card-id *arg*
      (required)  virgil Card identifier
 
-    -e <arg>,  --public-key-id <arg>
+    -e *arg*,  --public-key-id *arg*
      Public Key identifier
 
 
-    -k <file>,  --key <file>
+    -k *file*,  --key *file*
      Private key
 
-    -p <arg>,  --private-key-password <arg>
+    -p *arg*,  --private-key-password *arg*
      Password to be used for Private Key encryption.
 
     -V,  --VERBOSE

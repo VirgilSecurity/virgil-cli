@@ -6,7 +6,7 @@ NAME
 SYNOPSIS
 ========
 
-**virgil card-search-app** \[-o <arg>\] -c <arg> \[-V\] \[--\]
+**virgil card-search-app** \[-o *arg*\] -c *arg* \[-V\] \[--\]
 \[--version\] \[-h\]
 
 DESCRIPTION
@@ -17,10 +17,10 @@ Search for application Cards
 OPTIONS
 =======
 
-    -o <arg>,  --out <arg>
+    -o *arg*,  --out *arg*
      Folder in which will be saved a Virgil Cards
 
-    -c <arg>,  --application-name <arg>
+    -c *arg*,  --application-name *arg*
      (required)  Application name, name = '*' - get all Cards
 
 

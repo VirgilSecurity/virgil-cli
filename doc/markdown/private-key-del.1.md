@@ -7,7 +7,7 @@ Service
 SYNOPSIS
 ========
 
-**virgil private-key-del** -a <arg> -k <file> \[-p <arg>\] \[-V\] \[--\]
+**virgil private-key-del** -a *arg* -k *file* \[-p *arg*\] \[-V\] \[--\]
 \[--version\] \[-h\]
 
 DESCRIPTION
@@ -18,13 +18,13 @@ Delete the Private Key from the Private Keys Service.
 OPTIONS
 =======
 
-    -a <arg>,  --card-id <arg>
+    -a *arg*,  --card-id *arg*
      (required)  virgil Card identifier
 
-    -k <file>,  --key <file>
+    -k *file*,  --key *file*
      (required)  Private Key
 
-    -p <arg>,  --private-key-password <arg>
+    -p *arg*,  --private-key-password *arg*
      Password to be used for Private Key encryption.
 
     -V,  --VERBOSE

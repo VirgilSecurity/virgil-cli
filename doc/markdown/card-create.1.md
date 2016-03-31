@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil card-create** {--public-key <file>|-e <arg>} {-d <arg>|-f
-<file>} \[-o <file>\] -k <file> \[-p <arg>\] \[-V\] \[--\] \[--version\]
+**virgil card-create** {--public-key *file*|-e *arg*} {-d *arg*|-f
+*file*} \[-o *file*\] -k *file* \[-p *arg*\] \[-V\] \[--\] \[--version\]
 \[-h\]
 
 DESCRIPTION
@@ -39,27 +39,27 @@ public-key-id.
 OPTIONS
 =======
 
-    --public-key <file>
+    --public-key *file*
      (OR required)  Public key
          -- OR --
-    -e <arg>,  --public-key-id <arg>
+    -e *arg*,  --public-key-id *arg*
      (OR required)  Public key identifier
 
 
-    -d <arg>,  --identity <arg>
+    -d *arg*,  --identity *arg*
      (OR required)  Identity: email
          -- OR --
-    -f <file>,  --validated-identity <file>
+    -f *file*,  --validated-identity *file*
      (OR required)  Validated identity
 
 
-    -o <file>,  --out <file>
+    -o *file*,  --out *file*
      virgil Card. If omitted, stdout is used.
 
-    -k <file>,  --key <file>
+    -k *file*,  --key *file*
      (required)  Private key
 
-    -p <arg>,  --private-key-password <arg>
+    -p *arg*,  --private-key-password *arg*
      Password to be used for Private Key encryption.
 
     -V,  --VERBOSE
