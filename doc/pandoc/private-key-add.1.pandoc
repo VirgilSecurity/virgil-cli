@@ -8,7 +8,7 @@
 
 # SYNOPSIS
 
-**virgil private-key-add** -a *arg* -k *file* [--] [--version] [-h]
+**virgil private-key-add** -a <arg> -k <file> [-p <arg>] [-V] [--] [--version] [-h]
 
 
 # DESCRIPTION
@@ -24,20 +24,26 @@ to the Public Keys Service.
 
 # OPTIONS
 
-    -a *arg*,  --card-id *arg*
-     (required)  Virgil Card identifier
+    -a <arg>,  --card-id <arg>
+     (required)  virgil Card identifier
 
-    -k *file*,  --key *file*
+    -k <file>,  --key <file>
      (required)  Private Key
 
+    -p <arg>,  --private-key-password <arg>
+     Password to be used for Private Key encryption.
+
+    -V,  --VERBOSE
+     Show detailed information
+
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
 
 
 # EXAMPLES

@@ -8,8 +8,8 @@
 Keys Service
 .SH SYNOPSIS
 .PP
-\f[B]virgil private\-key\-del\f[] \-a \f[I]arg\f[] \-k \f[I]file\f[]
-[\[en]] [\[en]version] [\-h]
+\f[B]virgil private\-key\-del\f[] \-a \-k [\-p ] [\-V] [\[en]]
+[\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 Delete the Private Key from the Private Keys Service.
@@ -17,20 +17,26 @@ Delete the Private Key from the Private Keys Service.
 .IP
 .nf
 \f[C]
-\-a\ *arg*,\ \ \-\-card\-id\ *arg*
-\ (required)\ \ Virgil\ Card\ identifier
+\-a\ <arg>,\ \ \-\-card\-id\ <arg>
+\ (required)\ \ virgil\ Card\ identifier
 
-\-k\ *file*,\ \ \-\-key\ *file*
+\-k\ <file>,\ \ \-\-key\ <file>
 \ (required)\ \ Private\ Key
 
+\-p\ <arg>,\ \ \-\-private\-key\-password\ <arg>
+\ Password\ to\ be\ used\ for\ Private\ Key\ encryption.
+
+\-V,\ \ \-\-VERBOSE
+\ Show\ detailed\ information
+
 \-\-,\ \ \-\-ignore_rest
-\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag
+\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
 
 \-\-version
-\ Displays\ version\ information\ and\ exits
+\ Displays\ version\ information\ and\ exits.
 
 \-h,\ \ \-\-help
-\ Displays\ usage\ information\ and\ exits
+\ Displays\ usage\ information\ and\ exits.
 \f[]
 .fi
 .SH EXAMPLES

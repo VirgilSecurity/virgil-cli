@@ -8,9 +8,8 @@
 Key
 .SH SYNOPSIS
 .PP
-\f[B]virgil decrypt\f[] [\-i \f[I]file\f[]] [\-o \f[I]file\f[]] [\-c
-\f[I]file\f[]] [\-k \f[I]file\f[]] \-r \f[I]arg\f[] [\[en]]
-[\[en]version] [\-h]
+\f[B]virgil decrypt\f[] [\-i ] [\-o ] [\-c ] [\-k ] [\-p ] \-r [\-V]
+[\[en]] [\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 Decrypt data with given password or given Private Key + recipient\-id.
@@ -21,48 +20,52 @@ Also Public Key is saved in the Card.
 .IP
 .nf
 \f[C]
-\-i\ *file*,\ \ \-\-in\ *file*
-\ Data\ to\ be\ decrypted.\ If\ omitted,\ stdin\ is\ used
+\-i\ <file>,\ \ \-\-in\ <file>
+\ Data\ to\ be\ decrypted.\ If\ omitted,\ stdin\ is\ used.
 
-\-o\ *file*,\ \ \-\-out\ *file*
-\ Decrypted\ data.\ If\ omitted,\ stdout\ is\ used
+\-o\ <file>,\ \ \-\-out\ <file>
+\ Decrypted\ data.\ If\ omitted,\ stdout\ is\ used.
 
-\-c\ *file*,\ \ \-\-content\-info\ *file*
+\-c\ <file>,\ \ \-\-content\-info\ <file>
 \ Content\ info.\ Use\ this\ option\ if\ content\ info\ is\ not\ embedded\ in\ the
-\ encrypted\ data
+\ encrypted\ data.
 
-\-k\ *file*,\ \ \-\-key\ *file*
+\-k\ <file>,\ \ \-\-key\ <file>
 \ Private\ Key.
 
-\-r\ *arg*,\ \ \-\-recipient\ *arg*
+\-p\ <arg>,\ \ \-\-private\-key\-password\ <arg>
+\ Password\ to\ be\ used\ for\ Private\ Key\ encryption.
+
+\-r\ <arg>,\ \ \-\-recipient\ <arg>
 \ (required)\ \ Recipient\ defined\ in\ format:
 
-\ [pass|id|vcard|email|pub\-key]:<value*
+\ [password|id|vcard|email]:<value>
 
 \ where:
 
-\ \ \ \ *\ if\ pass,\ then\ *value*\ \-\ recipient\[aq]s\ password;
+\ \ \ \ *\ if\ password,\ then\ <value>\ \-\ recipient\[aq]s\ password;
 
-\ \ \ \ *\ if\ id,\ then\ *value*\ \-\ recipient\[aq]s\ UUID\ associated\ with\ Virgil\ Card
+\ \ \ \ *\ if\ id,\ then\ <value>\ \-\ recipient\[aq]s\ UUID\ associated\ with\ Virgil\ Card
 \ identifier;
 
-\ \ \ \ *\ if\ vcard,\ then\ *value*\ \-\ recipient\[aq]s\ Virgil\ Card\ file
+\ \ \ \ *\ if\ vcard,\ then\ <value>\ \-\ recipient\[aq]s\ Virgil\ Card/Cards\ file
 
 \ \ \ \ \ \ stored\ locally;
 
-\ \ \ \ *\ if\ email,\ then\ *value*\ \-\ recipient\[aq]s\ email;
+\ \ \ \ *\ if\ email,\ then\ <value>\ \-\ recipient\[aq]s\ email;
 
-\ \ \ \ *\ if\ pub\-key,\ then\ *value*\ \-\ recipient\[aq]s\ Public\ Key
 
+\-V,\ \ \-\-VERBOSE
+\ Show\ detailed\ information
 
 \-\-,\ \ \-\-ignore_rest
-\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag
+\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
 
 \-\-version
-\ Displays\ version\ information\ and\ exits
+\ Displays\ version\ information\ and\ exits.
 
 \-h,\ \ \-\-help
-\ Displays\ usage\ information\ and\ exits
+\ Displays\ usage\ information\ and\ exits.
 \f[]
 .fi
 .SH EXAMPLES
@@ -72,7 +75,7 @@ Decrypt data for user identified by password:
 .IP
 .nf
 \f[C]
-virgil\ decrypt\ \-i\ plain.txt.enc\ \-o\ plain.txt\ \-k\ private.key\ \-r\ pass:strong_password
+virgil\ decrypt\ \-i\ plain.txt.enc\ \-o\ plain.txt\ \-k\ private.key\ \-r\ password:strong_password
 \f[]
 .fi
 .RE

@@ -7,8 +7,8 @@
 \f[B]card\-get\f[] \[en] return Card(s)
 .SH SYNOPSIS
 .PP
-\f[B]virgil card\-get\f[] [\-o \f[I]arg\f[]] \-a \f[I]arg\f[] [\-e
-\f[I]arg\f[]] [\-k \f[I]file\f[]] [\[en]] [\[en]version] [\-h]
+\f[B]virgil card\-get\f[] [\-o ] \-a [\-e ] [\-k ] [\-p ] [\-V] [\[en]]
+[\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 Return a Card by card\-id or a group of Cards connected with
@@ -17,27 +17,33 @@ public\-key\-id
 .IP
 .nf
 \f[C]
-\-o\ *arg*,\ \ \-\-out\ *arg*
-\ Folder\ where\ Virgil\ Cards\ will\ be\ saved
+\-o\ <arg>,\ \ \-\-out\ <arg>
+\ Folder\ in\ which\ will\ be\ saved\ a\ Virgil\ Cards
 
-\-a\ *arg*,\ \ \-\-card\-id\ *arg*
-\ (required)\ \ Virgil\ Card\ identifier
+\-a\ <arg>,\ \ \-\-card\-id\ <arg>
+\ (required)\ \ virgil\ Card\ identifier
 
-\-e\ *arg*,\ \ \-\-public\-key\-id\ *arg*
+\-e\ <arg>,\ \ \-\-public\-key\-id\ <arg>
 \ Public\ Key\ identifier
 
 
-\-k\ *file*,\ \ \-\-key\ *file*
+\-k\ <file>,\ \ \-\-key\ <file>
 \ Private\ key
 
+\-p\ <arg>,\ \ \-\-private\-key\-password\ <arg>
+\ Password\ to\ be\ used\ for\ Private\ Key\ encryption.
+
+\-V,\ \ \-\-VERBOSE
+\ Show\ detailed\ information
+
 \-\-,\ \ \-\-ignore_rest
-\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag
+\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
 
 \-\-version
-\ Displays\ version\ information\ and\ exits
+\ Displays\ version\ information\ and\ exits.
 
 \-h,\ \ \-\-help
-\ Displays\ usage\ information\ and\ exits
+\ Displays\ usage\ information\ and\ exits.
 \f[]
 .fi
 .SH EXAMPLES

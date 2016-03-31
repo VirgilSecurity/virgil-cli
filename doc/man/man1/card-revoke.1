@@ -7,8 +7,8 @@
 \f[B]card\-revoke\f[] \[en] revoke Card from the Public Keys Service
 .SH SYNOPSIS
 .PP
-\f[B]virgil card\-revoke\f[] {\-f \f[I]file\f[]|\-d \f[I]arg\f[]} \-a
-\f[I]arg\f[] \-k \f[I]file\f[] [\[en]] [\[en]version] [\-h]
+\f[B]virgil card\-revoke\f[] \-a [\-f ] \-k [\-p ] [\-V] [\[en]]
+[\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 Revoke a Card from the Public Keys Service
@@ -16,27 +16,29 @@ Revoke a Card from the Public Keys Service
 .IP
 .nf
 \f[C]
-\-f\ *file*,\ \ \-\-validated\-identities\ *file*
-\ (OR\ required)\ \ Validated\ identity
-\ \ \ \ \ \-\-\ OR\ \-\-
-\-d\ *arg*,\ \ \-\-identity\ *arg*
-\ (OR\ required)\ \ Identity\ user
+\-a\ <arg>,\ \ \-\-card\-id\ <arg>
+\ (required)\ \ virgil\ Card\ identifier
 
+\-f\ <file>,\ \ \-\-validated\-identity\ <file>
+\ Validated\ identity
 
-\-a\ *arg*,\ \ \-\-card\-id\ *arg*
-\ (required)\ \ Virgil\ Card\ identifier
-
-\-k\ *file*,\ \ \-\-key\ *file*
+\-k\ <file>,\ \ \-\-key\ <file>
 \ (required)\ \ Private\ key
 
+\-p\ <arg>,\ \ \-\-private\-key\-password\ <arg>
+\ Password\ to\ be\ used\ for\ Private\ Key\ encryption.
+
+\-V,\ \ \-\-VERBOSE
+\ Show\ detailed\ information
+
 \-\-,\ \ \-\-ignore_rest
-\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag
+\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
 
 \-\-version
-\ Displays\ version\ information\ and\ exits
+\ Displays\ version\ information\ and\ exits.
 
 \-h,\ \ \-\-help
-\ Displays\ usage\ information\ and\ exits
+\ Displays\ usage\ information\ and\ exits.
 \f[]
 .fi
 .SH EXAMPLES
@@ -56,7 +58,7 @@ Revoke Virgil Card with a confirmed identity:
 .IP
 .nf
 \f[C]
-virgil\ card\-revoke\ \-a\ *card_id*\ \-d\ email:user\@domain.com\ \-k\ private.key
+virgil\ card\-revoke\ \-a\ *card_id*\ \-k\ private.key
 \f[]
 .fi
 .RE

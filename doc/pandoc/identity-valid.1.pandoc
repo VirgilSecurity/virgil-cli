@@ -9,7 +9,7 @@
 
 # SYNOPSIS
 
-**virgil identity-valid** -f *file* [--] [--version] [-h]
+**virgil identity-valid** -f <file> [-V] [--] [--version] [-h]
 
 # DESCRIPTION
 
@@ -18,17 +18,21 @@ Check *validated-identity* received by *identity-confirm*
 
 # OPTIONS
 
-    -f *file*,  --validated-identity *file*
+    -f <file>,  --validated-identity <file>
      (required)  Validated identity
 
+    -V,  --VERBOSE
+     Show detailed information
+
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
+
 
 
 # RETURN VALUE

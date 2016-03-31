@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil card-sign** \[-o *file*\] -s *file* -b *file* -k *file* \[--\]
-\[--version\] \[-h\]
+**virgil card-sign** \[-o <file>\] -s <file> -b <file> -k <file> \[-p
+<arg>\] \[-V\] \[--\] \[--version\] \[-h\]
 
 DESCRIPTION
 ===========
@@ -17,26 +17,32 @@ Sign a Card. You are building a model of trust by signing the Card
 OPTIONS
 =======
 
-    -o *file*,  --out *file*
-     Card Sign. If omitted, stdout is used
+    -o <file>,  --out <file>
+     Card Sign. If omitted, stdout is used.
 
-    -s *file*,  --signer *file*
+    -s <file>,  --signer <file>
      (required)  Signer's Card
 
-    -b *file*,  --to-be-signed *file*
-     (required)  Card to be signed
+    -b <file>,  --to-be-signed <file>
+     (required)  Card to be signed.
 
-    -k *file*,  --key *file*
+    -k <file>,  --key <file>
      (required)  Signer's Private key
 
+    -p <arg>,  --private-key-password <arg>
+     Password to be used for Private Key encryption.
+
+    -V,  --VERBOSE
+     Show detailed information
+
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
 
 EXAMPLES
 ========

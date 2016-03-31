@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil public-key-revoke** {-f *file* ... |-d *arg* ... } -e *arg* -a
-*arg* -k *file* \[--\] \[--version\] \[-h\]
+**virgil public-key-revoke** {-f <file> ... |-d <arg> ... } -e <arg> -a
+<arg> -k <file> \[-p <arg>\] \[-V\] \[--\] \[--version\] \[-h\]
 
 DESCRIPTION
 ===========
@@ -18,31 +18,37 @@ public-key-id + card-id of one of the Cards from the group
 OPTIONS
 =======
 
-    -f *file*,  --validated-identities *file*  (accepted multiple times)
+    -f <file>,  --validated-identity <file>  (accepted multiple times)
      (OR required)  ValidatedIdentity
          -- OR --
-    -d *arg*,  --identity *arg*  (accepted multiple times)
+    -d <arg>,  --identity <arg>  (accepted multiple times)
      (OR required)  Identity user
 
 
-    -e *arg*,  --public-key-id *arg*
+    -e <arg>,  --public-key-id <arg>
      (required)  Public Key identifier
 
 
-    -a *arg*,  --card-id *arg*
-     (required)  Virgil Card identifier одной из Карточек в цепочки
+    -a <arg>,  --card-id <arg>
+     (required)  virgil Card identifier
 
-    -k *file*,  --key *file*
+    -k <file>,  --key <file>
      (required)  Private key
 
+    -p <arg>,  --private-key-password <arg>
+     Password to be used for Private Key encryption.
+
+    -V,  --VERBOSE
+     Show detailed information
+
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
 
 EXAMPLES
 ========

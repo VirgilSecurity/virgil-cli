@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil decrypt** \[-i *file*\] \[-o *file*\] \[-c *file*\] \[-k
-*file*\] -r *arg* \[--\] \[--version\] \[-h\]
+**virgil decrypt** \[-i <file>\] \[-o <file>\] \[-c <file>\] \[-k
+<file>\] \[-p <arg>\] -r <arg> \[-V\] \[--\] \[--version\] \[-h\]
 
 DESCRIPTION
 ===========
@@ -20,55 +20,59 @@ saved in the Card.
 OPTIONS
 =======
 
-    -i *file*,  --in *file*
-     Data to be decrypted. If omitted, stdin is used
+    -i <file>,  --in <file>
+     Data to be decrypted. If omitted, stdin is used.
 
-    -o *file*,  --out *file*
-     Decrypted data. If omitted, stdout is used
+    -o <file>,  --out <file>
+     Decrypted data. If omitted, stdout is used.
 
-    -c *file*,  --content-info *file*
+    -c <file>,  --content-info <file>
      Content info. Use this option if content info is not embedded in the
-     encrypted data
+     encrypted data.
 
-    -k *file*,  --key *file*
+    -k <file>,  --key <file>
      Private Key.
 
-    -r *arg*,  --recipient *arg*
+    -p <arg>,  --private-key-password <arg>
+     Password to be used for Private Key encryption.
+
+    -r <arg>,  --recipient <arg>
      (required)  Recipient defined in format:
 
-     [pass|id|vcard|email|pub-key]:<value*
+     [password|id|vcard|email]:<value>
 
      where:
 
-        * if pass, then *value* - recipient's password;
+        * if password, then <value> - recipient's password;
 
-        * if id, then *value* - recipient's UUID associated with Virgil Card
+        * if id, then <value> - recipient's UUID associated with Virgil Card
      identifier;
 
-        * if vcard, then *value* - recipient's Virgil Card file
+        * if vcard, then <value> - recipient's Virgil Card/Cards file
 
           stored locally;
 
-        * if email, then *value* - recipient's email;
+        * if email, then <value> - recipient's email;
 
-        * if pub-key, then *value* - recipient's Public Key
 
+    -V,  --VERBOSE
+     Show detailed information
 
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
 
 EXAMPLES
 ========
 
 1.  Decrypt data for user identified by password:
 
-        virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r pass:strong_password
+        virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r password:strong_password
 
 2.  Decrypt data for Bob identified by his Public Key + recipient-id
     \[id|vcard|email\]:

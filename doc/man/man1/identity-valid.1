@@ -8,8 +8,7 @@
 received by \f[I]identity\-confirm\f[]
 .SH SYNOPSIS
 .PP
-\f[B]virgil identity\-valid\f[] \-f \f[I]file\f[] [\[en]] [\[en]version]
-[\-h]
+\f[B]virgil identity\-valid\f[] \-f [\-V] [\[en]] [\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 Check \f[I]validated\-identity\f[] received by
@@ -18,17 +17,20 @@ Check \f[I]validated\-identity\f[] received by
 .IP
 .nf
 \f[C]
-\-f\ *file*,\ \ \-\-validated\-identity\ *file*
+\-f\ <file>,\ \ \-\-validated\-identity\ <file>
 \ (required)\ \ Validated\ identity
 
+\-V,\ \ \-\-VERBOSE
+\ Show\ detailed\ information
+
 \-\-,\ \ \-\-ignore_rest
-\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag
+\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
 
 \-\-version
-\ Displays\ version\ information\ and\ exits
+\ Displays\ version\ information\ and\ exits.
 
 \-h,\ \ \-\-help
-\ Displays\ usage\ information\ and\ exits
+\ Displays\ usage\ information\ and\ exits.
 \f[]
 .fi
 .SH RETURN VALUE

@@ -7,8 +7,8 @@
 \f[B]card\-search\-app\f[] \[en] search for application Cards
 .SH SYNOPSIS
 .PP
-\f[B]virgil card\-search\-app\f[] [\-o ] \-c [\[en]] [\[en]version]
-[\-h]
+\f[B]virgil card\-search\-app\f[] [\-o ] \-c [\-V] [\[en]]
+[\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
 Search for application Cards
@@ -16,20 +16,24 @@ Search for application Cards
 .IP
 .nf
 \f[C]
-\-o\ *file*,\ \ \-\-out\ *file*
-\ Application\ cards.\ If\ omitted,\ stdout\ is\ used
+\-o\ <arg>,\ \ \-\-out\ <arg>
+\ Folder\ in\ which\ will\ be\ saved\ a\ Virgil\ Cards
 
-\-c\ *arg*,\ \ \-\-application\-name\ *arg*
-\ (required)\ Application\ name,\ if\ application\ name\ =\ \[aq]*\[aq]\ \-\ get\ all\ Application\ Cards\ from\ Public\ Keys\ Service
+\-c\ <arg>,\ \ \-\-application\-name\ <arg>
+\ (required)\ \ Application\ name,\ name\ =\ \[aq]*\[aq]\ \-\ get\ all\ Cards
+
+
+\-V,\ \ \-\-VERBOSE
+\ Show\ detailed\ information
 
 \-\-,\ \ \-\-ignore_rest
-\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag
+\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
 
 \-\-version
-\ Displays\ version\ information\ and\ exits
+\ Displays\ version\ information\ and\ exits.
 
 \-h,\ \ \-\-help
-\ Displays\ usage\ information\ and\ exits
+\ Displays\ usage\ information\ and\ exits.
 \f[]
 .fi
 .SH EXAMPLES

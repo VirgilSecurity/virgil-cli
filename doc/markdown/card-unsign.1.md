@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil card-unsign** -s *file* -z *file* -k *file* \[--\]
-\[--version\] \[-h\]
+**virgil card-unsign** -s <file> -z <file> -k <file> \[-p <arg>\] \[-V\]
+\[--\]\[--version\] \[-h\]
 
 DESCRIPTION
 ===========
@@ -17,23 +17,29 @@ Remove a signature from an already signed Card
 OPTIONS
 =======
 
-    -s *file*,  --signer *file*
+    -s <file>,  --signer <file>
      (required)  Signer's Card
 
-    -z *file*,  --signed *file*
+    -z <file>,  --signed <file>
      (required)  Signed Card
 
-    -k *file*,  --key *file*
+    -k <file>,  --key <file>
      (required)  Signer's Private key
 
+    -p <arg>,  --private-key-password <arg>
+     Password to be used for Private Key encryption.
+
+    -V,  --VERBOSE
+     Show detailed information
+
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
 
 EXAMPLES
 ========

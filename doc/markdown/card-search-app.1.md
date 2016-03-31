@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil card-search-app** \[-o <arg>\] -c <arg> \[--\] \[--version\]
-\[-h\]
+**virgil card-search-app** \[-o <arg>\] -c <arg> \[-V\] \[--\]
+\[--version\] \[-h\]
 
 DESCRIPTION
 ===========
@@ -17,20 +17,24 @@ Search for application Cards
 OPTIONS
 =======
 
-    -o *file*,  --out *file*
-     Application cards. If omitted, stdout is used
+    -o <arg>,  --out <arg>
+     Folder in which will be saved a Virgil Cards
 
-    -c *arg*,  --application-name *arg*
-     (required) Application name, if application name = '*' - get all Application Cards from Public Keys Service
+    -c <arg>,  --application-name <arg>
+     (required)  Application name, name = '*' - get all Cards
+
+
+    -V,  --VERBOSE
+     Show detailed information
 
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
 
 EXAMPLES
 ========

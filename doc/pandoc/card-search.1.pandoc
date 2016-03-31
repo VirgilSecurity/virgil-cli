@@ -8,7 +8,8 @@
 
 # SYNOPSIS
 
-**virgil card-search** [-o *arg*] -d *arg* [-u] [--] [--version] [-h] *card-id* ...
+**virgil card-search** [-o <arg>] -d <arg> [-u] [-V] [--] [--version] [-h]
+                <card-id> ...
 
 
 # DESCRIPTION
@@ -20,14 +21,17 @@ Search for Cards by email using filters:
 
 # OPTIONS
 
-    -o *arg*,  --out *arg*
-     Folder where Virgil Cards will be saved
+    -o <arg>,  --out <arg>
+     Folder in which will be saved a Virgil Cards
 
-    -d *arg*,  --identity *arg*
-     (required)  Identity  [key]:<value*. [email]:<value>. email:user@domain.com
+    -d <arg>,  --identity <arg>
+     (required)  Identity: email
 
     -u,  --unconfirmed
-     Search Cards include unconfirmed identity. *false* by default.
+     Search Cards include unconfirmed identity
+
+    -V,  --VERBOSE
+     Show detailed information
 
     --,  --ignore_rest
      Ignores the rest of the labeled arguments following this flag.
@@ -38,7 +42,7 @@ Search for Cards by email using filters:
     -h,  --help
      Displays usage information and exits.
 
-    *card-id*  (accepted multiple times)
+    <card-id>  (accepted multiple times)
      Signed card id
 
 

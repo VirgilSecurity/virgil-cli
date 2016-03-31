@@ -7,7 +7,7 @@
 \f[B]key2pub\f[] \[en] get Public Key from the Private Key Service
 .SH SYNOPSIS
 .PP
-\f[B]virgil key2pub\f[] [\-i \f[I]file\f[]] [\-o \f[I]file\f[]] [\[en]]
+\f[B]virgil key2pub\f[] [\-i ] [\-o ] [\-p ] [\-V] [\[en]]
 [\[en]version] [\-h]
 .SH DESCRIPTION
 .PP
@@ -16,11 +16,17 @@ Get Public Key from the given Private Key
 .IP
 .nf
 \f[C]
-\-i\ *file*,\ \ \-\-in\ *file*
+\-i\ <file>,\ \ \-\-in\ <file>
 \ Private\ key.\ If\ omitted,\ stdin\ is\ used.
 
-\-o\ *file*,\ \ \-\-out\ *file*
+\-o\ <file>,\ \ \-\-out\ <file>
 \ Public\ key.\ If\ omitted,\ stdout\ is\ used.
+
+\-p\ <arg>,\ \ \-\-private\-key\-password\ <arg>
+\ Password\ to\ be\ used\ for\ Private\ Key\ encryption.
+
+\-V,\ \ \-\-VERBOSE
+\ Show\ detailed\ information
 
 \-\-,\ \ \-\-ignore_rest
 \ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
@@ -37,6 +43,9 @@ Get Public Key from the given Private Key
 .nf
 \f[C]
 \ \ \ \ virgil\ key2pub\ \-i\ private.key\ \-o\ public.key
+
+
+\ \ \ \ virgil\ key2pub\ \-i\ private.key\ \-o\ public.key\ \-p\ STRONGPASS
 \f[]
 .fi
 .SH SEE ALSO

@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil private-key-get** \[-o *file*\] -a \*\* -f *file* \[--\]
-\[--version\] \[-h\]
+**virgil private-key-get** \[-o <file>\] -a &lt;&gt; -f <file> \[-V\]
+\[--\] \[--version\] \[-h\]
 
 DESCRIPTION
 ===========
@@ -17,23 +17,26 @@ Get the Private Key from the Private Key Service
 OPTIONS
 =======
 
-    -o *file*,  --out *file*
-     Private Key. If omitted, stdout is used
+    -o <file>,  --out <file>
+     Private Key. If omitted, stdout is used.
 
-    -a **,  --card-id **
-     (required)  Virgil Card identifier
+    -a <>,  --card-id <>
+     (required)  virgil Card identifier
 
-    -f *file*,  --validated-identities *file*
+    -f <file>,  --validated-identity <file>
      (required)  Validated identity
 
+    -V,  --VERBOSE
+     Show detailed information
+
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
 
 EXAMPLES
 ========

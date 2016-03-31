@@ -9,7 +9,9 @@
 
 # SYNOPSIS
 
-**virgil identity-confirm** [-o *file*] -d *arg* [-l *int*] [-r *int*] [--] [--version] [-h]
+**virgil identity-confirm** [-o <file>] [-d <arg>] [--action-id <arg>]
+                     [--confirmation-code <arg>] [-t <int>] [-c <int>] [-V]
+                     [--] [--version] [-h]
 
 
 # DESCRIPTION
@@ -28,27 +30,36 @@ Identity. It is required for the following operations:\
 
 # OPTIONS
 
-    -o *file*,  --out *file*
-     Validated identity. If omitted, stdout is used
+    -o <file>,  --out <file>
+     Validated identity. If omitted, stdout is used.
 
-    -d *arg*,  --identity *arg*
-     (required)  Identity email
+    -d <arg>,  --identity <arg>
+     Identity email
 
-    -l *int*,  --time-to-live *int*
-     Time limit for validation-token,  by default = 3600
+    --action-id <arg>
+     Action id.
 
-    -r *int*,  --count-to-live *int*
-     Requests number limit for validation-token, by default = 10.
-     All requests where validation-token is used except *identity-valid* are counted.
+    --confirmation-code <arg>
+     Confirmation code
+
+    -t <int>,  --time-to-live <int>
+     Time to live, by default = 3600.
+
+    -c <int>,  --count-to-live <int>
+     Count to live, by default = 10.
+
+    -V,  --VERBOSE
+     Show detailed information
 
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
+
 
 
 # RETURN VALUE
@@ -66,13 +77,18 @@ is returned. On error, throw exeption.
 
 # EXAMPLES
 
-1. Identity confirmation with requests number limit = 10 and time validity limit = 3600:
+1. Identity confirmation with requests number limit = 2 and time validity limit = 3600:
 
         virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt
 
-1. Identity confirmation with requests number limit = 1 and time validity limit = 60:
+1. Identity confirmation with requests number limit = 10 and time validity limit = 60:
 
-        virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt -l 60 -r 1
+        virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt -l 60 -c 1o
+
+1. Identity confirmation with requests number limit = 2 and time validity limit = 3600:
+
+        virgil identity-confirm  --action-id <action_id> --confirmation-code <code> -o alice/validated-identity.txt
+
 
 # SEE ALSO
 

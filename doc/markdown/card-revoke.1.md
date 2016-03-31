@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil card-revoke** {-f *file*|-d *arg*} -a *arg* -k *file* \[--\]
-\[--version\] \[-h\]
+**virgil card-revoke** -a <arg> \[-f <file>\] -k <file> \[-p <arg>\]
+\[-V\] \[--\] \[--version\] \[-h\]
 
 DESCRIPTION
 ===========
@@ -17,27 +17,29 @@ Revoke a Card from the Public Keys Service
 OPTIONS
 =======
 
-    -f *file*,  --validated-identities *file*
-     (OR required)  Validated identity
-         -- OR --
-    -d *arg*,  --identity *arg*
-     (OR required)  Identity user
+    -a <arg>,  --card-id <arg>
+     (required)  virgil Card identifier
 
+    -f <file>,  --validated-identity <file>
+     Validated identity
 
-    -a *arg*,  --card-id *arg*
-     (required)  Virgil Card identifier
-
-    -k *file*,  --key *file*
+    -k <file>,  --key <file>
      (required)  Private key
 
+    -p <arg>,  --private-key-password <arg>
+     Password to be used for Private Key encryption.
+
+    -V,  --VERBOSE
+     Show detailed information
+
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
 
 EXAMPLES
 ========
@@ -48,7 +50,7 @@ EXAMPLES
 
 2.  Revoke Virgil Card with a confirmed identity:
 
-        virgil card-revoke -a *card_id* -d email:user@domain.com -k private.key
+        virgil card-revoke -a *card_id* -k private.key
 
 SEE ALSO
 ========

@@ -6,8 +6,8 @@ NAME
 SYNOPSIS
 ========
 
-**virgil card-get** \[-o *arg*\] -a *arg* \[-e *arg*\] \[-k *file*\]
-\[--\] \[--version\] \[-h\]
+**virgil card-get** \[-o <arg>\] -a <arg> \[-e <arg>\] \[-k <file>\]
+\[-p <arg>\] \[-V\] \[--\] \[--version\] \[-h\]
 
 DESCRIPTION
 ===========
@@ -18,27 +18,33 @@ public-key-id
 OPTIONS
 =======
 
-    -o *arg*,  --out *arg*
-     Folder where Virgil Cards will be saved
+    -o <arg>,  --out <arg>
+     Folder in which will be saved a Virgil Cards
 
-    -a *arg*,  --card-id *arg*
-     (required)  Virgil Card identifier
+    -a <arg>,  --card-id <arg>
+     (required)  virgil Card identifier
 
-    -e *arg*,  --public-key-id *arg*
+    -e <arg>,  --public-key-id <arg>
      Public Key identifier
 
 
-    -k *file*,  --key *file*
+    -k <file>,  --key <file>
      Private key
 
+    -p <arg>,  --private-key-password <arg>
+     Password to be used for Private Key encryption.
+
+    -V,  --VERBOSE
+     Show detailed information
+
     --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag
+     Ignores the rest of the labeled arguments following this flag.
 
     --version
-     Displays version information and exits
+     Displays version information and exits.
 
     -h,  --help
-     Displays usage information and exits
+     Displays usage information and exits.
 
 EXAMPLES
 ========
