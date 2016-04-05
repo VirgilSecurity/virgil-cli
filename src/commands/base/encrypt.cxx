@@ -44,8 +44,6 @@
 
 #include <tclap/CmdLine.h>
 
-#include <json.hpp>
-
 #include <virgil/crypto/VirgilByteArray.h>
 #include <virgil/crypto/VirgilStreamCipher.h>
 #include <virgil/crypto/stream/VirgilStreamDataSource.h>
@@ -56,8 +54,6 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
-
-using nlohmann::json;
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
