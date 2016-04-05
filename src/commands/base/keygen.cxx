@@ -138,9 +138,14 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
             "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
 
+        TCLAP::SwitchArg notShadowInputArg(
+            "", "not-password-input",
+            "If parameter -p, --private-key-password is omitted, password won’t be requested.", false);
+
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 
         cmd.add(verboseArg);
+        cmd.add(notShadowInputArg);
         cmd.add(privateKeyPasswordArg);
         cmd.add(algorithmArg);
         cmd.add(outArg);
@@ -152,14 +157,16 @@ int MAIN(int argc, char** argv) {
         if (privateKeyPasswordArg.isSet()) {
             privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
         } else {
-            std::cout << "Do you want add password to be used for Private Key encryption[Y/n] ?" << std::endl;
-            std::string answer;
-            std::cin >> answer;
-            if (answer == "Y" || answer == "y") {
-                std::cout << "Enter private key password:" << std::endl;
-                std::string password = vcli::inputShadow();
-                privateKeyPassword = vcrypto::str2bytes(password);
-                std::cout << std::endl;
+            if (!notShadowInputArg.isSet()) {
+                std::cout << "Do you want add password to be used for Private Key encryption[Y/n] ?" << std::endl;
+                std::string answer;
+                std::cin >> answer;
+                if (answer == "Y" || answer == "y") {
+                    std::cout << "Enter private key password:" << std::endl;
+                    std::string password = vcli::inputShadow();
+                    privateKeyPassword = vcrypto::str2bytes(password);
+                    std::cout << std::endl;
+                }
             }
         }
 
