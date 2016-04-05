@@ -46,8 +46,11 @@
 #include <virgil/crypto/VirgilStreamSigner.h>
 #include <virgil/crypto/stream/VirgilStreamDataSource.h>
 
+#include <virgil/sdk/ServicesHub.h>
 #include <virgil/sdk/models/CardModel.h>
+#include <virgil/sdk/io/Marshaller.h>
 
+#include <cli/config.h>
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
@@ -85,15 +88,16 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> outArg(
             "o", "out", "Verification result: success | failure. If omitted, stdout is used.", false, "", "file");
 
+        TCLAP::SwitchArg returnStatusArg("", "return-status", "Only return status, ignore '-o, --out'", false);
+
         TCLAP::ValueArg<std::string> signArg("s", "sign", "Digest sign.", true, "", "file");
 
         TCLAP::ValueArg<std::string> recipientArg(
             "r", "recipient", "Recipient defined in format:\n"
-                              "[id|vcard|email|pubkey]:<value>\n"
+                              "[id|vcard|pubkey]:<value>\n"
                               "where:\n"
                               "\t* if id, then <value> - recipient's UUID associated with Virgil Card identifier;\n"
                               "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
-                              "\t* if email, then <value> - recipient's email;\n"
                               "\t* if pubkey, then <value> - recipient's Public Key.\n",
             true, "", "arg");
 
@@ -102,6 +106,7 @@ int MAIN(int argc, char** argv) {
         cmd.add(verboseArg);
         cmd.add(recipientArg);
         cmd.add(signArg);
+        cmd.add(returnStatusArg);
         cmd.add(outArg);
         cmd.add(inArg);
         cmd.parse(argc, argv);
@@ -132,51 +137,56 @@ int MAIN(int argc, char** argv) {
         }
         vcrypto::VirgilByteArray sign((std::istreambuf_iterator<char>(signFile)), std::istreambuf_iterator<char>());
 
-        // Create signer
-        vcrypto::VirgilStreamSigner signer;
-
         std::string type = recipientFormat.first;
         std::string value = recipientFormat.second;
+        vcrypto::VirgilByteArray publicKey;
 
         if (type == "pubkey") {
             std::string pathToPublicKeyFile = value;
-            vcrypto::VirgilByteArray publicKey = vcli::readPublicKey(pathToPublicKeyFile);
-            bool verified = signer.verify(dataSource, sign, publicKey);
-            if (verified) {
-                vcli::writeBytes(outArg.getValue(), "success");
+            if (verboseArg.isSet()) {
+                std::cout << "Read public key by path:" << value << std::endl;
+            }
+            publicKey = vcli::readPublicKey(pathToPublicKeyFile);
+        } else {
+            // type [id|vcard]
+            if (type == "id") {
+                vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+                if (verboseArg.isSet()) {
+                    std::cout << "Download a Virgil Card by id:" << value << std::endl;
+                }
+                auto card = servicesHub.card().get(value);
+                publicKey = card.getPublicKey().getKey();
+            } else {
+                // vcard
+                std::string pathTofile = value;
+                if (verboseArg.isSet()) {
+                    std::cout << "Read a Virgil Card by path:" << pathTofile << std::endl;
+                }
+                std::ifstream inFile(pathTofile, std::ios::in | std::ios::binary);
+                if (!inFile) {
+                    throw std::invalid_argument("cannot read file: " + pathTofile);
+                }
+
+                std::string jsonCard((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+                auto card = vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(jsonCard);
+                publicKey = card.getPublicKey().getKey();
+            }
+        }
+
+        // Create signer
+        vcrypto::VirgilStreamSigner signer;
+        bool verified = signer.verify(dataSource, sign, publicKey);
+        if (verified) {
+            if (returnStatusArg.getValue()) {
                 return EXIT_SUCCESS;
             } else {
-                vcli::writeBytes(outArg.getValue(), "failure");
-                return EXIT_FAILURE;
+                vcli::writeBytes(outArg.getValue(), "success");
             }
         } else {
-            // type [id|vcard|email]
-            // if recipient email:<value>, then download a Virgil Card with confirmed identity
-            bool includeUnconrimedCard = false;
-            std::vector<vsdk::models::CardModel> recipientCards =
-                vcli::getRecipientCards(type, value, includeUnconrimedCard);
-
-            std::vector<std::string> verifiedInfo;
-            size_t countVerifiedFailure = 0;
-            for (const auto& recipientCard : recipientCards) {
-                bool verified = signer.verify(dataSource, sign, recipientCard.getPublicKey().getKey());
-                std::string recipientCardId = recipientCard.getId();
-                if (verified) {
-                    verifiedInfo.push_back("card-id " + recipientCardId + " - success\n");
-                } else {
-                    ++countVerifiedFailure;
-                    verifiedInfo.push_back("card-id " + recipientCardId + " - failure\n");
-                }
-            }
-
-            std::string info;
-            for (const auto& vi : verifiedInfo) {
-                info += vi;
-            }
-            vcli::writeBytes(outArg.getValue(), info);
-
-            if (countVerifiedFailure == recipientCards.size()) {
+            if (returnStatusArg.getValue()) {
                 return EXIT_FAILURE;
+            } else {
+                vcli::writeBytes(outArg.getValue(), "failure");
             }
         }
 
@@ -193,8 +203,8 @@ int MAIN(int argc, char** argv) {
 
 void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
-    if (type != "id" && type != "vcard" && type != "email" && type != "pubkey") {
+    if (type != "id" && type != "vcard" && type != "pubkey") {
         throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [id|vcard|email|pubkey]");
+                                                                     "Where <key> = [id|vcard|pubkey]");
     }
 }
