@@ -98,6 +98,14 @@ message (STATUS "CLI version: " ${CLI_VERSION})
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
 
+if (UNIX)
+    set (CONFIG_FILE_DIR_NAME $ENV{HOME})
+endif ()
+
+set (INSTALL_CONFIG_FILE_DIR_NAME CONFIG_FILE_DIR_NAME CACHE STRING "Installation directory name for config file")
+
+
+
 set(TOKEN "eyJpZCI6IjFkNzgzNTA1LTk1NGMtNDJhZC1hZThjLWQyOGFiYmNhMGM1NyIsImFwcGxpY2F0aW9uX2NhcmRfaWQiOiIwNGYyY2Y2NS1iZDY2LTQ3N2EtOGFiZi1hMDAyYWY4YjdmZWYiLCJ0dGwiOi0xLCJjdGwiOi0xLCJwcm9sb25nIjowfQ==.MIGZMA0GCWCGSAFlAwQCAgUABIGHMIGEAkAV1PHR3JaDsZBCl+6r/N5R5dATW9tcS4c44SwNeTQkHfEAlNboLpBBAwUtGhQbadRd4N4gxgm31sajEOJIYiGIAkADCz+MncOO74UVEEot5NEaCtvWT7fIW9WaF6JdH47Z7kTp0gAnq67cPbS0NDUyovAqILjmOmg1zAL8A4+ii+zd")
 
 # Configure application token
@@ -171,9 +179,13 @@ if (MSVC)
     install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
 endif (MSVC)
 
-# if (UNIX)
-#     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
-# endif (UNIX)
+if (UNIX)
+    install (
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/.virgil-cli-config
+        DESTINATION ${INSTALL_CONFIG_FILE_DIR_NAME}/.virgil-cli-config
+    )
+    install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
+endif ()
 
 # Pack
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY

@@ -37,3 +37,5 @@
 #include <cli/config.h>
 
 const std::string VIRGIL_ACCESS_TOKEN = "@VIRGIL_ACCESS_TOKEN@";
+
+const std::string INSTALL_CONFIG_FILE_DIR_NAME = "@INSTALL_CONFIG_FILE_DIR_NAME@";

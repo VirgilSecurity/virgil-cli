@@ -45,4 +45,6 @@
  */
 extern const std::string VIRGIL_ACCESS_TOKEN;
 
+extern const std::string INSTALL_CONFIG_FILE_DIR_NAME;
+
 #endif /* VIRGIL_CLI_COMMON_CONFIG_H */
