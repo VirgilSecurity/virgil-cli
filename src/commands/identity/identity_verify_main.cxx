@@ -87,7 +87,10 @@ int MAIN(int argc, char** argv) {
         std::string userEmail = identityPair.second;
         vsdk::dto::Identity identity(userEmail, vsdk::models::IdentityModel::Type::Email);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        std::cout << identityArg.getValue() << std::endl;
+        std::cout << userEmail << std::endl;
+
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
         std::string actionId = servicesHub.identity().verify(identity);
         vcli::writeBytes(outArg.getValue(), actionId);
 

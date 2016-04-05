@@ -142,7 +142,7 @@ int MAIN(int argc, char** argv) {
 
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
         vsdk::models::CardModel card;
         if (validatedIdentityArg.isSet()) {
             vsdk::dto::ValidatedIdentity validatedIdentity =

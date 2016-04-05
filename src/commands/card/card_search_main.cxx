@@ -111,7 +111,7 @@ int MAIN(int argc, char** argv) {
 
         bool includeUnconfirmed = unconfirmedArg.getValue();
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
         std::vector<vsdk::models::CardModel> foundCards;
         if (signedCardsIdArg.isSet()) {
             std::vector<std::string> signedCardsId = signedCardsIdArg.getValue();

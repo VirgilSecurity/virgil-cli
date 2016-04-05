@@ -83,7 +83,7 @@ int MAIN(int argc, char** argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
         std::string publicKeyId = publicKeyIdArg.getValue();
 
         vsdk::models::PublicKeyModel publicKey = servicesHub.publicKey().get(publicKeyId);

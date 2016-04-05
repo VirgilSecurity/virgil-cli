@@ -44,9 +44,13 @@
 
 #include <virgil/sdk/models/CardModel.h>
 #include <virgil/sdk/dto/ValidatedIdentity.h>
+#include <virgil/sdk/ServiceUri.h>
+
 
 namespace virgil {
 namespace cli {
+
+    virgil::sdk::ServiceUri readConfigFile();
 
     std::string inputShadow();
 

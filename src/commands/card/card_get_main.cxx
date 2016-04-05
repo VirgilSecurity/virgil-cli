@@ -97,7 +97,7 @@ int MAIN(int argc, char** argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
         if (publicKeyIdArg.isSet() && privateKeyArg.isSet()) {
             std::string pathPrivateKey = privateKeyArg.getValue();
             vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);

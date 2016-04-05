@@ -55,6 +55,7 @@
 #include <virgil/sdk/io/Marshaller.h>
 #include <virgil/sdk/models/PrivateKeyModel.h>
 
+#include <cli/pair.h>
 #include <cli/config.h>
 #include <cli/version.h>
 #include <cli/util.h>
@@ -89,6 +90,35 @@ static void setStdinEcho(bool enable) {
 
     (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 #endif
+}
+
+vsdk::ServiceUri virgil::cli::readConfigFile() {
+    std::string pathConfigFile = INSTALL_CONFIG_FILE_DIR_NAME + "/.virgil-cli-config";
+    std::ifstream inFile(pathConfigFile, std::ios::in | std::ios::binary);
+    if (!inFile) {
+        return vsdk::ServiceUri();
+    } else {
+        std::string line;
+        std::string identityServiceUri;
+        std::string keyServiceUri;
+        std::string privateKeyServiceUri;
+        while (std::getline(inFile, line)) {
+            auto servicePair = virgil::cli::parsePair(line);
+            if (servicePair.first == "identity-service") {
+                identityServiceUri = servicePair.second;
+            } else if (servicePair.first == "public-key-service") {
+                keyServiceUri = servicePair.second;
+            } else if (servicePair.first == "private-key-service") {
+                privateKeyServiceUri = servicePair.second;
+            } else {
+                throw std::invalid_argument("can not parse config file " + pathConfigFile + ".\n" +
+                    "key:value, where key[identity-service|public-key-service|private-key-service].\n"
+                    "key != " + servicePair.first);
+            }
+        }
+
+        return vsdk::ServiceUri(identityServiceUri, keyServiceUri, privateKeyServiceUri);
+    }
 }
 
 std::string virgil::cli::inputShadow() {
@@ -277,8 +307,9 @@ std::string virgil::cli::getDescriptionMessage(const std::string description, st
 
 std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const std::string& type, const std::string& value,
                                                                     const bool includeUnconrimedCard) {
+
     std::vector<vsdk::models::CardModel> recipientCards;
-    vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+    vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, virgil::cli::readConfigFile());
     if (type == "id") {
         recipientCards.push_back(servicesHub.card().get(value));
     } else if (type == "email") {

@@ -116,7 +116,7 @@ int MAIN(int argc, char** argv) {
         }
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
 
         if (validatedIdentityArg.isSet()) {
             std::vector<vsdk::dto::ValidatedIdentity> validatedIdentities;

@@ -80,7 +80,7 @@ int MAIN(int argc, char** argv) {
         cmd.add(validatedIdentityArg);
         cmd.parse(argc, argv);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
         vsdk::dto::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityArg.getValue());
 
         bool validateToken = servicesHub.identity().validate(validatedIdentity);

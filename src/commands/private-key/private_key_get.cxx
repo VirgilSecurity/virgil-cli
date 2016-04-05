@@ -89,7 +89,7 @@ int MAIN(int argc, char** argv) {
         std::string cardId = cardIdArg.getValue();
         vsdk::dto::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityArg.getValue());
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
         vsdk::models::PrivateKeyModel privateKey = servicesHub.privateKey().get(cardId, validatedIdentity);
         std::string privateKeyStr = vsdk::io::Marshaller<vsdk::models::PrivateKeyModel>::toJson<4>(privateKey);
         vcli::writeBytes(outArg.getValue(), privateKeyStr);
