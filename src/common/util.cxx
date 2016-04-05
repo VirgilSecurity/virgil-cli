@@ -46,10 +46,10 @@
 #include <unistd.h>
 #endif
 
-#include <json.hpp>
-
 #include <virgil/crypto/VirgilByteArray.h>
 #include <virgil/crypto/VirgilKeyPair.h>
+
+#include <json.hpp>
 
 #include <virgil/sdk/ServicesHub.h>
 #include <virgil/sdk/io/Marshaller.h>
@@ -59,7 +59,7 @@
 #include <cli/version.h>
 #include <cli/util.h>
 
-using nlohmann::json;
+using json = nlohmann::json;
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
@@ -277,7 +277,6 @@ std::string virgil::cli::getDescriptionMessage(const std::string description, st
 
 std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const std::string& type, const std::string& value,
                                                                     const bool includeUnconrimedCard) {
-
     std::vector<vsdk::models::CardModel> recipientCards;
     vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
     if (type == "id") {
@@ -294,24 +293,9 @@ std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const std::s
             throw std::invalid_argument("cannot read file: " + pathTofile);
         }
 
-        // in file may be card or cards
-        std::string undefinedCardJsonStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-        try {
-            json tmp = json::parse(undefinedCardJsonStr);
-            if (tmp.is_object()) {
-                vsdk::models::CardModel card =
-                    vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(undefinedCardJsonStr);
-                recipientCards.push_back(card);
-            } else if (tmp.is_array()) {
-                std::vector<vsdk::models::CardModel> cards = vsdk::io::cardsFromJson(undefinedCardJsonStr);
-                recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
-            } else {
-                throw std::runtime_error("Can't parse " + pathTofile + " .");
-            }
-
-        } catch (std::exception& exception) {
-            throw std::runtime_error("Can't parse " + pathTofile + " .");
-        }
+        std::string jsonCard((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+        vsdk::models::CardModel card = vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(jsonCard);
+        recipientCards.push_back(card);
     }
 
     return recipientCards;
