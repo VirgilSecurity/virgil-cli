@@ -86,7 +86,7 @@ function (virgil_add_dependency module target includes libraries)
         if (NOT TARGET ${VIRGIL}_project)
             ExternalProject_Add (${VIRGIL}_project
                 GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil-crypto.git"
-                GIT_TAG "v1.3.4"
+                GIT_TAG "v1.4.0-rc1"
                 PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil-crypto"
                 CMAKE_ARGS ${CMAKE_ARGS}
             )
@@ -97,8 +97,15 @@ function (virgil_add_dependency module target includes libraries)
 
         set (VIRGIL_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}virgil_crypto${CMAKE_STATIC_LIBRARY_SUFFIX})
         set (MBEDTLS_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX})
+        set (ED25519_LIBRARY_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}ed25519${CMAKE_STATIC_LIBRARY_SUFFIX})
         set (VIRGIL_INCLUDE_DIR "${INSTALL_DIR}/include")
-        set (VIRGIL_LIBRARIES "${INSTALL_DIR}/lib/${VIRGIL_LIBRARY_NAME};${INSTALL_DIR}/lib/${MBEDTLS_LIBRARY_NAME}")
+
+        set (VIRGIL_CRYPTO_LIB_DIR "${INSTALL_DIR}/lib/${VIRGIL_LIBRARY_NAME}")
+        set (MBEDTLS_LIB_DIR "${INSTALL_DIR}/lib/${MBEDTLS_LIBRARY_NAME}")
+        set (ED25519_LIB_DIR "${INSTALL_DIR}/lib/${ED25519_LIBRARY_NAME}")
+
+        set (VIRGIL_LIBRARIES
+                "${VIRGIL_CRYPTO_LIB_DIR};${MBEDTLS_LIB_DIR};${ED25519_LIB_DIR};")
 
     elseif (${module} STREQUAL "virgil-sdk")
         set (VIRGIL virgil_sdk)
@@ -130,7 +137,7 @@ function (virgil_add_dependency module target includes libraries)
         if (NOT TARGET ${VIRGIL}_project)
             ExternalProject_Add (${VIRGIL}_project
                 GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil-sdk-cpp.git"
-                GIT_TAG "v3.0.4"
+                GIT_TAG "v3.0.5"
                 PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil-sdk"
                 CMAKE_ARGS ${CMAKE_ARGS}
             )

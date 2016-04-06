@@ -159,8 +159,8 @@ file (GLOB_RECURSE SRC_LIST "${CMAKE_CURRENT_BINARY_DIR}/src/*.cxx")
 
 add_executable (virgil_cli ${SRC_LIST})
 target_link_libraries (virgil_cli
-    ${VIRGIL_SDK_LIBRARIES}
     ${VIRGIL_CRYPTO_LIBRARIES}
+    ${VIRGIL_SDK_LIBRARIES}
     ${CURL_LIBRARIES}
 )
 
