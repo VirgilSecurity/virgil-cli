@@ -105,7 +105,7 @@ function (virgil_add_dependency module target includes libraries)
         set (ED25519_LIB_DIR "${INSTALL_DIR}/lib/${ED25519_LIBRARY_NAME}")
 
         set (VIRGIL_LIBRARIES
-                "${VIRGIL_CRYPTO_LIB_DIR};${MBEDTLS_LIB_DIR};${ED25519_LIB_DIR};")
+                "${VIRGIL_CRYPTO_LIB_DIR};${MBEDTLS_LIB_DIR};${ED25519_LIB_DIR}")
 
     elseif (${module} STREQUAL "virgil-sdk")
         set (VIRGIL virgil_sdk)
