@@ -3,6 +3,7 @@ branches:
   only:
     - master
     - develop
+    - v2.0.0
     - /^release-.*$/
 compiler:
   - g++
@@ -17,7 +18,6 @@ addons:
       - gcc-4.8
       - g++-4.8
       - libcurl4-openssl-dev
-      - python-yaml
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 env:
