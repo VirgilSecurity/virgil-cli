@@ -41,7 +41,9 @@
 #include <stdexcept>
 #include <vector>
 
-#ifndef WIN32
+#if defined(WIN32)
+#include <Windows.h>
+#else
 #include <termios.h>
 #include <unistd.h>
 #endif
@@ -55,6 +57,7 @@
 #include <virgil/sdk/io/Marshaller.h>
 #include <virgil/sdk/models/PrivateKeyModel.h>
 
+#include <cli/ini.hpp>
 #include <cli/pair.h>
 #include <cli/config.h>
 #include <cli/version.h>
@@ -93,31 +96,24 @@ static void setStdinEcho(bool enable) {
 }
 
 vsdk::ServiceUri virgil::cli::readConfigFile() {
-    std::string pathConfigFile = INSTALL_CONFIG_FILE_DIR_NAME + "/.virgil-cli-config";
+    std::string pathConfigFile = INSTALL_CONFIG_FILE_DIR_NAME + "virgil-cli-config.ini";
     std::ifstream inFile(pathConfigFile, std::ios::in | std::ios::binary);
     if (!inFile) {
+        std::cout << "Can't read config file:\n" + pathConfigFile << std::endl;
         return vsdk::ServiceUri();
-    } else {
-        std::string line;
-        std::string identityServiceUri;
-        std::string keyServiceUri;
-        std::string privateKeyServiceUri;
-        while (std::getline(inFile, line)) {
-            auto servicePair = virgil::cli::parsePair(line);
-            if (servicePair.first == "identity-service") {
-                identityServiceUri = servicePair.second;
-            } else if (servicePair.first == "public-key-service") {
-                keyServiceUri = servicePair.second;
-            } else if (servicePair.first == "private-key-service") {
-                privateKeyServiceUri = servicePair.second;
-            } else {
-                throw std::invalid_argument("can not parse config file " + pathConfigFile + ".\n" +
-                    "key:value, where key[identity-service|public-key-service|private-key-service].\n"
-                    "key != " + servicePair.first);
-            }
-        }
+    }
 
-        return vsdk::ServiceUri(identityServiceUri, keyServiceUri, privateKeyServiceUri);
+    try {
+        std::string ini((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+        std::stringstream ss(ini);
+        INI::Parser iniParser(ss);
+        return vsdk::ServiceUri(iniParser.top()("URI")["identity-service"],
+                                iniParser.top()("URI")["public-key-service"],
+                                iniParser.top()("URI")["private-key-service"]);
+    } catch (std::runtime_error& exception) {
+        std::string error = "Can't parse config file " + pathConfigFile + ".\n";
+        error += exception.what();
+        throw std::runtime_error(error);
     }
 }
 
@@ -153,7 +149,7 @@ bool virgil::cli::isPublicKeyModel(const std::string& publicKey) {
         json tmp = json::parse(publicKey);
         return tmp.is_object() && tmp.find("id") != tmp.end() && tmp.find("public_key") != tmp.end() &&
                tmp.find("created_at") != tmp.end();
-    } catch (std::exception& exception) {
+    } catch (std::exception&) {
         return false;
     }
 }
@@ -165,7 +161,7 @@ bool virgil::cli::isPrivateKeyModel(const std::string& privateKey) {
     try {
         json tmp = json::parse(privateKey);
         return tmp.is_object() && tmp.find("private_key") != tmp.end() && tmp.find("virgil_card_id") != tmp.end();
-    } catch (std::exception& exception) {
+    } catch (std::exception&) {
         return false;
     }
 }
