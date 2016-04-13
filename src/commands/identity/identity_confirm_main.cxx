@@ -91,7 +91,7 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<int> timeToliveArg("t", "time-to-live", "Time to live, by default = 3600.", false, 3600, "int");
 
-        TCLAP::ValueArg<int> countToLiveArg("c", "count-to-live", "Count to live, by default = 10.", false, 2, "int");
+        TCLAP::ValueArg<int> countToLiveArg("c", "count-to-live", "Count to live, by default = 2.", false, 2, "int");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 
