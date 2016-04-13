@@ -81,10 +81,10 @@ EXAMPLES
 
 3.  Alice encrypts the data with a password:
 
-        virgil encrypt -i plain.txt -o plain.txt.venc pass:strong_password
+        virgil encrypt -i plain.txt -o plain.txt.venc password:strong_password
 
 4.  Alice encrypts the data with a combination of Public Key +
-    recipient-id. You will be asked to enter recipient-id:
+    recipient-id:
 
         virgil encrypt -i plain.txt -o plain.txt.venc pubkey:public.key:ForBob
 

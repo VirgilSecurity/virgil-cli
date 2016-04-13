@@ -43,7 +43,7 @@ OPTIONS
      Time to live, by default = 3600.
 
     -c *int*,  --count-to-live *int*
-     Count to live, by default = 10.
+     Count to live, by default = 2.
 
     -V,  --VERBOSE
      Show detailed information
@@ -81,7 +81,7 @@ EXAMPLES
 2.  Identity confirmation with requests number limit = 10 and time
     validity limit = 60:
 
-        virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt -l 60 -c 1o
+        virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt -l 60 -c 10
 
 3.  Identity confirmation with requests number limit = 2 and time
     validity limit = 3600:

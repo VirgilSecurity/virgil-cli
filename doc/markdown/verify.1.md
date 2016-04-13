@@ -62,7 +62,7 @@ OPTIONS
 EXAMPLES
 ========
 
-        virgil verify -i plain.txt -s plain.txt.sign -r email:bob@gmail.com
+        virgil verify -i plain.txt -s plain.txt.sign -r vcard:bob/bob.vcard
 
 
         virgil verify -i plain.txt -s plain.txt.sign -r pubkey:bob/public.key
