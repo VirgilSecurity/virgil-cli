@@ -47,10 +47,11 @@ IDENTITY SERVICE COMMANDS
 
 **identity-confirm**  
 Confirmation of the Identity. Returns validation\_token which is
-required for operations with Cards and confirmed identity:  
-1. [`card-create(1)`](../markdown/card-create.1.md);  
-1. [`card-revoke(1)`](../markdown/card-revoke.1.md);  
-1. [`public-key-revoke(1)`](../markdown/public-key-revoke.1.md).
+required for operations with Cards and confirmed identity:
+
+1.  [`card-create(1)`](../markdown/card-create.1.md);
+2.  [`card-revoke(1)`](../markdown/card-revoke.1.md);
+3.  [`public-key-revoke(1)`](../markdown/public-key-revoke.1.md).
 
 **identity-validate**  
 Validates the passed token. Checks whether validation\_token is valid.

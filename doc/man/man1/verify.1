@@ -23,13 +23,16 @@ Public Key.
 \-o\ *file*,\ \ \-\-out\ *file*
 \ Verification\ result:\ success\ |\ failure.\ If\ omitted,\ stdout\ is\ used.
 
+\-\-return\-status
+\ Only\ return\ status,\ ignore\ \[aq]\-o,\ \-\-out\[aq]
+
 \-s\ *file*,\ \ \-\-sign\ *file*
 \ (required)\ \ Digest\ sign.
 
 \-r\ *arg*,\ \ \-\-recipient\ *arg*
 \ (required)\ \ Recipient\ defined\ in\ format:
 
-\ [id|vcard|email|pubkey]:<value*
+\ [id|vcard|pubkey]:<value*
 
 \ where:
 
@@ -39,8 +42,6 @@ Public Key.
 \ \ \ \ *\ if\ vcard,\ then\ *value*\ \-\ recipient\[aq]s\ Virgil\ Card/Cards\ file
 
 \ \ \ \ \ \ stored\ locally;
-
-\ \ \ \ *\ if\ email,\ then\ *value*\ \-\ recipient\[aq]s\ email;
 
 \ \ \ \ *\ if\ pubkey,\ then\ *value*\ \-\ recipient\[aq]s\ Public\ Key.
 

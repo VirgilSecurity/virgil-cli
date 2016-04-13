@@ -24,13 +24,16 @@ OPTIONS
     -o *file*,  --out *file*
      Verification result: success | failure. If omitted, stdout is used.
 
+    --return-status
+     Only return status, ignore '-o, --out'
+
     -s *file*,  --sign *file*
      (required)  Digest sign.
 
     -r *arg*,  --recipient *arg*
      (required)  Recipient defined in format:
 
-     [id|vcard|email|pubkey]:<value*
+     [id|vcard|pubkey]:<value*
 
      where:
 
@@ -40,8 +43,6 @@ OPTIONS
         * if vcard, then *value* - recipient's Virgil Card/Cards file
 
           stored locally;
-
-        * if email, then *value* - recipient's email;
 
         * if pubkey, then *value* - recipient's Public Key.
 

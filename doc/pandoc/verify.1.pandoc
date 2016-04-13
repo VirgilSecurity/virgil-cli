@@ -24,13 +24,16 @@ Verify data and signature with given user's identifier or with its Public Key.
     -o *file*,  --out *file*
      Verification result: success | failure. If omitted, stdout is used.
 
+    --return-status
+     Only return status, ignore '-o, --out'
+
     -s *file*,  --sign *file*
      (required)  Digest sign.
 
     -r *arg*,  --recipient *arg*
      (required)  Recipient defined in format:
 
-     [id|vcard|email|pubkey]:<value*
+     [id|vcard|pubkey]:<value*
 
      where:
 
@@ -40,8 +43,6 @@ Verify data and signature with given user's identifier or with its Public Key.
         * if vcard, then *value* - recipient's Virgil Card/Cards file
 
           stored locally;
-
-        * if email, then *value* - recipient's email;
 
         * if pubkey, then *value* - recipient's Public Key.
 
