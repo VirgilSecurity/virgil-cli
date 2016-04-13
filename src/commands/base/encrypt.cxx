@@ -97,7 +97,7 @@ int MAIN(int argc, char** argv) {
                            "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com\n");
 
         examples.push_back("Alice encrypts the data with a password:\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc pass:strong_password\n");
+                           "virgil encrypt -i plain.txt -o plain.txt.enc password:strong_password\n");
 
         examples.push_back("Alice encrypts the data with a combination of Public Key + recipient-id."
                            "You will be asked to enter recipient-id:\n"
