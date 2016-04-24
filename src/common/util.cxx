@@ -51,7 +51,7 @@
 #include <virgil/crypto/VirgilByteArray.h>
 #include <virgil/crypto/VirgilKeyPair.h>
 
-#include <json.hpp>
+#include <nlohman/json.hpp>
 
 #include <virgil/sdk/ServicesHub.h>
 #include <virgil/sdk/io/Marshaller.h>

@@ -53,10 +53,8 @@ project (virgil_cli)
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Define enviroment parameters
-include (check_pointer_size)
-check_pointer_size (POINTER_SIZE)
-if (POINTER_SIZE)
-    message (STATUS "Compiler pointer size: " ${POINTER_SIZE} " bytes")
+if (CMAKE_SIZEOF_VOID_P)
+    message (STATUS "Compiler pointer size: " ${CMAKE_SIZEOF_VOID_P} " bytes")
 else ()
     message (STATUS "Compiler pointer size: UNDEFINED")
 endif ()
@@ -67,7 +65,7 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Inspect system
 set (SYSTEM_ARCH x86)
-if (POINTER_SIZE EQUAL 8)
+if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     set (SYSTEM_ARCH x64)
 endif ()
 string (TOLOWER "${CMAKE_SYSTEM_NAME}" SYSTEM_NAME)
@@ -120,34 +118,22 @@ if (NOT VIRGIL_ACCESS_TOKEN)
     message (FATAL_ERROR "VIRGIL_ACCESS_TOKEN configuration is not defined.")
 endif ()
 
-# Find dependencies
+# Add system external dependencies
 find_package (CURL REQUIRED)
-include_directories (${CURL_INCLUDE_DIRS})
 
-include (virgil)
-virgil_add_dependency ("crypto"
-    VIRGIL_CRYPTO_DEPENDENCIES
-    VIRGIL_CRYPTO_INCLUDE_DIRS
-    VIRGIL_CRYPTO_LIBRARIES
+# Add in-house external dependencies
+include (virgil_depends)
+
+virgil_depends (
+    PACKAGE_NAME "virgil_sdk"
+    CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/virgil_sdk"
 )
-include_directories (${VIRGIL_CRYPTO_INCLUDE_DIRS})
 
-virgil_add_dependency ("virgil-sdk"
-    VIRGIL_SDK_DEPENDENCIES
-    VIRGIL_SDK_INCLUDE_DIRS
-    VIRGIL_SDK_LIBRARIES
-)
-include_directories (${VIRGIL_SDK_INCLUDE_DIRS})
-
-include (json)
-include_directories (${JSON_INCLUDE_DIRS})
-
-# Use tclap lib
-include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/ext")
-message (STATUS "TCLAP library: ON")
-
-#
-include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/include")
+virgil_find_package (virgil_sdk 3.0)
+virgil_find_package (virgil_crypto 1.4.0 EXACT)
+virgil_find_package (nlohman_json 1.1.0 EXACT)
+virgil_find_package (restless 0.3.0 EXACT)
+virgil_find_package (mbedtls)
 
 # Grab source directory tree
 file (GLOB_RECURSE SRC_LIST "src/*.cxx")
@@ -162,17 +148,12 @@ endforeach ()
 file (GLOB_RECURSE SRC_LIST "${CMAKE_CURRENT_BINARY_DIR}/src/*.cxx")
 
 add_executable (virgil_cli ${SRC_LIST})
-target_link_libraries (virgil_cli
-    ${VIRGIL_SDK_LIBRARIES}
-    ${VIRGIL_CRYPTO_LIBRARIES}
-    ${CURL_LIBRARIES}
+target_include_directories (virgil_cli PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/ext"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CURL_INCLUDE_DIRS}"
 )
-
-add_dependencies (virgil_cli
-    json
-    ${VIRGIL_CRYPTO_DEPENDENCIES}
-    ${VIRGIL_SDK_DEPENDENCIES}
-)
+target_link_libraries (virgil_cli virgil::security::virgil_sdk ${CURL_LIBRARIES})
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
 # Install virgil_cli

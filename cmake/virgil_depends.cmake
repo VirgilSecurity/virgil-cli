@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015 Virgil Security Inc.
+# Copyright (C) 2016 Virgil Security Inc.
 #
 # Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #
@@ -35,30 +35,19 @@
 #
 
 #
-# @brief Defines pointer size for current compiler.
-# @return pointer size in bytes thru @param 'pointer_size'
+# See 'virgil_depends_local.cmake' for documentation
+# Note:
+#     VIRGIL_DEPENDS_CMAKE_FILE cache varibale can be used to define alternative 'virgil_depends.cmake'
+#     module implementation, i.e. from an upstream project.
 #
-function (check_pointer_size pointer_size)
-    if (CMAKE_CROSSCOMPILING)
-        set (${pointer_size} "" PARENT_SCOPE)
+
+if (EXISTS "${VIRGIL_DEPENDS_CMAKE_FILE}")
+    include ("${VIRGIL_DEPENDS_CMAKE_FILE}")
+else ()
+    find_file (VIRGIL_DEPENDS_CMAKE_FILE "virgil_depends_local.cmake" HINTS ${CMAKE_MODULE_PATH})
+    if (VIRGIL_DEPENDS_CMAKE_FILE)
+        include ("${VIRGIL_DEPENDS_CMAKE_FILE}")
     else ()
-        file (WRITE
-            ${CMAKE_BINARY_DIR}/CMakeTmp/check_pointer_size.cxx
-            "int main() { void *ptr = 0; return sizeof(ptr); }"
-        )
-
-        try_run (
-            RUN_RESULT
-            COMPILE_RESULT
-            ${CMAKE_BINARY_DIR}
-            ${CMAKE_BINARY_DIR}/CMakeTmp/check_pointer_size.cxx
-            OUTPUT_VARIABLE OUTPUT
-        )
-
-        if (COMPILE_RESULT AND RUN_RESULT GREATER 0)
-            set (${pointer_size} ${RUN_RESULT} PARENT_SCOPE)
-        else ()
-            set (${pointer_size} "" PARENT_SCOPE)
-        endif ()
+        include (virgil_depends_local)
     endif ()
-endfunction (check_pointer_size)
+endif ()

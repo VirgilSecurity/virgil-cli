@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015 Virgil Security Inc.
+# Copyright (C) 2016 Virgil Security Inc.
 #
 # Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #
@@ -34,33 +34,25 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Dependecy to https://github.com/nlohmann/json
+cmake_minimum_required (VERSION @CMAKE_VERSION@ FATAL_ERROR)
 
-# Configure external project
-if (NOT TARGET project_json)
-    ExternalProject_Add (project_json
-        GIT_REPOSITORY "https://github.com/nlohmann/json.git"
-        GIT_TAG "v1.1.0"
-        PREFIX "${CMAKE_BINARY_DIR}/ext/json"
-        SOURCE_DIR "${CMAKE_BINARY_DIR}/ext/json/src/project_json"
-        CMAKE_COMMAND ""
-        BUILD_COMMAND ""
-        INSTALL_COMMAND ""
-        TEST_COMMAND ""
-    )
-endif ()
+project ("@VIRGIL_DEPENDS_PACKAGE_NAME@-depends")
 
-if (NOT TARGET json)
-    # Configure output
-    set (JSON_INCLUDE_DIRS "${CMAKE_BINARY_DIR}/ext/json/src/project_json/src")
+include (ExternalProject)
 
-    # Workaround of http://public.kitware.com/Bug/view.php?id=14495
-    file (MAKE_DIRECTORY ${JSON_INCLUDE_DIRS})
+# Configure additional CMake parameters
+file (WRITE "@VIRGIL_DEPENDS_ARGS_FILE@"
+    "set (INSTALL_EXT_LIBS @INSTALL_EXT_LIBS@ CACHE INTERNAL \"\")\n"
+    "set (INSTALL_EXT_HEADERS @INSTALL_EXT_HEADERS@ CACHE INTERNAL \"\")\n"
+)
 
-    # Make target
-    add_library (json STATIC IMPORTED GLOBAL)
-    set_target_properties (json PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES ${JSON_INCLUDE_DIRS}
-    )
-    add_dependencies (json project_json)
-endif ()
+ExternalProject_Add (${PROJECT_NAME}
+    DOWNLOAD_DIR "@VIRGIL_DEPENDS_CACHE_DIR@/@VIRGIL_DEPENDS_PACKAGE_NAME@"
+    URL "https://github.com/VirgilSecurity/virgil-sdk-cpp/archive/7fbf4a70fe18d25c8d2e306d0fe21e8bd1bd142d.tar.gz"
+    URL_HASH SHA1=77ca46fb593f033b870c7edc882633241327a09b
+    PREFIX "@VIRGIL_DEPENDS_BUILD_DIR@"
+    CMAKE_ARGS "@VIRGIL_DEPENDS_CMAKE_ARGS@"
+)
+
+add_custom_target ("${PROJECT_NAME}-build" ALL COMMENT "Build package ${PROJECT_NAME}")
+add_dependencies ("${PROJECT_NAME}-build" ${PROJECT_NAME})
