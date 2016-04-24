@@ -16,7 +16,9 @@ matrix:
           packages:
             - g++-4.9
             - libcurl4-openssl-dev
-      env: COMPILER=g++-4.9
+      env:
+        - CC=gcc-4.9
+        - CXX=g++-4.9
     - compiler: gcc
       addons:
         apt:
@@ -25,7 +27,9 @@ matrix:
           packages:
             - g++-5
             - libcurl4-openssl-dev
-      env: COMPILER=g++-5
+      env:
+        - CC=gcc-5
+        - CXX=g++-5
     - compiler: clang
       addons:
         apt:
@@ -35,7 +39,9 @@ matrix:
           packages:
             - clang-3.6
             - libcurl4-openssl-dev
-      env: COMPILER=clang++-3.6
+      env:
+        - CC=clang-3.6
+        - CXX=clang++-3.6
     - compiler: clang
       addons:
         apt:
@@ -45,8 +51,9 @@ matrix:
           packages:
             - clang-3.7
             - libcurl4-openssl-dev
-      env: COMPILER=clang++-3.7
-
+      env:
+        - CC=clang-3.7
+        - CXX=clang++-3.7
 env:
   global:
     - BUILD_DIR_NAME=build
