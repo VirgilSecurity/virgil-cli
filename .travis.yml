@@ -17,8 +17,8 @@ matrix:
             - g++-4.9
             - libcurl4-openssl-dev
       env:
-        - CC=gcc-4.9
-        - CXX=g++-4.9
+        - CUSTOM_CC=gcc-4.9
+        - CUSTOM_CXX=g++-4.9
     - compiler: gcc
       addons:
         apt:
@@ -28,8 +28,8 @@ matrix:
             - g++-5
             - libcurl4-openssl-dev
       env:
-        - CC=gcc-5
-        - CXX=g++-5
+        - CUSTOM_CC=gcc-5
+        - CUSTOM_CXX=g++-5
     - compiler: clang
       addons:
         apt:
@@ -40,8 +40,8 @@ matrix:
             - clang-3.6
             - libcurl4-openssl-dev
       env:
-        - CC=clang-3.6
-        - CXX=clang++-3.6
+        - CUSTOM_CC=clang-3.6
+        - CUSTOM_CXX=clang++-3.6
     - compiler: clang
       addons:
         apt:
@@ -52,13 +52,15 @@ matrix:
             - clang-3.7
             - libcurl4-openssl-dev
       env:
-        - CC=clang-3.7
-        - CXX=clang++-3.7
+        - CUSTOM_CC=clang-3.7
+        - CUSTOM_CXX=clang++-3.7
 env:
   global:
     - BUILD_DIR_NAME=build
 before_install:
   - bash ./ci/install-cmake.sh
+install:
+- export CC="$CUSTOM_CC" CXX="$CUSTOM_CXX"
 before_script:
   - bash ./ci/configure.sh
 script:
