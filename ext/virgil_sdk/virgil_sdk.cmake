@@ -42,8 +42,12 @@ include (ExternalProject)
 
 # Configure additional CMake parameters
 file (WRITE "@VIRGIL_DEPENDS_ARGS_FILE@"
-    "set (INSTALL_EXT_LIBS @INSTALL_EXT_LIBS@ CACHE INTERNAL \"\")\n"
-    "set (INSTALL_EXT_HEADERS @INSTALL_EXT_HEADERS@ CACHE INTERNAL \"\")\n"
+    "set (ENABLE_TESTING OFF CACHE INTERNAL \"\")\n"
+    "set (ENABLE_EXAMPLES OFF CACHE INTERNAL \"\")\n"
+    "set (INSTALL_EXAMPLES OFF CACHE INTERNAL \"\")\n"
+    "set (INSTALL_EXT_LIBS ON CACHE INTERNAL \"\")\n"
+    "set (INSTALL_EXT_HEADERS ON CACHE INTERNAL \"\")\n"
+    "set (UCLIBC @UCLIBC@ CACHE INTERNAL \"\")\n"
 )
 
 ExternalProject_Add (${PROJECT_NAME}
