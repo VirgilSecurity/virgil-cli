@@ -36,8 +36,12 @@
 
 # Configurable variables:
 #     - INSTALL_BIN_DIR_NAME  - name of the directory where binaries will be installed.
+#     - INSTALL_LIB_DIR_NAME  - name of the directory where libraries will be installed.
 #     - INSTALL_MAN_DIR_NAME  - name of the directory where man pages will be installed.
 #     - INSTALL_DOC_DIR_NAME  - name of the directory where documentation will be installed.
+#
+#     - INSTALL_DOC_DIR_NAME  - name of the directory where documentation will be installed.
+#
 #
 # Define variables:
 #     - CLI_VERSION       - CLI full version.
@@ -48,6 +52,25 @@
 cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 
 project (virgil_cli)
+
+# Configure version
+set (CLI_VERSION_MAJOR 2)
+set (CLI_VERSION_MINOR 0)
+set (CLI_VERSION_PATCH 0)
+set (CLI_VERSION ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH})
+message (STATUS "CLI version: " ${CLI_VERSION})
+
+# Configurable variables
+## Installation directories
+set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
+set (INSTALL_LIB_DIR_NAME lib CACHE STRING "Installation directory name for libraries")
+set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
+
+## Crosscompiling
+set (UCLIBC OFF CACHE BOOL "Enable pathches if CLI is build with uClibc++")
+
+## Link with shared library if defined
+set (BUILD_SHARED_LIBS OFF CACHE BOOL "Force to link with shared libraries")
 
 # Configure path to custom modules
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -85,24 +108,11 @@ if (MSVC)
     set (CURL_LIBRARY_DLL "${EXT_PREBUILD_MSVC_DIR}/${SYSTEM_ARCH}/libcurl/lib/libcurl.dll")
 endif (MSVC)
 
-# Configure version
-set (CLI_VERSION_MAJOR 2)
-set (CLI_VERSION_MINOR 0)
-set (CLI_VERSION_PATCH 0)
-set (CLI_VERSION ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH})
-message (STATUS "CLI version: " ${CLI_VERSION})
-
-# Configure path variables
-set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
-set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
-
 if (UNIX)
     set (CONFIG_FILE_DIR_NAME $ENV{HOME}/.virgil_cli/)
 else()
     set (CONFIG_FILE_DIR_NAME $ENV{APPDATA}/virgil-cli)
 endif ()
-
-message (STATUS ${CONFIG_FILE_DIR_NAME})
 
 set (INSTALL_CONFIG_FILE_DIR_NAME ${CONFIG_FILE_DIR_NAME} CACHE STRING "Installation directory name for config file")
 
@@ -156,8 +166,38 @@ target_include_directories (virgil_cli PRIVATE
 target_link_libraries (virgil_cli virgil::security::virgil_sdk ${CURL_LIBRARIES})
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
+# Configure installation for shared libraries, see https://cmake.org/Wiki/CMake_RPATH_handling
+
+## Use, i.e. don't skip the full RPATH for the build tree
+set (CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+## When building, don't use the install RPATH already
+##     (but later on when installing)
+set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR_NAME}")
+
+## Add the automatically determined parts of the RPATH
+##     which point to directories outside the build tree to the install RPATH
+set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+## The RPATH to be used when installing, but only if it's not a system directory
+list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR_NAME}" isSystemDir)
+if ("${isSystemDir}" STREQUAL "-1")
+   set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR_NAME}")
+endif ("${isSystemDir}" STREQUAL "-1")
+
+# Install shared libraries
+install (DIRECTORY "${VIRGIL_DEPENDS_PREFIX}/lib/" DESTINATION "${INSTALL_LIB_DIR_NAME}"
+    PATTERN "cmake" EXCLUDE
+    PATTERN "pkgconfig" EXCLUDE
+)
+
 # Install virgil_cli
-install (TARGETS virgil_cli DESTINATION ${INSTALL_BIN_DIR_NAME})
+install (TARGETS virgil_cli
+    RUNTIME DESTINATION ${INSTALL_BIN_DIR_NAME}
+    LIBRARY DESTINATION ${INSTALL_LIB_DIR_NAME}
+)
 
 if (MSVC)
     install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
