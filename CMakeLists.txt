@@ -128,6 +128,19 @@ if (NOT VIRGIL_ACCESS_TOKEN)
     message (FATAL_ERROR "VIRGIL_ACCESS_TOKEN configuration is not defined.")
 endif ()
 
+if (UNIX)
+    if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        # Use relative to executable RPATH for OS X
+        set (CMAKE_INSTALL_NAME_DIR "@executable_path/../lib")
+    else ()
+        # Use full RPATH for all UNIX systems except OS X, see https://cmake.org/Wiki/CMake_RPATH_handling
+        set (CMAKE_SKIP_BUILD_RPATH  FALSE)
+        set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+        set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR_NAME}")
+        set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    endif ()
+endif ()
+
 # Add system external dependencies
 find_package (CURL REQUIRED)
 
@@ -165,27 +178,6 @@ target_include_directories (virgil_cli PRIVATE
 )
 target_link_libraries (virgil_cli virgil::security::virgil_sdk ${CURL_LIBRARIES})
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
-
-# Configure installation for shared libraries, see https://cmake.org/Wiki/CMake_RPATH_handling
-
-## Use, i.e. don't skip the full RPATH for the build tree
-set (CMAKE_SKIP_BUILD_RPATH  FALSE)
-
-## When building, don't use the install RPATH already
-##     (but later on when installing)
-set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-
-set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR_NAME}")
-
-## Add the automatically determined parts of the RPATH
-##     which point to directories outside the build tree to the install RPATH
-set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-## The RPATH to be used when installing, but only if it's not a system directory
-list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR_NAME}" isSystemDir)
-if ("${isSystemDir}" STREQUAL "-1")
-   set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR_NAME}")
-endif ("${isSystemDir}" STREQUAL "-1")
 
 # Install shared libraries
 install (DIRECTORY "${VIRGIL_DEPENDS_PREFIX}/lib/" DESTINATION "${INSTALL_LIB_DIR_NAME}"
