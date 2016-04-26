@@ -150,7 +150,9 @@ int MAIN(int argc, char** argv) {
         } else {
             // type [id|vcard]
             if (type == "id") {
-                vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN);
+                vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+                vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+
                 if (verboseArg.isSet()) {
                     std::cout << "Download a Virgil Card by id:" << value << std::endl;
                 }

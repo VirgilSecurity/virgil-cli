@@ -90,7 +90,9 @@ int MAIN(int argc, char** argv) {
         std::cout << identityArg.getValue() << std::endl;
         std::cout << userEmail << std::endl;
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
+        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+
         std::string actionId = servicesHub.identity().verify(identity);
         vcli::writeBytes(outArg.getValue(), actionId);
 

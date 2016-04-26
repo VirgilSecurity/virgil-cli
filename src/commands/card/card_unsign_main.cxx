@@ -103,7 +103,9 @@ int MAIN(int argc, char** argv) {
         }
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
+        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+
         servicesHub.card().unsign(signedCard.getId(), signerCard.getId(), credentials);
 
         if (verboseArg.isSet()) {
