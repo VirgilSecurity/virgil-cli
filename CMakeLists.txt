@@ -98,17 +98,16 @@ message (STATUS "CLI version: " ${CLI_VERSION})
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
 
-if (UNIX)
-    set (CONFIG_FILE_DIR_NAME $ENV{HOME}/.virgil_cli/)
-else()
-    set (CONFIG_FILE_DIR_NAME $ENV{APPDATA}/virgil-cli)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    set (CONFIG_FILE_DIR_NAME "$ENV{HOME}/.config/virgil-cli")
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set (CONFIG_FILE_DIR_NAME "$ENV{HOME}/Library/Application Support/virgil-cli")
+else ()
+    # win32
 endif ()
 
-message (STATUS ${CONFIG_FILE_DIR_NAME})
-
 set (INSTALL_CONFIG_FILE_DIR_NAME ${CONFIG_FILE_DIR_NAME} CACHE STRING "Installation directory name for config file")
-
-message (STATUS ${INSTALL_CONFIG_FILE_DIR_NAME})
+message (STATUS "Installation directory name for config file: " ${INSTALL_CONFIG_FILE_DIR_NAME})
 
 set(TOKEN "eyJpZCI6ImM0OWVmOWQ4LWJiNTQtNGY2Zi04NzM0LTFjNDVjNWIxODBlMiIsImFwcGxpY2F0aW9uX2NhcmRfaWQiOiJiMmJlYzNjMS05ZjU0LTQyMDctYTY0Ny00YmE3NDI4MDY2NTMiLCJ0dGwiOi0xLCJjdGwiOi0xLCJwcm9sb25nIjowfQ==.MIGZMA0GCWCGSAFlAwQCAgUABIGHMIGEAkAC4w0Z6XFoGE+4VJk1jJlE3Vtaxwd7qSoEi16PgVaPQ1N/ZQd0hT/fkdueH2X4SYE+dd0Q3AIpMaJYYS56kptqAkAAm/noIrmVmcydoKD5xytXvRKRME5AhL/tifHbpyHnilPP0QhnoLVbUR6lo5uqPt6xzHnEok9omdREhq5wQ0Zx")
 
@@ -175,20 +174,25 @@ add_dependencies (virgil_cli
 )
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
-# Install virgil_cli
-install (TARGETS virgil_cli DESTINATION ${INSTALL_BIN_DIR_NAME})
-
-if (MSVC)
-    install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
-    install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
-endif (MSVC)
-
-if (UNIX)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     install (
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli-config.ini
         DESTINATION ${INSTALL_CONFIG_FILE_DIR_NAME}
     )
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    install (
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli-config.ini
+        DESTINATION ${INSTALL_CONFIG_FILE_DIR_NAME}
+    )
+    install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
+else ()
+    # win32
+    if (MSVC)
+        install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
+        install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
+        install (PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli-config.ini" DESTINATION "install")
+    endif (MSVC)
 endif ()
 
 # Pack
