@@ -180,10 +180,12 @@ target_link_libraries (virgil_cli virgil::security::virgil_sdk ${CURL_LIBRARIES}
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
 # Install shared libraries
-install (DIRECTORY "${VIRGIL_DEPENDS_PREFIX}/lib/" DESTINATION "${INSTALL_LIB_DIR_NAME}"
-    PATTERN "cmake" EXCLUDE
-    PATTERN "pkgconfig" EXCLUDE
-)
+if (BUILD_SHARED_LIBS)
+    install (DIRECTORY "${VIRGIL_DEPENDS_PREFIX}/lib/" DESTINATION "${INSTALL_LIB_DIR_NAME}"
+        PATTERN "cmake" EXCLUDE
+        PATTERN "pkgconfig" EXCLUDE
+    )
+endif ()
 
 # Install virgil_cli
 install (TARGETS virgil_cli
