@@ -98,19 +98,18 @@ message (STATUS "CLI version: " ${CLI_VERSION})
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
 
-if (UNIX)
-    set (CONFIG_FILE_DIR_NAME $ENV{HOME}/.virgil_cli/)
-else()
-    set (CONFIG_FILE_DIR_NAME $ENV{APPDATA}/virgil-cli)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    set (CONFIG_FILE_DIR_NAME "$ENV{HOME}/.config/virgil-cli")
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set (CONFIG_FILE_DIR_NAME "$ENV{HOME}/Library/Application Support/virgil-cli")
+else ()
+    # win32
 endif ()
 
-message (STATUS ${CONFIG_FILE_DIR_NAME})
-
 set (INSTALL_CONFIG_FILE_DIR_NAME ${CONFIG_FILE_DIR_NAME} CACHE STRING "Installation directory name for config file")
+message (STATUS "Installation directory name for config file: " ${INSTALL_CONFIG_FILE_DIR_NAME})
 
-message (STATUS ${INSTALL_CONFIG_FILE_DIR_NAME})
-
-set(TOKEN "eyJpZCI6IjFkNzgzNTA1LTk1NGMtNDJhZC1hZThjLWQyOGFiYmNhMGM1NyIsImFwcGxpY2F0aW9uX2NhcmRfaWQiOiIwNGYyY2Y2NS1iZDY2LTQ3N2EtOGFiZi1hMDAyYWY4YjdmZWYiLCJ0dGwiOi0xLCJjdGwiOi0xLCJwcm9sb25nIjowfQ==.MIGZMA0GCWCGSAFlAwQCAgUABIGHMIGEAkAV1PHR3JaDsZBCl+6r/N5R5dATW9tcS4c44SwNeTQkHfEAlNboLpBBAwUtGhQbadRd4N4gxgm31sajEOJIYiGIAkADCz+MncOO74UVEEot5NEaCtvWT7fIW9WaF6JdH47Z7kTp0gAnq67cPbS0NDUyovAqILjmOmg1zAL8A4+ii+zd")
+set(TOKEN "eyJpZCI6ImM0OWVmOWQ4LWJiNTQtNGY2Zi04NzM0LTFjNDVjNWIxODBlMiIsImFwcGxpY2F0aW9uX2NhcmRfaWQiOiJiMmJlYzNjMS05ZjU0LTQyMDctYTY0Ny00YmE3NDI4MDY2NTMiLCJ0dGwiOi0xLCJjdGwiOi0xLCJwcm9sb25nIjowfQ==.MIGZMA0GCWCGSAFlAwQCAgUABIGHMIGEAkAC4w0Z6XFoGE+4VJk1jJlE3Vtaxwd7qSoEi16PgVaPQ1N/ZQd0hT/fkdueH2X4SYE+dd0Q3AIpMaJYYS56kptqAkAAm/noIrmVmcydoKD5xytXvRKRME5AhL/tifHbpyHnilPP0QhnoLVbUR6lo5uqPt6xzHnEok9omdREhq5wQ0Zx")
 
 # Configure application token
 set (VIRGIL_ACCESS_TOKEN ${TOKEN} CACHE STRING
@@ -175,21 +174,27 @@ add_dependencies (virgil_cli
 )
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
-# Install virgil_cli
-install (TARGETS virgil_cli DESTINATION ${INSTALL_BIN_DIR_NAME})
-
-if (MSVC)
-    install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
-    install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
-endif (MSVC)
-
-if (UNIX)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     install (
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli-config.ini
         DESTINATION ${INSTALL_CONFIG_FILE_DIR_NAME}
     )
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    install (
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli-config.ini
+        DESTINATION ${INSTALL_CONFIG_FILE_DIR_NAME}
+    )
+    install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
+else ()
+    # win32
+    if (MSVC)
+        install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
+        install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
+        install (PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli-config.ini" DESTINATION "install")
+    endif (MSVC)
 endif ()
+
 
 # Pack
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY
@@ -197,61 +202,53 @@ set (CPACK_PACKAGE_DESCRIPTION_SUMMARY
     "It can be used to encrypt, decrypt, sign and verify data. "
     "Functionality also includes interaction with Virgil Public Keys Service and Virgil Private Keys Service."
 )
-set (CPACK_PACKAGE_NAME "Virgil Security CLI")
-set (CPACK_PACKAGE_VENDOR "Virgil Security Inc.")
+
+set (CPACK_PACKAGE_NAME "virgil ${CLI_VERSION}-${SYSTEM_ARCH}")
+set (CPACK_PACKAGE_VENDOR "Virgil Security Inc")
 set (CPACK_PACKAGE_VERSION_MAJOR "${CLI_VERSION_MAJOR}")
 set (CPACK_PACKAGE_VERSION_MINOR "${CLI_VERSION_MINOR}")
 set (CPACK_PACKAGE_VERSION_PATCH "${CLI_VERSION_PATCH}")
 set (CPACK_PACKAGE_FILE_NAME
-    "virgil-cli-${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}-${SYSTEM_NAME}-${SYSTEM_ARCH}"
-)
+    "virgil ${CLI_VERSION}-${SYSTEM_ARCH}")
+
+set(CPACK_MONOLITHIC_INSTALL TRUE)
+
 set (CPACK_PACKAGE_INSTALL_DIRECTORY "Virgil Security CLI")
-set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY
-        "Virgil Security CLI ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}")
+set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY "virgil ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}-${SYSTEM_NAME}-${SYSTEM_ARCH}")
+
+set (CPACK_PACKAGE_EXECUTABLES "virgil" "virgil-${SYSTEM_ARCH}")
+set (CPACK_CREATE_DESKTOP_LINKS "virgil")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 if (MSVC)
+    set(CPACK_GENERATOR "NSIS")
+
+    set (CPACK_NSIS_MODIFY_PATH "ON")
+    set (CPACK_NSIS_DISPLAY_NAME "Virgil Security CLI")
     set (CPACK_NSIS_CONTACT "support@virgilsecurity.com")
-    set (CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_REGISTRY_KEY}")
-
-    string (REPLACE "\\" "\\\\" APPDATA "$ENV{APPDATA}")
-    message (STATUS ${APPDATA})
-
-    string (REPLACE "/" "\\\\" CURRENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-    message (STATUS ${CURRENT_DIR})
 
     set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS
-        "CreateDirectory ${APPDATA}\\\\virgil-cli
-        SetOutPath ${APPDATA}\\\\virgil-cli
-        File ${CURRENT_DIR}\\\\data\\\\virgil-cli.config"
-    )
-
-    set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS
-        "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}"
-        "Push \\\"PATH\\\""
-        "Push \\\"A\\\""
-        "Push \\\"HKLM\\\""
-        "Push \\\"$INSTDIR\\\\${INSTALL_BIN_DIR_NAME}\\\""
-        "Call AddToPath"
-        "Pop \\\$0"
         "ExecWait '\\\"$INSTDIR\\\\install\\\\vc_redist.${SYSTEM_ARCH}.exe\\\" /install /quiet'"
+        "SetShellVarContext current"
+        "CreateDirectory \\\"$APPDATA\\\\virgil-cli\\\""
+        "CopyFiles \\\"install\\\\virgil-cli-config.ini\\\" \\\"$APPDATA\\\\virgil-cli\\\""
+        "SetShellVarContext all"
     )
 
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}")
 
     set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
-        # Remove executable folder from the PATH
-        "Push \\\"PATH\\\""
-        "Push \\\"R\\\""
-        "Push \\\"HKLM\\\""
-        "Push \\\"$INSTDIR\\\\${INSTALL_BIN_DIR_NAME}\\\""
-        "Call un.RemoveFromPath"
-        "Pop \\\$0"
-        "Delete ${APPDATA}\\\\virgil-cli"
+        "SetShellVarContext current"
+        # Remove config file
+        # example C:\Users\John\AppData\Roaming\virgil-cli
+        "Delete \\\"$APPDATA\\\\virgil-cli\\\\virgil-cli-config.ini\\\""
+        # Remove directory
+        "RMDir \\\"$APPDATA\\\\virgil-cli\\\""
+        "SetShellVarContext all"
     )
 
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}")
 
-
 endif (MSVC)
+
 INCLUDE(CPack)

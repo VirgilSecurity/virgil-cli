@@ -113,7 +113,7 @@ function (virgil_add_dependency module target includes libraries)
         set (CMAKE_ARGS
             -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
             -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-            -DENABLE_STAGING_ENV=ON
+            -DENABLE_STAGING_ENV=OFF
             -DINSTALL_EXT_LIBS=ON
         )
 

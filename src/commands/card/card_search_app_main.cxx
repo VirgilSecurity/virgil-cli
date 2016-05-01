@@ -87,7 +87,9 @@ int MAIN(int argc, char** argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
+        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+
         std::string appName = "com.virgilsecurity." + applicationNameArg.getValue();
 
         std::vector<vsdk::models::CardModel> appCards = servicesHub.card().searchApp(appName);

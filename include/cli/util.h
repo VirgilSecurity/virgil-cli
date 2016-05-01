@@ -46,11 +46,18 @@
 #include <virgil/sdk/dto/ValidatedIdentity.h>
 #include <virgil/sdk/ServiceUri.h>
 
+#include <cli/config.h>
 
 namespace virgil {
 namespace cli {
 
-    virgil::sdk::ServiceUri readConfigFile();
+    struct ConfigFile {
+        std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
+        virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
+    };
+
+
+    ConfigFile readConfigFile(const bool verbose);
 
     std::string inputShadow();
 
