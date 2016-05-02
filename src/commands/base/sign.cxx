@@ -124,7 +124,7 @@ int MAIN(int argc, char** argv) {
         vcli::writeBytes(outArg.getValue(), sign);
 
         if (verboseArg.isSet()) {
-            std::cout << "File signing" << std::endl;
+            std::cout << "File signed" << std::endl;
         }
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "sing. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
