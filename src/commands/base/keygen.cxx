@@ -73,7 +73,7 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back(
-            "Generate Elliptic 384-bits NIST Curve Private Key(default), your password will be requested:\n"
+            "Generate Curve25519 Private Key(default), your password will be requested:\n"
             "virgil keygen -o alice/private.key\n");
 
         examples.push_back(
@@ -126,12 +126,12 @@ int MAIN(int argc, char** argv) {
                                                                     "\t* secp192r1 - 192-bits NIST curve;\n"
                                                                     "\t* secp224r1 - 224-bits NIST curve;\n"
                                                                     "\t* secp256r1 - 256-bits NIST curve;\n"
-                                                                    "\t* secp384r1 - 384-bits NIST curve (default);\n"
+                                                                    "\t* secp384r1 - 384-bits NIST curve;\n"
                                                                     "\t* secp521r1 - 521-bits NIST curve;\n"
                                                                     "\t* secp192k1 - 192-bits \"Koblitz\" curve;\n"
                                                                     "\t* secp224k1 - 224-bits \"Koblitz\" curve;\n"
                                                                     "\t* secp256k1 - 256-bits \"Koblitz\" curve;\n"
-                                                                    "\t* ed25519 - Curve25519;\n"
+                                                                    "\t* ed25519 - Curve25519 (default);\n"
                                                                     "\t* rsa3072 - 3072-bits \"RSA\" key;\n"
                                                                     "\t* rsa4096 - 4096-bits \"RSA\" key;\n"
                                                                     "\t* rsa8192 - 8192-bits \"RSA\" key",
@@ -237,12 +237,12 @@ static void printProcessGeneratingPrivate(const std::string& algorithmType) {
     algTypeDescription["secp192r1"] = "192-bits NIST curve";
     algTypeDescription["secp224r1"] = "224-bits NIST curve";
     algTypeDescription["secp256r1"] = "256-bits Brainpool curve";
-    algTypeDescription["secp384r1"] = "384-bits NIST curve (default)";
+    algTypeDescription["secp384r1"] = "384-bits NIST curve";
     algTypeDescription["secp521r1"] = "521-bits NIST curve";
     algTypeDescription["secp192k1"] = "192-bits \"Koblitz\" curve";
     algTypeDescription["secp224k1"] = "224-bits \"Koblitz\" curve";
     algTypeDescription["secp256k1"] = "256-bits \"Koblitz\" curve";
-    algTypeDescription["ed25519"] = "Curve25519";
+    algTypeDescription["ed25519"] = "Curve25519 (default)";
     algTypeDescription["rsa3072"] = "RSA 3072-bits ";
     algTypeDescription["rsa4096"] = "RSA 4096-bits";
     algTypeDescription["rsa8192"] = "RSA 8192-bits";
