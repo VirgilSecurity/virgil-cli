@@ -101,10 +101,14 @@ virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
     char cfgdir[MAX_PATH];
     get_user_config_folder(cfgdir, sizeof(cfgdir), "virgil-cli");
     if (cfgdir[0] == 0) {
-        std::cout << "Can't find config file";
+        if (verbose) {
+            std::cout << "Can't find config file";
+        }
         return ConfigFile();
     } else {
-        std::cout << "File found by path:" << std::string(cfgdir) << std::endl;
+        if (verbose) {
+            std::cout << "File found by path:" << std::string(cfgdir) << std::endl;
+        }
     }
 
     pathConfigFile = std::string(cfgdir);
