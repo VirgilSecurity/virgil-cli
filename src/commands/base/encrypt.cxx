@@ -167,8 +167,6 @@ int MAIN(int argc, char** argv) {
             }
         }
 
-        std::cout << "recipientCards.empty() " << recipientCards.empty() << std::endl;
-
         if (recipientsPasswords.empty() && pubKey_recipientId.empty() && recipientCards.empty()) {
             throw std::invalid_argument("no recipients are defined");
         }
@@ -235,14 +233,6 @@ int MAIN(int argc, char** argv) {
 
     return EXIT_SUCCESS;
 }
-
-/*
-
-1. Проверяем разбитие по двоеточию
-2. Проверяем на уникальность всех переданных данных
-3. Проверяем уникальность всех переданных recipient-id.
-Для этого берем id с vcard, из выкаченных Карт по email, id.
-*/
 
 std::vector<PairStrStr> checkFormatRecipientsArg(const std::vector<std::string>& recipientsData) {
     std::vector<PairStrStr> recipientsPairs;
