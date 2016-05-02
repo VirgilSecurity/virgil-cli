@@ -172,6 +172,8 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "card-search-app             Search an Application Card\n\n"
 
+                      "card-get                    Get user's Virgil Card/Cards\n\n"
+
                       "card-sign                   Sign a Card\n\n"
 
                       "card-unsign                 Unsign the Card\n\n\n"
