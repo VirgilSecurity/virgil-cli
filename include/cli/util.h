@@ -111,10 +111,12 @@ namespace cli {
 
     /**
      * @brief Write bytes to the given destination.
-     * @param out - if empty or equal to "-" then 'stdout' is used, otherwise - path to file.
+     * @param out - if empty then 'stdout' ispath to file.
      */
     void writeBytes(const std::string& out, const virgil::crypto::VirgilByteArray& data);
     void writeBytes(const std::string& out, const std::string& data);
+
+    void writeOutput(const std::string& out, const std::string& data);
 
     std::string getDescriptionMessage(const std::string description, std::vector<std::string> examples);
 

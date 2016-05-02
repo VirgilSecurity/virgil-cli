@@ -110,7 +110,7 @@ virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
     pathConfigFile = std::string(cfgdir);
     pathConfigFile += "\\virgil-cli-config.ini";
 #else
-    pathConfigFile = INSTALL_CONFIG_FILE_DIR_NAME + "/virgil-cli-config.ini";
+    pathConfigFile = INSTALL_CONFIG_FILE_DIR + "/virgil-cli-config.ini";
 #endif
 
     std::ifstream inFile(pathConfigFile, std::ios::in | std::ios::binary);
@@ -307,6 +307,20 @@ void virgil::cli::writeBytes(const std::string& out, const vcrypto::VirgilByteAr
 
 void virgil::cli::writeBytes(const std::string& out, const std::string& data) {
     return virgil::cli::writeBytes(out, virgil::crypto::str2bytes(data));
+}
+
+void virgil::cli::writeOutput(const std::string& out, const std::string& data) {
+    if (out.empty()) {
+        std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(std::cout));
+        std::cout << std::endl;
+        return;
+    }
+
+    std::ofstream outFile(out, std::ios::out | std::ios::binary);
+    if (!outFile) {
+        throw std::invalid_argument("cannot write file: " + out);
+    }
+    outFile << data;
 }
 
 //-------------------------------------------------------------------------------------
