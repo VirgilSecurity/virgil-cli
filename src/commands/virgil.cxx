@@ -65,8 +65,6 @@ int card_create_main(int argc, char** argv);
 int card_get_main(int argc, char** argv);
 int card_search_main(int argc, char** argv);
 int card_search_app_main(int argc, char** argv);
-int card_sign_main(int argc, char** argv);
-int card_unsign_main(int argc, char** argv);
 int card_revoke_main(int argc, char** argv);
 
 int public_key_get_main(int argc, char** argv);
@@ -116,8 +114,6 @@ int main(int argc, char** argv) {
     commandsMap["card-get"] = &card_get_main;
     commandsMap["card-search"] = &card_search_main;
     commandsMap["card-search-app"] = &card_search_app_main;
-    commandsMap["card-sign"] = &card_sign_main;
-    commandsMap["card-unsign"] = &card_unsign_main;
     commandsMap["card-revoke"] = &card_revoke_main;
 
     commandsMap["public-key-get"] = &public_key_get_main;
@@ -176,11 +172,7 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "card-search-app             Search an Application Card\n\n"
 
-                      "card-get                    Get user's Virgil Card/Cards\n\n"
-
-                      "card-sign                   Sign a Card\n\n"
-
-                      "card-unsign                 Unsign the Card\n\n\n"
+                      "card-get                    Get user's Virgil Card/Cards\n\n\n"
 
                       "PUBCLIC KEY COMMANDS:\n"
 
