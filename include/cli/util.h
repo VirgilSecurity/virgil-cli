@@ -120,10 +120,10 @@ namespace cli {
 
     //-------------------------------------------------------------------------------------
 
-    std::vector<virgil::sdk::models::CardModel> getRecipientCards(const std::string& type, const std::string& value,
+    std::vector<virgil::sdk::models::CardModel> getRecipientCards(const bool verbose, const std::string& type, const std::string& value,
                                                                   const bool includeUnconrimedCard);
 
-    std::vector<std::string> getRecipientCardsId(const std::string& type, const std::string& value,
+    std::vector<std::string> getRecipientCardsId(const bool verbose, const std::string& type, const std::string& value,
                                                  const bool includeUnconrimedCard);
 }
 }

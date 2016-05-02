@@ -41,6 +41,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <set>
 
 #include <tclap/CmdLine.h>
 
@@ -59,24 +60,23 @@ namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
 namespace vcli = virgil::cli;
 
-static void checked(const std::vector<std::string>& recipientsData);
+using PairStrStr = std::pair<std::string, std::string>;
+using PairPubKey_RecipientId = std::pair<vcrypto::VirgilByteArray, std::string>;
 
-/**
- * @brief Add recipients from the list to the cipher.
- * @param recipients - array of recipients <type:value>, where type can be [pass|vpk_file|email|phone|domain].
- * @param cipher - recipients added to.
- * @return Number of added recipients.
- */
-static size_t add_recipients(const std::vector<std::string>& recipientsData, const bool includeUnconrimedCard,
-                             vcrypto::VirgilStreamCipher* cipher);
+static std::vector<PairStrStr> checkFormatRecipientsArg(const std::vector<std::string>& recipientsData);
 
-/**
- * @brief Add recipient to the cipher.
- * @param recipientData - <type:value>, where type can be [pass|key|email|phone|domain].
- * @param cipher - recipients added to.
- */
-static void add_recipient(const std::string& recipientType, const std::string& recipientValue,
-                          const bool includeUnconrimedCard, vcrypto::VirgilStreamCipher* cipher);
+static void checkUniqueRecipientsPairs(const std::vector<PairStrStr>& recipientsPairs);
+
+static std::vector<PairStrStr> checkRecipientsArgs(const std::vector<std::string>& recipientsData);
+
+static void checkUniqueRecipientsId(const std::vector<PairPubKey_RecipientId>& pairs,
+                                    const std::vector<vsdk::models::CardModel>& cards);
+
+static void addPasswordsRecipients(const bool verbose, const std::vector<std::string>& recipientsPasswords,
+                                   vcrypto::VirgilStreamCipher* cipher);
+
+static void addKeysRecipients(const bool verbose, const std::vector<PairPubKey_RecipientId>& pairs,
+                              const std::vector<vsdk::models::CardModel>& cards, vcrypto::VirgilStreamCipher* cipher);
 
 #ifdef SPLIT_CLI
 #define MAIN main
@@ -141,20 +141,46 @@ int MAIN(int argc, char** argv) {
         cmd.add(inArg);
         cmd.parse(argc, argv);
 
-        checked(recipientsArg.getValue());
+        auto recipientsPairs = checkRecipientsArgs(recipientsArg.getValue());
+        std::vector<std::string> recipientsPasswords;
+        std::vector<PairPubKey_RecipientId> pubKey_recipientId;
+        std::vector<vsdk::models::CardModel> recipientCards;
+        for (const auto recipientsPair : recipientsPairs) {
+            if (recipientsPair.first == "password") {
+                recipientsPasswords.push_back(recipientsPair.second);
+            } else {
+                // recipientsPair.first [id | vcard | email | pubkey]
+                if (recipientsPair.first == "pubkey") {
+                    //  public.key:<recipient-id>
+                    auto pubkeyRecipientId = vcli::parsePair(recipientsPair.second);
+                    std::string pathToPublicKeyFile = pubkeyRecipientId.first;
+                    auto publicKey = vcli::readFileBytes(pathToPublicKeyFile);
+                    std::string recipientId = pubkeyRecipientId.second;
+                    pubKey_recipientId.push_back(std::make_pair(publicKey, pubkeyRecipientId.second));
+                } else {
+                    // Else recipientsPair.first [id | vcard | email]
+                    // if recipient email:<value>, then download a Virgil Card with confirmed identity
+                    bool includeUnconrimedCard = false;
+                    recipientCards = vcli::getRecipientCards(verboseArg.isSet(), recipientsPair.first,
+                                                             recipientsPair.second, includeUnconrimedCard);
+                }
+            }
+        }
+
+        std::cout << "recipientCards.empty() " << recipientCards.empty() << std::endl;
+
+        if (recipientsPasswords.empty() && pubKey_recipientId.empty() && recipientCards.empty()) {
+            throw std::invalid_argument("no recipients are defined");
+        }
+
+        if (!pubKey_recipientId.empty()) {
+            checkUniqueRecipientsId(pubKey_recipientId, recipientCards);
+        }
 
         // Create cipher
         vcrypto::VirgilStreamCipher cipher;
-
-        // Add recipients
-        size_t addedRecipientsCount = 0;
-
-        // if recipient email:<value>, then download a Virgil Card with confirmed identity
-        bool includeUnconrimedCard = false;
-        addedRecipientsCount += add_recipients(recipientsArg.getValue(), includeUnconrimedCard, &cipher);
-        if (addedRecipientsCount == 0) {
-            throw std::invalid_argument("no recipients are defined");
-        }
+        addPasswordsRecipients(verboseArg.isSet(), recipientsPasswords, &cipher);
+        addKeysRecipients(verboseArg.isSet(), pubKey_recipientId, recipientCards, &cipher);
 
         // Prepare input
         std::istream* inStream;
@@ -199,10 +225,6 @@ int MAIN(int argc, char** argv) {
             std::copy(contentInfo.begin(), contentInfo.end(), std::ostreambuf_iterator<char>(contentInfoFile));
         }
 
-        if (verboseArg.isSet()) {
-            std::cout << "File has been encrypted" << std::endl;
-        }
-
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "encrypt. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
@@ -214,49 +236,112 @@ int MAIN(int argc, char** argv) {
     return EXIT_SUCCESS;
 }
 
-void checked(const std::vector<std::string>& recipientsData) {
+/*
+
+1. Проверяем разбитие по двоеточию
+2. Проверяем на уникальность всех переданных данных
+3. Проверяем уникальность всех переданных recipient-id.
+Для этого берем id с vcard, из выкаченных Карт по email, id.
+*/
+
+std::vector<PairStrStr> checkFormatRecipientsArg(const std::vector<std::string>& recipientsData) {
+    std::vector<PairStrStr> recipientsPairs;
     for (const auto& recipientData : recipientsData) {
         auto recipientPair = vcli::parsePair(recipientData);
         vcli::checkFormatRecipientArg(recipientPair);
-    }
-}
-
-size_t add_recipients(const std::vector<std::string>& recipientsData, const bool includeUnconrimedCard,
-                      vcrypto::VirgilStreamCipher* cipher) {
-    size_t addedRecipientsCount = 0;
-    for (const auto& recipientData : recipientsData) {
-        auto recipientPair = vcli::parsePair(recipientData);
-        std::string recipientType = recipientPair.first;
-        std::string recipientValue = recipientPair.second;
-        try {
-            add_recipient(recipientType, recipientValue, includeUnconrimedCard, cipher);
-        } catch (std::exception& exception) {
-            throw std::invalid_argument("cannot add recipient. Error " + recipientType + ":" + recipientValue + "\n" +
-                                        exception.what());
+        if (recipientPair.first == "pubkey") {
+            auto pubkeyRecipientId = vcli::parsePair(recipientPair.second);
         }
-        ++addedRecipientsCount;
+        recipientsPairs.push_back(recipientPair);
     }
-    return addedRecipientsCount;
+    return recipientsPairs;
 }
 
-void add_recipient(const std::string& recipientType, const std::string& recipientValue,
-                   const bool includeUnconrimedCard, vcrypto::VirgilStreamCipher* cipher) {
-    if (recipientType == "password") {
-        vcrypto::VirgilByteArray pwd = virgil::crypto::str2bytes(recipientValue);
-        cipher->addPasswordRecipient(pwd);
-    } else if (recipientType == "pubkey") {
-        //  public.key:<recipient-id>
-        auto pubkeyRecipientId = vcli::parsePair(recipientValue);
-        std::string pathToPublicKeyFile = pubkeyRecipientId.first;
-        std::string recipientId = pubkeyRecipientId.second;
-        auto publicKey = vcli::readFileBytes(pathToPublicKeyFile);
-        cipher->addKeyRecipient(vcrypto::str2bytes(recipientId), publicKey);
-    } else {
-        // Else recipientType [id|vcard|email]
-        std::vector<vsdk::models::CardModel> recipientsCard =
-            vcli::getRecipientCards(recipientType, recipientValue, includeUnconrimedCard);
-        for (const auto& recipientCard : recipientsCard) {
-            cipher->addKeyRecipient(vcrypto::str2bytes(recipientCard.getId()), recipientCard.getPublicKey().getKey());
+void checkUniqueRecipientsPairs(const std::vector<PairStrStr>& recipientsPairs) {
+    std::set<PairStrStr> uniqueRecipientsPairs;
+    for (const auto& recipientPair : recipientsPairs) {
+        if (uniqueRecipientsPairs.count(recipientPair) == 0) {
+            uniqueRecipientsPairs.insert(recipientPair);
+        } else {
+            std::string error = "recipient must be unique. this recipient ";
+            error += recipientPair.first + ":" + recipientPair.second + " has already.";
+            throw std::logic_error(error);
         }
     }
 }
+
+std::vector<PairStrStr> checkRecipientsArgs(const std::vector<std::string>& recipientsData) {
+    auto recipientsPairs = checkFormatRecipientsArg(recipientsData);
+    checkUniqueRecipientsPairs(recipientsPairs);
+    return recipientsPairs;
+}
+
+void checkUniqueRecipientsId(const std::vector<PairPubKey_RecipientId>& pairs,
+                             const std::vector<vsdk::models::CardModel>& cards) {
+    // pubkey:bob/public.key:ForBob   pubkey:<path_public_key>:<recipient_id>
+    std::vector<std::string> recipientsId_PubKeyArgs;
+    for (const auto& pair : pairs) {
+        recipientsId_PubKeyArgs.push_back(pair.second);
+    }
+
+    std::set<std::string> uniqueRecipientsId;
+    for (const auto& recipientId : recipientsId_PubKeyArgs) {
+        if (uniqueRecipientsId.count(recipientId) == 0) {
+            uniqueRecipientsId.insert(recipientId);
+        } else {
+            std::string error = "recipient id must be unique. this recipient id ";
+            error += recipientId + " has already.";
+            throw std::logic_error(error);
+        }
+    }
+
+    if (!cards.empty()) {
+        for (const auto& card : cards) {
+            if (uniqueRecipientsId.count(card.getId()) == 0) {
+                uniqueRecipientsId.insert(card.getId());
+            } else {
+                auto identity = card.getCardIdentity();
+                std::string error = "recipient id must be unique. this recipient id ";
+                error +=
+                    card.getId() + " which refers on the card with identity " + identity.getValue() + " has already.";
+                throw std::logic_error(error);
+            }
+        }
+    }
+}
+
+void addPasswordsRecipients(const bool verbose, const std::vector<std::string>& recipientsPasswords,
+                            vcrypto::VirgilStreamCipher* cipher) {
+    for (const auto& recipientPassword : recipientsPasswords) {
+        vcrypto::VirgilByteArray pwd = virgil::crypto::str2bytes(recipientPassword);
+        if (!pwd.empty()) {
+            cipher->addPasswordRecipient(pwd);
+            if (verbose) {
+                std::cout << "File has been password encrypted" << std::endl;
+            }
+        }
+    }
+}
+
+void addKeysRecipients(const bool verbose, const std::vector<PairPubKey_RecipientId>& pairs,
+                       const std::vector<vsdk::models::CardModel>& cards, vcrypto::VirgilStreamCipher* cipher) {
+    for (const auto& pair : pairs) {
+        auto publicKey = pair.first;
+        auto recipientId = vcrypto::str2bytes(pair.second);
+        if (!recipientId.empty() && !publicKey.empty()) {
+            cipher->addKeyRecipient(recipientId, publicKey);
+        }
+        if (verbose) {
+            std::cout << "File has been recipient-id:" << pair.second << "  and public key encrypted" << std::endl;
+        }
+    }
+
+    for (const auto& card : cards) {
+        cipher->addKeyRecipient(vcrypto::str2bytes(card.getId()), card.getPublicKey().getKey());
+        if (verbose) {
+            std::cout << "File has been card-id:" << card.getId() << ", identity:" << card.getCardIdentity().getValue()
+                      << "  and card public key encrypted" << std::endl;
+        }
+    }
+}
+

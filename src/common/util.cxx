@@ -325,39 +325,51 @@ std::string virgil::cli::getDescriptionMessage(const std::string description, st
 
 //-------------------------------------------------------------------------------------
 
-std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const std::string& type, const std::string& value,
+std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool verbose, const std::string& type,
+                                                                    const std::string& value,
                                                                     const bool includeUnconrimedCard) {
-
     std::vector<vsdk::models::CardModel> recipientCards;
     ConfigFile configFile = readConfigFile(false);
     vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
-
     if (type == "id") {
-        recipientCards.push_back(servicesHub.card().get(value));
+        auto card = servicesHub.card().get(value);
+        recipientCards.push_back(card);
+        if (verbose) {
+            std::cout << "For the entered id: " << value << " have been received a Virgil Card." << std::endl;
+        }
     } else if (type == "email") {
         vsdk::dto::Identity identity(value, vsdk::models::IdentityModel::Type::Email);
-        std::vector<vsdk::models::CardModel> cards;
-        cards = servicesHub.card().search(identity, includeUnconrimedCard);
-        recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
+        auto cards = servicesHub.card().search(identity, includeUnconrimedCard);
+        if (!cards.empty()) {
+            recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
+            if (verbose) {
+                std::cout << "For the entered email:" << value << " have been received " << cards.size()
+                          << " with confirmed Identity." << std::endl;
+            }
+        } else {
+            throw std::invalid_argument(std::string("Cards by email: ") + value + " haven't been found.");
+        }
     } else if (type == "vcard") {
         std::string pathTofile = value;
         std::ifstream inFile(pathTofile, std::ios::in | std::ios::binary);
         if (!inFile) {
             throw std::invalid_argument("cannot read file: " + pathTofile);
         }
-
         std::string jsonCard((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
         vsdk::models::CardModel card = vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(jsonCard);
+        if (verbose) {
+            std::cout << "A Virgil Card by path " << pathTofile << " read." << std::endl;
+        }
         recipientCards.push_back(card);
     }
 
     return recipientCards;
 }
 
-std::vector<std::string> virgil::cli::getRecipientCardsId(const std::string& type, const std::string& value,
-                                                          const bool includeUnconrimedCard) {
+std::vector<std::string> virgil::cli::getRecipientCardsId(const bool verbose, const std::string& type,
+                                                          const std::string& value, const bool includeUnconrimedCard) {
     std::vector<vsdk::models::CardModel> recipientCards =
-        virgil::cli::getRecipientCards(type, value, includeUnconrimedCard);
+        virgil::cli::getRecipientCards(verbose, type, value, includeUnconrimedCard);
     std::vector<std::string> recipientCardsId;
     for (const auto& recipientCard : recipientCards) {
         recipientCardsId.push_back(recipientCard.getId());

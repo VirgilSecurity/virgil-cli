@@ -169,9 +169,8 @@ int MAIN(int argc, char** argv) {
         std::string value = recipientFormat.second;
 
         if (type == "password") {
-            vcrypto::VirgilByteArray pass = virgil::crypto::str2bytes(value);
-            cipher.decryptWithPassword(dataSource, dataSink, pass);
-
+            vcrypto::VirgilByteArray password = virgil::crypto::str2bytes(value);
+            cipher.decryptWithPassword(dataSource, dataSink, password);
             if (verboseArg.isSet()) {
                 std::cout << "File has been decrypted with a password" << std::endl;
             }
@@ -198,7 +197,15 @@ int MAIN(int argc, char** argv) {
             }
 
             bool includeUnconrimedCard = false;
-            std::vector<std::string> recipientCardsId = vcli::getRecipientCardsId(type, value, includeUnconrimedCard);
+            std::vector<std::string> recipientCardsId =
+                vcli::getRecipientCardsId(verboseArg.isSet(), type, value, includeUnconrimedCard);
+
+            if (recipientCardsId.empty()) {
+                if (verboseArg.isSet()) {
+                    std::cout << "Cards by " << type << ":" << value << " haven't been found." << std::endl;
+                    return EXIT_FAILURE;
+                }
+            }
 
             size_t countErrorDecryptWithKey = 0;
             for (const auto& recipientCardId : recipientCardsId) {
