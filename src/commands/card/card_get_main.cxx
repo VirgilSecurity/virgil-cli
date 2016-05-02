@@ -64,7 +64,7 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Receive a Card by card-id:\n"
-                           "virgil card-get -a <card-id> -o cards/\n");
+                           "virgil card-get -a <card-id> -o my.vcard\n");
 
         examples.push_back(
             "Return a group of Cards connected with public-key-id, card-id belongs to one of the Cards:\n"
