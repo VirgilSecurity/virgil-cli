@@ -141,11 +141,17 @@ include_directories (${VIRGIL_SDK_INCLUDE_DIRS})
 include (json)
 include_directories (${JSON_INCLUDE_DIRS})
 
-# Use tclap lib
+if (CMAKE_TOOLCHAIN_FILE)
+   list (APPEND CMAKE_ARGS
+               -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+)
+endif (CMAKE_TOOLCHAIN_FILE)
+
+# Use ext header only libs
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/ext")
 message (STATUS "TCLAP library: ON")
 
-#
+# Use virgil-cli headers
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # Grab source directory tree
@@ -173,6 +179,9 @@ add_dependencies (virgil_cli
     ${VIRGIL_SDK_DEPENDENCIES}
 )
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
+
+# Install virgil_cli
+install (TARGETS virgil_cli DESTINATION ${INSTALL_BIN_DIR_NAME})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     install (
