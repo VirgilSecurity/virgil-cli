@@ -161,8 +161,11 @@ int MAIN(int argc, char** argv) {
                     // Else recipientsPair.first [id | vcard | email]
                     // if recipient email:<value>, then download a Virgil Card with confirmed identity
                     bool includeUnconrimedCard = false;
-                    recipientCards = vcli::getRecipientCards(verboseArg.isSet(), recipientsPair.first,
+                    auto cards = vcli::getRecipientCards(verboseArg.isSet(), recipientsPair.first,
                                                              recipientsPair.second, includeUnconrimedCard);
+
+                    recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
+
                 }
             }
         }
@@ -320,9 +323,9 @@ void addKeysRecipients(const bool verbose, const std::vector<PairPubKey_Recipien
         auto recipientId = vcrypto::str2bytes(pair.second);
         if (!recipientId.empty() && !publicKey.empty()) {
             cipher->addKeyRecipient(recipientId, publicKey);
-        }
-        if (verbose) {
-            std::cout << "File has been recipient-id:" << pair.second << "  and public key encrypted" << std::endl;
+            if (verbose) {
+                std::cout << "File has been recipient-id:" << pair.second << "  and public key encrypted" << std::endl;
+            }
         }
     }
 
