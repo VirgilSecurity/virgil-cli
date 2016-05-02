@@ -71,11 +71,6 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Search for Cards with a confirmed Identity and uncorfirmaed Identity:\n"
                            "virgil card-search -d email:alice@gmail.com -u alice-with-unconfirmed-identity/\n");
 
-        examples.push_back("Search for Cards with an email, which have signed `card-sign' the"
-                           " Cards with card-id:\n"
-                           "virgil card-search -d email:alice@gmail.com "
-                           "<user1_card_id> <user1_card_id>\n");
-
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
@@ -90,10 +85,6 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 
-        TCLAP::UnlabeledMultiArg<std::string> signedCardsIdArg("signed-card-id", "Signed card id", false, "card-id",
-                                                               false);
-
-        cmd.add(signedCardsIdArg);
         cmd.add(verboseArg);
         cmd.add(unconfirmedArg);
         cmd.add(identityArg);
@@ -115,13 +106,7 @@ int MAIN(int argc, char** argv) {
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
         std::vector<vsdk::models::CardModel> foundCards;
-        if (signedCardsIdArg.isSet()) {
-            std::vector<std::string> signedCardsId = signedCardsIdArg.getValue();
-            foundCards = servicesHub.card().search(identity, includeUnconfirmed, signedCardsId);
-        } else {
-            foundCards = servicesHub.card().search(identity, includeUnconfirmed);
-        }
-
+        foundCards = servicesHub.card().search(identity, includeUnconfirmed);
         if (foundCards.empty()) {
             if (verboseArg.isSet()) {
                 std::cout << "Cards by email: " << recipientValue << " haven't been found." << std::endl;
