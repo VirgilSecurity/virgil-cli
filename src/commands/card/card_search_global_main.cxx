@@ -55,7 +55,7 @@ namespace vcli = virgil::cli;
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN card_search_app_main
+#define MAIN card_search_global_main
 #endif
 
 int MAIN(int argc, char** argv) {
@@ -64,10 +64,10 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Search for application Cards:\n"
-                           "virgil card-search-app -c <app_name>\n");
+                           "virgil card-search-global -c <app_name>\n");
 
         examples.push_back("Get all application cards:\n"
-                           "virgil card-search-app -c \"*\"\n");
+                           "virgil card-search-global -c \"*\"\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -80,19 +80,27 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> applicationNameArg(
             "c", "application-name", "Application name, name = '*' - get all Cards\n", true, "", "arg");
 
+        TCLAP::ValueArg<std::string> emailArg(
+            "e", "email", "email", true, "", "arg");
+
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 
         cmd.add(verboseArg);
+        cmd.xorAdd(emailArg, applicationNameArg);
         cmd.add(applicationNameArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
         vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+        std::vector<vsdk::models::CardModel> appCards;
+        if (applicationNameArg.isSet()) {
+            std::string appName = "com.virgilsecurity." + applicationNameArg.getValue();
+            appCards = servicesHub.card().searchGlobal(appName);
+        } else {
+            appCards = servicesHub.card().searchGlobalbyEmail(emailArg.getValue());
+        }
 
-        std::string appName = "com.virgilsecurity." + applicationNameArg.getValue();
-
-        std::vector<vsdk::models::CardModel> appCards = servicesHub.card().searchApp(appName);
         if (appCards.empty()) {
             if (verboseArg.isSet()) {
                 std::cout << "Cards by name: " << applicationNameArg.getValue() << " haven't been found." << std::endl;
@@ -119,13 +127,13 @@ int MAIN(int argc, char** argv) {
 
         if (verboseArg.isSet()) {
             std::cout << "For the entered application name:" << applicationNameArg.getValue() << " have been received "
-                      << appCards.size() << " Карт." << std::endl;
+                      << appCards.size() << " Cards." << std::endl;
         }
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "card-search-app. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-search-global. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "card-search-app. Error: " << exception.what() << std::endl;
+        std::cerr << "card-search-global. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 
