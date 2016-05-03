@@ -116,7 +116,7 @@ int MAIN(int argc, char** argv) {
 
         size_t countCardUnconfirmedIdentity = 0;
         for (auto&& foundCard : foundCards) {
-            if (!foundCard.isConfirmed()) {
+            if (foundCard.authorizedBy().empty()) {
                 ++countCardUnconfirmedIdentity;
             }
         }
@@ -132,7 +132,7 @@ int MAIN(int argc, char** argv) {
                 std::string identity = foundCard.getCardIdentity().getValue();
                 std::string cardId = foundCard.getId();
                 std::string isConfirmed;
-                if (foundCard.isConfirmed()) {
+                if (!foundCard.authorizedBy().empty()) {
                     isConfirmed = "confirmed";
                 } else {
                     isConfirmed = "unconfirmed";
