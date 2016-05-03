@@ -64,8 +64,9 @@ int identity_valid_main(int argc, char** argv);
 int card_create_main(int argc, char** argv);
 int card_get_main(int argc, char** argv);
 int card_search_main(int argc, char** argv);
-int card_search_app_main(int argc, char** argv);
+int card_search_global_main(int argc, char** argv);
 int card_revoke_main(int argc, char** argv);
+int validation_token_generate_main(int argc, char** argv);
 
 int public_key_get_main(int argc, char** argv);
 int public_key_revoke_main(int argc, char** argv);
@@ -113,8 +114,9 @@ int main(int argc, char** argv) {
     commandsMap["card-create"] = &card_create_main;
     commandsMap["card-get"] = &card_get_main;
     commandsMap["card-search"] = &card_search_main;
-    commandsMap["card-search-app"] = &card_search_app_main;
+    commandsMap["card-search-global"] = &card_search_global_main;
     commandsMap["card-revoke"] = &card_revoke_main;
+    commandsMap["validation-token-generate"] = &validation_token_generate_main;
 
     commandsMap["public-key-get"] = &public_key_get_main;
     commandsMap["public-key-revoke"] = &public_key_revoke_main;
@@ -170,9 +172,11 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "card-search                 Search by criteria\n\n"
 
-                      "card-search-app             Search an Application Card\n\n"
+                      "card-search-global          Search an Application Card\n\n"
 
-                      "card-get                    Get user's Virgil Card/Cards\n\n\n"
+                      "card-get                    Get user's Virgil Card/Cards\n\n"
+
+                      "validation-token-generate   Generate a Validation token\n\n"
 
                       "PUBCLIC KEY COMMANDS:\n"
 
