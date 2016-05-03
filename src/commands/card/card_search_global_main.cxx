@@ -60,11 +60,14 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Search for application Cards.\n";
+        std::string description = "Performs the global search for the applications' Virgil Cards.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Search for application Cards:\n"
-                           "virgil card-search-global -c <app_name>\n");
+        examples.push_back("The global search for application Cards by email:\n"
+                           "virgil card-search-global -e alice@mailinator.com\n\n");
+
+        examples.push_back("The global search for application Cards:\n"
+                           "virgil card-search-global -c <app_name>\n\n");
 
         examples.push_back("Get all application cards:\n"
                            "virgil card-search-global -c \"*\"\n");
@@ -87,7 +90,6 @@ int MAIN(int argc, char** argv) {
 
         cmd.add(verboseArg);
         cmd.xorAdd(emailArg, applicationNameArg);
-        cmd.add(applicationNameArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
