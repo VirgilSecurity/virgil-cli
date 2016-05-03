@@ -356,8 +356,7 @@ std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool v
             std::cout << "For the entered id: " << value << " have been received a Virgil Card." << std::endl;
         }
     } else if (type == "email") {
-        vsdk::dto::Identity identity(value, vsdk::models::IdentityModel::Type::Email);
-        auto cards = servicesHub.card().search(identity, includeUnconrimedCard);
+        auto cards = servicesHub.card().searchGlobalbyEmail(value);
         if (!cards.empty()) {
             recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
             if (verbose) {
