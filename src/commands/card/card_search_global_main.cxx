@@ -81,10 +81,10 @@ int MAIN(int argc, char** argv) {
                                             "arg");
 
         TCLAP::ValueArg<std::string> applicationNameArg(
-            "c", "application-name", "Application name, name = '*' - get all Cards\n", true, "", "arg");
+            "c", "application-name", "Application name, name = 'com.virgilsecurity.*' - get all Cards\n", true, "",
+            "arg");
 
-        TCLAP::ValueArg<std::string> emailArg(
-            "e", "email", "email", true, "", "arg");
+        TCLAP::ValueArg<std::string> emailArg("e", "email", "email", true, "", "arg");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 
@@ -97,10 +97,10 @@ int MAIN(int argc, char** argv) {
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
         std::vector<vsdk::models::CardModel> appCards;
         if (applicationNameArg.isSet()) {
-            std::string appName = "com.virgilsecurity." + applicationNameArg.getValue();
-            appCards = servicesHub.card().searchGlobal(appName);
+            appCards =
+                servicesHub.card().searchGlobal(applicationNameArg.getValue(), vsdk::dto::IdentityType::Application);
         } else {
-            appCards = servicesHub.card().searchGlobalbyEmail(emailArg.getValue());
+            appCards = servicesHub.card().searchGlobal(emailArg.getValue(), vsdk::dto::IdentityType::Email);
         }
 
         if (appCards.empty()) {
@@ -131,8 +131,10 @@ int MAIN(int argc, char** argv) {
             std::cout << "For the entered application name:" << applicationNameArg.getValue() << " have been received "
                       << appCards.size() << " Cards." << std::endl;
         }
+
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "card-search-global. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-search-global. Error: " << exception.error() << " for arg " << exception.argId()
+                  << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
         std::cerr << "card-search-global. Error: " << exception.what() << std::endl;

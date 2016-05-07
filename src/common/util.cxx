@@ -356,12 +356,15 @@ std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool v
             std::cout << "For the entered id: " << value << " have been received a Virgil Card." << std::endl;
         }
     } else if (type == "email") {
-        auto cards = servicesHub.card().searchGlobalbyEmail(value);
+        if (verbose) {
+            std::cout << "Searching the Global Virgil Card[s] by email" << std::endl;
+        }
+        auto cards = servicesHub.card().searchGlobal(value, vsdk::dto::IdentityType::Email);
         if (!cards.empty()) {
             recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
             if (verbose) {
                 std::cout << "For the entered email:" << value << " have been received " << cards.size()
-                          << " with confirmed Identity." << std::endl;
+                          << " Virgil Card[s]." << std::endl;
             }
         } else {
             throw std::invalid_argument(std::string("Cards by email: ") + value + " haven't been found.");

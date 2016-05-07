@@ -59,32 +59,31 @@ namespace vcli = virgil::cli;
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN card_create_main
+#define MAIN card_create_global_main
 #endif
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Create card.\n";
+        std::string description = "Create the Global Virgil C ard.\n";
 
         std::vector<std::string> examples;
         examples.push_back("Create a Card with a confirmed identity:\n"
-                           "virgil card-create -f alice/validated_identity.txt "
-                           "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n");
+                           "virgil card-create-global -f alice/validated_identity_global.txt "
+                           "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing Card with a confirmed"
+        examples.push_back("Create a connection with an already existing Card"
                            "Identity by public-key-id:\n"
-                           "virgil card-create -f alice/validated_identity.txt "
-                           "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n");
+                           "virgil card-create -f alice/validated_identity_global.txt "
+                           "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back(
-            "Create a Card with an unconfirmed Identity:\n"
-            "virgil card-create -d email:user@domain.com --public_key alice/public.key -k alice/private.key "
-            "-o alice/my_card.vcard\n");
+        examples.push_back("Create a Card with a confirmed identity:\n"
+                           "virgil card-create-global -d alice@domain.com "
+                           "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing Card with an unconfirmed"
+        examples.push_back("Create a connection with an already existing Card"
                            "Identity by public-key-id:\n"
-                           "virgil card-create -d email:user@domain.com -e <pub_key_id> -k alice/private.key "
-                           "-o alice/my_card.vcard\n");
+                           "virgil card-create-global -d alice@domain.com "
+                           "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -93,10 +92,10 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "virgil Card. If omitted, stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
-
         TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", true, "",
                                                           "file");
+
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
 
         TCLAP::ValueArg<std::string> publicKeyArg("", "public-key", "Public key", true, "", "file");
 
@@ -112,7 +111,7 @@ int MAIN(int argc, char** argv) {
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
-        cmd.xorAdd(publicKeyArg, publicKeyIdArg);
+        cmd.xorAdd(publicKeyIdArg, publicKeyArg);
         cmd.xorAdd(identityArg, validatedIdentityArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
@@ -163,25 +162,39 @@ int MAIN(int argc, char** argv) {
                 }
             }
         } else {
-            // identityArg.isSet
-            auto identityPair = vcli::parsePair(identityArg.getValue());
-            std::string recipientType = identityPair.first;
-            std::string recipientValue = identityPair.second;
-            std::string arg = "-d, --identity";
-            vcli::checkFormatIdentity(arg, recipientType);
-            vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
-            vsdk::dto::Identity identity(recipientValue, identityType);
+            std::string recipientType = "email";
+            std::string recipientValue = identityArg.getValue();
+
+            std::string actionId =
+                servicesHub.identity().verify(recipientValue, vsdk::dto::VerifiableIdentityType::Email);
+            if (verboseArg.isSet()) {
+                std::cout << "Send confirmation-code to " << recipientValue << std::endl;
+            }
+
+            std::cout << "Enter confirmation code which was sent on you identity - " << recipientType << ":"
+                      << recipientValue << std::endl;
+            std::string confirmationCode = vcli::inputShadow();
+
+            if (verboseArg.isSet()) {
+                std::cout << "Confirme identity " << recipientValue << std::endl;
+            }
+
+            vsdk::dto::ValidatedIdentity validatedIdentity = servicesHub.identity().confirm(actionId, confirmationCode);
+            if (verboseArg.isSet()) {
+                std::cout << "An Identity " << recipientType << ":" << recipientValue << " is confirmed" << std::endl;
+            }
 
             if (publicKeyArg.isSet()) {
-                card = servicesHub.card().create(identity, publicKey, credentials);
+                card = servicesHub.card().create(validatedIdentity, publicKey, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A card with an unconfirmed identity has been created." << std::endl;
+                    std::cout << "A card with a confirmed identity has been created." << std::endl;
                 }
             } else {
-                card = servicesHub.card().create(identity, publicKeyId, credentials);
+                // publicKeyIdArg
+                card = servicesHub.card().create(validatedIdentity, publicKeyId, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A card with an unconfirmed identity, which is connected with already existing one by"
-                                 " public-key-id, has been created."
+                    std::cout << "A card with a confirmed identity, which is connected with already existing one by"
+                                 " public-key-id=" << publicKeyId << " has been created."
                               << std::endl;
                 }
             }

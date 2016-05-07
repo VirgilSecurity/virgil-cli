@@ -57,7 +57,7 @@ namespace vcli = virgil::cli;
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN validation_token_generate_main
+#define MAIN identity_confirm_private_main
 #endif
 
 int MAIN(int argc, char** argv) {
@@ -67,7 +67,7 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Generate a validation-token:\n"
-                           "virgil validation-token-generate -d alice@domain.com -o validated-identity.txt\n"
+                           "virgil identity-confirm-private -d alice@domain.com -o validated-identity.txt "
                            "--app-key application-private.key");
 
         std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
@@ -75,27 +75,31 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
-
         TCLAP::ValueArg<std::string> outArg("o", "validation-token", "A Validation-token. If omitted, stdout is used.",
                                             false, "", "file");
+
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity value", true, "", "arg");
+
+        TCLAP::ValueArg<std::string> identityTypeArg("t", "identity-type", "Identity type", true, "", "arg");
 
         TCLAP::ValueArg<std::string> appPrivateKeyArg("", "app-key", "Application Private key", true, "", "file");
 
         TCLAP::ValueArg<std::string> appPrivateKeyPasswordArg(
-            "", "app-private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
+            "", "app-key-password", "Password to be used for Application Private Key encryption.", false, "", "arg");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 
         cmd.add(verboseArg);
         cmd.add(appPrivateKeyPasswordArg);
         cmd.add(appPrivateKeyArg);
-        cmd.add(outArg);
+        cmd.add(identityTypeArg);
         cmd.add(identityArg);
-
+        cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        std::string identity = identityArg.getValue();
+        std::string identityValue = identityArg.getValue();
+        std::string identityType = identityTypeArg.getValue();
+
         std::string pathPrivateKey = appPrivateKeyArg.getValue();
         vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
         vcrypto::VirgilByteArray privateKeyPassword;
@@ -110,9 +114,11 @@ int MAIN(int argc, char** argv) {
             std::cout << "Generating validation token.." << std::endl;
         }
 
-        std::string validationToken = vsdk::util::ValidationTokenGenerator::generate(identity, "email", appCredentials);
-        vsdk::dto::ValidatedIdentity validatedIdentity(validationToken, identity,
-                                                       vsdk::models::IdentityModel::Type::Email);
+        std::string validationToken =
+            vsdk::util::ValidationTokenGenerator::generate(identityValue, identityType, appCredentials);
+
+        vsdk::dto::ValidatedIdentity validatedIdentity(vsdk::dto::Identity(identityValue, identityType),
+                                                       validationToken);
 
         std::string validatedIdentityStr =
             vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
@@ -120,15 +126,15 @@ int MAIN(int argc, char** argv) {
         vcli::writeOutput(outArg.getValue(), validatedIdentityStr);
 
         if (verboseArg.isSet()) {
-            std::cout << "The validated-identity generated" << std::endl;
+            std::cout << "The validated-identity for a Private Virgil Card generated" << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "validation-token-generate. Error: " << exception.error() << " for arg " << exception.argId()
+        std::cerr << "identity-confirm-private. Error: " << exception.error() << " for arg " << exception.argId()
                   << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "validation-token-generate. Error: " << exception.what() << std::endl;
+        std::cerr << "identity-confirm-private. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

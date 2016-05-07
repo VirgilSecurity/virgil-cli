@@ -34,15 +34,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <algorithm>
-#include <fstream>
 #include <iostream>
-#include <iterator>
-#include <stdexcept>
 #include <string>
-#include <vector>
+#include <stdexcept>
 
 #include <tclap/CmdLine.h>
+
+#include <virgil/crypto/VirgilByteArray.h>
 
 #include <virgil/sdk/ServicesHub.h>
 
@@ -51,45 +49,37 @@
 #include <cli/pair.h>
 #include <cli/util.h>
 
-namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
+namespace vsdk = virgil::sdk;
 namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN public_key_revoke_main
+#define MAIN card_revoke_private_main
 #endif
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description =
-            "Revoke a chain of cards with (un)confirmed identities connected by public-key-id from "
-            "virgil Keys Service.\n";
+        std::string description = "Revoke Virgil Card from the Virgil Public Key service.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Revoke a chain of cards with confirmed identities connected by public-key-id from "
-                           "virgil Keys Service:\n"
-                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key"
-                           " -f alice/validated-identity.txt\n");
+        examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
+                           "virgil card-revoke-private -a <card_id> -f alice/validated-identities.file "
+                           "-k alice/private.key\n");
 
-        examples.push_back("Revoke a chain of cards with unconfirmed identities connected by public-key-id from "
-                           "virgil Keys Service:\n"
-                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key"
-                           " -d email:user@domain.com\n");
+        examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
+                           "virgil card-revoke-private -a <card_id> -k alice/private.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", true, "", "arg");
-
         TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
-        TCLAP::MultiArg<std::string> identityArg("d", "identity", "Identity user", true, "arg");
-
-        TCLAP::MultiArg<std::string> validatedIdentityArg("f", "validated-identity", "ValidatedIdentity", true, "file");
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", false, "",
+                                                          "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
@@ -101,10 +91,14 @@ int MAIN(int argc, char** argv) {
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
-        cmd.xorAdd(validatedIdentityArg, identityArg);
+        cmd.add(validatedIdentityArg);
         cmd.add(cardIdArg);
-        cmd.add(publicKeyIdArg);
         cmd.parse(argc, argv);
+
+        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+
+        std::string cardId = cardIdArg.getValue();
 
         std::string pathPrivateKey = privateKeyArg.getValue();
         vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
@@ -116,48 +110,30 @@ int MAIN(int argc, char** argv) {
         }
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
-        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
-
+        std::string messageSuccess = "Card with card-id " + cardIdArg.getValue() + " revoked.";
         if (validatedIdentityArg.isSet()) {
-            std::vector<vsdk::dto::ValidatedIdentity> validatedIdentities;
-            std::vector<std::string> validatedIdentityFiles = validatedIdentityArg.getValue();
-            for (const auto& validatedIdentityFile : validatedIdentityFiles) {
-                vsdk::dto::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityFile);
-                validatedIdentities.push_back(validatedIdentity);
-            }
+            vsdk::dto::ValidatedIdentity validatedIdentity =
+                vcli::readValidateIdentity(validatedIdentityArg.getValue());
 
-            servicesHub.publicKey().revoke(publicKeyIdArg.getValue(), validatedIdentities, cardIdArg.getValue(),
-                                           credentials);
+            servicesHub.card().revoke(cardId, validatedIdentity, credentials);
+            if (verboseArg.isSet()) {
+                std::cout << messageSuccess << std::endl;
+            }
         } else {
-            // identityArg.isSet
-            std::vector<std::string> identitiesStr = identityArg.getValue();
-            std::vector<vsdk::dto::Identity> identities;
-            for (const auto& identityStr : identitiesStr) {
-                auto identityPair = vcli::parsePair(identityStr);
-                std::string recipientType = identityPair.first;
-                std::string recipientValue = identityPair.second;
-                std::string arg = "-d, --identity";
-                vcli::checkFormatIdentity(arg, recipientType);
-
-                vsdk::dto::Identity identity(recipientValue, recipientType);
-                identities.push_back(identity);
+            auto card = servicesHub.card().get(cardId);
+            vsdk::dto::Identity identity(card.getCardIdentity().getValue(), card.getCardIdentity().getType());
+            servicesHub.card().revoke(cardId, identity, credentials);
+            if (verboseArg.isSet()) {
+                std::cout << messageSuccess << std::endl;
             }
-
-            servicesHub.publicKey().revokeNotValid(publicKeyIdArg.getValue(), identities, cardIdArg.getValue(),
-                                                   credentials);
-        }
-
-        if (verboseArg.isSet()) {
-            std::string messageSuccess = "Card with public-key-id:" + publicKeyIdArg.getValue() + " has been revoked";
-            std::cout << messageSuccess;
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "public-key-revoke. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-revoke-private. Error: " << exception.error() << " for arg " << exception.argId()
+                  << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "public-key-revoke. Error: " << exception.what() << std::endl;
+        std::cerr << "card-revoke-private. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

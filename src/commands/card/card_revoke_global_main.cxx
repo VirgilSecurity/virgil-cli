@@ -56,20 +56,20 @@ namespace vcli = virgil::cli;
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN card_revoke_main
+#define MAIN card_revoke_global_main
 #endif
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Revoke Virgil Card from the Virgil Public Key service.\n";
+        std::string description = "Revoke a Global Virgil Card from the Virgil Public Key service.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
-                           "virgil card-revoke -a <card_id> -f alice/validated-identities.file "
+        examples.push_back("Revoke the Virgil Card:\n"
+                           "virgil card-revoke-global -a <card_id> -f alice/validated-identities.txt "
                            "-k alice/private.key\n");
 
-        examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
-                           "virgil card-revoke -a <card_id> -k alice/private.key\n");
+        examples.push_back("Revoke the Virgil Card:\n"
+                           "virgil card-revoke-global -a <card_id> -d alice@domain.com -k alice/private.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -81,6 +81,8 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", false, "",
                                                           "file");
 
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
+
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
@@ -91,7 +93,7 @@ int MAIN(int argc, char** argv) {
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
-        cmd.add(validatedIdentityArg);
+        cmd.xorAdd(identityArg, validatedIdentityArg);
         cmd.add(cardIdArg);
         cmd.parse(argc, argv);
 
@@ -120,19 +122,40 @@ int MAIN(int argc, char** argv) {
                 std::cout << messageSuccess << std::endl;
             }
         } else {
-            auto card = servicesHub.card().get(cardId);
-            vsdk::dto::Identity identity(card.getCardIdentity().getValue(), card.getCardIdentity().getType());
-            servicesHub.card().revoke(cardId, identity, credentials);
+            std::string recipientType = "email";
+            std::string recipientValue = identityArg.getValue();
+
+            std::string actionId =
+                servicesHub.identity().verify(recipientValue, vsdk::dto::VerifiableIdentityType::Email);
+            if (verboseArg.isSet()) {
+                std::cout << "Send confirmation-code to " << recipientValue << std::endl;
+            }
+
+            std::cout << "Enter confirmation code which was sent on you identity - " << recipientType << ":"
+                      << recipientValue << std::endl;
+            std::string confirmationCode = vcli::inputShadow();
+
+            if (verboseArg.isSet()) {
+                std::cout << "Confirme identity " << recipientValue << std::endl;
+            }
+
+            vsdk::dto::ValidatedIdentity validatedIdentity = servicesHub.identity().confirm(actionId, confirmationCode);
+            if (verboseArg.isSet()) {
+                std::cout << "An Identity " << recipientType << ":" << recipientValue << " is confirmed" << std::endl;
+            }
+
+            servicesHub.card().revoke(cardId, validatedIdentity, credentials);
             if (verboseArg.isSet()) {
                 std::cout << messageSuccess << std::endl;
             }
+
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "card-revoke. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-revoke-global. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "card-revoke. Error: " << exception.what() << std::endl;
+        std::cerr << "card-revoke-global. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

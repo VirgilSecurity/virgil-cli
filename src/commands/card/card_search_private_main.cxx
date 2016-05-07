@@ -57,12 +57,12 @@ namespace vcli = virgil::cli;
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN card_search_main
+#define MAIN card_search_private_main
 #endif
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Search for a Virgil Card from the Virgil Keys service\n";
+        std::string description = "Search for a Private Virgil Card from the Virgil Keys service\n";
 
         std::vector<std::string> examples;
         examples.push_back("Search for Virgil Cards with a confirmed Identity:\n"
@@ -79,7 +79,9 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
                                             "arg");
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity value", true, "", "arg");
+
+        TCLAP::ValueArg<std::string> identityTypeArg("t", "identity-type", "Identity type", true, "", "arg");
 
         TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", "Search Cards include unconfirmed identity", false);
 
@@ -87,29 +89,21 @@ int MAIN(int argc, char** argv) {
 
         cmd.add(verboseArg);
         cmd.add(unconfirmedArg);
+        cmd.add(identityTypeArg);
         cmd.add(identityArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        auto identityPair = vcli::parsePair(identityArg.getValue());
-        std::string recipientType = identityPair.first;
-        std::string recipientValue = identityPair.second;
-        std::string arg = "-d, --identity";
-        vcli::checkFormatIdentity(arg, recipientType);
-
-        vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
-        vsdk::dto::Identity identity(recipientValue, identityType);
-
         bool includeUnconfirmed = unconfirmedArg.getValue();
-
         vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
-
         std::vector<vsdk::models::CardModel> foundCards;
-        foundCards = servicesHub.card().search(identity, includeUnconfirmed);
+        foundCards = servicesHub.card().search(identityArg.getValue(), identityTypeArg.getValue(), includeUnconfirmed);
+
         if (foundCards.empty()) {
             if (verboseArg.isSet()) {
-                std::cout << "Cards by email: " << recipientValue << " haven't been found." << std::endl;
+                std::cout << "Cards by type:" << identityTypeArg.getValue() << "; value:" << identityArg.getValue()
+                          << " haven't been found." << std::endl;
             }
             return EXIT_FAILURE;
         }
@@ -146,14 +140,14 @@ int MAIN(int argc, char** argv) {
 
         if (includeUnconfirmed) {
             if (verboseArg.isSet()) {
-                std::cout << "For the entered email:" << recipientValue << " have been received "
+                std::cout << "For the entered value:" << identityArg.getValue() << " have been received "
                           << countCardUnconfirmedIdentity << " Cards with unconfirmed Identity and "
                           << foundCards.size() - countCardUnconfirmedIdentity << "  with confirmed Identity."
                           << std::endl;
             }
         } else {
             if (verboseArg.isSet()) {
-                std::cout << "For the entered email:" << recipientValue << " have been received "
+                std::cout << "For the entered value:" << identityArg.getValue() << " have been received "
                           << foundCards.size() - countCardUnconfirmedIdentity << " with confirmed Identity."
                           << std::endl;
             }

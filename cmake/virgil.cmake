@@ -137,7 +137,7 @@ function (virgil_add_dependency module target includes libraries)
         if (NOT TARGET ${VIRGIL}_project)
             ExternalProject_Add (${VIRGIL}_project
                 GIT_REPOSITORY "https://github.com/VirgilSecurity/virgil-sdk-cpp.git"
-                GIT_TAG "release"
+                GIT_TAG "global_and_private_cards"
                 PREFIX "${CMAKE_CURRENT_BINARY_DIR}/ext/virgil-sdk"
                 CMAKE_ARGS ${CMAKE_ARGS}
             )
