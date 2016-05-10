@@ -1,21 +1,21 @@
-NAME
-====
+% CARD-SEARCH-APP(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
+
+# NAME
 
 **card-search-app** -- search for application Cards
 
-SYNOPSIS
-========
+# SYNOPSIS
 
-**virgil card-search-app** \[-o *arg*\] -c *arg* \[-V\] \[--\]
-\[--version\] \[-h\]
+**virgil card-search-app**  [-o *arg*] -c *arg* [-V] [--] [--version] [-h]
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
 Search for application Cards
 
-OPTIONS
-=======
+
+# OPTIONS
 
     -o *arg*,  --out *arg*
      Folder in which will be saved a Virgil Cards
@@ -36,20 +36,21 @@ OPTIONS
     -h,  --help
      Displays usage information and exits.
 
-EXAMPLES
-========
 
-1.  Search for application Cards:
+
+# EXAMPLES
+
+1. Search for application Cards:
 
         virgil card-search-app -c *app_name* -o app_cards/
 
-2.  Return all application Card:
+1. Return all application Card:
 
         virgil card-search-app -c "*" -o all_app_cards/
 
-SEE ALSO
-========
 
-[`virgil(1)`](../markdown/virgil.1.md),  
-[`card-create(1)`](../markdown/card-create.1.md),  
-[`card-get(1)`](../markdown/card-get.1.md)
+# SEE ALSO
+
+virgil(1)
+card-create(1)
+card-get(1)

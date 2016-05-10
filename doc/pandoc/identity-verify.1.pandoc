@@ -47,6 +47,6 @@ On success, *action_id* is returned. On error, throw exeption.
 
 # SEE ALSO
 
-[`virgil(1)`](../markdown/virgil.1.md),\
-[`identity-confirm(1)`](../markdown/identity-confirm.1.md),\
+virgil(1)
+identity-confirm(1)
 

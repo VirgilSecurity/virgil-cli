@@ -1,21 +1,21 @@
-NAME
-====
+% SIGN(1) Virgil Security CLI (2.0.0) | Virgil
+% (c) Virgil Security Inc
+% February 29, 2016
 
-**sign** -- sign data
+# NAME
 
-SYNOPSIS
-========
+**hash** -- sign data
 
-**virgil sign** \[-i *file*\] \[-o *file*\] -k *file* \[-p *arg*\]
-\[-V\] \[--\] \[--version\] \[-h\]
+# SYNOPSIS
 
-DESCRIPTION
-===========
+**virgil hash** [-i *file*] [-o *file*] -k *file* [-p *arg*] [-V] [--] [--version] [-h]
+
+# DESCRIPTION
 
 Sign data with given user's Private Key.
 
-OPTIONS
-=======
+
+# OPTIONS
 
     -i *file*,  --in *file*
      Data to be signed. If omitted, stdin is used.
@@ -41,13 +41,12 @@ OPTIONS
     -h,  --help
      Displays usage information and exits.
 
-EXAMPLES
-========
+
+# EXAMPLES
 
         virgil sign -i plain.txt -o plain.txt.sign -k private.key
 
-SEE ALSO
-========
+# SEE ALSO
 
-[`virgil(1)`](../markdown/virgil.1.md),  
-[`verify(1)`](../markdown/verify.1.md)
+virgil(1)
+verify(1)
