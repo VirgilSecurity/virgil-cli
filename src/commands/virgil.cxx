@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
     commandsMap["identity-valid"] = &identity_valid_main;
 
     commandsMap["card-create-global"] = &card_create_global_main;
-    commandsMap["card-create=private"] = &card_create_private_main;
+    commandsMap["card-create-private"] = &card_create_private_main;
     commandsMap["card-get"] = &card_get_main;
     commandsMap["card-search-private"] = &card_search_private_main;
     commandsMap["card-search-global"] = &card_search_global_main;
