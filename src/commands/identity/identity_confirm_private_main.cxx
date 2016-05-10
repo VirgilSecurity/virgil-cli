@@ -67,7 +67,7 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Generate a validation-token:\n"
-                           "virgil identity-confirm-private -d alice@domain.com -o validated-identity.txt "
+                           "virgil identity-confirm-private -d alice@domain.com -t email -o validated-identity.txt "
                            "--app-key application-private.key");
 
         std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);

@@ -156,7 +156,8 @@ int MAIN(int argc, char** argv) {
             } else {
                 card = servicesHub.card().create(validatedIdentity, publicKeyId, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A card with a confirmed identity, which is connected with already existing one by"
+                    std::cout << "A Global Virgil Card with a confirmed identity, which is connected with already "
+                                 "existing one by"
                                  " public-key-id has been created."
                               << std::endl;
                 }
@@ -187,15 +188,15 @@ int MAIN(int argc, char** argv) {
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(validatedIdentity, publicKey, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A card with a confirmed identity has been created." << std::endl;
+                    std::cout << "A Global Virgil Card with a confirmed identity has been created." << std::endl;
                 }
             } else {
                 // publicKeyIdArg
                 card = servicesHub.card().create(validatedIdentity, publicKeyId, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A card with a confirmed identity, which is connected with already existing one by"
-                                 " public-key-id=" << publicKeyId << " has been created."
-                              << std::endl;
+                    std::cout << "A Global Virgil Card with a confirmed identity, which is connected with already existing one by"
+                                 " public-key-id="
+                              << publicKeyId << " has been created." << std::endl;
                 }
             }
         }
@@ -204,10 +205,11 @@ int MAIN(int argc, char** argv) {
         vcli::writeBytes(outArg.getValue(), cardStr);
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "card-create. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-create-global. Error: " << exception.error() << " for arg " << exception.argId()
+                  << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "card-create. Error: " << exception.what() << std::endl;
+        std::cerr << "card-create-global. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

@@ -66,10 +66,11 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Search for Virgil Cards with a confirmed Identity:\n"
-                           "virgil card-search -d email:alice@gmail.com -o alice/\n");
+                           "virgil card-search-private -d alice@gmail.com -t email -o alice/\n");
 
-        examples.push_back("Search for Cards with a confirmed Identity and uncorfirmaed Identity:\n"
-                           "virgil card-search -d email:alice@gmail.com -u alice-with-unconfirmed-identity/\n");
+        examples.push_back(
+            "Search for Cards with a confirmed Identity and uncorfirmaed Identity:\n"
+            "virgil card-search-private -d alice@gmail.com -t email -o alice/ -u alice-with-unconfirmed-identity/\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

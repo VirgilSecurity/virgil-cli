@@ -68,12 +68,12 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Create a Card with a confirmed identity:\n"
-                           "virgil card-create -f alice/validated_identity.txt "
+                           "virgil card-create-private -f alice/validated_identity.txt "
                            "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n");
 
         examples.push_back("Create a connection with an already existing Card with a confirmed"
                            "Identity by public-key-id:\n"
-                           "virgil card-create -f alice/validated_identity.txt "
+                           "virgil card-create-private -f alice/validated_identity.txt "
                            "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n");
 
         examples.push_back(
@@ -157,7 +157,8 @@ int MAIN(int argc, char** argv) {
             } else {
                 card = servicesHub.card().create(validatedIdentity, publicKeyId, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A card with a confirmed identity, which is connected with already existing one by"
+                    std::cout << "A Private Virgil Card with a confirmed identity, which is connected with already "
+                                 "existing one by"
                                  " public-key-id has been created."
                               << std::endl;
                 }
@@ -174,12 +175,13 @@ int MAIN(int argc, char** argv) {
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(identity, publicKey, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A card with an unconfirmed identity has been created." << std::endl;
+                    std::cout << "A Private Virgil Card with an unconfirmed identity has been created." << std::endl;
                 }
             } else {
                 card = servicesHub.card().create(identity, publicKeyId, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A card with an unconfirmed identity, which is connected with already existing one by"
+                    std::cout << "A Private Virgil Card with an unconfirmed identity, which is connected with already "
+                                 "existing one by"
                                  " public-key-id, has been created."
                               << std::endl;
                 }
@@ -190,10 +192,11 @@ int MAIN(int argc, char** argv) {
         vcli::writeBytes(outArg.getValue(), cardStr);
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "card-create. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-create-private. Error: " << exception.error() << " for arg " << exception.argId()
+                  << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "card-create. Error: " << exception.what() << std::endl;
+        std::cerr << "card-create-private. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 
