@@ -367,14 +367,14 @@ std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool v
         std::vector<vsdk::models::CardModel> cards;
         if (verbose) {
             std::cout << "Searching the Private Virgil Card[s] with confirmed identity by type:" << type
-                      << " value:" << value << std::endl;
+                      << " value:" << value << "\n\n";
         }
         cards = servicesHub.card().search(value, type);
         if (!cards.empty()) {
             recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
             if (verbose) {
                 std::cout << "For the entered type:" << type << "  value:" << value << "have been received "
-                          << cards.size() << " Virgil Card[s]." << std::endl;
+                          << cards.size() << " Virgil Card[s].\n\n";
             }
         } else {
             throw std::invalid_argument(std::string("Private Virgil Cards by type: ") + type + " value:" + value +
@@ -391,14 +391,14 @@ std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool v
     } else if (type == "email" && !isSearchForPrivateCard) {
         std::vector<vsdk::models::CardModel> cards;
         if (verbose) {
-            std::cout << "Searching the Global Virgil Card[s] by type:" << type << " value:" << value << std::endl;
+            std::cout << "Searching the Global Virgil Card[s] by type:" << type << " value:" << value << "\n\n";
         }
         cards = servicesHub.card().searchGlobal(value, vsdk::dto::IdentityType::Email);
         if (!cards.empty()) {
             recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
             if (verbose) {
                 std::cout << "For the entered type:" << type << "  value:" << value << "have been received "
-                          << cards.size() << " Virgil Card[s]." << std::endl;
+                          << cards.size() << " Virgil Card[s].\n\n";
             }
         } else {
             throw std::invalid_argument(std::string("Global Virgil Cards by email: ") + value + " haven't been found.");

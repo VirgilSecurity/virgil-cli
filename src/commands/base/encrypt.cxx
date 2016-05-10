@@ -90,8 +90,11 @@ int MAIN(int argc, char** argv) {
                                   " either by the password, or by the Virgil Card Key.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Alice encrypts the data for Bob using his email:\n"
+        examples.push_back("Alice encrypts the data for Bob using his email (searching the Global Virgil Card[s]):\n"
                            "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n");
+
+        examples.push_back("Alice encrypts the data for Bob using his email (searching the Private Virgil Card[s]):\n"
+                           "virgil encrypt -i plain.txt -o plain.txt.enc private:email:bob@domain.com\n");
 
         examples.push_back("Alice encrypts the data for Bob and Tom using their emails:\n"
                            "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com\n");
@@ -334,7 +337,7 @@ void addKeysRecipients(const bool verbose, const std::vector<PairPubKey_Recipien
         if (!recipientId.empty() && !publicKey.empty()) {
             cipher->addKeyRecipient(recipientId, publicKey);
             if (verbose) {
-                std::cout << "File has been recipient-id:" << pair.second << "  and public key encrypted" << std::endl;
+                std::cout << "File has been recipient-id:" << pair.second << "  and public key encrypted.\n\n";
             }
         }
     }
@@ -343,7 +346,7 @@ void addKeysRecipients(const bool verbose, const std::vector<PairPubKey_Recipien
         cipher->addKeyRecipient(vcrypto::str2bytes(card.getId()), card.getPublicKey().getKey());
         if (verbose) {
             std::cout << "File has been card-id:" << card.getId() << ", identity:" << card.getCardIdentity().getValue()
-                      << " type: " + card.getCardIdentity().getType() << "  and card public key encrypted" << std::endl;
+                      << " type:" + card.getCardIdentity().getType() << " and card public key encrypted.\n\n";
         }
     }
 }

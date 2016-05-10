@@ -64,7 +64,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Create the Global Virgil C ard.\n";
+        std::string description = "Create the Global Virgil Card.\n";
 
         std::vector<std::string> examples;
         examples.push_back("Create a Card with a confirmed identity:\n"
