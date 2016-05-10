@@ -132,9 +132,20 @@ virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
 
         ConfigFile configFile;
         configFile.virgilAccessToken = iniParser.top()("Virgil Access Token")["token"];
+        if (configFile.virgilAccessToken.empty()) {
+            configFile.virgilAccessToken = VIRGIL_ACCESS_TOKEN;
+        }
+
         configFile.serviceUri =
             vsdk::ServiceUri(iniParser.top()("URI")["identity-service"], iniParser.top()("URI")["public-key-service"],
                              iniParser.top()("URI")["private-key-service"]);
+
+        if (verbose) {
+            std::cout << "Virgil Access Token:\n" << configFile.virgilAccessToken << "\n\n";
+            std::cout << "Identity Service:\n" << configFile.serviceUri.getIdentityService() << "\n\n";
+            std::cout << "Public Key Service:\n" << configFile.serviceUri.getPublicKeyService() << "\n\n";
+            std::cout << "Private Key Service:\n" << configFile.serviceUri.getPrivateKeyService() << "\n\n";
+        }
 
         return configFile;
 
