@@ -166,10 +166,9 @@ int MAIN(int argc, char** argv) {
                         // private:<type>:<value>
                         auto pairTypeAndValue = vcli::parsePair(recipientsPair.second);
                         std::string type = pairTypeAndValue.first;
-                        bool isSearchPrivateCard = true; // search the Private Virgil Card[s] with confirmed identity
                         std::string value = pairTypeAndValue.second;
-                        cards = vcli::getRecipientCards(verboseArg.isSet(), recipientsPair.first, recipientsPair.second,
-                                                        isSearchPrivateCard);
+                        bool isSearchPrivateCard = true; // search the Private Virgil Card[s] with confirmed identity
+                        cards = vcli::getRecipientCards(verboseArg.isSet(), type, value, isSearchPrivateCard);
                     } else {
                         // Else recipientsPair.first [id | vcard | email]
                         bool isSearchPrivateCard = false; // search the Global Virgil Card[s]
@@ -344,7 +343,7 @@ void addKeysRecipients(const bool verbose, const std::vector<PairPubKey_Recipien
         cipher->addKeyRecipient(vcrypto::str2bytes(card.getId()), card.getPublicKey().getKey());
         if (verbose) {
             std::cout << "File has been card-id:" << card.getId() << ", identity:" << card.getCardIdentity().getValue()
-                      << "  and card public key encrypted" << std::endl;
+                      << " type: " + card.getCardIdentity().getType() << "  and card public key encrypted" << std::endl;
         }
     }
 }

@@ -216,8 +216,9 @@ void virgil::cli::checkFormatRecipientArg(const std::pair<std::string, std::stri
     const std::string type = pairRecipientArg.first;
     if (type != "password" && type != "id" && type != "vcard" && type != "email" && type != "pubkey" &&
         type != "private") {
-        throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [password|id|vcard|email|pubkey]");
+        throw std::invalid_argument("invalid type format: " + type +
+                                    ". Expected format: '<key>:<value>'. "
+                                    "Where <key> = [password|id|vcard|email|pubkey|private]");
     }
 }
 
@@ -359,48 +360,48 @@ std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool v
                                                                     const std::string& value,
                                                                     const bool isSearchForPrivateCard) {
     std::vector<vsdk::models::CardModel> recipientCards;
-    ConfigFile configFile = readConfigFile(false);
+    ConfigFile configFile = readConfigFile(verbose);
     vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+
+    if (isSearchForPrivateCard) {
+        std::vector<vsdk::models::CardModel> cards;
+        if (verbose) {
+            std::cout << "Searching the Private Virgil Card[s] with confirmed identity by type:" << type
+                      << " value:" << value << std::endl;
+        }
+        cards = servicesHub.card().search(value, type);
+        if (!cards.empty()) {
+            recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
+            if (verbose) {
+                std::cout << "For the entered type:" << type << "  value:" << value << "have been received "
+                          << cards.size() << " Virgil Card[s]." << std::endl;
+            }
+        } else {
+            throw std::invalid_argument(std::string("Private Virgil Cards by type: ") + type + " value:" + value +
+                                        " haven't been found.");
+        }
+    }
+
     if (type == "id") {
         auto card = servicesHub.card().get(value);
         recipientCards.push_back(card);
         if (verbose) {
             std::cout << "For the entered id: " << value << " have been received a Virgil Card." << std::endl;
         }
-    } else if (type == "email") {
+    } else if (type == "email" && !isSearchForPrivateCard) {
         std::vector<vsdk::models::CardModel> cards;
-        if (isSearchForPrivateCard) {
-            if (verbose) {
-                std::cout << "Searching the Private Virgil Card[s] with confirmed identity by type:" << type
-                          << " value:" << value << std::endl;
-            }
-            cards = servicesHub.card().searchGlobal(value, vsdk::dto::IdentityType::Email);
-        } else {
-            if (verbose) {
-                std::cout << "Searching the Private Virgil Card[s] by email" << std::endl;
-            }
-            cards = servicesHub.card().search(value, type);
+        if (verbose) {
+            std::cout << "Searching the Global Virgil Card[s] by type:" << type << " value:" << value << std::endl;
         }
-
+        cards = servicesHub.card().searchGlobal(value, vsdk::dto::IdentityType::Email);
         if (!cards.empty()) {
             recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
             if (verbose) {
-                if (isSearchForPrivateCard) {
-                    std::cout << "For the entered type:" << type << "  value:" << value << "have been received "
-                              << cards.size() << " Virgil Card[s]." << std::endl;
-                } else {
-                    std::cout << "For the entered email:" << value << " have been received " << cards.size()
-                              << " Virgil Card[s]." << std::endl;
-                }
+                std::cout << "For the entered type:" << type << "  value:" << value << "have been received "
+                          << cards.size() << " Virgil Card[s]." << std::endl;
             }
         } else {
-            if (isSearchForPrivateCard) {
-                throw std::invalid_argument(std::string("Private Virgil Cards by type: ") + type + " value:" + value +
-                                            " haven't been found.");
-            } else {
-                throw std::invalid_argument(std::string("Global Virgil Cards by email: ") + value +
-                                            " haven't been found.");
-            }
+            throw std::invalid_argument(std::string("Global Virgil Cards by email: ") + value + " haven't been found.");
         }
     } else if (type == "vcard") {
         std::string pathTofile = value;
@@ -420,9 +421,9 @@ std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool v
 }
 
 std::vector<std::string> virgil::cli::getRecipientCardsId(const bool verbose, const std::string& type,
-                                                          const std::string& value, const bool searchForPrivateCard) {
+                                                          const std::string& value, const bool isSearchForPrivateCard) {
     std::vector<vsdk::models::CardModel> recipientCards =
-        virgil::cli::getRecipientCards(verbose, type, value, searchForPrivateCard);
+        virgil::cli::getRecipientCards(verbose, type, value, isSearchForPrivateCard);
     std::vector<std::string> recipientCardsId;
     for (const auto& recipientCard : recipientCards) {
         recipientCardsId.push_back(recipientCard.getId());

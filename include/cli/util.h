@@ -56,7 +56,6 @@ namespace cli {
         virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
     };
 
-
     ConfigFile readConfigFile(const bool verbose);
 
     std::string inputShadow();
@@ -122,8 +121,9 @@ namespace cli {
 
     //-------------------------------------------------------------------------------------
 
-    std::vector<virgil::sdk::models::CardModel> getRecipientCards(const bool verbose, const std::string& type, const std::string& value,
-                                                                  const bool searchForPrivateCard);
+    std::vector<virgil::sdk::models::CardModel> getRecipientCards(const bool verbose, const std::string& type,
+                                                                  const std::string& value,
+                                                                  const bool isSearchForPrivateCard);
 
     std::vector<std::string> getRecipientCardsId(const bool verbose, const std::string& type, const std::string& value,
                                                  const bool isSearchForPrivateCard);

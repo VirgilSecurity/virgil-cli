@@ -72,7 +72,7 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Decrypt data for user identified by password:\n"
                            "virgil decrypt -i plain.txt.enc -o plain.txt -r password:strong_password\n");
 
-        examples.push_back("Decrypt data for Bob identified by his Private Key + recipient-id [id|vcard|email]:\n"
+        examples.push_back("Decrypt data for Bob identified by his Private Key + recipient-id [id|vcard|email|private]:\n"
                            "virgil decrypt -i plain.txt.enc -o plain.txt -k bob/private.key -r id:<recipient_id>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -200,9 +200,13 @@ int MAIN(int argc, char** argv) {
 
             std::vector<std::string> recipientCardsId;
             if (type == "private") {
+                // private:<type>:<value>
+                auto pairTypeAndValue = vcli::parsePair(value);
+                std::string type = pairTypeAndValue.first;
+                std::string value = pairTypeAndValue.second;
+
                 bool isSearchPrivateCard = true; // search the Private Virgil Card[s]
                 recipientCardsId = vcli::getRecipientCardsId(verboseArg.isSet(), type, value, isSearchPrivateCard);
-
             } else {
                 // type = [id|vcard|email]
                 bool isSearchPrivateCard = false; // search the Global Virgil Card[s]
