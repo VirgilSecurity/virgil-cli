@@ -122,14 +122,16 @@ int MAIN(int argc, char** argv) {
         TCLAP::UnlabeledMultiArg<std::string> recipientsArg(
             "recipient", "Contains information about one recipient.\n"
                          "Format:\n"
-                         "[password|id|vcard|email|pubkey]:<value>\n"
+                         "[password|id|vcard|email|pubkey|private]:<value>\n"
                          "where:\n"
                          "\t* if password, then <value> - recipient's password;\n"
                          "\t* if id, then <value> - recipient's UUID associated with Virgil\n\t Card identifier;\n"
                          "\t* if vcard, then <value> - recipient's the Virgil Card file\n\t  stored locally;\n"
                          "\t* if email, then <value> - recipient's email;\n"
                          "\t* if pubkey, then <value> - recipient's Public Key + identifier, for example:\n"
-                         " pubkey:bob/public.key:ForBob.\n",
+                         " pubkey:bob/public.key:ForBob.\n"
+                         "\t* if private, then set type:value for searching Private Virgil Card[s]. "
+                         " For example: private:email:<obfuscator_email>. ( obfiscator - see 'virgil hash')",
             false, "recipient", false);
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
@@ -143,7 +145,7 @@ int MAIN(int argc, char** argv) {
 
         auto recipientsPairs = checkRecipientsArgs(recipientsArg.getValue());
         std::vector<std::string> recipientsPasswords;
-        std::vector<PairPubKey_RecipientId> pubKey_recipientId;
+        std::vector<PairPubKey_RecipientId> pubkeysAndRecipientsId;
         std::vector<vsdk::models::CardModel> recipientCards;
         for (const auto recipientsPair : recipientsPairs) {
             if (recipientsPair.first == "password") {
@@ -151,37 +153,46 @@ int MAIN(int argc, char** argv) {
             } else {
                 // recipientsPair.first [id | vcard | email | pubkey]
                 if (recipientsPair.first == "pubkey") {
-                    //  public.key:<recipient-id>
-                    auto pubkeyRecipientId = vcli::parsePair(recipientsPair.second);
-                    std::string pathToPublicKeyFile = pubkeyRecipientId.first;
+                    // pubkey:bob/public.key:<recipient_id> - pubkey:bob/public.key:ForBob
+                    auto pubkeyAndRecipientId = vcli::parsePair(recipientsPair.second);
+                    std::string pathToPublicKeyFile = pubkeyAndRecipientId.first;
                     auto publicKey = vcli::readFileBytes(pathToPublicKeyFile);
-                    std::string recipientId = pubkeyRecipientId.second;
-                    pubKey_recipientId.push_back(std::make_pair(publicKey, pubkeyRecipientId.second));
+                    std::string recipientId = pubkeyAndRecipientId.second;
+                    pubkeysAndRecipientsId.push_back(std::make_pair(publicKey, recipientId));
                 } else {
-                    // Else recipientsPair.first [id | vcard | email]
-                    // if recipient email:<value>, then download a Virgil Card with confirmed identity
-                    bool includeUnconrimedCard = false;
-                    auto cards = vcli::getRecipientCards(verboseArg.isSet(), recipientsPair.first,
-                                                             recipientsPair.second, includeUnconrimedCard);
-
+                    // Else recipientsPair.first [id | vcard | email | private]
+                    std::vector<vsdk::models::CardModel> cards;
+                    if (recipientsPair.first == "private") {
+                        // private:<type>:<value>
+                        auto pairTypeAndValue = vcli::parsePair(recipientsPair.second);
+                        std::string type = pairTypeAndValue.first;
+                        bool isSearchPrivateCard = true; // search the Private Virgil Card[s] with confirmed identity
+                        std::string value = pairTypeAndValue.second;
+                        cards = vcli::getRecipientCards(verboseArg.isSet(), recipientsPair.first, recipientsPair.second,
+                                                        isSearchPrivateCard);
+                    } else {
+                        // Else recipientsPair.first [id | vcard | email]
+                        bool isSearchPrivateCard = false; // search the Global Virgil Card[s]
+                        cards = vcli::getRecipientCards(verboseArg.isSet(), recipientsPair.first, recipientsPair.second,
+                                                        isSearchPrivateCard);
+                    }
                     recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
-
                 }
             }
         }
 
-        if (recipientsPasswords.empty() && pubKey_recipientId.empty() && recipientCards.empty()) {
+        if (recipientsPasswords.empty() && pubkeysAndRecipientsId.empty() && recipientCards.empty()) {
             throw std::invalid_argument("no recipients are defined");
         }
 
-        if (!pubKey_recipientId.empty()) {
-            checkUniqueRecipientsId(pubKey_recipientId, recipientCards);
+        if (!pubkeysAndRecipientsId.empty()) {
+            checkUniqueRecipientsId(pubkeysAndRecipientsId, recipientCards);
         }
 
         // Create cipher
         vcrypto::VirgilStreamCipher cipher;
         addPasswordsRecipients(verboseArg.isSet(), recipientsPasswords, &cipher);
-        addKeysRecipients(verboseArg.isSet(), pubKey_recipientId, recipientCards, &cipher);
+        addKeysRecipients(verboseArg.isSet(), pubkeysAndRecipientsId, recipientCards, &cipher);
 
         // Prepare input
         std::istream* inStream;
@@ -337,4 +348,3 @@ void addKeysRecipients(const bool verbose, const std::vector<PairPubKey_Recipien
         }
     }
 }
-

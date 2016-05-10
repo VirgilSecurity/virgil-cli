@@ -98,12 +98,14 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> recipientArg(
             "r", "recipient", "Recipient defined in format:\n"
-                              "[password|id|vcard|email]:<value>\n"
+                              "[password|id|vcard|email|private]:<value>\n"
                               "where:\n"
                               "\t* if password, then <value> - recipient's password;\n"
                               "\t* if id, then <value> - recipient's UUID associated with Virgil Card identifier;\n"
                               "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
-                              "\t* if email, then <value> - recipient's email;\n",
+                              "\t* if email, then <value> - recipient's email;\n"
+                              "\t* if private, then set type:value for searching Private Virgil Card[s].\n"
+                              " For example: private:email:<obfuscator_email>. ( obfiscator - see 'virgil hash')\n",
             true, "", "arg");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
@@ -187,7 +189,7 @@ int MAIN(int argc, char** argv) {
                 privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
             }
 
-            // type = [id|vcard|email]
+            // type = [id|vcard|email|private]
             // if recipient email:<value>, then a download Virgil Card with confirmed identity
             if (type == "id") {
                 std::string recipientCardId = value;
@@ -196,9 +198,16 @@ int MAIN(int argc, char** argv) {
                 return EXIT_SUCCESS;
             }
 
-            bool includeUnconrimedCard = false;
-            std::vector<std::string> recipientCardsId =
-                vcli::getRecipientCardsId(verboseArg.isSet(), type, value, includeUnconrimedCard);
+            std::vector<std::string> recipientCardsId;
+            if (type == "private") {
+                bool isSearchPrivateCard = true; // search the Private Virgil Card[s]
+                recipientCardsId = vcli::getRecipientCardsId(verboseArg.isSet(), type, value, isSearchPrivateCard);
+
+            } else {
+                // type = [id|vcard|email]
+                bool isSearchPrivateCard = false; // search the Global Virgil Card[s]
+                recipientCardsId = vcli::getRecipientCardsId(verboseArg.isSet(), type, value, isSearchPrivateCard);
+            }
 
             if (recipientCardsId.empty()) {
                 if (verboseArg.isSet()) {
