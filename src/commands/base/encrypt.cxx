@@ -91,20 +91,19 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Alice encrypts the data for Bob using his email (searching the Global Virgil Card[s]):\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n");
+                           "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n\n");
 
         examples.push_back("Alice encrypts the data for Bob using his email (searching the Private Virgil Card[s]):\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc private:email:bob@domain.com\n");
+                           "virgil encrypt -i plain.txt -o plain.txt.enc private:email:bob@domain.com\n\n");
 
         examples.push_back("Alice encrypts the data for Bob and Tom using their emails:\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com\n");
+                           "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com\n\n");
 
         examples.push_back("Alice encrypts the data with a password:\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc password:strong_password\n");
+                           "virgil encrypt -i plain.txt -o plain.txt.enc password:strong_password\n\n");
 
-        examples.push_back("Alice encrypts the data with a combination of Public Key + recipient-id."
-                           "You will be asked to enter recipient-id:\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc pubkey:public.key:ForBob\n");
+        examples.push_back("Alice encrypts the data with a combination of Public Key + recipient-id:\n"
+                           "virgil encrypt -i plain.txt -o plain.txt.enc pubkey:bob/public.key:ForBob\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

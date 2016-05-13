@@ -64,7 +64,7 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Validated identity:\n"
-                           "virgil identity-valid -f alice/validated-identity.txt\n");
+                           "virgil identity-valid -f alice/validated-identity.txt\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

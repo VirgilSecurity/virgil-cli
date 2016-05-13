@@ -62,15 +62,15 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Search for a Private Virgil Card from the Virgil Keys service\n";
+        std::string description = "Search for a Private Virgil Card from the Virgil Keys Service\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Search for Virgil Cards with a confirmed Identity:\n"
-                           "virgil card-search-private -d alice@gmail.com -t email -o alice/\n");
+        examples.push_back("Search for Private Virgil Card with a confirmed Identity:\n"
+                           "virgil card-search-private -d alice@gmail.com -t email -o alice/\n\n");
 
         examples.push_back(
-            "Search for Cards with a confirmed Identity and uncorfirmaed Identity:\n"
-            "virgil card-search-private -d alice@gmail.com -t email -o alice/ -u alice-with-unconfirmed-identity/\n");
+            "Search for Private Virgil Card with a confirmed Identity and uncorfirmaed Identity:\n"
+            "virgil card-search-private -d alice@gmail.com -t email -o alice-with-unconfirmed-identity/ -u\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

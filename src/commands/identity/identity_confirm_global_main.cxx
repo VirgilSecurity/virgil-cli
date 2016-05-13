@@ -63,16 +63,17 @@ int MAIN(int argc, char** argv) {
         std::string description = "Confirm identity for a global Virgil Card\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Identity confirmation with requests number limit = 2 and time validity limit = 3600:\n"
-                           "virgil identity-confirm  -d email:alice@domain.com -o alice/validated-identity.txt\n");
+        examples.push_back(
+            "Identity confirmation with requests number limit = 2 and time validity limit = 3600:\n"
+            "virgil identity-confirm-global -d email:alice@domain.com -o alice/validated-identity.txt\n\n");
 
         examples.push_back("Identity confirmation with requests number limit = 10 and time validity limit = 60:\n"
-                           "virgil identity-confirm -d email:alice@domain.com -t 60 -c 10 -o "
-                           "alice/validated-identity.txt\n");
+                           "virgil identity-confirm-global -d email:alice@domain.com -t 60 -c 10 -o "
+                           "alice/validated-identity.txt\n\n");
 
         examples.push_back("Identity confirmation with requests number limit = 1 and time validity limit = 3600:\n"
-                           "virgil identity-confirm  --action-id <action_id> --confirmation-code <code>"
-                           " -o alice/validated-identity.txt\n");
+                           "virgil identity-confirm-global --action-id <action_id> --confirmation-code <code>"
+                           " -o alice/validated-identity.txt\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -132,7 +133,7 @@ int MAIN(int argc, char** argv) {
             std::cout << "Confirme identity " << recipientValue << std::endl;
         }
         auto validatedIdentity = servicesHub.identity().confirm(actionId, confirmationCode, timeToliveArg.getValue(),
-                                                           countToLiveArg.getValue());
+                                                                countToLiveArg.getValue());
 
         if (verboseArg.isSet()) {
             std::cout << "An Identity " << recipientType << ":" << recipientValue << " is confirmed" << std::endl;
@@ -161,10 +162,11 @@ int MAIN(int argc, char** argv) {
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "identity-confirm. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "identity-confirm-global. Error: " << exception.error() << " for arg " << exception.argId()
+                  << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "identity-confirm. Error: " << exception.what() << std::endl;
+        std::cerr << "identity-confirm-global. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

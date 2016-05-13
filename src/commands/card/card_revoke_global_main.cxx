@@ -66,10 +66,10 @@ int MAIN(int argc, char** argv) {
         std::vector<std::string> examples;
         examples.push_back("Revoke the Virgil Card:\n"
                            "virgil card-revoke-global -a <card_id> -f alice/validated-identities.txt "
-                           "-k alice/private.key\n");
+                           "-k alice/private.key\n\n");
 
-        examples.push_back("Revoke the Virgil Card:\n"
-                           "virgil card-revoke-global -a <card_id> -d alice@domain.com -k alice/private.key\n");
+        examples.push_back("Revoke the Virgil Card with confirming identity:\n"
+                           "virgil card-revoke-global -a <card_id> -d alice@domain.com -k alice/private.key\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -78,8 +78,8 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", false, "",
-                                                          "file");
+        TCLAP::ValueArg<std::string> validatedIdentityArg(
+            "f", "validated-identity", "Validated identity. See 'virgil identity-confirm-global'", false, "", "file");
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
 
@@ -148,11 +148,11 @@ int MAIN(int argc, char** argv) {
             if (verboseArg.isSet()) {
                 std::cout << messageSuccess << std::endl;
             }
-
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "card-revoke-global. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-revoke-global. Error: " << exception.error() << " for arg " << exception.argId()
+                  << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
         std::cerr << "card-revoke-global. Error: " << exception.what() << std::endl;

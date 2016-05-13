@@ -61,15 +61,15 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Revoke Virgil Card from the Virgil Public Key service.\n";
+        std::string description = "Revoke a Private Virgil Card from the Virgil Public Key service.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
+        examples.push_back("Revoke a Private Virgil Card with a confirmed identity:\n"
                            "virgil card-revoke-private -a <card_id> -f alice/validated-identities.file "
-                           "-k alice/private.key\n");
+                           "-k alice/private.key\n\n");
 
-        examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
-                           "virgil card-revoke-private -a <card_id> -k alice/private.key\n");
+        examples.push_back("Revoke a Private Virgil Card with a unconfirmed identity:\n"
+                           "virgil card-revoke-private -a <card_id> -k alice/private.key\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -78,8 +78,8 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", false, "",
-                                                          "file");
+        TCLAP::ValueArg<std::string> validatedIdentityArg(
+            "f", "validated-identity", "Validated identity. See 'virgil identity-confirm-private'", false, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 

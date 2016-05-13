@@ -60,15 +60,15 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Get user's Virgil Card/Cards from the Virgil Keys service\n";
+        std::string description = "Get user's Private/Global Virgil Card[s] from the Virgil Keys Service\n";
 
         std::vector<std::string> examples;
         examples.push_back("Receive a Card by card-id:\n"
-                           "virgil card-get -a <card-id> -o my.vcard\n");
+                           "virgil card-get -a <card-id> -o my.vcard\n\n");
 
         examples.push_back(
             "Return a group of Cards connected with public-key-id, card-id belongs to one of the Cards:\n"
-            "virgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n");
+            "virgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

@@ -64,27 +64,27 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Create the private Virgil Card.\n";
+        std::string description = "Create a Private Virgil Card.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Create a Card with a confirmed identity:\n"
+        examples.push_back("Create a Private Virgil Card with a confirmed identity:\n"
                            "virgil card-create-private -f alice/validated_identity.txt "
-                           "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n");
+                           "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing Card with a confirmed"
+        examples.push_back("Create a connection with an already existing a Private Virgil Card with a confirmed"
                            "Identity by public-key-id:\n"
                            "virgil card-create-private -f alice/validated_identity.txt "
-                           "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n");
+                           "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
 
         examples.push_back(
-            "Create a Card with an unconfirmed Identity:\n"
+            "Create a Private Virgil Card with an unconfirmed Identity:\n"
             "virgil card-create -d email:user@domain.com --public_key alice/public.key -k alice/private.key "
-            "-o alice/my_card.vcard\n");
+            "-o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing Card with an unconfirmed"
+        examples.push_back("Create a connection with an already existing a Private Virgil Card with an unconfirmed"
                            "Identity by public-key-id:\n"
                            "virgil card-create -d email:user@domain.com -e <pub_key_id> -k alice/private.key "
-                           "-o alice/my_card.vcard\n");
+                           "-o alice/my_card.vcard\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -95,8 +95,8 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: type:value", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", true, "",
-                                                          "file");
+        TCLAP::ValueArg<std::string> validatedIdentityArg(
+            "f", "validated-identity", "Validated identity. See 'virgil identity-confirm-private'", true, "", "file");
 
         TCLAP::ValueArg<std::string> publicKeyArg("", "public-key", "Public key", true, "", "file");
 
@@ -152,7 +152,7 @@ int MAIN(int argc, char** argv) {
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(validatedIdentity, publicKey, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A card with a confirmed identity has been created." << std::endl;
+                    std::cout << "A Private Virgil Card with a confirmed identity has been created." << std::endl;
                 }
             } else {
                 card = servicesHub.card().create(validatedIdentity, publicKeyId, credentials);

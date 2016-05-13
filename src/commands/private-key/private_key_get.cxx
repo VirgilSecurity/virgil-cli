@@ -64,7 +64,7 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back(
-            "virgil private-key-get -a <card_id> -f alice/validated_identity.txt -o alice/private.key\n");
+            "virgil private-key-get -a <card_id> -f alice/validated_identity.txt -o alice/private.key\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

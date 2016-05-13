@@ -73,9 +73,9 @@ int MAIN(int argc, char** argv) {
                                   " or with its Virgil Card.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r vcard:bob/bob.vcard\n");
+        examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r vcard:bob/bob.vcard\n\n");
 
-        examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r pubkey:bob/public.key\n");
+        examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r pubkey:bob/public.key\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

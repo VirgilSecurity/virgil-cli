@@ -63,7 +63,7 @@ int MAIN(int argc, char** argv) {
         std::string description = "Delete the Private key from the Private Key Service\n";
 
         std::vector<std::string> examples;
-        examples.push_back("virgil private-key-del -k private.key -a <card_id>\n");
+        examples.push_back("virgil private-key-del -k private.key -a <card_id>\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

@@ -64,23 +64,23 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Create the Global Virgil Card.\n";
+        std::string description = "Create a Global Virgil Card.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Create a Card with a confirmed identity:\n"
+        examples.push_back("Create a Global Virgil Card:\n"
                            "virgil card-create-global -f alice/validated_identity_global.txt "
                            "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing Card"
+        examples.push_back("Create a connection with an already existing the Global Virgil Card, "
                            "Identity by public-key-id:\n"
-                           "virgil card-create -f alice/validated_identity_global.txt "
+                           "virgil card-create-global -f alice/validated_identity_global.txt "
                            "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a Card with a confirmed identity:\n"
+        examples.push_back("Create a Global Virgil Card with confirming identity:\n"
                            "virgil card-create-global -d alice@domain.com "
                            "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing Card"
+        examples.push_back("Create a connection with an already existing Card  with confirming identity, "
                            "Identity by public-key-id:\n"
                            "virgil card-create-global -d alice@domain.com "
                            "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
@@ -151,14 +151,13 @@ int MAIN(int argc, char** argv) {
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(validatedIdentity, publicKey, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A card with a confirmed identity has been created." << std::endl;
+                    std::cout << "A Global Virgil Card has been created." << std::endl;
                 }
             } else {
                 card = servicesHub.card().create(validatedIdentity, publicKeyId, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A Global Virgil Card with a confirmed identity, which is connected with already "
-                                 "existing one by"
-                                 " public-key-id has been created."
+                    std::cout << "A Global Virgil Card which is connected with already "
+                                 "existing one by public-key-id has been created."
                               << std::endl;
                 }
             }
@@ -188,14 +187,14 @@ int MAIN(int argc, char** argv) {
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(validatedIdentity, publicKey, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A Global Virgil Card with a confirmed identity has been created." << std::endl;
+                    std::cout << "A Global Virgil Card has been created." << std::endl;
                 }
             } else {
                 // publicKeyIdArg
                 card = servicesHub.card().create(validatedIdentity, publicKeyId, credentials);
                 if (verboseArg.isSet()) {
-                    std::cout << "A Global Virgil Card with a confirmed identity, which is connected with already existing one by"
-                                 " public-key-id="
+                    std::cout << "A Global Virgil Card which is connected with already "
+                                 "existing one by public-key-id="
                               << publicKeyId << " has been created." << std::endl;
                 }
             }

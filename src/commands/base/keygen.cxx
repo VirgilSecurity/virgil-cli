@@ -74,24 +74,24 @@ int MAIN(int argc, char** argv) {
         std::vector<std::string> examples;
         examples.push_back(
             "Generate Curve25519 Private Key(default), your password will be requested:\n"
-            "virgil keygen -o alice/private.key\n");
+            "virgil keygen -o alice/private.key\n\n");
 
         examples.push_back(
             "Generate Elliptic Curve Private Key with password protection, your password will be requested:\n"
-            "virgil keygen -o alice/private.key\n");
+            "virgil keygen -o alice/private.key\n\n");
 
         examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
-                           "virgil keygen -o alice/private.key -p STRONGPASS\n");
+                           "virgil keygen -o alice/private.key -p STRONGPASS\n\n");
 
         examples.push_back("Generate Elliptic Curve Private Key with password protection "
                            "with detailed information:\n"
-                           "virgil keygen -o alice/private.key -p STRONGPASS --VERBOSE\n");
+                           "virgil keygen -o alice/private.key -p STRONGPASS --VERBOSE\n\n");
 
         examples.push_back("Generate Elliptic 521-bits NIST Curve Private Key:\n"
-                           "virgil keygen -o alice/private.key -a secp521r1\n");
+                           "virgil keygen -o alice/private.key -a secp521r1\n\n");
 
         examples.push_back("Generate RSA Private Key:\n"
-                           "virgil keygen -o alice/private.key -a rsa8192\n");
+                           "virgil keygen -o alice/private.key -a rsa8192\n\n");
 
         std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
 

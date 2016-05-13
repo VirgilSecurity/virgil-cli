@@ -60,7 +60,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Performs the global search for the applications' Virgil Cards.\n";
+        std::string description = "Performs the global search for the applications Virgil Cards.\n";
 
         std::vector<std::string> examples;
         examples.push_back("The global search for application Cards by email:\n"
@@ -70,7 +70,7 @@ int MAIN(int argc, char** argv) {
                            "virgil card-search-global -c <app_name>\n\n");
 
         examples.push_back("Get all application cards:\n"
-                           "virgil card-search-global -c \"*\"\n");
+                           "virgil card-search-global -c \"com.virgilsecurity.*\"\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -105,7 +105,8 @@ int MAIN(int argc, char** argv) {
 
         if (appCards.empty()) {
             if (verboseArg.isSet()) {
-                std::cout << "Cards by name: " << applicationNameArg.getValue() << " haven't been found." << std::endl;
+                std::cout << "Card[s] by name: " << applicationNameArg.getValue() << " haven't been found."
+                          << std::endl;
             }
             return EXIT_FAILURE;
         }

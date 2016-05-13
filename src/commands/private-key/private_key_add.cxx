@@ -71,7 +71,7 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Add Private Key to Private Keys Service:\n"
-                           "virgil private-key-add -k private.key -a <card_id>\n");
+                           "virgil private-key-add -k private.key -a <card_id>\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

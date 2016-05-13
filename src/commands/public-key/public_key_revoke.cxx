@@ -65,18 +65,18 @@ int MAIN(int argc, char** argv) {
     try {
         std::string description =
             "Revoke a chain of cards with (un)confirmed identities connected by public-key-id from "
-            "virgil Keys Service.\n";
+            "Virgil Keys Service.\n";
 
         std::vector<std::string> examples;
         examples.push_back("Revoke a chain of cards with confirmed identities connected by public-key-id from "
-                           "virgil Keys Service:\n"
+                           "Virgil Keys Service:\n"
                            "virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key"
-                           " -f alice/validated-identity.txt\n");
+                           " -f alice/validated-identity.txt\n\n");
 
         examples.push_back("Revoke a chain of cards with unconfirmed identities connected by public-key-id from "
-                           "virgil Keys Service:\n"
+                           "Virgil Keys Service:\n"
                            "virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key"
-                           " -d email:user@domain.com\n");
+                           " -d email:user@domain.com\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
