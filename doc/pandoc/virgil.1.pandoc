@@ -39,17 +39,32 @@ The **Virgil** program is a command line tool for using Virgil Security stack fu
 **verify**
 :   Verify data and signature with Public Key.
 
+**hash**
+: Derives the obfuscated data from incoming parameters using PBKDF function.
 
 # IDENTITY SERVICE COMMANDS
 
-**identity-confirm**
+**identity-confirm-global**
 :   Confirmation of the Identity.
 Returns validation_token which is required for operations with Cards and confirmed identity:
 
-1. `card-create(1)`;
-1. `card-revoke(1)`;
+1. `card-create-global(1)`;
+1. `card-revoke-global(1)`;
 1. `public-key-revoke(1).
 
+
+**identity-confirm-private**
+:   Confirmation of the Identity.
+Returns validation_token which is required for operations with Cards and confirmed identity:
+
+1. `card-create-private(1)`;
+1. `card-revoke-private(1)`;
+1. `public-key-revoke(1).
+
+
+**identity-verify**
+: Verify an identity
+Returns action_id.
 
 **identity-validate**
 :   Validates the passed token.
@@ -69,35 +84,30 @@ Instead of deleting every Card one at a time we can delete all the Cards connect
 
 # VIRGIL CARD SERVICE COMMANDS
 
-**card-create**
-:   Create a Virgil Card.
-Creates a Card with a confirmed Identity. This means identity-verify; identity-confirm.
+**card-create-global**
+:   Create a Global Virgil Card.
+Creates a Global Virgil Card. This means identity-verify; identity-confirm-global.
 
+**card-create-private**
+:   Create a Private Virgil Card.
+Creates a Private Virgil Card. This means identity-confirm-private.
 
-**card-get**
-:   Get user's Virgil Card from the Virgil Keys service.
+**card-search-global**
+:   Search Card by email or application name search
 
-
-**card-search**
+**card-search-private**
 :   Search Card by email, search with criteria:\
 1. Including Cards with unconfirmed Identity;\
 1. Search for Cards which have signed some other Cards.\
 
+**card-get**
+:   Get user's Virgil Card from the Virgil Keys service.
 
-**card-search-app**
-:   Search for Application Cards.
+**card-revoke-private**
+:   Revoke a Private Virgil Card by card-id.
 
-
-**card-sign**
-:   Sign a Virgil Card. We can start trusting another Card by signing it.
-
-**card-unsign**
-:   Untrust a Virgil Card
-Cancel sign of an already signed Card.
-
-
-**card-revoke**
-:   Revoke a Virgil Card by card-id.
+**card-revoke-global**
+:   Revoke a Global Virgil Card by card-id.
 
 
 # PRIVATE KEYS SERVICE COMMANDS
@@ -114,30 +124,26 @@ Cancel sign of an already signed Card.
 
 # SEE ALSO
 
-keygen(1)
-key2pub(1)
-encrypt(1)
-decrypt(1)
-sign(1)
-verify(1)
-hash(1)
-
-identity-verify(1)
-identity-confirm-global(1)
-identity-confirm-private(1)
-identity-valid(1)
-
-public-key-get(1)
-public-key-revoke(1)
-
-card-create-global(1)
-card-create-private(1)
-card-search-global(1)
-card-search-private(1)
-card-get(1)
-card-revoke-private(1)
-card-revoke-global(1)
-
-private-key-add(1)
-private-key-get(1)
+keygen(1)\
+key2pub(1)\
+encrypt(1)\
+decrypt(1)\
+sign(1)\
+verify(1)\
+hash(1)\
+identity-verify(1)\
+identity-confirm-global(1)\
+identity-confirm-private(1)\
+identity-valid(1)\
+public-key-get(1)\
+public-key-revoke(1)\
+card-create-global(1)\
+card-create-private(1)\
+card-search-global(1)\
+card-search-private(1)\
+card-get(1)\
+card-revoke-private(1)\
+card-revoke-global(1)\
+private-key-add(1)\
+private-key-get(1)\
 private-key-del(1)

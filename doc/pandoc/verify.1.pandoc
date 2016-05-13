@@ -8,8 +8,8 @@
 
 # SYNOPSIS
 
-**virgil verify** [-i *file*] [-o *file*] -s *file* -r *arg* [-V] [--] [--version] [-h]
-
+        virgil verify  [-i <file>] [-o <file>] [--return-status] -s <file> -r <arg>
+               [-V] [--] [--version] [-h]
 
 # DESCRIPTION
 
@@ -18,46 +18,46 @@ Verify data and signature with given user's identifier or with its Public Key.
 
 # OPTIONS
 
-    -i *file*,  --in *file*
-     Data to be verified. If omitted, stdin is used.
+        -i <file>,  --in <file>
+         Data to be verified. If omitted, stdin is used.
 
-    -o *file*,  --out *file*
-     Verification result: success | failure. If omitted, stdout is used.
+        -o <file>,  --out <file>
+         Verification result: success | failure. If omitted, stdout is used.
 
-    --return-status
-     Only return status, ignore '-o, --out'
+        --return-status
+         Only return status, ignore '-o, --out'
 
-    -s *file*,  --sign *file*
-     (required)  Digest sign.
+        -s <file>,  --sign <file>
+         (required)  Digest sign.
 
-    -r *arg*,  --recipient *arg*
-     (required)  Recipient defined in format:
+        -r <arg>,  --recipient <arg>
+         (required)  Recipient defined in format:
 
-     [id|vcard|pubkey]:<value*
+         [id|vcard|pubkey]:<value>
 
-     where:
+         where:
 
-        * if id, then *value* - recipient's UUID associated with Virgil Card
-     identifier;
+            * if id, then <value> - recipient's UUID associated with Virgil Card
+         identifier;
 
-        * if vcard, then *value* - recipient's Virgil Card/Cards file
+            * if vcard, then <value> - recipient's Virgil Card/Cards file
 
-          stored locally;
+              stored locally;
 
-        * if pubkey, then *value* - recipient's Public Key.
+            * if pubkey, then <value> - recipient's Public Key.
 
 
-    -V,  --VERBOSE
-     Show detailed information
+        -V,  --VERBOSE
+         Show detailed information
 
-    --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+        --,  --ignore_rest
+         Ignores the rest of the labeled arguments following this flag.
 
-    --version
-     Displays version information and exits.
+        --version
+         Displays version information and exits.
 
-    -h,  --help
-     Displays usage information and exits.
+        -h,  --help
+         Displays usage information and exits.
 
 
 # EXAMPLES
@@ -69,5 +69,5 @@ Verify data and signature with given user's identifier or with its Public Key.
 
 # SEE ALSO
 
-virgil(1)
+virgil(1)\
 sign(1)

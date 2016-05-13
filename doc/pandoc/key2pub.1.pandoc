@@ -8,7 +8,7 @@
 
 # SYNOPSIS
 
-**virgil key2pub** [-i *file*] [-o *file*] [-p *arg*] [-V] [--] [--version] [-h]
+        virgil key2pub  [-i <file>] [-o <file>] [-p <arg>] [-V] [--] [--version] [-h]
 
 
 # DESCRIPTION
@@ -18,26 +18,27 @@ Get Public Key from the given Private Key
 
 # OPTIONS
 
-    -i *file*,  --in *file*
-     Private key. If omitted, stdin is used.
+        -i <file>,  --in <file>
+         Private key. If omitted, stdin is used.
 
-    -o *file*,  --out *file*
-     Public key. If omitted, stdout is used.
+        -o <file>,  --out <file>
+         Public key. If omitted, stdout is used.
 
-    -p *arg*,  --private-key-password *arg*
-     Password to be used for Private Key encryption.
+        -p <arg>,  --private-key-password <arg>
+         Password to be used for Private Key encryption.
 
-    -V,  --VERBOSE
-     Show detailed information
+        -V,  --VERBOSE
+         Show detailed information
 
-    --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+        --,  --ignore_rest
+         Ignores the rest of the labeled arguments following this flag.
 
-    --version
-     Displays version information and exits.
+        --version
+         Displays version information and exits.
 
-    -h,  --help
-     Displays usage information and exits.
+        -h,  --help
+         Displays usage information and exits.
+
 
 
 # EXAMPLES
@@ -50,5 +51,5 @@ Get Public Key from the given Private Key
 
 # SEE ALSO
 
-virgil(1)
+virgil(1)\
 keygen(1)

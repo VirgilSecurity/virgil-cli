@@ -9,11 +9,12 @@
 
 # SYNOPSIS
 
-**virgil identity-valid** -f *file* [-V] [--] [--version] [-h]
+        virgil identity-valid -f <file> [-V] [--] [--version] [-h]
+
 
 # DESCRIPTION
 
-Check *validated-identity* received by *identity-confirm*
+Check *validated-identity* received by *identity-confirm-global*
 
 
 # OPTIONS
@@ -46,5 +47,5 @@ On success, true is returned else false.
 
 # SEE ALSO
 
-virgil(1)
+virgil(1)\
 identity-confirm(1)

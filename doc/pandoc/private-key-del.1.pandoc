@@ -8,7 +8,9 @@
 
 # SYNOPSIS
 
-**virgil private-key-del** -a *arg* -k *file* [-p *arg*] [-V] [--] [--version] [-h]
+        virgil private-key-del  -a <arg> -k <file> [-p <arg>] [-V] [--] [--version]
+                        [-h]
+
 
 # DESCRIPTION
 
@@ -45,6 +47,7 @@ Delete the Private Key from the Private Keys Service.
 
 # SEE ALSO
 
-virgil(1)
-keygen(1)
-identity-confirm(1)
+virgil(1)\
+keygen(1)\
+identity-confirm-private(1)\
+identity-confirm-global(1)

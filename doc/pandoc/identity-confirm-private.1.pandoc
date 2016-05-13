@@ -4,61 +4,54 @@
 
 # NAME
 
-**identity-confirm** -- confirm an Identity
+**identity-confirm-private** -- generate validation token based on application's private key.
 
 
 # SYNOPSIS
 
-**virgil identity-confirm** [-o *file*] [-d *arg*] [--action-id *arg*]
-                     [--confirmation-code *arg*] [-t *int*] [-c *int*] [-V]
-                     [--] [--version] [-h]
+        virgil identity-confirm-private  [-o <file>] -d <arg> -t <arg> --app-key <file>
+                                 [--app-key-password <arg>] [-V] [--]
+                                 [--version] [-h]
 
 
 # DESCRIPTION
 
-It is required to pass **identity-confirm** if you want
-to confirm your Identity so that other people can be sure
-that a received signature, encrypted data came from you.
-After entering your email *confirmation_code* will be sent
-to you, you have to enter it to receive a validated-identity.
-**validated-identity** consists of *validation_token* and your
-Identity. It is required for the following operations:\
-1. create a Card with a confirmed Identity;\
-1. revoke a Card, a group of Cards;\
+Provides a helper methods to generate validation token based on
+application's private key.
+It is required for the following operations:
+1. create a Private Virgil Card with a confirmed Identity;\
+1. revoke a Private Virgil Card, a group of Cards;\
 1. get a Private key from the Private Keys Service.
 
 
 # OPTIONS
 
-    -o *file*,  --out *file*
-     Validated identity. If omitted, stdout is used.
+        -o <file>,  --validation-token <file>
+         A Validation-token. If omitted, stdout is used.
 
-    -d *arg*,  --identity *arg*
-     Identity email
+        -d <arg>,  --identity <arg>
+         (required)  Identity value
 
-    --action-id *arg*
-     Action id.
+        -t <arg>,  --identity-type <arg>
+         (required)  Identity type
 
-    --confirmation-code *arg*
-     Confirmation code
+        --app-key <file>
+         (required)  Application Private key
 
-    -t *int*,  --time-to-live *int*
-     Time to live, by default = 3600.
+        --app-key-password <arg>
+         Password to be used for Application Private Key encryption.
 
-    -c *int*,  --count-to-live *int*
-     Count to live, by default = 2.
+        -V,  --VERBOSE
+         Show detailed information
 
-    -V,  --VERBOSE
-     Show detailed information
+        --,  --ignore_rest
+         Ignores the rest of the labeled arguments following this flag.
 
-    --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+        --version
+         Displays version information and exits.
 
-    --version
-     Displays version information and exits.
-
-    -h,  --help
-     Displays usage information and exits.
+        -h,  --help
+         Displays usage information and exits.
 
 
 
@@ -77,22 +70,13 @@ is returned. On error, throw exeption.
 
 # EXAMPLES
 
-1. Identity confirmation with requests number limit = 2 and time validity limit = 3600:
+1. Generate validation-token:
 
-        virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt
-
-1. Identity confirmation with requests number limit = 10 and time validity limit = 60:
-
-        virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt -l 60 -c 10
-
-1. Identity confirmation with requests number limit = 2 and time validity limit = 3600:
-
-        virgil identity-confirm  --action-id *action_id* --confirmation-code *code* -o alice/validated-identity.txt
-
+        virgil identity-confirm-private -d alice@domain.com -t email -o validated-identity-private.txt --app-key application-private.key
 
 # SEE ALSO
 
-virgil(1)
-card-create(1)
-card-revoke(1)
+virgil(1)\
+card-create-private(1)\
+card-revoke-private(1)\
 private-key-get(1)

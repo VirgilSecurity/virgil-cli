@@ -4,14 +4,14 @@
 
 # NAME
 
-**identity-confirm** -- confirm an Identity
+**identity-confirm-global** -- confirm identity for a Global Virgil Card
 
 
 # SYNOPSIS
 
-**virgil identity-confirm** [-o *file*] [-d *arg*] [--action-id *arg*]
-                     [--confirmation-code *arg*] [-t *int*] [-c *int*] [-V]
-                     [--] [--version] [-h]
+        virgil identity-confirm-global  [-o <file>] [-d <arg>] [--action-id <arg>]
+                                [--confirmation-code <arg>] [-t <int>] [-c
+                                <int>] [-V] [--] [--version] [-h]
 
 
 # DESCRIPTION
@@ -22,43 +22,43 @@ that a received signature, encrypted data came from you.
 After entering your email *confirmation_code* will be sent
 to you, you have to enter it to receive a validated-identity.
 **validated-identity** consists of *validation_token* and your
-Identity. It is required for the following operations:\
-1. create a Card with a confirmed Identity;\
-1. revoke a Card, a group of Cards;\
+Identity. It is required for the following operations:
+1. create a Global Virgil Card;\
+1. revoke a Global Virgil Card, a group of Cards;\
 1. get a Private key from the Private Keys Service.
 
 
 # OPTIONS
 
-    -o *file*,  --out *file*
-     Validated identity. If omitted, stdout is used.
+        -o <file>,  --out <file>
+         Validated identity. If omitted, stdout is used.
 
-    -d *arg*,  --identity *arg*
-     Identity email
+        -d <arg>,  --identity <arg>
+         Identity email
 
-    --action-id *arg*
-     Action id.
+        --action-id <arg>
+         Action id.
 
-    --confirmation-code *arg*
-     Confirmation code
+        --confirmation-code <arg>
+         Confirmation code
 
-    -t *int*,  --time-to-live *int*
-     Time to live, by default = 3600.
+        -t <int>,  --time-to-live <int>
+         Time to live, by default = 3600.
 
-    -c *int*,  --count-to-live *int*
-     Count to live, by default = 2.
+        -c <int>,  --count-to-live <int>
+         Count to live, by default = 2.
 
-    -V,  --VERBOSE
-     Show detailed information
+        -V,  --VERBOSE
+         Show detailed information
 
-    --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+        --,  --ignore_rest
+         Ignores the rest of the labeled arguments following this flag.
 
-    --version
-     Displays version information and exits.
+        --version
+         Displays version information and exits.
 
-    -h,  --help
-     Displays usage information and exits.
+        -h,  --help
+         Displays usage information and exits.
 
 
 
@@ -79,20 +79,20 @@ is returned. On error, throw exeption.
 
 1. Identity confirmation with requests number limit = 2 and time validity limit = 3600:
 
-        virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt
+        virgil identity-confirm-global -d email:alice@gmail.com -o validated-identity.txt
 
 1. Identity confirmation with requests number limit = 10 and time validity limit = 60:
 
-        virgil identity-confirm -d email:alice@gmail.com -o validated-identity.txt -l 60 -c 10
+        virgil identity-confirm-global -d email:alice@gmail.com -o validated-identity.txt -l 60 -c 10
 
 1. Identity confirmation with requests number limit = 2 and time validity limit = 3600:
 
-        virgil identity-confirm  --action-id *action_id* --confirmation-code *code* -o alice/validated-identity.txt
+        virgil identity-confirm-global --action-id <action_id> --confirmation-code <code> -o alice/validated-identity.txt
 
 
 # SEE ALSO
 
-virgil(1)
-card-create(1)
-card-revoke(1)
+virgil(1)\
+card-create-global(1)\
+card-revoke-global(1)\
 private-key-get(1)

@@ -1,56 +1,60 @@
-% CARD-SEARCH-APP(1) Virgil Security CLI (2.0.0) | Virgil
+% CARD-SEARCH-GLOBAL(1) Virgil Security CLI (2.0.0) | Virgil
 % (c) Virgil Security Inc
 % February 29, 2016
 
 # NAME
 
-**card-search-app** -- search for application Cards
+**card-search-global** -- the global search for the applications Virgil Card[s]
 
 # SYNOPSIS
 
-**virgil card-search-app**  [-o *arg*] -c *arg* [-V] [--] [--version] [-h]
+        virgil card-search-global  {-e <arg>|-c <arg>} [-o <arg>] [-V] [--] [--version]
+                           [-h]
 
 # DESCRIPTION
 
-Search for application Cards
+Search for a Global Virgil Card from the Virgil Keys Service
 
 
 # OPTIONS
 
-    -o *arg*,  --out *arg*
-     Folder in which will be saved a Virgil Cards
+        -e <arg>,  --email <arg>
+         (OR required)  email
+             -- OR --
+        -c <arg>,  --application-name <arg>
+         (OR required)  Application name, name = 'com.virgilsecurity.*' - get
+         all Cards
 
-    -c *arg*,  --application-name *arg*
-     (required)  Application name, name = '*' - get all Cards
+        -o <arg>,  --out <arg>
+         Folder in which will be saved a Virgil Cards
 
+        -V,  --VERBOSE
+         Show detailed information
 
-    -V,  --VERBOSE
-     Show detailed information
+        --,  --ignore_rest
+         Ignores the rest of the labeled arguments following this flag.
 
-    --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+        --version
+         Displays version information and exits.
 
-    --version
-     Displays version information and exits.
-
-    -h,  --help
-     Displays usage information and exits.
+        -h,  --help
+         Displays usage information and exits.
 
 
 
 # EXAMPLES
 
-1. Search for application Cards:
+1. The global search for application Cards by email:
 
-        virgil card-search-app -c *app_name* -o app_cards/
+        virgil card-search-global -e <app_name> -o app_cards/
 
-1. Return all application Card:
+1. The global search for application Cards by application name:
 
-        virgil card-search-app -c "*" -o all_app_cards/
+        virgil card-search-global -c "com.virgilsecurity.*" -o all_app_cards/
 
 
 # SEE ALSO
 
-virgil(1)
-card-create(1)
+virgil(1)\
+card-create-global(1)\
 card-get(1)
