@@ -2,9 +2,9 @@ language: cpp
 branches:
   only:
     - master
-    - develop
     - v2.0.0
-    - /^release-.*$/
+    - openwrt
+    - /^release*$/
 
 matrix:
   include:

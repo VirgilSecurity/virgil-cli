@@ -46,9 +46,9 @@ The **Virgil** program is a command line tool for using Virgil Security stack fu
 :   Confirmation of the Identity.
 Returns validation_token which is required for operations with Cards and confirmed identity:
 
-1. [`card-create(1)`](../markdown/card-create.1.md);
-1. [`card-revoke(1)`](../markdown/card-revoke.1.md);
-1. [`public-key-revoke(1)`](../markdown/public-key-revoke.1.md).
+1. `card-create(1)`;
+1. `card-revoke(1)`;
+1. `public-key-revoke(1).
 
 
 **identity-validate**
@@ -114,23 +114,30 @@ Cancel sign of an already signed Card.
 
 # SEE ALSO
 
-[`keygen(1)`](../markdown/keygen.1.md),\
-[`key2pub(1)`](../markdown/key2pub.1.md),\
-[`encrypt(1)`](../markdown/encrypt.1.md),\
-[`decrypt(1)`](../markdown/decrypt.1.md),\
-[`sign(1)`](../markdown/sign.1.md),\
-[`verify(1)`](../markdown/verify.1.md),\
-[`identity-confirm(1)`](../markdown/identity-confirm.1.md),\
-[`identity-valid(1)`](../markdown/identity-valid.1.md),\
-[`public-key-get(1)`](../markdown/public-key-get.1.md),\
-[`public-key-revoke(1)`](../markdown/public-key-revoke.1.md),\
-[`card-create(1)`](../markdown/card-create.1.md),\
-[`card-get(1)`](../markdown/card-get.1.md),\
-[`card-search(1)`](../markdown/card-search.1.md),\
-[`card-search-app(1)`](../markdown/card-search-app.1.md),\
-[`card-sign(1)`](../markdown/card-sign.1.md),\
-[`card-unsign(1)`](../markdown/card-unsign.1.md),\
-[`card-revoke(1)`](../markdown/card-revoke.1.md),\
-[`private-key-add(1)`](../markdown/private-key-add.1.md),\
-[`private-key-get(1)`](../markdown/private-key-get.1.md),\
-[`private-key-del(1)`](../markdown/private-key-del.1.md)
+keygen(1)
+key2pub(1)
+encrypt(1)
+decrypt(1)
+sign(1)
+verify(1)
+hash(1)
+
+identity-verify(1)
+identity-confirm-global(1)
+identity-confirm-private(1)
+identity-valid(1)
+
+public-key-get(1)
+public-key-revoke(1)
+
+card-create-global(1)
+card-create-private(1)
+card-search-global(1)
+card-search-private(1)
+card-get(1)
+card-revoke-private(1)
+card-revoke-global(1)
+
+private-key-add(1)
+private-key-get(1)
+private-key-del(1)

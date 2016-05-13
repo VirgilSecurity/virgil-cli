@@ -84,16 +84,14 @@ int MAIN(int argc, char** argv) {
         auto identityPair = vcli::parsePair(identityArg.getValue());
         std::string arg = "-d, --identity";
         vcli::checkFormatIdentity(arg, identityPair.first);
+
+        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+
         std::string userEmail = identityPair.second;
-        vsdk::dto::Identity identity(userEmail, vsdk::models::IdentityModel::Type::Email);
+        std::string actionId = servicesHub.identity().verify(userEmail, vsdk::dto::VerifiableIdentityType::Email);
 
-        std::cout << identityArg.getValue() << std::endl;
-        std::cout << userEmail << std::endl;
-
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
-        std::string actionId = servicesHub.identity().verify(identity);
         vcli::writeBytes(outArg.getValue(), actionId);
-
         if (verboseArg.isSet()) {
             std::cout << "An Identity with email:" << userEmail << " verified" << std::endl;
             std::cout << "Now you can confirm the Identity with a command identity-confirm" << std::endl;

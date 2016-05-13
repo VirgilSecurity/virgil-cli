@@ -72,8 +72,9 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Decrypt data for user identified by password:\n"
                            "virgil decrypt -i plain.txt.enc -o plain.txt -r password:strong_password\n");
 
-        examples.push_back("Decrypt data for Bob identified by his Private Key + recipient-id [id|vcard|email]:\n"
-                           "virgil decrypt -i plain.txt.enc -o plain.txt -k bob/private.key -r id:<recipient_id>\n");
+        examples.push_back(
+            "Decrypt data for Bob identified by his Private Key + recipient-id [id|vcard|email|private]:\n"
+            "virgil decrypt -i plain.txt.enc -o plain.txt -k bob/private.key -r id:<recipient_id>\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -98,12 +99,14 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> recipientArg(
             "r", "recipient", "Recipient defined in format:\n"
-                              "[password|id|vcard|email]:<value>\n"
+                              "[password|id|vcard|email|private]:<value>\n"
                               "where:\n"
                               "\t* if password, then <value> - recipient's password;\n"
                               "\t* if id, then <value> - recipient's UUID associated with Virgil Card identifier;\n"
                               "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
-                              "\t* if email, then <value> - recipient's email;\n",
+                              "\t* if email, then <value> - recipient's email;\n"
+                              "\t* if private, then set type:value for searching Private Virgil Card[s].\n"
+                              " For example: private:email:<obfuscator_email>. ( obfiscator - see 'virgil hash')\n",
             true, "", "arg");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
@@ -169,9 +172,8 @@ int MAIN(int argc, char** argv) {
         std::string value = recipientFormat.second;
 
         if (type == "password") {
-            vcrypto::VirgilByteArray pass = virgil::crypto::str2bytes(value);
-            cipher.decryptWithPassword(dataSource, dataSink, pass);
-
+            vcrypto::VirgilByteArray password = virgil::crypto::str2bytes(value);
+            cipher.decryptWithPassword(dataSource, dataSink, password);
             if (verboseArg.isSet()) {
                 std::cout << "File has been decrypted with a password" << std::endl;
             }
@@ -188,7 +190,7 @@ int MAIN(int argc, char** argv) {
                 privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
             }
 
-            // type = [id|vcard|email]
+            // type = [id|vcard|email|private]
             // if recipient email:<value>, then a download Virgil Card with confirmed identity
             if (type == "id") {
                 std::string recipientCardId = value;
@@ -197,8 +199,27 @@ int MAIN(int argc, char** argv) {
                 return EXIT_SUCCESS;
             }
 
-            bool includeUnconrimedCard = false;
-            std::vector<std::string> recipientCardsId = vcli::getRecipientCardsId(type, value, includeUnconrimedCard);
+            std::vector<std::string> recipientCardsId;
+            if (type == "private") {
+                // private:<type>:<value>
+                auto pairTypeAndValue = vcli::parsePair(value);
+                std::string type = pairTypeAndValue.first;
+                std::string value = pairTypeAndValue.second;
+
+                bool isSearchPrivateCard = true; // search the Private Virgil Card[s]
+                recipientCardsId = vcli::getRecipientCardsId(verboseArg.isSet(), type, value, isSearchPrivateCard);
+            } else {
+                // type = [id|vcard|email]
+                bool isSearchPrivateCard = false; // search the Global Virgil Card[s]
+                recipientCardsId = vcli::getRecipientCardsId(verboseArg.isSet(), type, value, isSearchPrivateCard);
+            }
+
+            if (recipientCardsId.empty()) {
+                if (verboseArg.isSet()) {
+                    std::cout << "Cards by " << type << ":" << value << " haven't been found." << std::endl;
+                    return EXIT_FAILURE;
+                }
+            }
 
             size_t countErrorDecryptWithKey = 0;
             for (const auto& recipientCardId : recipientCardsId) {

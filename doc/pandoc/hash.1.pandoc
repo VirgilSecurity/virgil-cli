@@ -4,11 +4,11 @@
 
 # NAME
 
-**sign** -- sign data
+**hash** -- sign data
 
 # SYNOPSIS
 
-**virgil sign** [-i *file*] [-o *file*] -k *file* [-p *arg*] [-V] [--] [--version] [-h]
+**virgil hash** [-i *file*] [-o *file*] -k *file* [-p *arg*] [-V] [--] [--version] [-h]
 
 # DESCRIPTION
 

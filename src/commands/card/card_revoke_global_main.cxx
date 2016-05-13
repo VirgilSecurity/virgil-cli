@@ -40,30 +40,36 @@
 
 #include <tclap/CmdLine.h>
 
+#include <virgil/crypto/VirgilByteArray.h>
+
 #include <virgil/sdk/ServicesHub.h>
-#include <virgil/sdk/io/Marshaller.h>
 
 #include <cli/version.h>
 #include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 
-namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
+namespace vsdk = virgil::sdk;
 namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN private_key_del_main
+#define MAIN card_revoke_global_main
 #endif
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Delete the Private key from the Private Key Service\n";
+        std::string description = "Revoke a Global Virgil Card from the Virgil Public Key service.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("virgil private-key-del -k private.key -a <card_id>\n");
+        examples.push_back("Revoke the Virgil Card:\n"
+                           "virgil card-revoke-global -a <card_id> -f alice/validated-identities.txt "
+                           "-k alice/private.key\n");
+
+        examples.push_back("Revoke the Virgil Card:\n"
+                           "virgil card-revoke-global -a <card_id> -d alice@domain.com -k alice/private.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -72,7 +78,12 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key", true, "", "file");
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", false, "",
+                                                          "file");
+
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
+
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
             "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
@@ -82,8 +93,12 @@ int MAIN(int argc, char** argv) {
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
+        cmd.xorAdd(identityArg, validatedIdentityArg);
         cmd.add(cardIdArg);
         cmd.parse(argc, argv);
+
+        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
         std::string cardId = cardIdArg.getValue();
 
@@ -97,19 +112,50 @@ int MAIN(int argc, char** argv) {
         }
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
-        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
-        servicesHub.privateKey().del(cardId, credentials);
+        std::string messageSuccess = "Card with card-id " + cardIdArg.getValue() + " revoked.";
+        if (validatedIdentityArg.isSet()) {
+            vsdk::dto::ValidatedIdentity validatedIdentity =
+                vcli::readValidateIdentity(validatedIdentityArg.getValue());
 
-        if (verboseArg.isSet()) {
-            std::cout << "The Private key has been deleted from the Private Keys Service" << std::endl;
+            servicesHub.card().revoke(cardId, validatedIdentity, credentials);
+            if (verboseArg.isSet()) {
+                std::cout << messageSuccess << std::endl;
+            }
+        } else {
+            std::string recipientType = "email";
+            std::string recipientValue = identityArg.getValue();
+
+            std::string actionId =
+                servicesHub.identity().verify(recipientValue, vsdk::dto::VerifiableIdentityType::Email);
+            if (verboseArg.isSet()) {
+                std::cout << "Send confirmation-code to " << recipientValue << std::endl;
+            }
+
+            std::cout << "Enter confirmation code which was sent on you identity - " << recipientType << ":"
+                      << recipientValue << std::endl;
+            std::string confirmationCode = vcli::inputShadow();
+
+            if (verboseArg.isSet()) {
+                std::cout << "Confirme identity " << recipientValue << std::endl;
+            }
+
+            vsdk::dto::ValidatedIdentity validatedIdentity = servicesHub.identity().confirm(actionId, confirmationCode);
+            if (verboseArg.isSet()) {
+                std::cout << "An Identity " << recipientType << ":" << recipientValue << " is confirmed" << std::endl;
+            }
+
+            servicesHub.card().revoke(cardId, validatedIdentity, credentials);
+            if (verboseArg.isSet()) {
+                std::cout << messageSuccess << std::endl;
+            }
+
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "private-key-del. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-revoke-global. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "private-key-del. Error: " << exception.what() << std::endl;
+        std::cerr << "card-revoke-global. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

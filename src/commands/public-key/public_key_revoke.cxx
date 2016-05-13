@@ -116,7 +116,8 @@ int MAIN(int argc, char** argv) {
         }
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
+        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
         if (validatedIdentityArg.isSet()) {
             std::vector<vsdk::dto::ValidatedIdentity> validatedIdentities;
@@ -139,8 +140,7 @@ int MAIN(int argc, char** argv) {
                 std::string arg = "-d, --identity";
                 vcli::checkFormatIdentity(arg, recipientType);
 
-                vsdk::models::IdentityModel::Type identityType = vsdk::models::fromString(recipientType);
-                vsdk::dto::Identity identity(recipientValue, identityType);
+                vsdk::dto::Identity identity(recipientValue, recipientType);
                 identities.push_back(identity);
             }
 

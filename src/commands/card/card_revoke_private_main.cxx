@@ -34,50 +34,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <fstream>
 #include <iostream>
-#include <iterator>
-#include <stdexcept>
 #include <string>
+#include <stdexcept>
 
 #include <tclap/CmdLine.h>
 
 #include <virgil/crypto/VirgilByteArray.h>
-#include <virgil/crypto/VirgilStreamSigner.h>
-#include <virgil/crypto/stream/VirgilStreamDataSource.h>
+
+#include <virgil/sdk/ServicesHub.h>
 
 #include <cli/version.h>
+#include <cli/config.h>
+#include <cli/pair.h>
 #include <cli/util.h>
 
 namespace vcrypto = virgil::crypto;
+namespace vsdk = virgil::sdk;
 namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN sign_main
+#define MAIN card_revoke_private_main
 #endif
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Sign data with given user's Private Key.\n";
+        std::string description = "Revoke Virgil Card from the Virgil Public Key service.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key\n");
+        examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
+                           "virgil card-revoke-private -a <card_id> -f alice/validated-identities.file "
+                           "-k alice/private.key\n");
 
-        examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key -p STRONGPASS\n");
+        examples.push_back("Revoke Virgil Card with a confirmed identity:\n"
+                           "virgil card-revoke-private -a <card_id> -k alice/private.key\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be signed. If omitted, stdin is used.", false, "",
-                                           "file");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Digest sign. If omitted, stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", false, "",
+                                                          "file");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private Key.", true, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
             "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
@@ -87,50 +91,49 @@ int MAIN(int argc, char** argv) {
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
         cmd.add(privateKeyArg);
-        cmd.add(outArg);
-        cmd.add(inArg);
+        cmd.add(validatedIdentityArg);
+        cmd.add(cardIdArg);
         cmd.parse(argc, argv);
 
-        // Prepare input
-        std::istream* inStream;
-        std::ifstream inFile;
-        if (inArg.getValue().empty() || inArg.getValue() == "-") {
-            inStream = &std::cin;
-        } else {
-            inFile.open(inArg.getValue(), std::ios::in | std::ios::binary);
-            if (!inFile) {
-                throw std::invalid_argument("cannot read file: " + inArg.getValue());
-            }
-            inStream = &inFile;
-        }
+        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
-        // Read private key
-        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(privateKeyArg.getValue());
+        std::string cardId = cardIdArg.getValue();
+
+        std::string pathPrivateKey = privateKeyArg.getValue();
+        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
         vcrypto::VirgilByteArray privateKeyPassword;
         if (privateKeyPasswordArg.isSet()) {
             privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
         } else {
             privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
         }
+        vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
-        // Create signer
-        vcrypto::VirgilStreamSigner signer;
+        std::string messageSuccess = "Card with card-id " + cardIdArg.getValue() + " revoked.";
+        if (validatedIdentityArg.isSet()) {
+            vsdk::dto::ValidatedIdentity validatedIdentity =
+                vcli::readValidateIdentity(validatedIdentityArg.getValue());
 
-        // Sign data
-        vcrypto::stream::VirgilStreamDataSource dataSource(*inStream);
-        vcrypto::VirgilByteArray sign = signer.sign(dataSource, privateKey, privateKeyPassword);
-
-        // Prepare output. Write sign to the output.
-        vcli::writeBytes(outArg.getValue(), sign);
-
-        if (verboseArg.isSet()) {
-            std::cout << "File signed" << std::endl;
+            servicesHub.card().revoke(cardId, validatedIdentity, credentials);
+            if (verboseArg.isSet()) {
+                std::cout << messageSuccess << std::endl;
+            }
+        } else {
+            auto card = servicesHub.card().get(cardId);
+            vsdk::dto::Identity identity(card.getCardIdentity().getValue(), card.getCardIdentity().getType());
+            servicesHub.card().revoke(cardId, identity, credentials);
+            if (verboseArg.isSet()) {
+                std::cout << messageSuccess << std::endl;
+            }
         }
+
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "sing. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-revoke-private. Error: " << exception.error() << " for arg " << exception.argId()
+                  << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "sign. Error: " << exception.what() << std::endl;
+        std::cerr << "card-revoke-private. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

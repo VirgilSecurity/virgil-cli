@@ -64,7 +64,7 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Receive a Card by card-id:\n"
-                           "virgil card-get -a <card-id> -o cards/\n");
+                           "virgil card-get -a <card-id> -o my.vcard\n");
 
         examples.push_back(
             "Return a group of Cards connected with public-key-id, card-id belongs to one of the Cards:\n"
@@ -97,7 +97,9 @@ int MAIN(int argc, char** argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, vcli::readConfigFile());
+        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+
         if (publicKeyIdArg.isSet() && privateKeyArg.isSet()) {
             std::string pathPrivateKey = privateKeyArg.getValue();
             vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);

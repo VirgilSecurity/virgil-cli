@@ -42,6 +42,7 @@
 #include <vector>
 
 #if defined(WIN32)
+#include <cfgpath.h>
 #include <Windows.h>
 #else
 #include <termios.h>
@@ -59,7 +60,6 @@
 
 #include <cli/ini.hpp>
 #include <cli/pair.h>
-#include <cli/config.h>
 #include <cli/version.h>
 #include <cli/util.h>
 
@@ -95,21 +95,60 @@ static void setStdinEcho(bool enable) {
 #endif
 }
 
-vsdk::ServiceUri virgil::cli::readConfigFile() {
-    std::string pathConfigFile = INSTALL_CONFIG_FILE_DIR_NAME + "virgil-cli-config.ini";
+virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
+    std::string pathConfigFile;
+#if defined(WIN32)
+    char cfgdir[MAX_PATH];
+    get_user_config_folder(cfgdir, sizeof(cfgdir), "virgil-cli");
+    if (cfgdir[0] == 0) {
+        if (verbose) {
+            std::cout << "Can't find config file";
+        }
+        return ConfigFile();
+    } else {
+        if (verbose) {
+            std::cout << "File found by path:" << std::string(cfgdir) << std::endl;
+        }
+    }
+
+    pathConfigFile = std::string(cfgdir);
+    pathConfigFile += "\\virgil-cli-config.ini";
+#else
+    pathConfigFile = INSTALL_CONFIG_FILE_DIR + "/virgil-cli-config.ini";
+#endif
+
     std::ifstream inFile(pathConfigFile, std::ios::in | std::ios::binary);
     if (!inFile) {
-        std::cout << "Can't read config file:\n" + pathConfigFile << std::endl;
-        return vsdk::ServiceUri();
+        if (verbose) {
+            std::cout << "Can't read config file:\n" + pathConfigFile << std::endl;
+        }
+        return ConfigFile();
     }
 
     try {
         std::string ini((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
         std::stringstream ss(ini);
         INI::Parser iniParser(ss);
-        return vsdk::ServiceUri(iniParser.top()("URI")["identity-service"],
-                                iniParser.top()("URI")["public-key-service"],
-                                iniParser.top()("URI")["private-key-service"]);
+
+        ConfigFile configFile;
+        configFile.virgilAccessToken = iniParser.top()("Virgil Access Token")["token"];
+        if (configFile.virgilAccessToken.empty()) {
+            configFile.virgilAccessToken = VIRGIL_ACCESS_TOKEN;
+        }
+
+        configFile.serviceUri =
+            vsdk::ServiceUri(iniParser.top()("URI")["identity-service"], iniParser.top()("URI")["public-key-service"],
+                             iniParser.top()("URI")["private-key-service"]);
+
+        if (verbose) {
+            std::cout << "Virgil Access Token:\n" << configFile.virgilAccessToken << "\n\n";
+            std::cout << "Identity Service:\n" << configFile.serviceUri.getIdentityService() << "\n\n";
+            std::cout << "Public Key Service:\n" << configFile.serviceUri.getPublicKeyService() << "\n\n";
+            std::cout << "Private Key Service:\n" << configFile.serviceUri.getPrivateKeyService() << "\n\n";
+        }
+
+        return configFile;
+
     } catch (std::runtime_error& exception) {
         std::string error = "Can't parse config file " + pathConfigFile + ".\n";
         error += exception.what();
@@ -175,9 +214,11 @@ void virgil::cli::printVersion(std::ostream& out, const char* programName) {
 
 void virgil::cli::checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
-    if (type != "password" && type != "id" && type != "vcard" && type != "email" && type != "pubkey") {
-        throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [password|id|vcard|email|pubkey]");
+    if (type != "password" && type != "id" && type != "vcard" && type != "email" && type != "pubkey" &&
+        type != "private") {
+        throw std::invalid_argument("invalid type format: " + type +
+                                    ". Expected format: '<key>:<value>'. "
+                                    "Where <key> = [password|id|vcard|email|pubkey|private]");
     }
 }
 
@@ -285,6 +326,20 @@ void virgil::cli::writeBytes(const std::string& out, const std::string& data) {
     return virgil::cli::writeBytes(out, virgil::crypto::str2bytes(data));
 }
 
+void virgil::cli::writeOutput(const std::string& out, const std::string& data) {
+    if (out.empty()) {
+        std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(std::cout));
+        std::cout << std::endl;
+        return;
+    }
+
+    std::ofstream outFile(out, std::ios::out | std::ios::binary);
+    if (!outFile) {
+        throw std::invalid_argument("cannot write file: " + out);
+    }
+    outFile << data;
+}
+
 //-------------------------------------------------------------------------------------
 
 std::string virgil::cli::getDescriptionMessage(const std::string description, std::vector<std::string> examples) {
@@ -301,37 +356,74 @@ std::string virgil::cli::getDescriptionMessage(const std::string description, st
 
 //-------------------------------------------------------------------------------------
 
-std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const std::string& type, const std::string& value,
-                                                                    const bool includeUnconrimedCard) {
-
+std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool verbose, const std::string& type,
+                                                                    const std::string& value,
+                                                                    const bool isSearchForPrivateCard) {
     std::vector<vsdk::models::CardModel> recipientCards;
-    vsdk::ServicesHub servicesHub(VIRGIL_ACCESS_TOKEN, virgil::cli::readConfigFile());
-    if (type == "id") {
-        recipientCards.push_back(servicesHub.card().get(value));
-    } else if (type == "email") {
-        vsdk::dto::Identity identity(value, vsdk::models::IdentityModel::Type::Email);
+    ConfigFile configFile = readConfigFile(verbose);
+    vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+
+    if (isSearchForPrivateCard) {
         std::vector<vsdk::models::CardModel> cards;
-        cards = servicesHub.card().search(identity, includeUnconrimedCard);
-        recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
+        if (verbose) {
+            std::cout << "Searching the Private Virgil Card[s] with confirmed identity by type:" << type
+                      << " value:" << value << "\n\n";
+        }
+        cards = servicesHub.card().search(value, type);
+        if (!cards.empty()) {
+            recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
+            if (verbose) {
+                std::cout << "For the entered type:" << type << "  value:" << value << "have been received "
+                          << cards.size() << " Virgil Card[s].\n\n";
+            }
+        } else {
+            throw std::invalid_argument(std::string("Private Virgil Cards by type: ") + type + " value:" + value +
+                                        " haven't been found.");
+        }
+    }
+
+    if (type == "id") {
+        auto card = servicesHub.card().get(value);
+        recipientCards.push_back(card);
+        if (verbose) {
+            std::cout << "For the entered id: " << value << " have been received a Virgil Card." << std::endl;
+        }
+    } else if (type == "email" && !isSearchForPrivateCard) {
+        std::vector<vsdk::models::CardModel> cards;
+        if (verbose) {
+            std::cout << "Searching the Global Virgil Card[s] by type:" << type << " value:" << value << "\n\n";
+        }
+        cards = servicesHub.card().searchGlobal(value, vsdk::dto::IdentityType::Email);
+        if (!cards.empty()) {
+            recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
+            if (verbose) {
+                std::cout << "For the entered type:" << type << "  value:" << value << "have been received "
+                          << cards.size() << " Virgil Card[s].\n\n";
+            }
+        } else {
+            throw std::invalid_argument(std::string("Global Virgil Cards by email: ") + value + " haven't been found.");
+        }
     } else if (type == "vcard") {
         std::string pathTofile = value;
         std::ifstream inFile(pathTofile, std::ios::in | std::ios::binary);
         if (!inFile) {
             throw std::invalid_argument("cannot read file: " + pathTofile);
         }
-
         std::string jsonCard((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
         vsdk::models::CardModel card = vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(jsonCard);
+        if (verbose) {
+            std::cout << "A Virgil Card by path " << pathTofile << " read." << std::endl;
+        }
         recipientCards.push_back(card);
     }
 
     return recipientCards;
 }
 
-std::vector<std::string> virgil::cli::getRecipientCardsId(const std::string& type, const std::string& value,
-                                                          const bool includeUnconrimedCard) {
+std::vector<std::string> virgil::cli::getRecipientCardsId(const bool verbose, const std::string& type,
+                                                          const std::string& value, const bool isSearchForPrivateCard) {
     std::vector<vsdk::models::CardModel> recipientCards =
-        virgil::cli::getRecipientCards(type, value, includeUnconrimedCard);
+        virgil::cli::getRecipientCards(verbose, type, value, isSearchForPrivateCard);
     std::vector<std::string> recipientCardsId;
     for (const auto& recipientCard : recipientCards) {
         recipientCardsId.push_back(recipientCard.getId());

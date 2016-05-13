@@ -92,5 +92,5 @@ If a *sender* has a Card, his recipient-id is the Card's id. Also Public Keys is
 
 # SEE ALSO
 
-[`virgil(1)`](../markdown/virgil.1.md),\
-[`decrypt(1)`](../markdown/decrypt.1.md)
+virgil(1)
+decrypt(1)
