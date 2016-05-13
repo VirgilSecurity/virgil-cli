@@ -40,15 +40,16 @@
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/crypto/VirgilByteArray.h>
 #include <virgil/crypto/foundation/VirgilPBKDF.h>
-#include <virgil/crypto/foundation/VirgilBase64.h>
+
+#include <virgil/sdk/util/obfuscator.h>
 
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 
 namespace vcrypto = virgil::crypto;
+namespace vsdk = virgil::sdk;
 namespace vcli = virgil::cli;
 
 #ifdef SPLIT_CLI
@@ -114,17 +115,14 @@ int MAIN(int argc, char** argv) {
 
         cmd.parse(argc, argv);
 
-        vcrypto::foundation::VirgilPBKDF pbkdf(vcrypto::str2bytes(saltArg.getValue()), iterationsArg.getValue());
-        pbkdf.setHash(hash_alg(algorithmArg.getValue()));
-        std::string value = vcli::readInput(inArg.getValue());
-
         if (verboseArg.isSet()) {
             std::cout << "Generating hash.." << std::endl;
         }
-        vcrypto::VirgilByteArray sequence = pbkdf.derive(vcrypto::str2bytes(value));
-        auto sequenceBase64 = vcrypto::foundation::VirgilBase64::encode(sequence);
-        vcli::writeOutput(outArg.getValue(), sequenceBase64);
 
+        std::string value = vcli::readInput(inArg.getValue());
+        auto sequenceBase64 = vsdk::util::obfuscate(value, saltArg.getValue(), hash_alg(algorithmArg.getValue()),
+                                                    iterationsArg.getValue());
+        vcli::writeOutput(outArg.getValue(), sequenceBase64);
         if (verboseArg.isSet()) {
             std::cout << "The hash generated" << std::endl;
         }
