@@ -1,35 +1,33 @@
-% CARD-CREATE-GLOBAL(1) Virgil Security CLI (2.0.0) | Virgil
-% (c) Virgil Security Inc
-% February 29, 2016
-
-# NAME
+NAME
+====
 
 **card-create-global** -- create a Global Virgil Card
 
-
-# SYNOPSIS
+SYNOPSIS
+========
 
        virgil card-create-global  {-e <arg>|--public-key <file>} {-d <arg>|-f <file>}
                            [-o <file>] -k <file> [-p <arg>] [-V] [--]
                            [--version] [-h]
 
-
-# DESCRIPTION
+DESCRIPTION
+===========
 
 Global Virgil Card is a base of building the net of trust between users.
 
-Connections between Cards can be created. Model many-to-many is implemented in PKI.
-It means that we can have Cards with:
+Connections between Cards can be created. Model many-to-many is
+implemented in PKI. It means that we can have Cards with:
 
-1. one Public Key and *different* Identities;
-1. one Public Key and *one* identity;
-1. different Public Keys and *different* Identities;
-1. different Public Keys and *one* Identity;
-1. one Public Key and *one* Identity connected with public-key-id;
-1. one Public Key and *different* identities connected with public-key-id.
+1.  one Public Key and *different* Identities;
+2.  one Public Key and *one* identity;
+3.  different Public Keys and *different* Identities;
+4.  different Public Keys and *one* Identity;
+5.  one Public Key and *one* Identity connected with public-key-id;
+6.  one Public Key and *different* identities connected
+    with public-key-id.
 
-
-# OPTIONS
+OPTIONS
+=======
 
         -e <arg>,  --public-key-id <arg>
          (OR required)  Public key identifier
@@ -66,29 +64,30 @@ It means that we can have Cards with:
         -h,  --help
          Displays usage information and exits.
 
+EXAMPLES
+========
 
-# EXAMPLES
-
-1. Create a Global Virgil Card:
+1.  Create a Global Virgil Card:
 
         virgil card-create -f validated-identity.txt --public-key public.key -k private.key -o my_card.vcard
 
-1. Create a connection with an already existing the Global Virgil Card,
-Identity by public-key-id:
+2.  Create a connection with an already existing the Global Virgil Card,
+    Identity by public-key-id:
 
         virgil card-create -f validated-identity.txt --public-key-id <public_key_id> -k private.key -o my_card.vcard
 
-1. Create a Global Virgil Card with confirming identity:
+3.  Create a Global Virgil Card with confirming identity:
 
         virgil card-create-global -d alice@domain.com --public-key public.key -k alice/private.key -o alice/my_card.vcard
 
-1. Create a connection with an already existing Card  with confirming identity, Identity by public-key-id:
+4.  Create a connection with an already existing Card with confirming
+    identity, Identity by public-key-id:
 
         virgil card-create-global -d alice@domain.com -e <pub_key_id> -k alice/private.key -o alice/my_card.vcard
 
+SEE ALSO
+========
 
-# SEE ALSO
-
-virgil(1)\
-keygen(1)\
+virgil(1)  
+keygen(1)  
 identity-confirm-global(1)

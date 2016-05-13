@@ -1,35 +1,32 @@
-% PUBLIC-KEY-ADD(1) Virgil Security CLI (2.0.0) | Virgil
-% (c) Virgil Security Inc
-% February 29, 2016
-
-# NAME
+NAME
+====
 
 **identity-confirm-global** -- confirm identity for a Global Virgil Card
 
-
-# SYNOPSIS
+SYNOPSIS
+========
 
         virgil identity-confirm-global  [-o <file>] [-d <arg>] [--action-id <arg>]
                                 [--confirmation-code <arg>] [-t <int>] [-c
                                 <int>] [-V] [--] [--version] [-h]
 
+DESCRIPTION
+===========
 
-# DESCRIPTION
+It is required to pass **identity-confirm** if you want to confirm your
+Identity so that other people can be sure that a received signature,
+encrypted data came from you. After entering your email
+*confirmation\_code* will be sent to you, you have to enter it to
+receive a validated-identity. **validated-identity** consists of
+*validation\_token* and your Identity. It is required for the following
+operations:
 
-It is required to pass **identity-confirm** if you want
-to confirm your Identity so that other people can be sure
-that a received signature, encrypted data came from you.
-After entering your email *confirmation_code* will be sent
-to you, you have to enter it to receive a validated-identity.
-**validated-identity** consists of *validation_token* and your
-Identity. It is required for the following operations:
+1.  create a Global Virgil Card;
+2.  revoke a Global Virgil Card, a group of Cards;
+3.  get a Private key from the Private Keys Service.
 
-1. create a Global Virgil Card;
-1. revoke a Global Virgil Card, a group of Cards;
-1. get a Private key from the Private Keys Service.
-
-
-# OPTIONS
+OPTIONS
+=======
 
         -o <file>,  --out <file>
          Validated identity. If omitted, stdout is used.
@@ -61,9 +58,8 @@ Identity. It is required for the following operations:
         -h,  --help
          Displays usage information and exits.
 
-
-
-# RETURN VALUE
+RETURN VALUE
+============
 
 On success, *validated identity model*:
 
@@ -75,25 +71,28 @@ On success, *validated identity model*:
 
 is returned. On error, throw exeption.
 
+EXAMPLES
+========
 
-# EXAMPLES
-
-1. Identity confirmation with requests number limit = 2 and time validity limit = 3600:
+1.  Identity confirmation with requests number limit = 2 and time
+    validity limit = 3600:
 
         virgil identity-confirm-global -d email:alice@gmail.com -o validated-identity.txt
 
-1. Identity confirmation with requests number limit = 10 and time validity limit = 60:
+2.  Identity confirmation with requests number limit = 10 and time
+    validity limit = 60:
 
         virgil identity-confirm-global -d email:alice@gmail.com -o validated-identity.txt -l 60 -c 10
 
-1. Identity confirmation with requests number limit = 2 and time validity limit = 3600:
+3.  Identity confirmation with requests number limit = 2 and time
+    validity limit = 3600:
 
         virgil identity-confirm-global --action-id <action_id> --confirmation-code <code> -o alice/validated-identity.txt
 
+SEE ALSO
+========
 
-# SEE ALSO
-
-virgil(1)\
-card-create-global(1)\
-card-revoke-global(1)\
+virgil(1)  
+card-create-global(1)  
+card-revoke-global(1)  
 private-key-get(1)

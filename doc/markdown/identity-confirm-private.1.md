@@ -1,31 +1,28 @@
-% PUBLIC-KEY-ADD(1) Virgil Security CLI (2.0.0) | Virgil
-% (c) Virgil Security Inc
-% February 29, 2016
+NAME
+====
 
-# NAME
+**identity-confirm-private** -- generate validation token based on
+application's private key.
 
-**identity-confirm-private** -- generate validation token based on application's private key.
-
-
-# SYNOPSIS
+SYNOPSIS
+========
 
         virgil identity-confirm-private  [-o <file>] -d <arg> -t <arg> --app-key <file>
                                  [--app-key-password <arg>] [-V] [--]
                                  [--version] [-h]
 
-
-# DESCRIPTION
+DESCRIPTION
+===========
 
 Provides a helper methods to generate validation token based on
-application's private key.
-It is required for the following operations:
+application's private key. It is required for the following operations:
 
-1. create a Private Virgil Card with a confirmed Identity;
-1. revoke a Private Virgil Card, a group of Cards;
-1. get a Private key from the Private Keys Service.
+1.  create a Private Virgil Card with a confirmed Identity;
+2.  revoke a Private Virgil Card, a group of Cards;
+3.  get a Private key from the Private Keys Service.
 
-
-# OPTIONS
+OPTIONS
+=======
 
         -o <file>,  --validation-token <file>
          A Validation-token. If omitted, stdout is used.
@@ -54,9 +51,8 @@ It is required for the following operations:
         -h,  --help
          Displays usage information and exits.
 
-
-
-# RETURN VALUE
+RETURN VALUE
+============
 
 On success, *validated identity model*:
 
@@ -68,16 +64,17 @@ On success, *validated identity model*:
 
 is returned. On error, throw exeption.
 
+EXAMPLES
+========
 
-# EXAMPLES
-
-1. Generate validation-token:
+1.  Generate validation-token:
 
         virgil identity-confirm-private -d alice@domain.com -t email -o validated-identity-private.txt --app-key application-private.key
 
-# SEE ALSO
+SEE ALSO
+========
 
-virgil(1)\
-card-create-private(1)\
-card-revoke-private(1)\
+virgil(1)  
+card-create-private(1)  
+card-revoke-private(1)  
 private-key-get(1)

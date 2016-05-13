@@ -1,23 +1,21 @@
-% PUBLIC-KEY-ADD(1) Virgil Security CLI (2.0.0) | Virgil
-% (c) Virgil Security Inc
-% February 29, 2016
+NAME
+====
 
-# NAME
+**identity-validate** -- check *validated-identity* received by
+*identity-confirmglobal*
 
-**identity-validate** -- check *validated-identity* received by *identity-confirmglobal*
-
-
-# SYNOPSIS
+SYNOPSIS
+========
 
         virgil identity-valid -f <file> [-V] [--] [--version] [-h]
 
-
-# DESCRIPTION
+DESCRIPTION
+===========
 
 Check *validated-identity* received by *identity-confirm-global*
 
-
-# OPTIONS
+OPTIONS
+=======
 
     -f *file*,  --validated-identity *file*
      (required)  Validated identity
@@ -34,18 +32,18 @@ Check *validated-identity* received by *identity-confirm-global*
     -h,  --help
      Displays usage information and exits.
 
-
-
-# RETURN VALUE
+RETURN VALUE
+============
 
 On success, true is returned else false.
 
-
-# EXAMPLES
+EXAMPLES
+========
 
         virgil identity-valid -f validated-identity.txt
 
-# SEE ALSO
+SEE ALSO
+========
 
-virgil(1)\
+virgil(1)  
 identity-confirm-global(1)
