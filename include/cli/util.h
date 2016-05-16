@@ -47,16 +47,10 @@
 #include <virgil/sdk/ServiceUri.h>
 
 #include <cli/config.h>
+#include <cli/ConfigFile.h>
 
 namespace virgil {
 namespace cli {
-
-    struct ConfigFile {
-        std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
-        virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
-    };
-
-    ConfigFile readConfigFile(const bool verbose);
 
     std::string inputShadow();
 

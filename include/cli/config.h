@@ -46,7 +46,8 @@
 extern const std::string VIRGIL_ACCESS_TOKEN;
 
 #if !defined(WIN32)
-extern const std::string INSTALL_CONFIG_FILE_DIR;
+extern const std::string INSTALL_CONFIG_FILE_GLOBAL_DIR;
+extern const std::string INSTALL_CONFIG_FILE_LOCALE_DIR;
 #endif
 
 #endif /* VIRGIL_CLI_COMMON_CONFIG_H */

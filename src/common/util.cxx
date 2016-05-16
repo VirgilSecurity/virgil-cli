@@ -58,7 +58,6 @@
 #include <virgil/sdk/io/Marshaller.h>
 #include <virgil/sdk/models/PrivateKeyModel.h>
 
-#include <cli/ini.hpp>
 #include <cli/pair.h>
 #include <cli/version.h>
 #include <cli/util.h>
@@ -93,67 +92,6 @@ static void setStdinEcho(bool enable) {
 
     (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 #endif
-}
-
-virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
-    std::string pathConfigFile;
-#if defined(WIN32)
-    char cfgdir[MAX_PATH];
-    get_user_config_folder(cfgdir, sizeof(cfgdir), "virgil-cli");
-    if (cfgdir[0] == 0) {
-        if (verbose) {
-            std::cout << "Can't find config file";
-        }
-        return ConfigFile();
-    } else {
-        if (verbose) {
-            std::cout << "File found by path:" << std::string(cfgdir) << std::endl;
-        }
-    }
-
-    pathConfigFile = std::string(cfgdir);
-    pathConfigFile += "\\virgil-cli-config.ini";
-#else
-    pathConfigFile = INSTALL_CONFIG_FILE_DIR + "/virgil-cli-config.ini";
-#endif
-
-    std::ifstream inFile(pathConfigFile, std::ios::in | std::ios::binary);
-    if (!inFile) {
-        if (verbose) {
-            std::cout << "Can't read config file:\n" + pathConfigFile << std::endl;
-        }
-        return ConfigFile();
-    }
-
-    try {
-        std::string ini((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-        std::stringstream ss(ini);
-        INI::Parser iniParser(ss);
-
-        ConfigFile configFile;
-        configFile.virgilAccessToken = iniParser.top()("Virgil Access Token")["token"];
-        if (configFile.virgilAccessToken.empty()) {
-            configFile.virgilAccessToken = VIRGIL_ACCESS_TOKEN;
-        }
-
-        configFile.serviceUri =
-            vsdk::ServiceUri(iniParser.top()("URI")["identity-service"], iniParser.top()("URI")["public-key-service"],
-                             iniParser.top()("URI")["private-key-service"]);
-
-        if (verbose) {
-            std::cout << "Virgil Access Token:\n" << configFile.virgilAccessToken << "\n\n";
-            std::cout << "Identity Service:\n" << configFile.serviceUri.getIdentityService() << "\n\n";
-            std::cout << "Public Key Service:\n" << configFile.serviceUri.getPublicKeyService() << "\n\n";
-            std::cout << "Private Key Service:\n" << configFile.serviceUri.getPrivateKeyService() << "\n\n";
-        }
-
-        return configFile;
-
-    } catch (std::runtime_error& exception) {
-        std::string error = "Can't parse config file " + pathConfigFile + ".\n";
-        error += exception.what();
-        throw std::runtime_error(error);
-    }
 }
 
 std::string virgil::cli::inputShadow() {

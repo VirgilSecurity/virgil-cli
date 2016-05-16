@@ -34,11 +34,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef VIRGIL_CLI_CONFIG_H
+#define VIRGIL_CLI_CONFIG_H
+
+#include <string>
+
+#include <virgil/sdk/ServiceUri.h>
+
 #include <cli/config.h>
 
-const std::string VIRGIL_ACCESS_TOKEN = "@VIRGIL_ACCESS_TOKEN@";
+namespace virgil {
+namespace cli {
 
-#if !defined(WIN32)
-const std::string INSTALL_CONFIG_FILE_GLOBAL_DIR = "@INSTALL_CONFIG_FILE_GLOBAL_DIR@";
-const std::string INSTALL_CONFIG_FILE_LOCALE_DIR = "@INSTALL_CONFIG_FILE_LOCALE_DIR@";
-#endif
+    struct ConfigFile {
+        std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
+        virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
+    };
+
+    ConfigFile readConfigFile(const bool verbose);
+}
+}
+
+#endif /* VIRGIL_CLI_CONFIG_H */

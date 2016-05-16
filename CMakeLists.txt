@@ -105,15 +105,29 @@ if (MSVC)
     set (CURL_LIBRARY_DLL "${EXT_PREBUILD_MSVC_DIR}/${SYSTEM_ARCH}/libcurl/lib/libcurl.dll")
 endif (MSVC)
 
-if (UNIX)
-    set (CONFIG_FILE_DIR_NAME $ENV{HOME}/.virgil_cli/)
-else()
-    set (CONFIG_FILE_DIR_NAME $ENV{APPDATA}/virgil-cli)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    # Global:
+    set (CONFIG_FILE_GLOBAL_DIR "/Library/Application Support/virgil-cli/")
+
+    # Locale:
+    set (CONFIG_FILE__LOCALE_DIR "$ENV{HOME}/.config/virgil-cli")
+
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # Global:
+    set (CONFIG_FILE__LOCALE_DIR "/Library/Application Support/virgil-cli/")
+
+    # Locale:
+    set (CONFIG_FILE_GLOBAL_DIR "$ENV{HOME}/Library/Application Support/virgil-cli/")
+
+else ()
+    # win32
 endif ()
 
-set (INSTALL_CONFIG_FILE_DIR ${CONFIG_FILE_DIR_NAME} CACHE STRING "Installation directory name for config file")
+set (INSTALL_CONFIG_FILE_GLOBAL_DIR ${CONFIG_FILE_GLOBAL_DIR} CACHE STRING "Path by config file for all users")
+set (INSTALL_CONFIG_FILE_LOCALE_DIR ${CONFIG_FILE__LOCALE_DIR} CACHE STRING "Path by config file for current user")
 
-message (STATUS ${INSTALL_CONFIG_FILE_DIR})
+message (STATUS "Path by config file for all users:" ${INSTALL_CONFIG_FILE_GLOBAL_DIR})
+message (STATUS "Path by config file for current user:" ${INSTALL_CONFIG_FILE_LOCALE_DIR})
 
 set(TOKEN "eyJpZCI6ImM0OWVmOWQ4LWJiNTQtNGY2Zi04NzM0LTFjNDVjNWIxODBlMiIsImFwcGxpY2F0aW9uX2NhcmRfaWQiOiJiMmJlYzNjMS05ZjU0LTQyMDctYTY0Ny00YmE3NDI4MDY2NTMiLCJ0dGwiOi0xLCJjdGwiOi0xLCJwcm9sb25nIjowfQ==.MIGZMA0GCWCGSAFlAwQCAgUABIGHMIGEAkAC4w0Z6XFoGE+4VJk1jJlE3Vtaxwd7qSoEi16PgVaPQ1N/ZQd0hT/fkdueH2X4SYE+dd0Q3AIpMaJYYS56kptqAkAAm/noIrmVmcydoKD5xytXvRKRME5AhL/tifHbpyHnilPP0QhnoLVbUR6lo5uqPt6xzHnEok9omdREhq5wQ0Zx")
 
@@ -191,23 +205,42 @@ install (TARGETS virgil_cli
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    # Locale
     install (
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli-config.ini
-        DESTINATION ${INSTALL_CONFIG_FILE_DIR}
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.conf
+        DESTINATION ${INSTALL_CONFIG_FILE_LOCALE_DIR}
     )
+
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
+
+    # Global
+    install (
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.conf
+        DESTINATION ${INSTALL_CONFIG_FILE_GLOBAL_DIR}
+    )
+
+
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # Locale
     install (
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli-config.ini
-        DESTINATION ${INSTALL_CONFIG_FILE_DIR}
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.conf
+        DESTINATION ${INSTALL_CONFIG_FILE_LOCALE_DIR}
     )
+
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
+
+    # Global
+    install (
+        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.conf
+        DESTINATION ${INSTALL_CONFIG_FILE_GLOBAL_DIR}
+    )
+
 else ()
     # win32
     if (MSVC)
         install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
         install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
-        install (PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli-config.ini" DESTINATION "install")
+        install (PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.ini" DESTINATION "install")
     endif (MSVC)
 endif ()
 
@@ -245,22 +278,32 @@ if (MSVC)
 
     set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS
         "ExecWait '\\\"$INSTDIR\\\\install\\\\vc_redist.${SYSTEM_ARCH}.exe\\\" /install /quiet'"
+
+        "SetShellVarContext all"
+        "CreateDirectory \\\"$APPDATA\\\\virgil-cli\\\""
+        "CopyFiles \\\"install\\\\virgil-cli.ini\\\" \\\"$APPDATA\\\\virgil-cli\\\""
+
         "SetShellVarContext current"
         "CreateDirectory \\\"$APPDATA\\\\virgil-cli\\\""
-        "CopyFiles \\\"install\\\\virgil-cli-config.ini\\\" \\\"$APPDATA\\\\virgil-cli\\\""
-        "SetShellVarContext all"
+        "CopyFiles \\\"install\\\\virgil-cli.ini\\\" \\\"$APPDATA\\\\virgil-cli\\\""
     )
 
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}")
 
     set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
+        "SetShellVarContext all"
+        # Remove config file
+        # example C:\ProgramData\virgil-cli
+        "Delete \\\"$APPDATA\\\\virgil-cli\\\\virgil-cli.ini\\\""
+        # Remove directory
+        "RMDir \\\"$APPDATA\\\\virgil-cli\\\""
+
         "SetShellVarContext current"
         # Remove config file
         # example C:\Users\John\AppData\Roaming\virgil-cli
-        "Delete \\\"$APPDATA\\\\virgil-cli\\\\virgil-cli-config.ini\\\""
+        "Delete \\\"$APPDATA\\\\virgil-cli\\\\virgil-cli.ini\\\""
         # Remove directory
         "RMDir \\\"$APPDATA\\\\virgil-cli\\\""
-        "SetShellVarContext all"
     )
 
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}")
