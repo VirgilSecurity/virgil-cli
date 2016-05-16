@@ -107,17 +107,17 @@ endif (MSVC)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     # Global:
-    set (CONFIG_FILE_GLOBAL_DIR "/Library/Application Support/virgil-cli/")
+    set (CONFIG_FILE_GLOBAL_DIR "/Library/Application Support/virgil-cli")
 
     # Locale:
     set (CONFIG_FILE__LOCALE_DIR "$ENV{HOME}/.config/virgil-cli")
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # Global:
-    set (CONFIG_FILE__LOCALE_DIR "/Library/Application Support/virgil-cli/")
+    set (CONFIG_FILE__LOCALE_DIR "/Library/Application Support/virgil-cli")
 
     # Locale:
-    set (CONFIG_FILE_GLOBAL_DIR "$ENV{HOME}/Library/Application Support/virgil-cli/")
+    set (CONFIG_FILE_GLOBAL_DIR "$ENV{HOME}/Library/Application Support/virgil-cli")
 
 else ()
     # win32
