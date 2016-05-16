@@ -77,7 +77,7 @@ int MAIN(int argc, char** argv) {
             "virgil keygen -o alice/private.key\n\n");
 
         examples.push_back(
-            "Generate Elliptic Curve Private Key with password protection, your password will be requested:\n"
+            "Generate Elliptic Curve Private Key with password protection:\n"
             "virgil keygen -o alice/private.key\n\n");
 
         examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
