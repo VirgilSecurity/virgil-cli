@@ -39,30 +39,52 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <fstream>
+#include <iterator>
 
 #include <cli/version.h>
+#include <cli/util.h>
 
-typedef int (*main_func)(int argc, char **argv);
+typedef int (*main_func)(int argc, char** argv);
 
-int keygen_main(int argc, char **argv);
-int key2pub_main(int argc, char **argv);
-int keyreg_main(int argc, char **argv);
-int keyget_main(int argc, char **argv);
-int confirm_main(int argc, char **argv);
-int reconfirm_main(int argc, char **argv);
-int encrypt_main(int argc, char **argv);
-int decrypt_main(int argc, char **argv);
-int sign_main(int argc, char **argv);
-int verify_main(int argc, char **argv);
+// simple-action
+int hash_main(int argc, char** argv);
+int keygen_main(int argc, char** argv);
+int key2pub_main(int argc, char** argv);
+int encrypt_main(int argc, char** argv);
+int decrypt_main(int argc, char** argv);
+int sign_main(int argc, char** argv);
+int verify_main(int argc, char** argv);
 
-static void print_usage(std::ostream &out, const char *programName);
-static void print_version(std::ostream& out, const char *programName);
+// module-action
+int identity_verify_main(int argc, char** argv);
+int identity_confirm_global_main(int argc, char** argv);
+int identity_confirm_private_main(int argc, char** argv);
+int identity_valid_main(int argc, char** argv);
 
+int card_create_global_main(int argc, char** argv);
+int card_create_private_main(int argc, char** argv);
+int card_get_main(int argc, char** argv);
+int card_search_private_main(int argc, char** argv);
+int card_search_global_main(int argc, char** argv);
+int card_revoke_global_main(int argc, char** argv);
+int card_revoke_private_main(int argc, char** argv);
 
-int main(int argc, char **argv) {
+int public_key_get_main(int argc, char** argv);
+int public_key_revoke_main(int argc, char** argv);
+
+int private_key_add_main(int argc, char** argv);
+int private_key_get_main(int argc, char** argv);
+int private_key_del_main(int argc, char** argv);
+
+static void print_usage(std::ostream& out, const char* programName);
+
+int main(int argc, char** argv) {
     // Parse arguments.
     if (argc < 2) {
-        std::cerr << "Error: " << " Required argument missing: " << "command" << std::endl;
+        std::cerr << "Error: "
+                  << " Required argument is missing: "
+                  << "command" << std::endl;
         print_usage(std::cerr, argv[0]);
         return EXIT_FAILURE;
     }
@@ -72,67 +94,119 @@ int main(int argc, char **argv) {
         print_usage(std::cout, argv[0]);
         return EXIT_SUCCESS;
     } else if (firstArg == "--version") {
-        print_version(std::cout, argv[0]);
+        virgil::cli::printVersion(std::cout, argv[0]);
         return EXIT_SUCCESS;
     }
 
     std::map<std::string, main_func> commandsMap;
+    // simple-action
+    commandsMap["hash"] = &hash_main;
     commandsMap["keygen"] = &keygen_main;
     commandsMap["key2pub"] = &key2pub_main;
-    commandsMap["keyreg"] = &keyreg_main;
-    commandsMap["keyget"] = &keyget_main;
-    commandsMap["confirm"] = &confirm_main;
-    commandsMap["reconfirm"] = &reconfirm_main;
     commandsMap["encrypt"] = &encrypt_main;
     commandsMap["decrypt"] = &decrypt_main;
     commandsMap["sign"] = &sign_main;
     commandsMap["verify"] = &verify_main;
 
-    auto command = commandsMap.find(firstArg);
-    if (command != commandsMap.end()) {
-        command->second(argc - 1, argv + 1);
+    // module-action
+    commandsMap["identity-verify"] = &identity_verify_main;
+    commandsMap["identity-confirm-global"] = &identity_confirm_global_main;
+    commandsMap["identity-confirm-private"] = &identity_confirm_private_main;
+    commandsMap["identity-valid"] = &identity_valid_main;
+
+    commandsMap["card-create-global"] = &card_create_global_main;
+    commandsMap["card-create-private"] = &card_create_private_main;
+    commandsMap["card-get"] = &card_get_main;
+    commandsMap["card-search-private"] = &card_search_private_main;
+    commandsMap["card-search-global"] = &card_search_global_main;
+    commandsMap["card-revoke-global"] = &card_revoke_global_main;
+    commandsMap["card-revoke-private"] = &card_revoke_private_main;
+
+    commandsMap["public-key-get"] = &public_key_get_main;
+    commandsMap["public-key-revoke"] = &public_key_revoke_main;
+
+    commandsMap["private-key-add"] = &private_key_add_main;
+    commandsMap["private-key-get"] = &private_key_get_main;
+    commandsMap["private-key-del"] = &private_key_del_main;
+
+    auto module = commandsMap.find(firstArg);
+    if (module != commandsMap.end()) {
+        module->second(argc - 1, argv + 1);
     } else {
-        std::cerr << "Error: " << "command '" << firstArg << "' not found" << std::endl;
+        std::cerr << "Error: "
+                  << "command '" << firstArg << "' not found" << std::endl;
         return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;
 }
 
+void print_usage(std::ostream& out, const char* programName) {
+    std::string doc = "command [command_opts] [command_args]\n"
+                      "DESCRIPTION:\n"
+                      "The 'virgil' program is a command line tool for using Virgil Security\n"
+                      "stack functionality:\n"
+                      "encrypt, decrypt, sign and verify data;\n"
+                      "interact with Virgil Keys Service;\n"
+                      "interact with Virgil Private Keys Service.\n\n"
 
-static void print_usage(std::ostream &out, const char *programName) {
-    out << std::endl << "USAGE:" << std::endl;
-    out << "    " << programName << " command [command_opts] [command_args]" << std::endl;
-    out << std::endl << "DESCRIPTION:" << std::endl;
-    out << "    " << "Command line tool for using Virgil Security stack functionality." << std::endl;
-    out << std::endl << "AVAILABLE COMMANDS:" << std::endl;
-    out << "    " << "keygen     " <<
-            "Generate private key with a given parameters." << std::endl;
-    out << "    " << "key2pub    " <<
-            "Get public key from the private key." << std::endl;
-    out << "    " << "keyreg     " <<
-            "Register user's public key on the Virgil Public Keys service." << std::endl;
-    out << "    " << "keyget     " <<
-            "Get user's public key from the Virgil Public Keys service." << std::endl;
-    out << "    " << "confirm    " <<
-            "Send confirmation code to the Virgil Public Keys service." << std::endl;
-    out << "    " << "reconfirm  " <<
-            "Resend confirmation code to the user for given user's identifier." << std::endl;
-    out << "    " << "encrypt    " <<
-            "Encrypt data for given recipients which can be defined by " <<
-            "Virgil Public Keys and by passwords." << std::endl;
-    out << "    " << "decrypt    " <<
-            "Decrypt data for given recipient which can be defined by " <<
-            "Virgil Public Key or by password." << std::endl;
-    out << "    " << "sign       " <<
-            "Sign data with Private Key." << std::endl;
-    out << "    " << "verify     " <<
-            "Verify data with Virgil Public Key." << std::endl;
-}
+                      "COMMON COMMANDS:\n"
+                      "hash                        Derives the obfuscated data from incoming parameters using\n"
+                      "                            PBKDF function.\n\n"
 
+                      "keygen                      Generate private key with given parameters.\n\n"
 
-static void print_version(std::ostream& out, const char *programName) {
-    out << programName << "  " << "version: "<< virgil::cli_version() << std::endl;
+                      "key2pub                     Extract Public Key from the Private Key.\n\n"
+
+                      "encrypt                     Encrypt data for given recipients which can be\n"
+                      "                            defined by Virgil Public Keys and by passwords.\n\n"
+
+                      "decrypt                     Decrypt data for given recipient which can be\n"
+                      "                            defined by Virgil Public Key or by password.\n\n"
+
+                      "sign                        Sign data with Private Key.\n\n"
+
+                      "verify                      Verify data with Virgil Public Key.\n\n\n"
+
+                      "virgil CARD COMMANDS:\n"
+
+                      "card-create-global          Create a Global Virgil Card\n\n"
+
+                      "card-create-private         Create a Private Virgil Card\n\n"
+
+                      "card-revoke-global          Revoke the Global Virgil Card\n\n"
+
+                      "card-revoke-private         Revoke the Private Virgil Card\n\n"
+
+                      "card-search-private         Search a Private Virgil Card\n\n"
+
+                      "card-search-global          Search a global Virgil Card\n\n"
+
+                      "card-get                    Get user's Virgil Card/Cards\n\n"
+
+                      "PUBCLIC KEY COMMANDS:\n"
+
+                      "public-key-revoke           Revoke Public Key\n\n"
+
+                      "public-key-get              Get Public Key\n\n\n"
+
+                      "PRIVATE KEY COMMANDS:\n"
+
+                      "public-key-revoke           Revoke Public Key\n\n"
+
+                      "public-key-get              Get Public Key\n\n\n"
+
+                      "IDENTITY COMMANDS:\n"
+
+                      "identity-verify             Verify a Identity\n\n"
+
+                      "identity-confirm-global     Confirm the Identity for the Global Virgil Card\n\n"
+
+                      "identity-confirm-private    Confirm the Identity for the Private Virgil Card\n\n"
+
+                      "identity-valid              Validate the Identity\n\n\n";
+
+    out << "USAGE: " << programName << " " << doc << std::endl;
 }
 
 #endif /* SPLIT_CLI */

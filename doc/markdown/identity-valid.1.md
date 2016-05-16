@@ -1,0 +1,49 @@
+NAME
+====
+
+**identity-validate** -- check *validated-identity* received by
+*identity-confirmglobal*
+
+SYNOPSIS
+========
+
+        virgil identity-valid -f <file> [-V] [--] [--version] [-h]
+
+DESCRIPTION
+===========
+
+Check *validated-identity* received by *identity-confirm-global*
+
+OPTIONS
+=======
+
+    -f *file*,  --validated-identity *file*
+     (required)  Validated identity
+
+    -V,  --VERBOSE
+     Show detailed information
+
+    --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+    --version
+     Displays version information and exits.
+
+    -h,  --help
+     Displays usage information and exits.
+
+RETURN VALUE
+============
+
+On success, true is returned else false.
+
+EXAMPLES
+========
+
+        virgil identity-valid -f validated-identity.txt
+
+SEE ALSO
+========
+
+virgil(1)  
+identity-confirm-global(1)

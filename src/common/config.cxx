@@ -36,4 +36,9 @@
 
 #include <cli/config.h>
 
-const std::string VIRGIL_APP_TOKEN = "@VIRGIL_APP_TOKEN@";
+const std::string VIRGIL_ACCESS_TOKEN = "@VIRGIL_ACCESS_TOKEN@";
+
+#if !defined(WIN32)
+const std::string INSTALL_CONFIG_FILE_GLOBAL_DIR = "@INSTALL_CONFIG_FILE_GLOBAL_DIR@";
+const std::string INSTALL_CONFIG_FILE_LOCALE_DIR = "@INSTALL_CONFIG_FILE_LOCALE_DIR@";
+#endif

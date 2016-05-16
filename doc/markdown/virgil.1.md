@@ -1,85 +1,152 @@
 NAME
 ====
 
-**virgil** -- command line tool for using Virgil Security stack
+**virgil** -- command line tool for using Virgil Security full stack
 functionality.
 
 SYNOPSIS
 ========
 
-**virgil** *command* [*command\_opts*] [*command\_args*]
+**virgil** *command* \[*command\_opts*\] \[*command\_args*\]
 
 DESCRIPTION
 ===========
 
-The **virgil** program is a command line tool for using Virgil Security
-stack functionality. It can be used to encrypt, decrypt, sign and verify
-data. Functionality also includes interaction with Virgil Public Keys
-Service.
+The **Virgil** program is a command line tool for using Virgil Security
+stack functionality:
 
-COMMANDS
-========
+-   encrypt, decrypt, sign and verify data;
+-   interact with Virgil Keys Service;
+-   interact with Virgil Private Keys Service.
+
+COMMON COMMANDS
+===============
 
 **keygen**  
-Generate private key with a given parameters. For example:
-
-    virgil keygen -o user.key
+Generate Private Key with given parameters.
 
 **key2pub**  
-Get public key from the private key. For example:
-
-    virgil key2pub -i user.key -o user.pub
-
-**keyreg**  
-Register user's public key on the Virgil Public Keys service. For
-example:
-
-    virgil keyreg -i user.pub -o user.pk email:user@domain.com
-
-**keyget**  
-Get user's public key from the Virgil Public Keys service. For example:
-
-    virgil keyget -o user.pk email:user@domain.com
-
-**confirm**  
-Send confirmation code to the Virgil Public Keys service. For example:
-
-    virgil confirm -i email:user@domain.com -c E5J8W7
-
-**reconfirm**  
-Resend confirmation code to the user for given user's identifier. For
-example:
-
-    virgil reconfirm -i email:user@domain.com
+Extract Public Key from the Private Key.
 
 **encrypt**  
-Encrypt data for given recipients which can be defined by Virgil Public
-Keys and by passwords. For example:
-
-    virgil encrypt -i plain.txt -o encrypted.dat email:user@domain.com
+Encrypt data for given recipients which can be defined by Virgil Keys
+and by passwords.
 
 **decrypt**  
 Decrypt data for given recipient which can be defined by Virgil Public
-Key or by password. For example:
-
-    virgil decrypt -i encrypted.dat -o plain.txt -k user.key -r user.pk
+Key or by password.
 
 **sign**  
-Sign data with Private Key. For example:
-
-    virgil sign -i plain.txt -o plain.txt.sign -k user.key
+Sign data with Private Key.
 
 **verify**  
-Verify data with Virgil Public Key. For example:
+Verify data and signature with Public Key.
 
-    virgil verify -i plain.txt -s plain.txt.sign -r key:user.pk
-    virgil verify -i plain.txt -s plain.txt.sign -r email:user@domain.com
+**hash**  
+Derives the obfuscated data from incoming parameters using
+PBKDF function.
+
+IDENTITY SERVICE COMMANDS
+=========================
+
+**identity-confirm-global**  
+Confirmation of the Identity. Returns validation\_token which is
+required for operations with Cards and confirmed identity:
+
+1.  `card-create-global(1)`;
+2.  `card-revoke-global(1)`;
+3.  \`public-key-revoke(1).
+
+**identity-confirm-private**  
+Confirmation of the Identity. Returns validation\_token which is
+required for operations with Cards and confirmed identity:
+
+1.  `card-create-private(1)`;
+2.  `card-revoke-private(1)`;
+3.  \`public-key-revoke(1).
+
+**identity-verify**  
+Verify an identity Returns action\_id.
+
+**identity-validate**  
+Validates the passed token. Checks whether validation\_token is valid.
+It has time and usage limits.
+
+KEYS SERVICE COMMANDS
+=====================
+
+**public-key-get**  
+Get user's Virgil Public Key from the Virgil Keys service.
+
+**public-key-revoke**  
+Revoke Public Key’s data. Within one-to-many model we can have Cards
+with a single Public key and connected with public-key-id. Instead of
+deleting every Card one at a time we can delete all the Cards connected
+with Public Key ID.
+
+VIRGIL CARD SERVICE COMMANDS
+============================
+
+**card-create-global**  
+Create a Global Virgil Card. Creates a Global Virgil Card. This means
+identity-verify; identity-confirm-global.
+
+**card-create-private**  
+Create a Private Virgil Card. Creates a Private Virgil Card. This
+means identity-confirm-private.
+
+**card-search-global**  
+Search Card by email or application name search
+
+**card-search-private**  
+Search Card by email, search with criteria:  
+1. Including Cards with unconfirmed Identity;  
+1. Search for Cards which have signed some other Cards.  
+
+**card-get**  
+Get user's Virgil Card from the Virgil Keys service.
+
+**card-revoke-private**  
+Revoke a Private Virgil Card by card-id.
+
+**card-revoke-global**  
+Revoke a Global Virgil Card by card-id.
+
+PRIVATE KEYS SERVICE COMMANDS
+=============================
+
+**private-key-add**  
+Add existing Private Key to the Private Keys Service.
+
+**private-key-get**  
+Get Private Key from the Virgil Private Keys Service.
+
+**private-key-del**  
+Delete Private Key object from the Private Keys Service.
 
 SEE ALSO
 ========
 
-`virgilkeygen(1)`, `virgilkey2pub(1)`, `virgilkeyreg(1)`,
-`virgilkeyget(1)`,  
-`virgilconfirm(1)`, `virgilreconfirm(1)`,  
-`virgilencrypt(1)`, `virgildecrypt(1)`,  
-`virgilsign(1)`, `virgilverify(1)`
+keygen(1)  
+key2pub(1)  
+encrypt(1)  
+decrypt(1)  
+sign(1)  
+verify(1)  
+hash(1)  
+identity-verify(1)  
+identity-confirm-global(1)  
+identity-confirm-private(1)  
+identity-valid(1)  
+public-key-get(1)  
+public-key-revoke(1)  
+card-create-global(1)  
+card-create-private(1)  
+card-search-global(1)  
+card-search-private(1)  
+card-get(1)  
+card-revoke-private(1)  
+card-revoke-global(1)  
+private-key-add(1)  
+private-key-get(1)  
+private-key-del(1)

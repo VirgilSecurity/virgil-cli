@@ -48,5 +48,8 @@ fi
 mkdir "${BUILD_DIR_NAME}"
 cd "${BUILD_DIR_NAME}"
 
-$HOME/cmake/cmake-3.2.2-Linux-x86_64/bin/cmake --version
-$HOME/cmake/cmake-3.2.2-Linux-x86_64/bin/cmake ${CMAKE_ARGS} ..
+
+export PATH=$HOME/cmake/bin:$PATH
+cmake --version
+
+cmake ${CMAKE_ARGS} ..
