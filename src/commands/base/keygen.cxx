@@ -72,13 +72,11 @@ int MAIN(int argc, char** argv) {
         std::string description = "Generate Elliptic Curve or RSA Private Key.\n";
 
         std::vector<std::string> examples;
-        examples.push_back(
-            "Generate Curve25519 Private Key(default), your password will be requested:\n"
-            "virgil keygen -o alice/private.key\n\n");
+        examples.push_back("Generate Curve25519 Private Key(default), your password will be requested:\n"
+                           "virgil keygen -o alice/private.key\n\n");
 
-        examples.push_back(
-            "Generate Elliptic Curve Private Key with password protection:\n"
-            "virgil keygen -o alice/private.key\n\n");
+        examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
+                           "virgil keygen -o alice/private.key\n\n");
 
         examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
                            "virgil keygen -o alice/private.key -p STRONGPASS\n\n");
@@ -141,8 +139,8 @@ int MAIN(int argc, char** argv) {
             "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
 
         TCLAP::SwitchArg notShadowInputArg(
-            "", "no-password-input",
-            "If parameter -p, --private-key-password is omitted, password won’t be requested.", false);
+            "", "no-password-input", "If parameter -p, --private-key-password is omitted, password won’t be requested.",
+            false);
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 
