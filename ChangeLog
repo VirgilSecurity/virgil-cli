@@ -1,5 +1,13 @@
 virgil CLI ChangeLog (Sorted per date)
 
+= Version v2.0.0-rc1 released 2016-05-16
+
+Changes:
+  * Use virgil-crypto lib 1.6.0
+  * Use virgil-sdk-cpp lib 3.2.0
+  * Add config file
+
+
 = Version 0.3.4 released 2015-08-27
 
 Bugfix:
