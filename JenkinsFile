@@ -1,0 +1,61 @@
+stage 'VCS checkout'
+
+node('master'){
+	cleanDirectory('jenkins-build')
+	//git branch: 'release', credentialsId: '6cb00211-790f-4054-8f7a-6b69634fb7bf', url: 'https://github.com/VirgilSecurity/virgil-cli.git'
+  git branch: 'v2.0.0', credentialsId: '6cb00211-790f-4054-8f7a-6b69634fb7bf', url: 'https://github.com/VirgilSecurity/virgil-cli.git'
+	stash includes: '**', name: 'src'
+}
+
+
+stage 'Build'
+
+def slaves = [:]
+slaves['native-centos7'] = createCentos('native-centos7')
+
+parallel slaves
+
+def createCentos(slaveName){
+	println "Building for centos7"
+	return{
+		node(slaveName){
+			sh "rm -rf ./*"
+			unstash 'src'
+			cleanDirectory("build")
+			dir("build"){
+				sh "pwd"
+				sh "cmake .."
+				sh "make"
+				cleanDirectory("install")
+				sh "make install DESTDIR=./install"
+				dir("install"){
+						sh "tar czvf ../virgil-cli.tgz ."
+				}
+				archiveArtifacts("virgil-cli.tgz")
+			}
+		}
+	}
+}
+
+def createWindows(slaveName){
+	println "Plug for windows build. It not defined yet"
+}
+
+def cleanDirectory(dirPath) {
+	println "Clean directory: ${dirPath}"
+	def folder = new File(dirPath)
+
+	if(folder.exists()){
+		println "Delete directory: ${dirPath}"
+		folder.deleteDir()
+		cleanDirectory(dirPath)
+	} else {
+		println "Create directory: ${dirPath}"
+		folder.mkdirs()
+	}
+	println "Clean complete"
+}
+
+def archiveArtifacts(pattern) {
+    step([$class: 'ArtifactArchiver', artifacts: pattern, fingerprint: true, onlyIfSuccessful: true])
+}
