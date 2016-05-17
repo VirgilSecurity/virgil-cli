@@ -112,8 +112,8 @@ int MAIN(int argc, char** argv) {
         std::string recipientValue;
         if (!actionIdArg.isSet() && !confirmationCodeArg.isSet()) {
             auto identityPair = vcli::parsePair(identityArg.getValue());
-            std::string recipientType = identityPair.first;
-            std::string recipientValue = identityPair.second;
+            recipientType = identityPair.first;
+            recipientValue = identityPair.second;
             std::string arg = "-d, --identity";
             vcli::checkFormatIdentity(arg, recipientType);
         } else {
