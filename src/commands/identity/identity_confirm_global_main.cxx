@@ -107,58 +107,56 @@ int MAIN(int argc, char** argv) {
 
         vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
-
         std::string recipientType;
         std::string recipientValue;
-        if (!actionIdArg.isSet() && !confirmationCodeArg.isSet()) {
-            auto identityPair = vcli::parsePair(identityArg.getValue());
-            recipientType = identityPair.first;
-            recipientValue = identityPair.second;
-            std::string arg = "-d, --identity";
-            vcli::checkFormatIdentity(arg, recipientType);
+
+        std::string actionId;
+        std::string confirmationCode;
+
+        if (actionIdArg.isSet() && confirmationCodeArg.isSet()) {
+            actionId = actionIdArg.getValue();
+            confirmationCode = confirmationCodeArg.getValue();
+
+        } else if (!actionIdArg.isSet() && !confirmationCodeArg.isSet()) {
+
+            if (identityArg.isSet()) {
+                auto identityPair = vcli::parsePair(identityArg.getValue());
+                recipientType = identityPair.first;
+                recipientValue = identityPair.second;
+                std::string arg = "-d, --identity";
+                vcli::checkFormatIdentity(arg, recipientType);
+
+                if (verboseArg.isSet()) {
+                    std::cout << "Send confirmation-code to " << recipientValue << std::endl;
+                }
+                actionId = servicesHub.identity().verify(recipientValue, vsdk::dto::VerifiableIdentityType::Email);
+
+                std::cout << "Enter confirmation code that was sent on - " << recipientType << ":" << recipientValue
+                          << std::endl;
+                confirmationCode = vcli::inputShadow();
+            } else {
+                throw std::invalid_argument("-d, --identity -- is not set");
+            }
         } else {
-            throw std::invalid_argument("-d, --identity -- is not set");
+            throw std::invalid_argument("--action-id and --confirmation-code must always together");
         }
-
-        if (verboseArg.isSet()) {
-            std::cout << "Send confirmation-code to " << recipientValue << std::endl;
-        }
-        std::string actionId = servicesHub.identity().verify(recipientValue, vsdk::dto::VerifiableIdentityType::Email);
-
-        std::cout << "Enter confirmation code which was sent on you identity - " << recipientType << ":"
-                  << recipientValue << std::endl;
-        std::string confirmationCode = vcli::inputShadow();
 
         if (verboseArg.isSet()) {
             std::cout << "Confirme identity " << recipientValue << std::endl;
         }
+
         auto validatedIdentity = servicesHub.identity().confirm(actionId, confirmationCode, timeToliveArg.getValue(),
                                                                 countToLiveArg.getValue());
 
+        std::string validatedIdentityStr =
+            vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
+
+        vcli::writeBytes(outArg.getValue(), validatedIdentityStr);
+
         if (verboseArg.isSet()) {
-            std::cout << "An Identity " << recipientType << ":" << recipientValue << " is confirmed" << std::endl;
-        } else if (actionIdArg.isSet() && confirmationCodeArg.isSet()) {
-            // !actionIdArg.isSet() && confirmationCodeArg.isSet()
-            actionId = actionIdArg.getValue();
-            confirmationCode = confirmationCodeArg.getValue();
-
-            if (verboseArg.isSet()) {
-                std::cout << "Confirme identity with action-id:" << actionId << std::endl;
-            }
-            validatedIdentity = servicesHub.identity().confirm(actionId, confirmationCode, timeToliveArg.getValue(),
-                                                               countToLiveArg.getValue());
-
-            std::string validatedIdentityStr =
-                vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
-
-            vcli::writeBytes(outArg.getValue(), validatedIdentityStr);
-
-            if (verboseArg.isSet()) {
-                std::cout << "An Identity with action-id " << actionId << " is confirmed" << std::endl;
-            }
-
-        } else {
-            throw std::invalid_argument("--action-id and --confirmation-code must always together");
+            std::cout << "Identity " << recipientType << ":" << recipientValue << "  is confirmed." << std::endl;
+            std::cout << "Time to live: " << timeToliveArg.getValue() << std::endl;
+            std::cout << "Count to live: " << countToLiveArg.getValue() << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {
