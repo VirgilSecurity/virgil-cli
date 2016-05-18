@@ -100,7 +100,7 @@ virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
     }
 
     pathLocalConfigFile = std::string(cfgdir);
-    pathLocaleConfigFile += "\\virgil-cli.ini";
+    pathLocalConfigFile += "\\virgil-cli.ini";
 #else
     pathGlobalConfigFile = INSTALL_CONFIG_FILE_GLOBAL_DIR + "/virgil-cli.conf";
     pathLocalConfigFile = INSTALL_CONFIG_FILE_LOCALE_DIR + "/virgil-cli.conf";
