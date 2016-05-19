@@ -1,9 +1,8 @@
 stage 'VCS checkout'
 
 node('master'){
-	cleanDirectory('jenkins-build')
-	//git branch: 'release', credentialsId: '6cb00211-790f-4054-8f7a-6b69634fb7bf', url: 'https://github.com/VirgilSecurity/virgil-cli.git'
-  git branch: 'v2.0.0', credentialsId: '6cb00211-790f-4054-8f7a-6b69634fb7bf', url: 'https://github.com/VirgilSecurity/virgil-cli.git'
+	cleanDirectoryLinux('jenkins-build')
+  git branch: 'v2.0.0', url: 'https://github.com/VirgilSecurity/virgil-cli.git'
 	stash includes: '**', name: 'src'
 }
 
@@ -11,7 +10,7 @@ node('master'){
 stage 'Build'
 
 def slaves = [:]
-slaves['native-centos7'] = createCentos('native-centos7')
+slaves['build-centos7'] = createCentos('build-centos7')
 
 parallel slaves
 
@@ -19,14 +18,13 @@ def createCentos(slaveName){
 	println "Building for centos7"
 	return{
 		node(slaveName){
-			sh "rm -rf ./*"
+			deleteDir()
 			unstash 'src'
-			cleanDirectory("build")
+			cleanDirectoryLinux("build")
 			dir("build"){
-				sh "pwd"
 				sh "cmake .."
 				sh "make"
-				cleanDirectory("install")
+				cleanDirectoryLinux("install")
 				sh "make install DESTDIR=./install"
 				dir("install"){
 						sh "tar czvf ../virgil-cli.tgz ."
@@ -41,19 +39,32 @@ def createWindows(slaveName){
 	println "Plug for windows build. It not defined yet"
 }
 
-def cleanDirectory(dirPath) {
+def cleanDirectoryLinux(dirPath) {
 	println "Clean directory: ${dirPath}"
-	def folder = new File(dirPath)
 
-	if(folder.exists()){
-		println "Delete directory: ${dirPath}"
-		folder.deleteDir()
-		cleanDirectory(dirPath)
-	} else {
-		println "Create directory: ${dirPath}"
-		folder.mkdirs()
+	def dirCheck = fileExists dirPath
+
+	switch(dirCheck){
+		case true:
+			println "Delete directory: ${dirPath}"
+			dir(dirPath){
+			    deleteDir()
+			}
+			cleanDirectoryLinux(dirPath)
+			break
+
+		case false:
+			println "Create directory: ${dirPath}"
+			if(isUnix()){
+			    sh "mkdir -p ${dirPath}"
+			} else {
+			    bat "mkdir ${dirPath}"
+			}
+			break
+
+		default:
+			println "[ERROR]: Something goes wrong in cleanDirectoryLinuxLinux function"
 	}
-	println "Clean complete"
 }
 
 def archiveArtifacts(pattern) {
