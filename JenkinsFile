@@ -1,7 +1,7 @@
 stage 'VCS checkout'
 
 node('master'){
-	cleanDirectoryLinux('jenkins-build')
+	deleteDir()
   git branch: 'v2.0.0', url: 'https://github.com/VirgilSecurity/virgil-cli.git'
 	stash includes: '**', name: 'src'
 }
@@ -55,16 +55,45 @@ def cleanDirectoryLinux(dirPath) {
 
 		case false:
 			println "Create directory: ${dirPath}"
-			if(isUnix()){
+			switch(identityOsType()){
+				case "nix":
 			    sh "mkdir -p ${dirPath}"
-			} else {
+					break
+				case "win":
 			    bat "mkdir ${dirPath}"
+					break
+
+				default:
+					println "Unknown Slave OS Type"
 			}
 			break
 
 		default:
 			println "[ERROR]: Something goes wrong in cleanDirectoryLinuxLinux function"
 	}
+}
+
+def identityOsType(){
+	println "Detecting slave OS type"
+	def osType
+	try{
+		println "Try by native plugin function:"
+		if(isUnix()){
+			osType = "nix"
+		} else {
+			osType = "win"
+		}
+	} catch(err) {
+		println "Sad :( you use very old pipeline plugin version)"
+		println "Try by custom function:"
+		try {
+        sh "uname -a"
+        osType = "nix"
+    } catch(err1) {
+        osType = "win"
+    }
+	}
+	return osType
 }
 
 def archiveArtifacts(pattern) {
