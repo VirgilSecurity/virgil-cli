@@ -39,11 +39,13 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <iterator>
 
 #include <tclap/CmdLine.h>
 
 #include <virgil/crypto/VirgilByteArray.h>
 
+#include <virgil/crypto/VirgilCipher.h>
 #include <virgil/crypto/VirgilStreamCipher.h>
 #include <virgil/crypto/stream/VirgilStreamDataSource.h>
 #include <virgil/crypto/stream/VirgilStreamDataSink.h>
@@ -62,7 +64,7 @@ namespace vcli = virgil::cli;
 #define MAIN decrypt_main
 #endif
 
-static void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg);
+static void reset(std::istream& in);
 
 int MAIN(int argc, char** argv) {
     try {
@@ -222,10 +224,26 @@ int MAIN(int argc, char** argv) {
             }
 
             size_t countErrorDecryptWithKey = 0;
+            vcrypto::VirgilByteArray encryptedData((std::istreambuf_iterator<char>(inStream->rdbuf())),
+                                                   std::istreambuf_iterator<char>());
+
             for (const auto& recipientCardId : recipientCardsId) {
                 try {
-                    cipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(recipientCardId), privateKey,
-                                          privateKeyPassword);
+                    if (inArg.getValue().empty() || inArg.getValue() == "-") {
+                        vcrypto::VirgilCipher cipher;
+                        vcrypto::VirgilByteArray decryptedData = cipher.decryptWithKey(
+                            encryptedData, vcrypto::str2bytes(recipientCardId), privateKey, privateKeyPassword);
+
+                        vcli::writeBytes(outArg.getValue(), decryptedData);
+                        break;
+                    } else {
+                        reset(*inStream);
+                        vcrypto::VirgilStreamCipher streamCipher;
+                        streamCipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(recipientCardId),
+                                                    privateKey, privateKeyPassword);
+                        break;
+                    }
+
                 } catch (std::exception& exception) {
                     ++countErrorDecryptWithKey;
                     if (verboseArg.isSet()) {
@@ -255,10 +273,7 @@ int MAIN(int argc, char** argv) {
     return EXIT_SUCCESS;
 }
 
-void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
-    const std::string type = pairRecipientArg.first;
-    if (type != "password" && type != "id" && type != "vcard" && type != "email") {
-        throw std::invalid_argument("invalid type format: " + type + ". Expected format: '<key>:<value>'. "
-                                                                     "Where <key> = [password|id|vcard|email]");
-    }
+void reset(std::istream& in) {
+    in.clear();
+    in.seekg(0, in.beg);
 }
