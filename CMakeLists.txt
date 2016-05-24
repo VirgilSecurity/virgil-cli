@@ -107,27 +107,27 @@ endif (MSVC)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     # Global:
-    set (CONFIG_FILE_GLOBAL_DIR "/Library/Application Support/virgil-cli")
+    set (CONFIG_FILE_GLOBAL_DIR "/etc/virgil-cli")
 
-    # Locale:
-    set (CONFIG_FILE__LOCALE_DIR "$ENV{HOME}/.config/virgil-cli")
+    # Local:
+    set (CONFIG_FILE_LOCAL_DIR "$ENV{HOME}/.config/virgil-cli")
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # Global:
-    set (CONFIG_FILE__LOCALE_DIR "/Library/Application Support/virgil-cli")
+    set (CONFIG_FILE_GLOBAL_DIR "/private/etc/virgil-cli")
 
-    # Locale:
-    set (CONFIG_FILE_GLOBAL_DIR "$ENV{HOME}/Library/Application Support/virgil-cli")
+    # Local:
+    set (CONFIG_FILE_LOCAL_DIR "$ENV{HOME}/Library/Application Support/virgil-cli")
 
 else ()
     # win32
 endif ()
 
 set (INSTALL_CONFIG_FILE_GLOBAL_DIR ${CONFIG_FILE_GLOBAL_DIR} CACHE STRING "Path by config file for all users")
-set (INSTALL_CONFIG_FILE_LOCALE_DIR ${CONFIG_FILE__LOCALE_DIR} CACHE STRING "Path by config file for current user")
+set (INSTALL_CONFIG_FILE_LOCAL_DIR ${CONFIG_FILE_LOCAL_DIR} CACHE STRING "Path by config file for current user")
 
 message (STATUS "Path by config file for all users:" ${INSTALL_CONFIG_FILE_GLOBAL_DIR})
-message (STATUS "Path by config file for current user:" ${INSTALL_CONFIG_FILE_LOCALE_DIR})
+message (STATUS "Path by config file for current user:" ${INSTALL_CONFIG_FILE_LOCAL_DIR})
 
 set(TOKEN "eyJpZCI6ImM0OWVmOWQ4LWJiNTQtNGY2Zi04NzM0LTFjNDVjNWIxODBlMiIsImFwcGxpY2F0aW9uX2NhcmRfaWQiOiJiMmJlYzNjMS05ZjU0LTQyMDctYTY0Ny00YmE3NDI4MDY2NTMiLCJ0dGwiOi0xLCJjdGwiOi0xLCJwcm9sb25nIjowfQ==.MIGZMA0GCWCGSAFlAwQCAgUABIGHMIGEAkAC4w0Z6XFoGE+4VJk1jJlE3Vtaxwd7qSoEi16PgVaPQ1N/ZQd0hT/fkdueH2X4SYE+dd0Q3AIpMaJYYS56kptqAkAAm/noIrmVmcydoKD5xytXvRKRME5AhL/tifHbpyHnilPP0QhnoLVbUR6lo5uqPt6xzHnEok9omdREhq5wQ0Zx")
 
@@ -205,10 +205,10 @@ install (TARGETS virgil_cli
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    # Locale
+    # Local
     install (
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.conf
-        DESTINATION ${INSTALL_CONFIG_FILE_LOCALE_DIR}
+        DESTINATION ${INSTALL_CONFIG_FILE_LOCAL_DIR}
     )
 
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
@@ -221,10 +221,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    # Locale
+    # Local
     install (
         FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.conf
-        DESTINATION ${INSTALL_CONFIG_FILE_LOCALE_DIR}
+        DESTINATION ${INSTALL_CONFIG_FILE_LOCAL_DIR}
     )
 
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
