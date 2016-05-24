@@ -107,6 +107,7 @@ virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
 #endif
 
     virgil::cli::ConfigFile globalConfigFile = readGlobalConfigFile(pathGlobalConfigFile, verbose);
+
     std::ifstream inLocalConfigFile(pathLocalConfigFile, std::ios::in | std::ios::binary);
     if (!inLocalConfigFile) {
         return globalConfigFile;
@@ -114,25 +115,36 @@ virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
 
     std::string ini((std::istreambuf_iterator<char>(inLocalConfigFile)), std::istreambuf_iterator<char>());
     virgil::cli::ConfigFile localConfigFile = iniToConfigFile(ini);
+
+    std::string identityServiceUri;
+    std::string publicServiceUri;
+    std::string privateServiceUri;
+
     if (localConfigFile.virgilAccessToken.empty()) {
         localConfigFile.virgilAccessToken = globalConfigFile.virgilAccessToken;
+    } else {
+        identityServiceUri = localConfigFile.virgilAccessToken;
     }
 
-    std::string identityServiceUri = vsdk::ServiceUri::kIdentityServiceUri;
-    std::string publicServiceUri = vsdk::ServiceUri::kKeysServiceUri;
-    std::string privateServiceUri = vsdk::ServiceUri::kPrivateKeyServiceUri;
     if (localConfigFile.serviceUri.getIdentityService().empty()) {
         identityServiceUri = globalConfigFile.serviceUri.getIdentityService();
+    } else {
+        identityServiceUri = localConfigFile.serviceUri.getIdentityService();
     }
 
     if (localConfigFile.serviceUri.getPublicKeyService().empty()) {
         publicServiceUri = globalConfigFile.serviceUri.getPublicKeyService();
+    } else {
+        publicServiceUri = localConfigFile.serviceUri.getPublicKeyService();
     }
 
     if (localConfigFile.serviceUri.getPrivateKeyService().empty()) {
         privateServiceUri = globalConfigFile.serviceUri.getPrivateKeyService();
+    } else {
+        privateServiceUri = localConfigFile.serviceUri.getPrivateKeyService();
     }
 
     localConfigFile.serviceUri = virgil::sdk::ServiceUri(identityServiceUri, publicServiceUri, privateServiceUri);
+
     return localConfigFile;
 }
