@@ -37,6 +37,7 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include <fstream>
 
 #include <tclap/CmdLine.h>
 
@@ -72,7 +73,7 @@ int MAIN(int argc, char** argv) {
                            "alice/validated-identity.txt\n\n");
 
         examples.push_back("Identity confirmation with requests number limit = 1 and time validity limit = 3600:\n"
-                           "virgil identity-confirm-global --action-id <action_id> --confirmation-code <code>"
+                           "virgil identity-confirm-global --action-id alice/action_id.txt --confirmation-code <code>"
                            " -o alice/validated-identity.txt\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -85,7 +86,7 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email", false, "", "arg");
 
-        TCLAP::ValueArg<std::string> actionIdArg("", "action-id", "Action id.", false, "", "arg");
+        TCLAP::ValueArg<std::string> actionIdArg("", "action-id", "Action id.", false, "", "file");
 
         TCLAP::ValueArg<std::string> confirmationCodeArg("", "confirmation-code", "Confirmation code", false, "",
                                                          "arg");
@@ -114,7 +115,12 @@ int MAIN(int argc, char** argv) {
         std::string confirmationCode;
 
         if (actionIdArg.isSet() && confirmationCodeArg.isSet()) {
-            actionId = actionIdArg.getValue();
+            std::ifstream inFileActionId(actionIdArg.getValue(), std::ios::binary);
+            if (!inFileActionId) {
+                throw std::invalid_argument("can not read file with action id by path: " + actionIdArg.getValue());
+            }
+
+            actionId = std::string((std::istreambuf_iterator<char>(inFileActionId)), std::istreambuf_iterator<char>());
             confirmationCode = confirmationCodeArg.getValue();
 
         } else if (!actionIdArg.isSet() && !confirmationCodeArg.isSet()) {
@@ -134,6 +140,7 @@ int MAIN(int argc, char** argv) {
                 std::cout << "Enter confirmation code that was sent on - " << recipientType << ":" << recipientValue
                           << std::endl;
                 confirmationCode = vcli::inputShadow();
+
             } else {
                 throw std::invalid_argument("-d, --identity -- is not set");
             }
