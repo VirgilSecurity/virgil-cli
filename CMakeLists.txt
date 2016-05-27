@@ -279,11 +279,11 @@ if (MSVC)
     set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS
         "ExecWait '\\\"$INSTDIR\\\\install\\\\vc_redist.${SYSTEM_ARCH}.exe\\\" /install /quiet'"
 
-        "SetShellVarContext all"
+        "SetShellVarContext current"
         "CreateDirectory \\\"$APPDATA\\\\virgil-cli\\\""
         "CopyFiles \\\"install\\\\virgil-cli.ini\\\" \\\"$APPDATA\\\\virgil-cli\\\""
 
-        "SetShellVarContext current"
+        "SetShellVarContext all"
         "CreateDirectory \\\"$APPDATA\\\\virgil-cli\\\""
         "CopyFiles \\\"install\\\\virgil-cli.ini\\\" \\\"$APPDATA\\\\virgil-cli\\\""
     )
@@ -291,16 +291,16 @@ if (MSVC)
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}")
 
     set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
-        "SetShellVarContext all"
+        "SetShellVarContext current"
         # Remove config file
-        # example C:\ProgramData\virgil-cli
+        # example C:\Users\John\AppData\Roaming\virgil-cli
         "Delete \\\"$APPDATA\\\\virgil-cli\\\\virgil-cli.ini\\\""
         # Remove directory
         "RMDir \\\"$APPDATA\\\\virgil-cli\\\""
 
-        "SetShellVarContext current"
+        "SetShellVarContext all"
         # Remove config file
-        # example C:\Users\John\AppData\Roaming\virgil-cli
+        # example C:\ProgramData\virgil-cli
         "Delete \\\"$APPDATA\\\\virgil-cli\\\\virgil-cli.ini\\\""
         # Remove directory
         "RMDir \\\"$APPDATA\\\\virgil-cli\\\""
