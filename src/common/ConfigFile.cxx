@@ -44,7 +44,7 @@
 #include <cli/ini.hpp>
 
 #if defined(WIN32)
-#include <cfgpath.h>
+#include <config_path.h>
 #include <Windows.h>
 #endif
 
@@ -74,7 +74,13 @@ static virgil::cli::ConfigFile iniToConfigFile(const std::string& ini) {
 static virgil::cli::ConfigFile readGlobalConfigFile(const std::string& pathGlobalConfigFile, const bool verbose) {
     std::ifstream inGlobalConfigFile(pathGlobalConfigFile, std::ios::in | std::ios::binary);
     if (!inGlobalConfigFile) {
-        return virgil::cli::ConfigFile();
+        virgil::cli::ConfigFile defaultConfigFile;
+        if (verbose) {
+            std::cout << "Can't read global config file by path:" << pathGlobalConfigFile << std::endl;
+            std::cout << "Set default values." << std::endl;
+        }
+
+        return defaultConfigFile;
     }
 
     std::string ini((std::istreambuf_iterator<char>(inGlobalConfigFile)), std::istreambuf_iterator<char>());
@@ -86,30 +92,31 @@ virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
     std::string pathLocalConfigFile;
 
 #if defined(WIN32)
-    char cfgdir[MAX_PATH];
-    get_user_config_folder(cfgdir, sizeof(cfgdir), "virgil-cli");
-    if (cfgdir[0] == 0) {
-        if (verbose) {
-            std::cout << "Can't find config file";
-        }
-        return ConfigFile();
-    } else {
-        if (verbose) {
-            std::cout << "File found by path:" << std::string(cfgdir) << std::endl;
-        }
-    }
+    pathGlobalConfigFile = get_all_user_config_folder("virgil-cli");
+    pathGlobalConfigFile += "\\virgil-cli.ini";
 
-    pathLocalConfigFile = std::string(cfgdir);
+    pathLocalConfigFile = get_user_config_folder("virgil-cli");
     pathLocalConfigFile += "\\virgil-cli.ini";
 #else
     pathGlobalConfigFile = INSTALL_CONFIG_FILE_GLOBAL_DIR + "/virgil-cli.conf";
     pathLocalConfigFile = INSTALL_CONFIG_FILE_LOCAL_DIR + "/virgil-cli.conf";
 #endif
 
+    if (verbose) {
+        std::cout << "pathGlobalConfigFile = " << pathGlobalConfigFile << std::endl;
+        std::cout << "pathLocalConfigFile = " << pathLocalConfigFile << std::endl;
+        std::cout << std::endl;
+    }
+
     virgil::cli::ConfigFile globalConfigFile = readGlobalConfigFile(pathGlobalConfigFile, verbose);
 
     std::ifstream inLocalConfigFile(pathLocalConfigFile, std::ios::in | std::ios::binary);
     if (!inLocalConfigFile) {
+        if (verbose) {
+            std::cout << "Can't read local config file by path:" << pathLocalConfigFile << std::endl;
+            std::cout << "Set values from global config." << std::endl;
+        }
+
         return globalConfigFile;
     }
 
@@ -119,7 +126,6 @@ virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
     std::string identityServiceUri;
     std::string publicServiceUri;
     std::string privateServiceUri;
-
     if (localConfigFile.virgilAccessToken.empty()) {
         localConfigFile.virgilAccessToken = globalConfigFile.virgilAccessToken;
     } else {
@@ -146,5 +152,19 @@ virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
 
     localConfigFile.serviceUri = virgil::sdk::ServiceUri(identityServiceUri, publicServiceUri, privateServiceUri);
 
+    if (verbose) {
+        std::cout << "[Virgil Access Token]" << std::endl;
+        std::cout << localConfigFile.virgilAccessToken << "\n\n";
+
+        std::cout << "[URI]" << std::endl;
+        std::cout << "identity-service:" << std::endl;
+        std::cout << localConfigFile.serviceUri.getIdentityService() << "\n\n";
+
+        std::cout << "public-key-service:" << std::endl;
+        std::cout << localConfigFile.serviceUri.getPublicKeyService() << "\n\n";
+
+        std::cout << "private-key-service:" << std::endl;
+        std::cout << localConfigFile.serviceUri.getPrivateKeyService() << "\n\n";
+    }
     return localConfigFile;
 }

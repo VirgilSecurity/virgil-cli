@@ -42,7 +42,7 @@
 #include <vector>
 
 #if defined(WIN32)
-#include <cfgpath.h>
+#include <config_path.h>
 #include <Windows.h>
 #else
 #include <termios.h>
