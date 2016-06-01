@@ -37,6 +37,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <fstream>
+#include <iterator>
 
 #include <tclap/CmdLine.h>
 
@@ -66,10 +68,10 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Generate hash (alg - sha384, iterations - 2048 default):\n"
-                           "virgil hash -i data.txt -o obfuscated_data.txt -s SALT\n");
+                           "virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt\n\n");
 
         examples.push_back("Generate hash sha512 and count of iterations - 4096:\n"
-                           "virgil hash -i data.txt -o obfuscated_data.txt -s SALT -a sha512 -c 4096\n");
+                           "virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096\n\n");
 
         std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
 
@@ -90,7 +92,7 @@ int MAIN(int argc, char** argv) {
         alg.push_back("sha512");
         TCLAP::ValuesConstraint<std::string> allowedAlg(alg);
 
-        TCLAP::ValueArg<std::string> saltArg("s", "salt", "The hash salt.", true, "", "string");
+        TCLAP::ValueArg<std::string> saltArg("s", "salt", "The hash salt.", true, "", "file");
 
         TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm", "Generate hash with one"
                                                                     "of the following positions:\n"
@@ -118,6 +120,14 @@ int MAIN(int argc, char** argv) {
         if (verboseArg.isSet()) {
             std::cout << "Generating hash.." << std::endl;
         }
+
+        std::string pathToSaltFile = saltArg.getValue();
+        std::ifstream inSaltFile(pathToSaltFile, std::ios::in | std::ios::binary);
+        if (!inSaltFile) {
+            throw std::invalid_argument("can not read salt file by path: " + pathToSaltFile);
+        }
+
+        std::string salt((std::istreambuf_iterator<char>(inSaltFile)), std::istreambuf_iterator<char>());
 
         std::string value = vcli::readInput(inArg.getValue());
         auto sequenceBase64 = vsdk::util::obfuscate(value, saltArg.getValue(), hash_alg(algorithmArg.getValue()),
