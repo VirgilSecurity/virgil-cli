@@ -60,7 +60,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Get Virgil Public Key from the Virgil Keys Service.\n";
+        std::string description = "Get Global/Private Virgil Public Key from the Public Key Service.\n";
 
         std::vector<std::string> examples;
         examples.push_back("Get Virgil Public Key:\n"
@@ -74,7 +74,8 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "virgil Public Key. If omitted, stdout is used.", false, "",
                                             "file");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", true, "", "arg");
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Global/Private Public Key identifier\n",
+                                                    true, "", "arg");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 

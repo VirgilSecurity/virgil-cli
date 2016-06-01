@@ -86,8 +86,11 @@ static void addKeysRecipients(const bool verbose, const std::vector<PairPubKey_R
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Encrypt data for given recipients. Recipient can be represented"
-                                  " either by the password, or by the Virgil Card Key.\n";
+        std::string description = "The utility allows you to encrypt data with a password or combination "
+                                  "of Public Key + recipient-id. recipient-id is an identifier which "
+                                  "will be connected with the Public Key. If a sender has a Card, his "
+                                  "recipient-id is the Card's id. Also, the Public Keys is saved in  "
+                                  "the Card.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Alice encrypts the data for Bob using his email (searching the Global Virgil Card[s]):\n"
@@ -123,18 +126,20 @@ int MAIN(int argc, char** argv) {
             false, "", "file");
 
         TCLAP::UnlabeledMultiArg<std::string> recipientsArg(
-            "recipient", "Contains information about one recipient.\n"
-                         "Format:\n"
-                         "[password|id|vcard|email|pubkey|private]:<value>\n"
-                         "where:\n"
-                         "\t* if password, then <value> - recipient's password;\n"
-                         "\t* if id, then <value> - recipient's UUID associated with Virgil\n\t Card identifier;\n"
-                         "\t* if vcard, then <value> - recipient's the Virgil Card file\n\t  stored locally;\n"
-                         "\t* if email, then <value> - recipient's email;\n"
-                         "\t* if pubkey, then <value> - recipient's Public Key + identifier, for example:\n"
-                         " pubkey:bob/public.key:ForBob.\n"
-                         "\t* if private, then set type:value for searching Private Virgil Card[s]. "
-                         " For example: private:email:<obfuscator_email>. ( obfiscator - see 'virgil hash')",
+            "recipient",
+            "Contains information about one recipient.\n"
+            "Format:\n"
+            "[password|id|vcard|email|pubkey|private]:<value>\n"
+            "where:\n"
+            "\t* if password, then <value> - recipient's password;\n"
+            "\t* if id, then <value> - recipient's UUID associated with Virgil\n\t Card identifier;\n"
+            "\t* if vcard, then <value> - recipient's the Virgil Card file\n\t  stored locally;\n"
+            "\t* if email, then <value> - recipient's email;\n"
+            "\t* if pubkey, then <value> - recipient's Public Key + identifier, for example:\n"
+            " pubkey:bob/public.key:ForBob.\n"
+            "\t* if private, then set type:value for searching Private Virgil Card[s]  with confirmed identity (see "
+            "'card-create-private'). "
+            " For example: private:<obfuscator_type>:<obfuscator_value>. ( obfiscator - see 'virgil hash')",
             false, "recipient", false);
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);

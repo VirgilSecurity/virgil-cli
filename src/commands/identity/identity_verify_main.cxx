@@ -59,10 +59,12 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Verify identity\n";
+        std::string description = "Verify an Identity for Global Virgil Card.\n"
+                                  "1. Send 'confirmation_code' on the email;"
+                                  "2. Return 'action_id'.";
 
         std::vector<std::string> examples;
-        examples.push_back("Verify identity:\n"
+        examples.push_back("Verify an Identity:\n"
                            "virgil identity-verify -d email:user@domain.com\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -94,7 +96,7 @@ int MAIN(int argc, char** argv) {
         vcli::writeBytes(outArg.getValue(), actionId);
         if (verboseArg.isSet()) {
             std::cout << "An Identity with email:" << userEmail << " verified" << std::endl;
-            std::cout << "Now you can confirm the Identity with a command identity-confirm" << std::endl;
+            std::cout << "Now you can confirm the Identity with a command identity-confirm-global" << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {

@@ -60,15 +60,16 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Get user's Private/Global Virgil Card[s] from the Virgil Keys Service\n";
+        std::string description = "Return a Private/Global Virgil Card by card-id or a group of "
+                                  "Private/Global Cards connected with public-key-id\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Receive a Card by card-id:\n"
-                           "virgil card-get -a <card-id> -o my.vcard\n\n");
+        examples.push_back("Receive a Private/Global Card by card-id:\n"
+                           "virgil card-get -a <card-id> -o my_card.vcard/\n\n");
 
-        examples.push_back(
-            "Return a group of Cards connected with public-key-id, card-id belongs to one of the Cards:\n"
-            "virgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n\n");
+        examples.push_back("Return a group of Private/Global Cards connected with public-key-id, card-id belongs to "
+                           "one of the Cards:\n"
+                           "virgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -78,9 +79,11 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
                                             "arg");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Global/Private Virgil Card identifier", true, "",
+                                               "arg");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", false, "", "arg");
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Global/Private Public Key identifier\n",
+                                                    false, "", "arg");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", false, "", "file");
 

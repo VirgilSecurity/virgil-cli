@@ -60,7 +60,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Check 'validated-identity' received by 'identity-confirm'\n";
+        std::string description = "Check 'validated-identity' received by 'identity-confirm-global'\n";
 
         std::vector<std::string> examples;
         examples.push_back("Validated identity:\n"

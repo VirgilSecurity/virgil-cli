@@ -68,7 +68,10 @@ static void reset(std::istream& in);
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Decrypt data with given password or given Private Key + Virgil Card.\n";
+        std::string description = "Decrypt data with given password or given Private Key + recipient-id. "
+                                  "recipient-id is an identifier which is connected with Public Key. "
+                                  "If a sender has a Card, his recipient-id is Card's id. Also, Public "
+                                  "Key is saved in the Card.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Decrypt data for user identified by password:\n"
@@ -108,7 +111,9 @@ int MAIN(int argc, char** argv) {
                               "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
                               "\t* if email, then <value> - recipient's email;\n"
                               "\t* if private, then set type:value for searching Private Virgil Card[s].\n"
-                              " For example: private:email:<obfuscator_email>. ( obfiscator - see 'virgil hash')\n",
+                              "For example:\n"
+                              "1. private:<obfuscator_type>:<obfuscator_email>. ( obfiscator - see 'virgil hash')\n"
+                              "2. private:<identity_type>:<identity_value>; private:email:alice@domain.com\n",
             true, "", "arg");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);

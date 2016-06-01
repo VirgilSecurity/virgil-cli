@@ -71,17 +71,17 @@ int MAIN(int argc, char** argv) {
                            "virgil card-create-global -f alice/validated_identity_global.txt "
                            "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing the Global Virgil Card, "
-                           "Identity by public-key-id:\n"
-                           "virgil card-create-global -f alice/validated_identity_global.txt "
-                           "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
-
-        examples.push_back("Create a Global Virgil Card with confirming identity:\n"
+        examples.push_back("Create a Global Virgil Card, with confirming of identity:\n"
                            "virgil card-create-global -d alice@domain.com "
                            "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing Card  with confirming identity, "
-                           "Identity by public-key-id:\n"
+        examples.push_back("Create a connection with already existing the Global Virgil Card, "
+                           "by public-key-id:\n"
+                           "virgil card-create-global -f alice/validated_identity_global.txt "
+                           "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
+
+        examples.push_back("Create a connection with already existing Global Virgil Card, by public-key-id."
+                           "With confirming of identity:\n"
                            "virgil card-create-global -d alice@domain.com "
                            "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
 

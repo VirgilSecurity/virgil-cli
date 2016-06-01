@@ -78,17 +78,10 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
                            "virgil keygen -o alice/private.key\n\n");
 
-        examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
-                           "virgil keygen -o alice/private.key -p STRONGPASS\n\n");
-
-        examples.push_back("Generate Elliptic Curve Private Key with password protection "
-                           "with detailed information:\n"
-                           "virgil keygen -o alice/private.key -p STRONGPASS --VERBOSE\n\n");
-
-        examples.push_back("Generate Elliptic 521-bits NIST Curve Private Key:\n"
+        examples.push_back("Generate Elliptic 521-bits NIST Curve Private Key, your password will be requested:\n"
                            "virgil keygen -o alice/private.key -a secp521r1\n\n");
 
-        examples.push_back("Generate RSA Private Key:\n"
+        examples.push_back("Generate 8192-bits RSA Private Key, your password will be requested:\n"
                            "virgil keygen -o alice/private.key -a rsa8192\n\n");
 
         std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);

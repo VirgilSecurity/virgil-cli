@@ -312,7 +312,7 @@ std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool v
             recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
             if (verbose) {
                 std::cout << "For the entered type:" << type << "  value:" << value << "have been received "
-                          << cards.size() << " Virgil Card[s].\n\n";
+                          << cards.size() << " Private Virgil Card[s].\n\n";
             }
         } else {
             throw std::invalid_argument(std::string("Private Virgil Cards by type: ") + type + " value:" + value +

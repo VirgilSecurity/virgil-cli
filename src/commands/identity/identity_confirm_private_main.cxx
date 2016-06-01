@@ -62,13 +62,25 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description =
-            "Provides a helper methods to generate validation token based on application's private key.\n";
+        std::string description = "Provides helper methods to generate validation token based on the"
+                                  "application's private key. It is required for the following"
+                                  "operations:\n"
+                                  "1. create a Private Virgil Card with a confirmed Identity. "
+                                  "See 'virgil card-create-private';\n"
+                                  "2. revoke a Private Virgil Card, a group of Cards."
+                                  "See 'virgil card-revoke-private', 'virgil public-key-revoke';\n"
+                                  "3. get a Private key from the Private Keys Service."
+                                  "See 'virgil private-key-get'.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Generate a validation-token:\n"
                            "virgil identity-confirm-private -d alice@domain.com -t email -o validated-identity.txt "
-                           "--app-key application-private.key\n");
+                           "--app-key application-private.key\n\n");
+
+        examples.push_back(
+            "Generate a validation-token with obfuscated identity (see 'virgil hash'):\n"
+            "virgil identity-confirm-private -d <obfuscate_value> -t <obfuscate_type> -o validated-identity.txt "
+            "--app-key application-private.key\n\n");
 
         std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
 

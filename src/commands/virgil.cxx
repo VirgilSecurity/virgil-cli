@@ -168,7 +168,7 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "verify                      Verify data with Virgil Public Key.\n\n\n"
 
-                      "virgil CARD COMMANDS:\n"
+                      "CARD COMMANDS:\n"
 
                       "card-create-global          Create a Global Virgil Card\n\n"
 
@@ -178,9 +178,9 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "card-revoke-private         Revoke the Private Virgil Card\n\n"
 
-                      "card-search-private         Search a Private Virgil Card\n\n"
+                      "card-search-global          Search a Global Virgil Card\n\n"
 
-                      "card-search-global          Search a global Virgil Card\n\n"
+                      "card-search-private         Search a Private Virgil Card\n\n"
 
                       "card-get                    Get user's Virgil Card/Cards\n\n"
 
@@ -192,19 +192,21 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "PRIVATE KEY COMMANDS:\n"
 
-                      "public-key-revoke           Revoke Public Key\n\n"
+                      "private-key-add             Add the Private Key to Private Key Service\n\n"
 
-                      "public-key-get              Get Public Key\n\n\n"
+                      "private-key-del             Delete the Private Key to Private Key Service\n\n"
+
+                      "private-key-get             Get the Private Key to Private Key Service\n\n\n"
 
                       "IDENTITY COMMANDS:\n"
 
-                      "identity-verify             Verify a Identity\n\n"
+                      "identity-verify             Verify a Identity for Global Virgil Card\n\n"
 
                       "identity-confirm-global     Confirm the Identity for the Global Virgil Card\n\n"
 
                       "identity-confirm-private    Confirm the Identity for the Private Virgil Card\n\n"
 
-                      "identity-valid              Validate the Identity\n\n\n";
+                      "identity-valid              Validate the Identity for Global Virgil Card\n\n\n";
 
     out << "USAGE: " << programName << " " << doc << std::endl;
 }
