@@ -71,7 +71,7 @@ int MAIN(int argc, char** argv) {
                            "virgil card-create-private -f alice/validated_identity.txt "
                            "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing a Private Virgil Card with a confirmed"
+        examples.push_back("Create a connection with an already existing a Private Virgil Card with a confirmed "
                            "Identity by public-key-id:\n"
                            "virgil card-create-private -f alice/validated_identity.txt "
                            "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
@@ -168,8 +168,6 @@ int MAIN(int argc, char** argv) {
             auto identityPair = vcli::parsePair(identityArg.getValue());
             std::string recipientType = identityPair.first;
             std::string recipientValue = identityPair.second;
-            std::string arg = "-d, --identity";
-            vcli::checkFormatIdentity(arg, recipientType);
             vsdk::dto::Identity identity(recipientValue, recipientType);
 
             if (publicKeyArg.isSet()) {
