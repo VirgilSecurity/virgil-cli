@@ -72,6 +72,13 @@ int MAIN(int argc, char** argv) {
             "Search for Private Virgil Card with a confirmed Identity and an unconfirmaed Identity:\n"
             "virgil card-search-private -d alice@gmail.com -t email -o alice-with-unconfirmed-identity/ -u\n\n");
 
+        examples.push_back("Search for the Private Virgil Card[s] with a confirmed Identity:\n"
+                           "virgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o alice/\n\n");
+
+        examples.push_back("Search for Private Virgil Card with a confirmed Identity and an unconfirmaed Identity:\n"
+                           "virgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o "
+                           "alice-with-unconfirmed-identity/ -u\n\n");
+
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
@@ -80,9 +87,11 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
                                             "arg");
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity value", true, "", "arg");
+        TCLAP::ValueArg<std::string> identityArg(
+            "d", "identity", "Identity value or obfuscated identity value (see 'virgil hash')", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> identityTypeArg("t", "identity-type", "Identity type", true, "", "arg");
+        TCLAP::ValueArg<std::string> identityTypeArg(
+            "t", "identity-type", "Identity type or obfuscated identity type (see 'virgil hash')", true, "", "arg");
 
         TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", "Search Cards include unconfirmed identity", false);
 
