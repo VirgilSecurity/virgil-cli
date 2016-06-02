@@ -69,7 +69,8 @@ If a *sender* has a Card, his recipient-id is the Card's id. Also Public Keys is
                 pubkey:bob/public.key:ForBob.
 
             * if private, then set type:value for searching Private Virgil
-                Card[s].  For example: private:e<obfuscator_type>:<obfuscator_value> ( obfiscator - see 'virgil hash')
+                Card[s]  with confirmed identity (see 'virgil card-create-private').
+                For example: private:<obfuscated_type>:<obfuscated_value> ( obfiscator - see 'virgil hash')
 
 
 
@@ -83,6 +84,11 @@ If a *sender* has a Card, his recipient-id is the Card's id. Also Public Keys is
 1. Alice encrypts the data for Bob using his email (searching the Private Virgil Card[s]):
 
         virgil encrypt -i plain.txt -o plain.txt.enc private:email:bob@domain.com
+
+
+1. Alice encrypts the data for Bob using his email (searching the Private Virgil Card[s]):
+
+        virgil encrypt -i plain.txt -o plain.txt.enc private:<obfuscated_type>:<obfuscated_value>
 
 
 1. Alice encrypts the data for Bob and Tom using their emails:

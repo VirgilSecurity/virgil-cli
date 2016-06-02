@@ -17,9 +17,12 @@ DESCRIPTION
 Provides a helper methods to generate validation token based on
 application's private key. It is required for the following operations:
 
-1.  create a Private Virgil Card with a confirmed Identity;
-2.  revoke a Private Virgil Card, a group of Cards;
-3.  get a Private key from the Private Keys Service.
+1.  create a Private Virgil Card with a confirmed Identity. See 'virgil
+    card-create-private';
+2.  revoke a Private Virgil Card, a group of Cards. See 'virgil
+    card-revoke-private', 'virgil public-key-revoke';
+3.  get a Private key from the Private Keys Service. See
+    'virgil private-key-get'.
 
 OPTIONS
 =======
@@ -56,11 +59,27 @@ RETURN VALUE
 
 On success, *validated identity model*:
 
-    {
-        "type": "email",
-        "value": "alice@gmail.com",
-        "validation_token": *validation_token*
-    }
+1.  Not obfuscated identity value and identity type
+
+        -d, --identity = "alice@domain.com"
+        -t, --identity-type = "email"
+
+        {
+            "type": "email",
+            "value": "alice@domain.com",
+            "validation_token": *validation_token*
+        }
+
+2.  Obfuscated identity (see 'virgil hash') value and identity type
+
+        -d, --identity = "xSf79dt6Bl6/WwHmO/KrIlaWrUxX2GLV7l7Jo+SCZSqT48Cq6mMWNDTkUPeMp82r"
+        -t, --identity-type = "WHTbiO4KeZUYC4tm5DWVJfacwdlmLkJZnhJKbMCFAdjC0hSkdHs3EnIWlPt+Lnni"
+
+        {
+            "type": "WHTbiO4KeZUYC4tm5DWVJfacwdlmLkJZnhJKbMCFAdjC0hSkdHs3EnIWlPt+Lnni",
+            "value": "xSf79dt6Bl6/WwHmO/KrIlaWrUxX2GLV7l7Jo+SCZSqT48Cq6mMWNDTkUPeMp82r",
+            "validation_token": *validation_token*
+        }
 
 is returned. On error, throw exeption.
 
@@ -70,6 +89,10 @@ EXAMPLES
 1.  Generate validation-token:
 
         virgil identity-confirm-private -d alice@domain.com -t email -o validated-identity-private.txt --app-key application-private.key
+
+2.  Generate validation-token with obfuscated identity:
+
+        virgil identity-confirm-private -d <obfuscate_value> -t <obfuscate_type> -o validated-identity-private.txt --app-key application-private.key
 
 SEE ALSO
 ========

@@ -5,7 +5,7 @@
 .SH NAME
 .PP
 \f[B]decrypt\f[] \[en] decrypt data with given password or given Private
-Key
+Key + recipient\-id
 .SH SYNOPSIS
 .IP
 .nf
@@ -19,7 +19,6 @@ Key
 Decrypt data with given password or given Private Key + recipient\-id.
 recipient\-id is an identifier which is connected with Public Key.
 If a \f[I]sender\f[] has a Card, his recipient\-id is Card's id.
-Also Public Key is saved in the Card.
 .SH OPTIONS
 .IP
 .nf
@@ -84,7 +83,7 @@ Decrypt data for user identified by password:
 .IP
 .nf
 \f[C]
-virgil\ decrypt\ \-i\ plain.txt.enc\ \-o\ plain.txt\ \-k\ private.key\ \-r\ password:strong_password
+virgil\ decrypt\ \-i\ plain.txt.enc\ \-o\ plain.txt\ \-r\ password:strong_password
 \f[]
 .fi
 .RE

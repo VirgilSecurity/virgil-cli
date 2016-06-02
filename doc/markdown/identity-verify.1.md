@@ -13,6 +13,9 @@ DESCRIPTION
 
 Verify an Identity for Global Virgil Card
 
+1.  Send confirmation\_code on the email
+2.  Return action\_id, need to for 'virgil identity-confirm-global'
+
 OPTIONS
 =======
 
@@ -37,7 +40,7 @@ OPTIONS
 RETURN VALUE
 ============
 
-On success, <action_id> is returned. On error, throw exeption.
+On success, *action\_id* is returned. On error, throw exeption.
 
 EXAMPLES
 ========

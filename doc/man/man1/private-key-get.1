@@ -22,32 +22,34 @@ Get the Private Key from the Private Key Service
 .nf
 \f[C]
 \ \ \ \ \-o\ <file>,\ \ \-\-out\ <file>
-\ \ \ \ \ Private\ Key.\ If\ omitted,\ stdout\ is\ used.
+\ \ \ \ Private\ Key.\ If\ omitted,\ stdout\ is\ used.
 
 \ \ \ \ \-a\ <arg>,\ \ \-\-card\-id\ <arg>
-\ \ \ \ \ (required)\ \ virgil\ Card\ identifier
+\ \ \ \ (required)\ \ Global/Private\ Virgil\ Card\ identifier
 
 \ \ \ \ \-f\ <file>,\ \ \-\-validated\-identity\ <file>
-\ \ \ \ \ (required)\ \ Validated\ identity
+\ \ \ \ (required)\ \ Validated\ Identity\ for\ Private\ Virgil\ Card\ \-\ see\ \[aq]virgil
+\ \ \ \ identity\-confirm\-private\[aq],\ for\ Global\ Virgil\ Card\ \-\ see\ \[aq]virgil
+\ \ \ \ identity\-confirm\-global\[aq]
 
 \ \ \ \ \-V,\ \ \-\-VERBOSE
-\ \ \ \ \ Show\ detailed\ information
+\ \ \ \ Show\ detailed\ information
 
 \ \ \ \ \-\-,\ \ \-\-ignore_rest
-\ \ \ \ \ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
+\ \ \ \ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
 
 \ \ \ \ \-\-version
-\ \ \ \ \ Displays\ version\ information\ and\ exits.
+\ \ \ \ Displays\ version\ information\ and\ exits.
 
 \ \ \ \ \-h,\ \ \-\-help
-\ \ \ \ \ Displays\ usage\ information\ and\ exits.
+\ \ \ \ Displays\ usage\ information\ and\ exits.
 \f[]
 .fi
 .SH EXAMPLES
 .IP
 .nf
 \f[C]
-\ \ \ \ virgil\ private\-key\-get\ \-a\ *card_id*\ \-f\ validated_identity.txt\ \-o\ private.vkey
+\ \ \ \ virgil\ private\-key\-get\ \-a\ <card_id>\ \-f\ validated_identity.txt\ \-o\ private.vkey
 \f[]
 .fi
 .SH SEE ALSO

@@ -6,7 +6,7 @@ NAME
 SYNOPSIS
 ========
 
-        virgil card-get [-o *arg*] -a *arg* [-e *arg*] [-k *file*] [-p *arg*] [-V]
+        virgil card-get [-o <arg>] -a <arg> [-e <arg>] [-k <file>] [-p <arg>] [-V]
                      [--] [--version] [-h]
 
 DESCRIPTION
@@ -18,20 +18,20 @@ public-key-id
 OPTIONS
 =======
 
-        -o *arg*,  --out *arg*
+        -o <arg>,  --out <arg>
          Folder in which will be saved a Virgil Cards
 
-        -a *arg*,  --card-id *arg*
-         (required)  virgil Card identifier
+        -a <arg>,  --card-id <arg>
+         (required)  Global/Private Virgil Card identifier
 
-        -e *arg*,  --public-key-id *arg*
+        -e <arg>,  --public-key-id <arg>
          Public Key identifier
 
 
-        -k *file*,  --key *file*
+        -k <file>,  --key <file>
          Private key
 
-        -p *arg*,  --private-key-password *arg*
+        -p <arg>,  --private-key-password <arg>
          Password to be used for Private Key encryption.
 
         -V,  --VERBOSE
@@ -49,14 +49,14 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Return a Card by card-id:
+1.  Return a Private/Global Virgil Card by card-id:
 
-        virgil card-get -a <card_id>
+        virgil card-get -a <card_id> -o my_card.vcard
 
-2.  Return a group of Cards connected with public-key-id, card-id
-    belongs to one of the Cards:
+2.  Return a group of Private/Global Virgil Cards connected with
+    public-key-id, card-id belongs to one of the Cards:
 
-        virgil card-get -a <card_id> -e <public_key_id> -k private.key
+        virgil card-get -a <card_id> -e <public_key_id> -k private.key -o cards/
 
 SEE ALSO
 ========

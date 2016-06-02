@@ -2,7 +2,7 @@ NAME
 ====
 
 **identity-validate** -- check *validated-identity* received by
-*identity-confirmglobal*
+*identity-confirm-global*
 
 SYNOPSIS
 ========
@@ -17,7 +17,7 @@ Check *validated-identity* received by *identity-confirm-global*
 OPTIONS
 =======
 
-    -f *file*,  --validated-identity *file*
+    -f <file>,  --validated-identity <file>
      (required)  Validated identity
 
     -V,  --VERBOSE
@@ -35,12 +35,12 @@ OPTIONS
 RETURN VALUE
 ============
 
-On success, true is returned else false.
+On success, true is returned else false, if on -V, --VERBOSE
 
 EXAMPLES
 ========
 
-        virgil identity-valid -f validated-identity.txt
+        virgil identity-valid -f validated-identity.txt -V
 
 SEE ALSO
 ========

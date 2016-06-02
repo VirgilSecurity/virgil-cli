@@ -1,7 +1,8 @@
 NAME
 ====
 
-**decrypt** -- decrypt data with given password or given Private Key
+**decrypt** -- decrypt data with given password or given Private Key +
+recipient-id
 
 SYNOPSIS
 ========
@@ -14,8 +15,7 @@ DESCRIPTION
 
 Decrypt data with given password or given Private Key + recipient-id.
 recipient-id is an identifier which is connected with Public Key. If a
-*sender* has a Card, his recipient-id is Card's id. Also Public Key is
-saved in the Card.
+*sender* has a Card, his recipient-id is Card's id.
 
 OPTIONS
 =======
@@ -77,7 +77,7 @@ EXAMPLES
 
 1.  Decrypt data for user identified by password:
 
-        virgil decrypt -i plain.txt.enc -o plain.txt -k private.key -r password:strong_password
+        virgil decrypt -i plain.txt.enc -o plain.txt -r password:strong_password
 
 2.  Decrypt data for Bob identified by his Private Key + recipient-id
     \[id|vcard|email|private\]:

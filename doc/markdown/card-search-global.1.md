@@ -13,7 +13,10 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-Search for a Global Virgil Card from the Virgil Keys Service
+Search for a Global Virgil Card from the Virgil Keys Service by:
+
+1.  application\_name - search an application Virgil Global Card
+2.  email - search a Virgil Global Card
 
 OPTIONS
 =======
@@ -43,11 +46,16 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  The global search for application Cards by email:
+1.  The global search Global Virgil Cards by email:
 
-        virgil card-search-global -e <app_name> -o app_cards/
+        virgil card-search-global -e alice@mailinator.com -o alice/
 
-2.  The global search for application Cards by application name:
+2.  The global search for application Global Virgil Cards by application
+    name:
+
+        virgil card-search-global -c <app_name> -o all_app_cards/
+
+3.  Get all application cards:
 
         virgil card-search-global -c "com.virgilsecurity.*" -o all_app_cards/
 

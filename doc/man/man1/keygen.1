@@ -66,7 +66,7 @@ Generate Elliptic Curve Private Key or RSA Private Key.
 \ \ \ \ \-p\ <arg>,\ \ \-\-private\-key\-password\ <arg>
 \ \ \ \ \ Password\ to\ be\ used\ for\ Private\ Key\ encryption.
 
-\ \ \ \ \-\-not\-password\-input
+\ \ \ \ \-\-no\-password\-input
 \ \ \ \ \ If\ parameter\ \-p,\ \-\-private\-key\-password\ is\ omitted,\ password\ won't
 \ \ \ \ \ be\ requested.
 
@@ -106,7 +106,8 @@ virgil\ keygen\ \-o\ private.key\ \-p\ STRONGPASS
 .fi
 .RE
 .IP "3." 3
-Generate Elliptic 521\-bits NIST Curve Private Key:
+Generate Elliptic 521\-bits NIST Curve Private Key, your password will
+be requested:
 .RS 4
 .IP
 .nf
@@ -116,7 +117,7 @@ virgil\ keygen\ \-o\ private.key\ \-a\ secp521r1
 .fi
 .RE
 .IP "4." 3
-Generate RSA Private Key:
+Generate RSA Private Key, your password will be requested:
 .RS 4
 .IP
 .nf

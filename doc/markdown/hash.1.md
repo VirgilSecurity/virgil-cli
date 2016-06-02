@@ -7,7 +7,7 @@ PBKDF function.
 SYNOPSIS
 ========
 
-        virgil hash  [-i <file>] [-o <file>] -s <string> [-a <sha1|sha224|sha256|sha384
+        virgil hash  [-i <file>] [-o <file>] -s <file> [-a <sha1|sha224|sha256|sha384
              |sha512>] [-c <int>] [-V] [--] [--version] [-h]
 
 DESCRIPTION
@@ -25,7 +25,7 @@ OPTIONS
         -o <file>,  --out <file>
          Obfuscated data. If omitted, stdout is used.
 
-        -s <string>,  --salt <string>
+        -s <string>,  --salt <file>
          (required)  The hash salt.
 
         -a <sha1|sha224|sha256|sha384|sha512>,  --algorithm <sha1|sha224|sha256
@@ -63,11 +63,11 @@ EXAMPLES
 
 1.  Generate hash (alg - sha384, iterations - 2048 default):
 
-        virgil hash -i data.txt -o obfuscated_data.txt -s SALT
+        virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt
 
 2.  Generate hash sha512 and count of iterations - 4096:
 
-        virgil hash -i data.txt -o obfuscated_data.txt -s SALT -a sha512 -c 4096
+        virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096
 
 SEE ALSO
 ========

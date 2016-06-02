@@ -12,7 +12,6 @@
                             [--version] [-h]
 
 
-
 # DESCRIPTION
 
 Revoke a Private Virgil Card from the Public Keys Service
@@ -21,10 +20,10 @@ Revoke a Private Virgil Card from the Public Keys Service
 # OPTIONS
 
         -a <arg>,  --card-id <arg>
-         (required)  virgil Card identifier
+         (required)  Private Virgil Card identifier
 
         -f <file>,  --validated-identity <file>
-         Validated identity. See 'virgil identity-confirm-private'
+         Private Validated identity. See 'virgil identity-confirm-private'
 
         -k <file>,  --key <file>
          (required)  Private key
@@ -45,7 +44,6 @@ Revoke a Private Virgil Card from the Public Keys Service
          Displays usage information and exits.
 
 
-
 # EXAMPLES
 
 1. Revoke a Private Virgil Card with a confirmed identity:
@@ -53,7 +51,7 @@ Revoke a Private Virgil Card from the Public Keys Service
         virgil card-revoke -a <card_id> -f validated-identities.txt -k private.key
 
 
-1. Revoke Virgil Card with a confirmed identity:
+1. Revoke Virgil Card with an unconfirmed identity:
 
         virgil card-revoke -a <card_id> -k private.key
 

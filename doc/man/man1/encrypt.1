@@ -71,7 +71,8 @@ Also Public Keys is saved in the Card.
 \ \ \ \ \ \ \ \ \ \ \ \ pubkey:bob/public.key:ForBob.
 
 \ \ \ \ \ \ \ \ *\ if\ private,\ then\ set\ type:value\ for\ searching\ Private\ Virgil
-\ \ \ \ \ \ \ \ \ \ \ \ Card[s].\ \ For\ example:\ private:e<obfuscator_type>:<obfuscator_value>\ (\ obfiscator\ \-\ see\ \[aq]virgil\ hash\[aq])
+\ \ \ \ \ \ \ \ \ \ \ \ Card[s]\ \ with\ confirmed\ identity\ (see\ \[aq]virgil\ card\-create\-private\[aq]).
+\ \ \ \ \ \ \ \ \ \ \ \ For\ example:\ private:<obfuscated_type>:<obfuscated_value>\ (\ obfiscator\ \-\ see\ \[aq]virgil\ hash\[aq])
 \f[]
 .fi
 .SH EXAMPLES
@@ -98,6 +99,17 @@ virgil\ encrypt\ \-i\ plain.txt\ \-o\ plain.txt.enc\ private:email:bob\@domain.c
 .fi
 .RE
 .IP "3." 3
+Alice encrypts the data for Bob using his email (searching the Private
+Virgil Card[s]):
+.RS 4
+.IP
+.nf
+\f[C]
+virgil\ encrypt\ \-i\ plain.txt\ \-o\ plain.txt.enc\ private:<obfuscated_type>:<obfuscated_value>
+\f[]
+.fi
+.RE
+.IP "4." 3
 Alice encrypts the data for Bob and Tom using their emails:
 .RS 4
 .IP
@@ -107,7 +119,7 @@ virgil\ encrypt\ \-i\ plain.txt\ \-o\ plain.txt.venc\ email:bob\@domain.com\ ema
 \f[]
 .fi
 .RE
-.IP "4." 3
+.IP "5." 3
 Alice encrypts the data with a password:
 .RS 4
 .IP
@@ -117,7 +129,7 @@ virgil\ encrypt\ \-i\ plain.txt\ \-o\ plain.txt.venc\ password:strong_password
 \f[]
 .fi
 .RE
-.IP "5." 3
+.IP "6." 3
 Alice encrypts the data with a combination of Public Key +
 recipient\-id:
 .RS 4

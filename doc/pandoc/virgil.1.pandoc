@@ -1,5 +1,5 @@
 % VIRGIL(1) Virgil Security CLI (2.0.0) | Virgil
-% (c) Virgil Security, Inc.
+% (c) Virgil Security, Inc
 % December 07, 2015
 
 # NAME
@@ -50,7 +50,7 @@ Returns validation_token which is required for operations with Cards and confirm
 
 1. `card-create-global(1)`;
 1. `card-revoke-global(1)`;
-1. `public-key-revoke(1).
+1. `public-key-revoke(1)`.
 
 
 **identity-confirm-private**
@@ -59,7 +59,7 @@ Returns validation_token which is required for operations with Cards and confirm
 
 1. `card-create-private(1)`;
 1. `card-revoke-private(1)`;
-1. `public-key-revoke(1).
+1. `public-key-revoke(1)`.
 
 
 **identity-verify**
@@ -96,9 +96,7 @@ Creates a Private Virgil Card. This means identity-confirm-private.
 :   Search Card by email or application name search
 
 **card-search-private**
-:   Search Card by email, search with criteria:\
-1. Including Cards with unconfirmed Identity;\
-1. Search for Cards which have signed some other Cards.\
+:   Search Card by type:value; search including Cards with unconfirmed Identity;
 
 **card-get**
 :   Get user's Virgil Card from the Virgil Keys service.

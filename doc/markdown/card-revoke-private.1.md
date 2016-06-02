@@ -19,10 +19,10 @@ OPTIONS
 =======
 
         -a <arg>,  --card-id <arg>
-         (required)  virgil Card identifier
+         (required)  Private Virgil Card identifier
 
         -f <file>,  --validated-identity <file>
-         Validated identity. See 'virgil identity-confirm-private'
+         Private Validated identity. See 'virgil identity-confirm-private'
 
         -k <file>,  --key <file>
          (required)  Private key
@@ -49,7 +49,7 @@ EXAMPLES
 
         virgil card-revoke -a <card_id> -f validated-identities.txt -k private.key
 
-2.  Revoke Virgil Card with a confirmed identity:
+2.  Revoke Virgil Card with an unconfirmed identity:
 
         virgil card-revoke -a <card_id> -k private.key
 

@@ -16,6 +16,10 @@ Card
 .SH DESCRIPTION
 .PP
 Verify an Identity for Global Virgil Card
+.IP "1." 3
+Send confirmation_code on the email
+.IP "2." 3
+Return action_id, need to for `virgil identity\-confirm\-global'
 .SH OPTIONS
 .IP
 .nf
@@ -41,7 +45,7 @@ Verify an Identity for Global Virgil Card
 .fi
 .SH RETURN VALUE
 .PP
-On success, is returned.
+On success, \f[I]action_id\f[] is returned.
 On error, throw exeption.
 .SH EXAMPLES
 .IP

@@ -19,10 +19,14 @@ OPTIONS
 =======
 
         -f <file>,  --validated-identity <file>  (accepted multiple times)
-         (OR required)  ValidatedIdentity
+         (OR required)  Validated Identity for Private Virgil Card - see
+         'virgil identity-confirm-private', for Global Virgil Card - see
+         'virgil identity-confirm-global'
              -- OR --
         -d <arg>,  --identity <arg>  (accepted multiple times)
-         (OR required)  Identity user
+         (OR required)  User identifier for Private Virgil Card with
+         unconfirmed identity. Use only for Private Virgil Card with
+         unconfirmed identity
 
 
         -e <arg>,  --public-key-id <arg>
@@ -30,7 +34,7 @@ OPTIONS
 
 
         -a <arg>,  --card-id <arg>
-         (required)  virgil Card identifier
+         (required)  Globalr/Private Virgil Card identifier
 
         -k <file>,  --key <file>
          (required)  Private key
@@ -53,15 +57,26 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Revoke a chain of cards with confirmed identities connected by
-    public-key-id from virgil Keys Service::
+1.  Revoke a chain of Virgil Global Cards connected by public-key-id
+    from Public Keys Service:
 
-        virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -f alice/validated-identity.txt
+        virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -f alice/global-main-validated-identity.txt -f alice/global-reserve-validated-identity.txt
 
-2.  Revoke a chain of cards with unconfirmed identities connected by
-    public-key-id from virgil Keys Service:
+2.  Revoke a chain of Virgil Private Cards with confirmed identities
+    connected by public-key-id from Public Keys Service:
 
-        virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -d email:user@domain.com
+        virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -f alice/private-main-validated-identity.txt -f alice/private-reserve-validated-identity.txt
+
+3.  Revoke a chain of Virgil Private Cards with unconfirmed identities
+    connected by public-key-id from Public Keys Service:
+
+        virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -d email:alice_main@domain.com -d email:alice_reserve@domain.com
+
+4.  Revoke a chain of Virgil Private Cards with unconfirmed identities
+    and obfuscator identity value and/or type connected by public-key-id
+    from Public Keys Service :
+
+        virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -d <obfuscator_type>:<obfuscator_value_1> -d <obfuscator_type>:<obfuscator_value_2>
 
 SEE ALSO
 ========

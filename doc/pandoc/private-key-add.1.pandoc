@@ -24,33 +24,33 @@ to the Public Keys Service.
 
 # OPTIONS
 
-    -a *arg*,  --card-id *arg*
-     (required)  virgil Card identifier
+        -a <arg>,  --card-id <arg>
+         (required)  Global/Private Virgil Card identifier
 
-    -k *file*,  --key *file*
-     (required)  Private Key
+        -k <file>,  --key <file>
+         (required)  Private Key
 
-    -p *arg*,  --private-key-password *arg*
-     Password to be used for Private Key encryption.
+        -p <arg>,  --private-key-password <arg>
+         Password to be used for Private Key encryption.
 
-    -V,  --VERBOSE
-     Show detailed information
+        -V,  --VERBOSE
+         Show detailed information
 
-    --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+        --,  --ignore_rest
+         Ignores the rest of the labeled arguments following this flag.
 
-    --version
-     Displays version information and exits.
+        --version
+         Displays version information and exits.
 
-    -h,  --help
-     Displays usage information and exits.
+        -h,  --help
+         Displays usage information and exits.
 
 
 # EXAMPLES
 
 1. Add Private Key to Private Keys Service:
 
-        virgil private-key-add -k private.key -a *card_id*
+        virgil private-key-add -k private.key -a <card_id>
 
 
 # SEE ALSO

@@ -4,7 +4,8 @@
 .hy
 .SH NAME
 .PP
-\f[B]public\-key\-get\f[] \[en] return Public Key
+\f[B]public\-key\-get\f[] \[en] get Global/Private Virgil Public Key
+from the Public Key Service
 .SH SYNOPSIS
 .IP
 .nf
@@ -14,29 +15,30 @@
 .fi
 .SH DESCRIPTION
 .PP
-Return the Public Key by Public Key id
+Get Global/Private Virgil Public Key from the Public Key Service by
+Public Key id
 .SH OPTIONS
 .IP
 .nf
 \f[C]
 \ \ \ \ \-o\ <file>,\ \ \-\-out\ <file>
-\ \ \ \ \ virgil\ Public\ Key.\ If\ omitted,\ stdout\ is\ used.
+\ \ \ \ virgil\ Public\ Key.\ If\ omitted,\ stdout\ is\ used.
 
 \ \ \ \ \-e\ <arg>,\ \ \-\-public\-key\-id\ <arg>
-\ \ \ \ \ (required)\ \ Public\ Key\ identifier
+\ \ \ \ (required)\ \ Global/Private\ Public\ Key\ identifier
 
 
 \ \ \ \ \-V,\ \ \-\-VERBOSE
-\ \ \ \ \ Show\ detailed\ information
+\ \ \ \ Show\ detailed\ information
 
 \ \ \ \ \-\-,\ \ \-\-ignore_rest
-\ \ \ \ \ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
+\ \ \ \ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
 
 \ \ \ \ \-\-version
-\ \ \ \ \ Displays\ version\ information\ and\ exits.
+\ \ \ \ Displays\ version\ information\ and\ exits.
 
 \ \ \ \ \-h,\ \ \-\-help
-\ \ \ \ \ Displays\ usage\ information\ and\ exits.
+\ \ \ \ Displays\ usage\ information\ and\ exits.
 \f[]
 .fi
 .SH EXAMPLES

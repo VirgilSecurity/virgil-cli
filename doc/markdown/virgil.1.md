@@ -55,7 +55,7 @@ required for operations with Cards and confirmed identity:
 
 1.  `card-create-global(1)`;
 2.  `card-revoke-global(1)`;
-3.  \`public-key-revoke(1).
+3.  `public-key-revoke(1)`.
 
 **identity-confirm-private**  
 Confirmation of the Identity. Returns validation\_token which is
@@ -63,7 +63,7 @@ required for operations with Cards and confirmed identity:
 
 1.  `card-create-private(1)`;
 2.  `card-revoke-private(1)`;
-3.  \`public-key-revoke(1).
+3.  `public-key-revoke(1)`.
 
 **identity-verify**  
 Verify an identity Returns action\_id.
@@ -99,9 +99,8 @@ means identity-confirm-private.
 Search Card by email or application name search
 
 **card-search-private**  
-Search Card by email, search with criteria:  
-1. Including Cards with unconfirmed Identity;  
-1. Search for Cards which have signed some other Cards.  
+Search Card by type:value; search including Cards with unconfirmed
+Identity;
 
 **card-get**  
 Get user's Virgil Card from the Virgil Keys service.

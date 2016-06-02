@@ -86,18 +86,7 @@ virgil\ card\-create\ \-f\ validated\-identity.txt\ \-\-public\-key\ public.key\
 .fi
 .RE
 .IP "2." 3
-Create a connection with an already existing the Global Virgil Card,
-Identity by public\-key\-id:
-.RS 4
-.IP
-.nf
-\f[C]
-virgil\ card\-create\ \-f\ validated\-identity.txt\ \-\-public\-key\-id\ <public_key_id>\ \-k\ private.key\ \-o\ my_card.vcard
-\f[]
-.fi
-.RE
-.IP "3." 3
-Create a Global Virgil Card with confirming identity:
+Create a Global Virgil Card, with confirming of identity:
 .RS 4
 .IP
 .nf
@@ -106,9 +95,21 @@ virgil\ card\-create\-global\ \-d\ alice\@domain.com\ \-\-public\-key\ public.ke
 \f[]
 .fi
 .RE
+.IP "3." 3
+Create a connection with already existing Global Virgil Card, by
+public\-key\-id:
+.RS 4
+.IP
+.nf
+\f[C]
+virgil\ card\-create\ \-f\ validated\-identity.txt\ \-\-public\-key\-id\ <public_key_id>\ \-k\ private.key\ \-o\ my_card.vcard
+\f[]
+.fi
+.RE
 .IP "4." 3
-Create a connection with an already existing Card with confirming
-identity, Identity by public\-key\-id:
+Create a connection with already existing Global Virgil Card, by
+public\-key\-id.
+With confirming of identity:
 .RS 4
 .IP
 .nf

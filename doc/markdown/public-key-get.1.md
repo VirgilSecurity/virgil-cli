@@ -1,7 +1,8 @@
 NAME
 ====
 
-**public-key-get** -- return Public Key
+**public-key-get** -- get Global/Private Virgil Public Key from the
+Public Key Service
 
 SYNOPSIS
 ========
@@ -11,29 +12,30 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-Return the Public Key by Public Key id
+Get Global/Private Virgil Public Key from the Public Key Service by
+Public Key id
 
 OPTIONS
 =======
 
         -o <file>,  --out <file>
-         virgil Public Key. If omitted, stdout is used.
+        virgil Public Key. If omitted, stdout is used.
 
         -e <arg>,  --public-key-id <arg>
-         (required)  Public Key identifier
+        (required)  Global/Private Public Key identifier
 
 
         -V,  --VERBOSE
-         Show detailed information
+        Show detailed information
 
         --,  --ignore_rest
-         Ignores the rest of the labeled arguments following this flag.
+        Ignores the rest of the labeled arguments following this flag.
 
         --version
-         Displays version information and exits.
+        Displays version information and exits.
 
         -h,  --help
-         Displays usage information and exits.
+        Displays usage information and exits.
 
 EXAMPLES
 ========

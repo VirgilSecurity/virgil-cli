@@ -21,9 +21,11 @@ receive a validated-identity. **validated-identity** consists of
 *validation\_token* and your Identity. It is required for the following
 operations:
 
-1.  create a Global Virgil Card;
-2.  revoke a Global Virgil Card, a group of Cards;
-3.  get a Private key from the Private Keys Service.
+1.  create a Global Virgil Card. See 'virgil card-create-global';
+2.  revoke a Global Virgil Card, a group of Cards. See 'virgil
+    card-revoke-global', 'virgil public-key-revoke';
+3.  get a Private key from the Private Keys Service. See
+    'virgil private-key-get'.
 
 OPTIONS
 =======
@@ -35,10 +37,10 @@ OPTIONS
          Identity email
 
         --action-id <arg>
-         Action id.
+         Action id (see 'virgil identity-verify')
 
         --confirmation-code <arg>
-         Confirmation code
+         Confirmation code (see 'virgil identity-verify')
 
         -t <int>,  --time-to-live <int>
          Time to live, by default = 3600.
@@ -87,7 +89,8 @@ EXAMPLES
 3.  Identity confirmation with requests number limit = 2 and time
     validity limit = 3600:
 
-        virgil identity-confirm-global --action-id <action_id> --confirmation-code <code> -o alice/validated-identity.txt
+        virgil identity-verify -d email:user@domain.com -o userDomain/action_id.txt
+        virgil identity-confirm-global --action-id userDomain/action_id.txt --confirmation-code <code> -o alice/validated-identity.txt
 
 SEE ALSO
 ========

@@ -63,7 +63,7 @@ OPTIONS
         -p <arg>,  --private-key-password <arg>
          Password to be used for Private Key encryption.
 
-        --not-password-input
+        --no-password-input
          If parameter -p, --private-key-password is omitted, password won’t
          be requested.
 
@@ -91,11 +91,12 @@ EXAMPLES
 
         virgil keygen -o private.key -p STRONGPASS
 
-3.  Generate Elliptic 521-bits NIST Curve Private Key:
+3.  Generate Elliptic 521-bits NIST Curve Private Key, your password
+    will be requested:
 
         virgil keygen -o private.key -a secp521r1
 
-4.  Generate RSA Private Key:
+4.  Generate RSA Private Key, your password will be requested:
 
         virgil keygen -a rsa8192 -o private.key
 

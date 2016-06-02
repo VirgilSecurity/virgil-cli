@@ -67,7 +67,8 @@ OPTIONS
                 pubkey:bob/public.key:ForBob.
 
             * if private, then set type:value for searching Private Virgil
-                Card[s].  For example: private:e<obfuscator_type>:<obfuscator_value> ( obfiscator - see 'virgil hash')
+                Card[s]  with confirmed identity (see 'virgil card-create-private').
+                For example: private:<obfuscated_type>:<obfuscated_value> ( obfiscator - see 'virgil hash')
 
 EXAMPLES
 ========
@@ -82,15 +83,20 @@ EXAMPLES
 
         virgil encrypt -i plain.txt -o plain.txt.enc private:email:bob@domain.com
 
-3.  Alice encrypts the data for Bob and Tom using their emails:
+3.  Alice encrypts the data for Bob using his email (searching the
+    Private Virgil Card\[s\]):
+
+        virgil encrypt -i plain.txt -o plain.txt.enc private:<obfuscated_type>:<obfuscated_value>
+
+4.  Alice encrypts the data for Bob and Tom using their emails:
 
         virgil encrypt -i plain.txt -o plain.txt.venc email:bob@domain.com email:tom@domain.com
 
-4.  Alice encrypts the data with a password:
+5.  Alice encrypts the data with a password:
 
         virgil encrypt -i plain.txt -o plain.txt.venc password:strong_password
 
-5.  Alice encrypts the data with a combination of Public Key +
+6.  Alice encrypts the data with a combination of Public Key +
     recipient-id:
 
         virgil encrypt -i plain.txt -o plain.txt.venc pubkey:public.key:ForBob

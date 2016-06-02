@@ -16,7 +16,11 @@ applications Virgil Card[s]
 .fi
 .SH DESCRIPTION
 .PP
-Search for a Global Virgil Card from the Virgil Keys Service
+Search for a Global Virgil Card from the Virgil Keys Service by:
+.IP "1." 3
+application_name \- search an application Virgil Global Card
+.IP "2." 3
+email \- search a Virgil Global Card
 .SH OPTIONS
 .IP
 .nf
@@ -46,17 +50,28 @@ Search for a Global Virgil Card from the Virgil Keys Service
 .fi
 .SH EXAMPLES
 .IP "1." 3
-The global search for application Cards by email:
+The global search Global Virgil Cards by email:
 .RS 4
 .IP
 .nf
 \f[C]
-virgil\ card\-search\-global\ \-e\ <app_name>\ \-o\ app_cards/
+virgil\ card\-search\-global\ \-e\ alice\@mailinator.com\ \-o\ alice/
 \f[]
 .fi
 .RE
 .IP "2." 3
-The global search for application Cards by application name:
+The global search for application Global Virgil Cards by application
+name:
+.RS 4
+.IP
+.nf
+\f[C]
+virgil\ card\-search\-global\ \-c\ <app_name>\ \-o\ all_app_cards/
+\f[]
+.fi
+.RE
+.IP "3." 3
+Get all application cards:
 .RS 4
 .IP
 .nf

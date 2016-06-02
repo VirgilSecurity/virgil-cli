@@ -22,10 +22,10 @@ OPTIONS
          Folder in which will be saved a Virgil Cards
 
         -d <arg>,  --identity <arg>
-         (required)  Identity value
+         (required)  Identity value or obfuscated identity value (see 'virgil hash')
 
         -t <arg>,  --identity-type <arg>
-         (required)  Identity type
+         (required)  Identity type or obfuscated identity type (see 'virgil hash')
 
         -u,  --unconfirmed
          Search Cards include unconfirmed identity
@@ -49,10 +49,19 @@ EXAMPLES
 
         virgil card-search-private -d alice@gmail.com -t email -o alice/
 
-2.  Search for Cards with a confirmed Identity and
-    uncorfirmaed Identity.
+2.  Search for Cards with a confirmed Identity and an uncorfirmaed
+    Identity:
 
         virgil card-search-private -d alice@gmail.com -t email -o alice-with-unconfirmed-identity/ -u
+
+3.  Search for Private Virgil Cards with a confirmed Identity:
+
+        virgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o alice/
+
+4.  Search for Private Virgil Cards with a confirmed Identity and an
+    uncorfirmaed Identity:
+
+        virgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o alice/ -u
 
 SEE ALSO
 ========

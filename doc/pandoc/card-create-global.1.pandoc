@@ -73,16 +73,15 @@ It means that we can have Cards with:
 
         virgil card-create -f validated-identity.txt --public-key public.key -k private.key -o my_card.vcard
 
-1. Create a connection with an already existing the Global Virgil Card,
-Identity by public-key-id:
-
-        virgil card-create -f validated-identity.txt --public-key-id <public_key_id> -k private.key -o my_card.vcard
-
-1. Create a Global Virgil Card with confirming identity:
+1. Create a Global Virgil Card, with confirming of identity:
 
         virgil card-create-global -d alice@domain.com --public-key public.key -k alice/private.key -o alice/my_card.vcard
 
-1. Create a connection with an already existing Card  with confirming identity, Identity by public-key-id:
+1. Create a connection with already existing Global Virgil Card, by public-key-id:
+
+        virgil card-create -f validated-identity.txt --public-key-id <public_key_id> -k private.key -o my_card.vcard
+
+1. Create a connection with already existing Global Virgil Card, by public-key-id. With confirming of identity:
 
         virgil card-create-global -d alice@domain.com -e <pub_key_id> -k alice/private.key -o alice/my_card.vcard
 
