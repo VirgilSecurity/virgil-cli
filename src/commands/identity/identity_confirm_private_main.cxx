@@ -73,9 +73,10 @@ int MAIN(int argc, char** argv) {
                                   "See 'virgil private-key-get'.\n\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Generate a validation-token:\n"
-                           "virgil identity-confirm-private -d alice@domain.com -t email -o validated-identity.txt "
-                           "--app-key application-private.key\n\n");
+        examples.push_back(
+            "Generate a validation-token:\n"
+            "virgil identity-confirm-private -d <identity_value> -t <identity_type> -o private-validated-identity.txt "
+            "--app-key application-private.key\n\n");
 
         examples.push_back(
             "Generate a validation-token with obfuscated identity (see 'virgil hash'):\n"
@@ -87,8 +88,8 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "validation-token", "A Validation-token. If omitted, stdout is used.",
-                                            false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "validation-token",
+                                            "A Validated Identity. If omitted, stdout is used.", false, "", "file");
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity value", true, "", "arg");
 

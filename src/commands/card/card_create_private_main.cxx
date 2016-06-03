@@ -78,13 +78,14 @@ int MAIN(int argc, char** argv) {
 
         examples.push_back(
             "Create a Private Virgil Card with an unconfirmed Identity:\n"
-            "virgil card-create -d email:user@domain.com --public_key alice/public.key -k alice/private.key "
-            "-o alice/my_card.vcard\n\n");
+            "virgil card-create -d <identity_type>:<identity_value> --public_key alice/public.key -k alice/private.key "
+            "-o alice/anonime_card1.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing a Private Virgil Card with an unconfirmed"
-                           "Identity by public-key-id:\n"
-                           "virgil card-create -d email:user@domain.com -e <pub_key_id> -k alice/private.key "
-                           "-o alice/my_card.vcard\n\n");
+        examples.push_back(
+            "Create a connection with an already existing a Private Virgil Card with an unconfirmed"
+            "Identity by public-key-id:\n"
+            "virgil card-create -d <identity_type>:<identity_value> -e <pub_key_id> -k alice/private.key "
+            "-o alice/anonime_card2.vcard\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 

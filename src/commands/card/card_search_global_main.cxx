@@ -101,16 +101,20 @@ int MAIN(int argc, char** argv) {
         if (applicationNameArg.isSet()) {
             appCards =
                 servicesHub.card().searchGlobal(applicationNameArg.getValue(), vsdk::dto::IdentityType::Application);
+            if (appCards.empty()) {
+                if (verboseArg.isSet()) {
+                    std::cout << "Card[s] by application name: " << applicationNameArg.getValue()
+                              << " haven't been found." << std::endl;
+                }
+            }
+
         } else {
             appCards = servicesHub.card().searchGlobal(emailArg.getValue(), vsdk::dto::IdentityType::Email);
-        }
-
-        if (appCards.empty()) {
-            if (verboseArg.isSet()) {
-                std::cout << "Card[s] by name: " << applicationNameArg.getValue() << " haven't been found."
-                          << std::endl;
+            if (appCards.empty()) {
+                if (verboseArg.isSet()) {
+                    std::cout << "Card[s] by email: " << emailArg.getValue() << " haven't been found." << std::endl;
+                }
             }
-            return EXIT_FAILURE;
         }
 
         std::string pathTofolder = outArg.getValue();
@@ -131,8 +135,14 @@ int MAIN(int argc, char** argv) {
         }
 
         if (verboseArg.isSet()) {
-            std::cout << "For the entered application name:" << applicationNameArg.getValue() << " have been received "
-                      << appCards.size() << " Cards." << std::endl;
+            if (applicationNameArg.isSet()) {
+                std::cout << "For the entered application name:" << applicationNameArg.getValue()
+                          << " have been received " << appCards.size() << " Cards." << std::endl;
+            } else {
+                // emailArg.isSet
+                std::cout << "For the entered email:" << emailArg.getValue()
+                          << " have been received " << appCards.size() << " Cards." << std::endl;
+            }
         }
 
     } catch (TCLAP::ArgException& exception) {
