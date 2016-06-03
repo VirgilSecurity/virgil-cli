@@ -20,7 +20,7 @@ application's private key. It is required for the following operations:
 1.  create a Private Virgil Card with a confirmed Identity. See 'virgil
     card-create-private';
 2.  revoke a Private Virgil Card, a group of Cards. See 'virgil
-    card-revoke-private', 'virgil public-key-revoke';
+    card-revoke-private', 'virgil public-key-revoke-private';
 3.  get a Private key from the Private Keys Service. See
     'virgil private-key-get'.
 

@@ -55,7 +55,7 @@ required for operations with Cards and confirmed identity:
 
 1.  `card-create-global(1)`;
 2.  `card-revoke-global(1)`;
-3.  `public-key-revoke(1)`.
+3.  `public-key-revoke-global(1)`.
 
 **identity-confirm-private**  
 Confirmation of the Identity. Returns validation\_token which is
@@ -63,7 +63,7 @@ required for operations with Cards and confirmed identity:
 
 1.  `card-create-private(1)`;
 2.  `card-revoke-private(1)`;
-3.  `public-key-revoke(1)`.
+3.  `public-key-revoke-private(1)`.
 
 **identity-verify**  
 Verify an identity Returns action\_id.
@@ -78,11 +78,13 @@ KEYS SERVICE COMMANDS
 **public-key-get**  
 Get user's Virgil Public Key from the Virgil Keys service.
 
-**public-key-revoke**  
-Revoke Public Key’s data. Within one-to-many model we can have Cards
-with a single Public key and connected with public-key-id. Instead of
-deleting every Card one at a time we can delete all the Cards connected
-with Public Key ID.
+**public-key-revoke-global**  
+Revoke a group of Global Virgil Cards from the Public Keys Service
+connected by public-key-id + card-id of one of the Cards from the group
+
+**public-key-revoke-private**  
+Revoke a group of Private Virgil Cards from the Public Keys Service
+connected by public-key-id + card-id of one of the Cards from the group
 
 VIRGIL CARD SERVICE COMMANDS
 ============================
@@ -138,7 +140,8 @@ identity-confirm-global(1)
 identity-confirm-private(1)  
 identity-valid(1)  
 public-key-get(1)  
-public-key-revoke(1)  
+public-key-revoke-global(1)  
+public-key-revoke-private(1)  
 card-create-global(1)  
 card-create-private(1)  
 card-search-global(1)  

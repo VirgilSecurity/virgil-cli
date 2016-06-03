@@ -72,7 +72,7 @@ confirmed identity:
 .IP "2." 3
 \f[C]card\-revoke\-global(1)\f[];
 .IP "3." 3
-\f[C]public\-key\-revoke(1)\f[].
+\f[C]public\-key\-revoke\-global(1)\f[].
 .TP
 .B \f[B]identity\-confirm\-private\f[]
 Confirmation of the Identity.
@@ -85,7 +85,7 @@ confirmed identity:
 .IP "2." 3
 \f[C]card\-revoke\-private(1)\f[];
 .IP "3." 3
-\f[C]public\-key\-revoke(1)\f[].
+\f[C]public\-key\-revoke\-private(1)\f[].
 .TP
 .B \f[B]identity\-verify\f[]
 Verify an identity Returns action_id.
@@ -105,12 +105,17 @@ Get user's Virgil Public Key from the Virgil Keys service.
 .RS
 .RE
 .TP
-.B \f[B]public\-key\-revoke\f[]
-Revoke Public Key's data.
-Within one\-to\-many model we can have Cards with a single Public key
-and connected with public\-key\-id.
-Instead of deleting every Card one at a time we can delete all the Cards
-connected with Public Key ID.
+.B \f[B]public\-key\-revoke\-global\f[]
+Revoke a group of Global Virgil Cards from the Public Keys Service
+connected by public\-key\-id + card\-id of one of the Cards from the
+group
+.RS
+.RE
+.TP
+.B \f[B]public\-key\-revoke\-private\f[]
+Revoke a group of Private Virgil Cards from the Public Keys Service
+connected by public\-key\-id + card\-id of one of the Cards from the
+group
 .RS
 .RE
 .SH VIRGIL CARD SERVICE COMMANDS
@@ -220,7 +225,11 @@ public\-key\-get(1)
 .PD 0
 .P
 .PD
-public\-key\-revoke(1)
+public\-key\-revoke\-global(1)
+.PD 0
+.P
+.PD
+public\-key\-revoke\-private(1)
 .PD 0
 .P
 .PD

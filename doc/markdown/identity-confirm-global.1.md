@@ -23,7 +23,7 @@ operations:
 
 1.  create a Global Virgil Card. See 'virgil card-create-global';
 2.  revoke a Global Virgil Card, a group of Cards. See 'virgil
-    card-revoke-global', 'virgil public-key-revoke';
+    card-revoke-global', 'virgil public-key-revoke-global';
 3.  get a Private key from the Private Keys Service. See
     'virgil private-key-get'.
 

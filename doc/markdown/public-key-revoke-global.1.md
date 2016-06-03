@@ -1,58 +1,46 @@
 NAME
 ====
 
-**public-key-revoke** -- revoke the Card from the Public Keys Service
+**public-key-revoke-global** -- revoke the Global Virgil Card from the
+Public Keys Service
 
 SYNOPSIS
 ========
 
-        virgil public-key-revoke  {-f <file> ... |-d <arg> ... } -e <arg> -a <arg> -k
+        virgil public-key-revoke-global {-f <file> ... |-d <arg> ... } -e <arg> -a <arg> -k
                           <file> [-p <arg>] [-V] [--] [--version] [-h]
 
 DESCRIPTION
 ===========
 
-Revoke a group of Cards from the Public Keys Service connected by
-public-key-id + card-id of one of the Cards from the group
+Revoke a group of Global Virgil Cards from the Public Keys Service
+connected by public-key-id + card-id of one of the Cards from the group
 
 OPTIONS
 =======
 
-        -f <file>,  --validated-identity <file>  (accepted multiple times)
-         (OR required)  Validated Identity for Private Virgil Card - see
-         'virgil identity-confirm-private', for Global Virgil Card - see
-         'virgil identity-confirm-global'
-             -- OR --
-        -d <arg>,  --identity <arg>  (accepted multiple times)
-         (OR required)  User identifier for Private Virgil Card with
-         unconfirmed identity. Use only for Private Virgil Card with
-         unconfirmed identity
+-f <file>, --validated-identity <file> (accepted multiple times) (OR
+required) Validated Identity, see 'virgil identity-confirm-global' -- OR
+-- -d <arg>, --identity <arg> (accepted multiple times) (OR required)
+Identity user, for example: -d email:alice@domain.com
 
+-e <arg>, --public-key-id <arg> (required) Public Key identifier
 
-        -e <arg>,  --public-key-id <arg>
-         (required)  Public Key identifier
+-a <arg>, --card-id <arg> (required) Global Virgil Card identifier
 
+-k <file>, --key <file> (required) Private key
 
-        -a <arg>,  --card-id <arg>
-         (required)  Globalr/Private Virgil Card identifier
+-p <arg>, --private-key-password <arg> Password to be used for Private
+Key encryption.
 
-        -k <file>,  --key <file>
-         (required)  Private key
+-V, --VERBOSE Show detailed information
 
-        -p <arg>,  --private-key-password <arg>
-         Password to be used for Private Key encryption.
+--, --ignore\_rest Ignores the rest of the labeled arguments following
+this flag.
 
-        -V,  --VERBOSE
-         Show detailed information
+--version Displays version information and exits.
 
-        --,  --ignore_rest
-         Ignores the rest of the labeled arguments following this flag.
-
-        --version
-         Displays version information and exits.
-
-        -h,  --help
-         Displays usage information and exits.
+-h, --help Displays usage information and exits.
 
 EXAMPLES
 ========
@@ -60,23 +48,12 @@ EXAMPLES
 1.  Revoke a chain of Virgil Global Cards connected by public-key-id
     from Public Keys Service:
 
-        virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -f alice/global-main-validated-identity.txt -f alice/global-reserve-validated-identity.txt
+        virgil public-key-revoke-global -e <public_key_id> -a <card_id> -k alice/private.key -f alice/validated-identity-main.txt -f alice/validated-identity-reserve.txt
 
-2.  Revoke a chain of Virgil Private Cards with confirmed identities
-    connected by public-key-id from Public Keys Service:
+2.  Revoke a chain of Global Virgil Cards by public-key-id from Virgil
+    Keys Service, with confirming of identity:
 
-        virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -f alice/private-main-validated-identity.txt -f alice/private-reserve-validated-identity.txt
-
-3.  Revoke a chain of Virgil Private Cards with unconfirmed identities
-    connected by public-key-id from Public Keys Service:
-
-        virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -d email:alice_main@domain.com -d email:alice_reserve@domain.com
-
-4.  Revoke a chain of Virgil Private Cards with unconfirmed identities
-    and obfuscator identity value and/or type connected by public-key-id
-    from Public Keys Service :
-
-        virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -d <obfuscator_type>:<obfuscator_value_1> -d <obfuscator_type>:<obfuscator_value_2>
+        virgil public-key-revoke-global -e <public_key_id> -a <card_id> -k alice/private.key -d email:alice_main@domain.com -d email:alice_reserve@domain.com
 
 SEE ALSO
 ========
