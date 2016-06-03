@@ -71,7 +71,8 @@ int card_revoke_global_main(int argc, char** argv);
 int card_revoke_private_main(int argc, char** argv);
 
 int public_key_get_main(int argc, char** argv);
-int public_key_revoke_main(int argc, char** argv);
+int public_key_revoke_global_main(int argc, char** argv);
+int public_key_revoke_private_main(int argc, char** argv);
 
 int private_key_add_main(int argc, char** argv);
 int private_key_get_main(int argc, char** argv);
@@ -123,7 +124,8 @@ int main(int argc, char** argv) {
     commandsMap["card-revoke-private"] = &card_revoke_private_main;
 
     commandsMap["public-key-get"] = &public_key_get_main;
-    commandsMap["public-key-revoke"] = &public_key_revoke_main;
+    commandsMap["public-key-revoke-global"] = &public_key_revoke_global_main;
+    commandsMap["public-key-revoke-private"] = &public_key_revoke_private_main;
 
     commandsMap["private-key-add"] = &private_key_add_main;
     commandsMap["private-key-get"] = &private_key_get_main;
@@ -186,7 +188,9 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "PUBCLIC KEY COMMANDS:\n"
 
-                      "public-key-revoke           Revoke Public Key\n\n"
+                      "public-key-revoke-global    Revoke a group of Global Virgil Cards\n\n"
+
+                      "public-key-revoke-private   Revoke a group of Private Virgil Cards\n\n"
 
                       "public-key-get              Get Public Key\n\n\n"
 
