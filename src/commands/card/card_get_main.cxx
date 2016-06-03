@@ -58,6 +58,8 @@ namespace vcli = virgil::cli;
 #define MAIN card_get_main
 #endif
 
+static void writeCard(const std::string& pathTofolder, const vsdk::models::CardModel& card);
+
 int MAIN(int argc, char** argv) {
     try {
         std::string description = "Return a Private/Global Virgil Card by card-id or a group of "
@@ -65,7 +67,7 @@ int MAIN(int argc, char** argv) {
 
         std::vector<std::string> examples;
         examples.push_back("Receive a Private/Global Card by card-id:\n"
-                           "virgil card-get -a <card-id> -o my_card.vcard/\n\n");
+                           "virgil card-get -a <card-id> -o cards/\n\n");
 
         examples.push_back("Return a group of Private/Global Cards connected with public-key-id, card-id belongs to "
                            "one of the Cards:\n"
@@ -79,11 +81,9 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
                                             "arg");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Global/Private Virgil Card identifier", true, "",
-                                               "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Global/Private Public Key identifier\n",
-                                                    false, "", "arg");
+        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", false, "", "arg");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", false, "", "file");
 
@@ -102,6 +102,7 @@ int MAIN(int argc, char** argv) {
 
         vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+        std::string pathTofolder = outArg.getValue();
 
         if (publicKeyIdArg.isSet() && privateKeyArg.isSet()) {
             std::string pathPrivateKey = privateKeyArg.getValue();
@@ -126,26 +127,13 @@ int MAIN(int argc, char** argv) {
                 return EXIT_FAILURE;
             }
 
-            std::string pathTofolder = outArg.getValue();
-            if (pathTofolder.empty()) {
-                for (auto&& foundCard : foundCards) {
-                    std::string foundCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(foundCard);
-                    vcli::writeBytes(pathTofolder, foundCardStr);
-                }
-            } else {
-                for (auto&& foundCard : foundCards) {
-                    std::string identity = foundCard.getCardIdentity().getValue();
-                    std::string cardId = foundCard.getId();
-
-                    std::string fileName = identity + "-id-" + foundCard.getId() + ".vcard";
-                    std::string foundCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(foundCard);
-                    vcli::writeBytes(pathTofolder + "/" + fileName, foundCardStr);
-                }
+            for (auto&& foundCard : foundCards) {
+                writeCard(pathTofolder, foundCard);
             }
+
         } else {
-            vsdk::models::CardModel card = servicesHub.card().get(cardIdArg.getValue());
-            std::string cardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(card);
-            vcli::writeBytes(outArg.getValue(), cardStr);
+            vsdk::models::CardModel foundCard = servicesHub.card().get(cardIdArg.getValue());
+            writeCard(pathTofolder, foundCard);
             if (verboseArg.isSet()) {
                 std::cout << "A Card with card-id:" << cardIdArg.getValue() << " has been received" << std::endl;
             }
@@ -160,4 +148,17 @@ int MAIN(int argc, char** argv) {
     }
 
     return EXIT_SUCCESS;
+}
+
+static void writeCard(const std::string& pathTofolder, const vsdk::models::CardModel& card) {
+    std::string cardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(card);
+    if (pathTofolder.empty()) {
+        vcli::writeBytes(pathTofolder, cardStr);
+        return;
+    }
+
+    std::string identity = card.getCardIdentity().getValue();
+    std::string cardId = card.getId();
+    std::string fileName = identity + "-id-" + card.getId() + ".vcard";
+    vcli::writeBytes(pathTofolder + "/" + fileName, cardStr);
 }
