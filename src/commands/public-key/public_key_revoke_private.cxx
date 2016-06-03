@@ -58,34 +58,29 @@ namespace vcli = virgil::cli;
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN public_key_revoke_main
+#define MAIN public_key_revoke_private_main
 #endif
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Revoke a group of Global/Private Cards from the Public Keys Service connected by "
+        std::string description = "Revoke a group of Private Cards from the Public Keys Service connected by "
                                   "public-key-id + card-id of one of the Cards from the group.\n";
 
         std::vector<std::string> examples;
-        examples.push_back(
-            "Revoke a chain of Virgil Global Cards connected by public-key-id from Public Keys Service:\n"
-            "virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -f "
-            "alice/global-main-validated-identity.txt -f alice/global-reserve-validated-identity.txt\n\n");
-
         examples.push_back("Revoke a chain of Virgil Private Cards with confirmed identities connected by "
                            "public-key-id from Public Keys Service:\n"
-                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -f "
+                           "virgil public-key-revoke-private -a <card_id> -k alice/private.key -f "
                            "alice/private-main-validated-identity.txt -f "
                            "alice/private-reserve-validated-identity.txt\n\n");
 
         examples.push_back("Revoke a chain of Virgil Private Cards with unconfirmed identities connected by "
                            "public-key-id from Public Keys Service:\n"
-                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -d "
+                           "virgil public-key-revoke-private -a <card_id> -k alice/private.key -d "
                            "email:alice_main@domain.com -d email:alice_reserve@domain.com\n\n");
 
         examples.push_back("Revoke a chain of Virgil Private Cards with unconfirmed identities and obfuscator identity "
                            "value and/or type connected by public-key-id from Public Keys Service:\n"
-                           "virgil public-key-revoke -e <public_key_id> -a <card_id> -k alice/private.key -d "
+                           "virgil public-key-revoke-private -a <card_id> -k alice/private.key -d "
                            "<obfuscator_type>:<obfuscator_value_1> -d <obfuscator_type>:<obfuscator_value_2>\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
@@ -95,18 +90,15 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", true, "", "arg");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Globalr/Private Virgil Card identifier", true, "",
-                                               "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Private Virgil Card identifier", true, "", "arg");
 
         TCLAP::MultiArg<std::string> identityArg("d", "identity", "User identifier for Private Virgil Card with "
-                                                                  "unconfirmed identity. Use only for Private Virgil "
-                                                                  "Card with unconfirmed identity",
+                                                                  "unconfirmed identity",
                                                  true, "arg");
 
         TCLAP::MultiArg<std::string> validatedIdentityArg("f", "validated-identity",
                                                           "Validated Identity for Private Virgil Card - see 'virgil "
-                                                          "identity-confirm-private', for Global Virgil Card - see "
-                                                          "'virgil identity-confirm-global'",
+                                                          "identity-confirm-private'",
                                                           true, "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
@@ -149,6 +141,7 @@ int MAIN(int argc, char** argv) {
                                            credentials);
         } else {
             // identityArg.isSet
+            // revoke for Private Virgil Card with unconfirmed identity
             std::vector<std::string> identitiesStr = identityArg.getValue();
             std::vector<vsdk::dto::Identity> identities;
             for (const auto& identityStr : identitiesStr) {
@@ -170,10 +163,11 @@ int MAIN(int argc, char** argv) {
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "public-key-revoke. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "public-key-revoke-private. Error: " << exception.error() << " for arg " << exception.argId()
+                  << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "public-key-revoke. Error: " << exception.what() << std::endl;
+        std::cerr << "public-key-revoke-private. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 
