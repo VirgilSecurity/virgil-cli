@@ -51,7 +51,7 @@ EXAMPLES
 
 1.  Return a Private/Global Virgil Card by card-id:
 
-        virgil card-get -a <card_id> -o my_card.vcard
+        virgil card-get -a <card_id> -o cards/
 
 2.  Return a group of Private/Global Virgil Cards connected with
     public-key-id, card-id belongs to one of the Cards:
