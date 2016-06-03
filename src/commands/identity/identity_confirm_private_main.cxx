@@ -37,6 +37,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <fstream>
 
 #include <tclap/CmdLine.h>
 
@@ -46,9 +47,13 @@
 #include <virgil/sdk/util/token.h>
 #include <virgil/sdk/io/Marshaller.h>
 
+#include <nlohman/json.hpp>
+
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+
+using json = nlohmann::json;
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
@@ -59,6 +64,8 @@ namespace vcli = virgil::cli;
 #else
 #define MAIN identity_confirm_private_main
 #endif
+
+vcrypto::VirgilByteArray readVKeys(const std::string& pathTofile);
 
 int MAIN(int argc, char** argv) {
     try {
@@ -114,7 +121,8 @@ int MAIN(int argc, char** argv) {
         std::string identityType = identityTypeArg.getValue();
 
         std::string pathPrivateKey = appPrivateKeyArg.getValue();
-        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
+        vcrypto::VirgilByteArray privateKey = readVKeys(pathPrivateKey);
+
         vcrypto::VirgilByteArray privateKeyPassword;
         if (appPrivateKeyPasswordArg.isSet()) {
             privateKeyPassword = vcrypto::str2bytes(appPrivateKeyPasswordArg.getValue());
@@ -152,4 +160,16 @@ int MAIN(int argc, char** argv) {
     }
 
     return EXIT_SUCCESS;
+}
+
+vcrypto::VirgilByteArray readVKeys(const std::string& pathTofile) {
+    std::ifstream inFile(pathTofile, std::ios::in | std::ios::binary);
+    if (!inFile) {
+        throw std::invalid_argument("can not read file: " + pathTofile);
+    }
+
+    std::string vkeys((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+    json jvkeys = json::parse(vkeys);
+    std::string privateKey = jvkeys["privateKey"];
+    return vcrypto::str2bytes(privateKey);
 }
