@@ -92,8 +92,8 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "virgil Card. If omitted, stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", true, "",
-                                                          "file");
+        TCLAP::ValueArg<std::string> validatedIdentityArg(
+            "f", "validated-identity", "Validated identity (see 'virgil identity-confirm-global')", true, "", "file");
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
 

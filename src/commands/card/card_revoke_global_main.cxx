@@ -79,9 +79,9 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "virgil Card identifier", true, "", "arg");
 
         TCLAP::ValueArg<std::string> validatedIdentityArg(
-            "f", "validated-identity", "Validated identity. See 'virgil identity-confirm-global'", false, "", "file");
+            "f", "validated-identity", "Validated identity (see 'virgil identity-confirm-global')", false, "", "file");
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email", true, "", "arg");
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: email:alice@domain.com", true, "", "arg");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 

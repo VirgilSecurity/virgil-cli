@@ -19,11 +19,11 @@ OPTIONS
 =======
 
         -d <arg>,  --identity <arg>
-         (OR required)  Identity: email
+         (OR required)  Identity: email:alice@domain.com
              -- OR --
         -f <file>,  --validated-identity <file>
-         (OR required)  Validated identity. See 'virgil
-         identity-confirm-global'
+         (OR required)  Validated identity (see 'virgil
+         identity-confirm-global')
 
 
         -a <arg>,  --card-id <arg>

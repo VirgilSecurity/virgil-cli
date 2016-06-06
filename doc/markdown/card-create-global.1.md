@@ -40,7 +40,8 @@ OPTIONS
          (OR required)  Identity: email
              -- OR --
         -f <file>,  --validated-identity <file>
-         (OR required)  Validated identity
+         (OR required)  Validated identity (see 'virgil
+         identity-confirm-global')
 
 
         -o <file>,  --out <file>
@@ -69,7 +70,7 @@ EXAMPLES
 
 1.  Create a Global Virgil Card:
 
-        virgil card-create -f validated-identity.txt --public-key public.key -k private.key -o my_card.vcard
+        virgil card-create-global -f alice/validated_identity_global.txt --public-key public.key -k alice/private.key -o alice/my_card.vcard
 
 2.  Create a Global Virgil Card, with confirming of identity:
 
@@ -78,7 +79,7 @@ EXAMPLES
 3.  Create a connection with already existing Global Virgil Card, by
     public-key-id:
 
-        virgil card-create -f validated-identity.txt --public-key-id <public_key_id> -k private.key -o my_card.vcard
+        virgil card-create-global -f alice/validated_identity_global.txt -e <pub_key_id> -k alice/private.key -o alice/my_card.vcard
 
 4.  Create a connection with already existing Global Virgil Card,
     by public-key-id. With confirming of identity:

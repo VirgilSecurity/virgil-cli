@@ -94,7 +94,7 @@ Create a Private Virgil Card with a confirmed Identity:
 .IP
 .nf
 \f[C]
-virgil\ card\-create\-private\ \-f\ validated\-identity.txt\ \-\-public\-key\ public.key\ \-k\ private.key\ \-o\ my_card.vcard
+virgil\ card\-create\-private\ \-f\ alice/validated_identity.txt\ \-\-public\-key\ public.key\ \-k\ alice/private.key\ \-o\ alice/my_card.vcard
 \f[]
 .fi
 .RE
@@ -105,7 +105,7 @@ a confirmed Identity by public\-key\-id:
 .IP
 .nf
 \f[C]
-virgil\ card\-create\-private\ \-f\ validated\-identity.txt\ \-\-public\-key\-id\ <public_key_id>\ \-k\ private.key\ \-o\ my_card.vcard
+virgil\ card\-create\-private\ \-f\ alice/validated_identity.txt\ \-e\ <pub_key_id>\ \-k\ alice/private.key\ \-o\ alice/my_card.vcard
 \f[]
 .fi
 .RE
@@ -115,7 +115,7 @@ Create a Private Virgil Card with an unconfirmed Identity:
 .IP
 .nf
 \f[C]
-virgil\ card\-create\-private\ \-d\ email:anonim\@gmail.com\ \-\-public\-key\ public.key\ \-k\ private.key\ \-o\ my_card.vcard
+virgil\ card\-create\-private\ \-d\ <identity_type>:<identity_value>\ \-\-public_key\ alice/public.key\ \-k\ alice/private.key\ \-o\ alice/anonim_card1.vcard
 \f[]
 .fi
 .RE
@@ -126,7 +126,7 @@ an unconfirmed Identity by public\-key\-id:
 .IP
 .nf
 \f[C]
-virgil\ card\-create\-private\ \-d\ email:anonim\@gmail.com\ \-\-public\-key\-id\ <public_key_id>\ \-k\ private.key\ \-o\ my_card.vcard
+virgil\ card\-create\-private\ \-d\ <identity_type>:<identity_value>\ \-e\ <pub_key_id>\ \-k\ alice/private.key\ \-o\ alice/anonim_card2.vcard
 \f[]
 .fi
 .RE

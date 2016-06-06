@@ -76,16 +76,16 @@ int MAIN(int argc, char** argv) {
                            "virgil card-create-private -f alice/validated_identity.txt "
                            "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back(
-            "Create a Private Virgil Card with an unconfirmed Identity:\n"
-            "virgil card-create -d <identity_type>:<identity_value> --public_key alice/public.key -k alice/private.key "
-            "-o alice/anonime_card1.vcard\n\n");
+        examples.push_back("Create a Private Virgil Card with an unconfirmed Identity:\n"
+                           "virgil card-create-private -d <identity_type>:<identity_value> --public_key "
+                           "alice/public.key -k alice/private.key "
+                           "-o alice/anonim_card1.vcard\n\n");
 
         examples.push_back(
             "Create a connection with an already existing a Private Virgil Card with an unconfirmed"
             "Identity by public-key-id:\n"
-            "virgil card-create -d <identity_type>:<identity_value> -e <pub_key_id> -k alice/private.key "
-            "-o alice/anonime_card2.vcard\n\n");
+            "virgil card-create-private -d <identity_type>:<identity_value> -e <pub_key_id> -k alice/private.key "
+            "-o alice/anonim_card2.vcard\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
@@ -97,7 +97,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: type:value", true, "", "arg");
 
         TCLAP::ValueArg<std::string> validatedIdentityArg(
-            "f", "validated-identity", "Validated identity. See 'virgil identity-confirm-private'", true, "", "file");
+            "f", "validated-identity", "Validated identity (see 'virgil identity-confirm-private')", true, "", "file");
 
         TCLAP::ValueArg<std::string> publicKeyArg("", "public-key", "Public key", true, "", "file");
 

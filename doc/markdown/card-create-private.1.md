@@ -80,21 +80,21 @@ EXAMPLES
 
 1.  Create a Private Virgil Card with a confirmed Identity:
 
-        virgil card-create-private -f validated-identity.txt --public-key public.key -k private.key -o my_card.vcard
+        virgil card-create-private -f alice/validated_identity.txt --public-key public.key -k alice/private.key -o alice/my_card.vcard
 
 2.  Create a connection with an already existing a Private Virgil Card
     with a confirmed Identity by public-key-id:
 
-        virgil card-create-private -f validated-identity.txt --public-key-id <public_key_id> -k private.key -o my_card.vcard
+        virgil card-create-private -f alice/validated_identity.txt -e <pub_key_id> -k alice/private.key -o alice/my_card.vcard
 
 3.  Create a Private Virgil Card with an unconfirmed Identity:
 
-        virgil card-create-private -d email:anonim@gmail.com --public-key public.key -k private.key -o my_card.vcard
+        virgil card-create-private -d <identity_type>:<identity_value> --public_key alice/public.key -k alice/private.key -o alice/anonim_card1.vcard
 
 4.  Create a connection with an already existing a Private Virgil Card
     with an unconfirmed Identity by public-key-id:
 
-        virgil card-create-private -d email:anonim@gmail.com --public-key-id <public_key_id> -k private.key -o my_card.vcard
+        virgil card-create-private -d <identity_type>:<identity_value> -e <pub_key_id> -k alice/private.key -o alice/anonim_card2.vcard
 
 SEE ALSO
 ========

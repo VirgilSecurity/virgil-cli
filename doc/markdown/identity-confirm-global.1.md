@@ -34,13 +34,13 @@ OPTIONS
          Validated identity. If omitted, stdout is used.
 
         -d <arg>,  --identity <arg>
-         Identity email
+         Identity email:alice@domain.com
 
-        --action-id <arg>
-         Action id (see 'virgil identity-verify')
+        --action-id <file>
+         Action id.
 
         --confirmation-code <arg>
-         Confirmation code (see 'virgil identity-verify')
+         Confirmation code
 
         -t <int>,  --time-to-live <int>
          Time to live, by default = 3600.

@@ -84,7 +84,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Validated identity. If omitted, stdout is used.", false, "",
                                             "file");
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email", false, "", "arg");
+        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email:alice@domain.com", false, "", "arg");
 
         TCLAP::ValueArg<std::string> actionIdArg("", "action-id", "Action id.", false, "", "file");
 
