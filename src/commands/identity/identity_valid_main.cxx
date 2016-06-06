@@ -60,7 +60,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Check 'validated-identity' received by 'identity-confirm-global'\n";
+        std::string description = "Check 'validated-identity' received by 'identity-confirm-global'\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Validated identity:\n"
@@ -71,13 +71,17 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity", "Validated identity", true, "",
-                                                          "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Return status. If omitted, stdout is used.", false, "",
+                                            "file");
+
+        TCLAP::ValueArg<std::string> validatedIdentityArg(
+            "f", "validated-identity", "Validated identity (see 'virgil identity-confirm-global')", true, "", "file");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 
         cmd.add(verboseArg);
         cmd.add(validatedIdentityArg);
+        cmd.add(outArg);
         cmd.parse(argc, argv);
 
         vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
@@ -89,15 +93,18 @@ int MAIN(int argc, char** argv) {
         std::string validatedIdentityStr =
             vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
 
-        if (verboseArg.isSet()) {
-            if (validateToken) {
+        if (validateToken) {
+            if (verboseArg.isSet()) {
                 std::cout << "Validation Token is valid" << std::endl;
                 std::cout << validatedIdentityStr << std::endl;
-            } else {
+            }
+            vcli::writeOutput(outArg.getValue(), "true");
+        } else {
+            if (verboseArg.isSet()) {
                 std::cout << "Validation Token is not valid" << std::endl;
                 std::cout << validatedIdentityStr << std::endl;
-                return EXIT_FAILURE;
             }
+            vcli::writeOutput(outArg.getValue(), "false");
         }
 
     } catch (TCLAP::ArgException& exception) {

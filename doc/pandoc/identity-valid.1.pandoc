@@ -9,7 +9,7 @@
 
 # SYNOPSIS
 
-        virgil identity-valid -f <file> [-V] [--] [--version] [-h]
+        virgil identity-valid  [-o <file>] -f <file> [-V] [--] [--version] [-h]
 
 
 # DESCRIPTION
@@ -19,31 +19,34 @@ Check *validated-identity* received by *identity-confirm-global*
 
 # OPTIONS
 
-    -f <file>,  --validated-identity <file>
-     (required)  Validated identity
+        -o <file>,  --out <file>
+         Return status. If omitted, stdout is used.
 
-    -V,  --VERBOSE
-     Show detailed information
+        -f <file>,  --validated-identity <file>
+         (required)  Validated identity (see 'virgil identity-confirm-global')
 
-    --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+        -V,  --VERBOSE
+         Show detailed information
 
-    --version
-     Displays version information and exits.
+        --,  --ignore_rest
+         Ignores the rest of the labeled arguments following this flag.
 
-    -h,  --help
-     Displays usage information and exits.
+        --version
+         Displays version information and exits.
+
+        -h,  --help
+         Displays usage information and exits.
 
 
 
 # RETURN VALUE
 
-On success, true is returned else false, if on -V, --VERBOSE
+On success, "true" is returned else "false"
 
 
 # EXAMPLES
 
-        virgil identity-valid -f validated-identity.txt -V
+        virgil identity-valid -f validated-identity.txt
 
 # SEE ALSO
 

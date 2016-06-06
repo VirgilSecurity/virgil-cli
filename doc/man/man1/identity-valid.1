@@ -10,7 +10,7 @@ received by \f[I]identity\-confirm\-global\f[]
 .IP
 .nf
 \f[C]
-\ \ \ \ virgil\ identity\-valid\ \-f\ <file>\ [\-V]\ [\-\-]\ [\-\-version]\ [\-h]
+\ \ \ \ virgil\ identity\-valid\ \ [\-o\ <file>]\ \-f\ <file>\ [\-V]\ [\-\-]\ [\-\-version]\ [\-h]
 \f[]
 .fi
 .SH DESCRIPTION
@@ -21,30 +21,33 @@ Check \f[I]validated\-identity\f[] received by
 .IP
 .nf
 \f[C]
-\-f\ <file>,\ \ \-\-validated\-identity\ <file>
-\ (required)\ \ Validated\ identity
+\ \ \ \ \-o\ <file>,\ \ \-\-out\ <file>
+\ \ \ \ \ Return\ status.\ If\ omitted,\ stdout\ is\ used.
 
-\-V,\ \ \-\-VERBOSE
-\ Show\ detailed\ information
+\ \ \ \ \-f\ <file>,\ \ \-\-validated\-identity\ <file>
+\ \ \ \ \ (required)\ \ Validated\ identity\ (see\ \[aq]virgil\ identity\-confirm\-global\[aq])
 
-\-\-,\ \ \-\-ignore_rest
-\ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
+\ \ \ \ \-V,\ \ \-\-VERBOSE
+\ \ \ \ \ Show\ detailed\ information
 
-\-\-version
-\ Displays\ version\ information\ and\ exits.
+\ \ \ \ \-\-,\ \ \-\-ignore_rest
+\ \ \ \ \ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
 
-\-h,\ \ \-\-help
-\ Displays\ usage\ information\ and\ exits.
+\ \ \ \ \-\-version
+\ \ \ \ \ Displays\ version\ information\ and\ exits.
+
+\ \ \ \ \-h,\ \ \-\-help
+\ \ \ \ \ Displays\ usage\ information\ and\ exits.
 \f[]
 .fi
 .SH RETURN VALUE
 .PP
-On success, true is returned else false, if on \-V, \[en]VERBOSE
+On success, \[lq]true\[rq] is returned else \[lq]false\[rq]
 .SH EXAMPLES
 .IP
 .nf
 \f[C]
-\ \ \ \ virgil\ identity\-valid\ \-f\ validated\-identity.txt\ \-V
+\ \ \ \ virgil\ identity\-valid\ \-f\ validated\-identity.txt
 \f[]
 .fi
 .SH SEE ALSO
