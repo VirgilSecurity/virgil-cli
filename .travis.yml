@@ -4,7 +4,6 @@ branches:
     - master
     - openwrt
     - /^release*$/
-
 compiler:
   - g++
   - clang++
@@ -18,6 +17,7 @@ addons:
       - gcc-4.8
       - g++-4.8
       - libcurl4-openssl-dev
+      - python-yaml
 env:
   global:
     - BUILD_DIR_NAME=build
