@@ -266,7 +266,6 @@ set (CPACK_PACKAGE_INSTALL_DIRECTORY "Virgil Security CLI")
 set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY "virgil ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}-${SYSTEM_NAME}-${SYSTEM_ARCH}")
 
 set (CPACK_PACKAGE_EXECUTABLES "virgil" "virgil-${SYSTEM_ARCH}")
-set (CPACK_CREATE_DESKTOP_LINKS "virgil")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
 if (MSVC)
@@ -278,6 +277,11 @@ if (MSVC)
 
     set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS
         "ExecWait '\\\"$INSTDIR\\\\install\\\\vc_redist.${SYSTEM_ARCH}.exe\\\" /install /quiet'"
+
+        "Push \\\$R0"
+        "ExpandEnvStrings \\\$R0 '%COMSPEC%'"
+        "CreateShortCut \\\"$SMPROGRAMS\\\\Virgil Security CLI\\\\virgil-${SYSTEM_ARCH}.lnk\\\" \\\"$R0\\\"  \\\"/k set PATH=$INSTDIR\\\\bin\\\""
+        "CreateShortCut \\\"$DESKTOP\\\\virgil-${SYSTEM_ARCH}.lnk\\\" \\\"$R0\\\"  \\\"/k set PATH=$INSTDIR\\\\bin\\\""
 
         "SetShellVarContext current"
         "CreateDirectory \\\"$APPDATA\\\\virgil-cli\\\""
@@ -291,6 +295,9 @@ if (MSVC)
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}")
 
     set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
+        "Delete \\\"$SMPROGRAMS\\\\Virgil Security CLI\\\\virgil.lnk\\\""
+        "Delete \\\"$DESKTOP\\\\virgil-${SYSTEM_ARCH}.lnk\\\""
+
         "SetShellVarContext current"
         # Remove config file
         # example C:\Users\John\AppData\Roaming\virgil-cli
