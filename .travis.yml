@@ -2,22 +2,34 @@ language: cpp
 branches:
   only:
     - master
+    - v2.0.0
     - openwrt
     - /^release*$/
-compiler:
-  - g++
-  - clang++
-os:
-  - linux
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - gcc-4.8
-      - g++-4.8
-      - libcurl4-openssl-dev
-      - python-yaml
+
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+            - libcurl4-openssl-dev
+      env:
+        - CUSTOM_CC=gcc-4.9
+        - CUSTOM_CXX=g++-4.9
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+            - libcurl4-openssl-dev
+      env:
+        - CUSTOM_CC=gcc-5
+        - CUSTOM_CXX=g++-5
 env:
   global:
     - BUILD_DIR_NAME=build
@@ -30,3 +42,4 @@ before_script:
 script:
   - bash ./ci/run.sh
 sudo: false
+Status API Training Shop Blog About
