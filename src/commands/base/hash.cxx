@@ -64,7 +64,7 @@ static vcrypto::foundation::VirgilPBKDF::Hash hash_alg(const std::string& param)
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Derives the obfuscated data from incoming parameters using PBKDF function.\n";
+        std::string description = "Derives the obfuscated data from incoming parameters using PBKDF function.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Generate hash (alg - sha384, iterations - 2048 default):\n"

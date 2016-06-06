@@ -60,7 +60,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Get Global/Private Virgil Public Key from the Public Key Service.\n";
+        std::string description = "Get Global/Private Virgil Public Key from the Public Key Service.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Get Virgil Public Key:\n"

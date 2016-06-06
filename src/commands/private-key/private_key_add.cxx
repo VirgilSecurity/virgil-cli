@@ -67,7 +67,7 @@ int MAIN(int argc, char** argv) {
             "2. Make sure that you have a public/private key pair and you have already uploaded the public key\n"
             "to the Public Keys Service\n"
             "3. Make sure that you have your private key saved locally\n"
-            "4. Make sure that you have registered an application at Virgil Security, Inc.\n";
+            "4. Make sure that you have registered an application at Virgil Security, Inc.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Add Private Key to Private Keys Service:\n"

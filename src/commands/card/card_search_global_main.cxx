@@ -62,7 +62,7 @@ int MAIN(int argc, char** argv) {
     try {
         std::string description = "Search for a Global Virgil Card from the Virgil Keys Service by:.\n"
                                   "1. application_name - search an application Virgil Global Card\n"
-                                  "2. email - search a Virgil Global Card\n";
+                                  "2. email - search a Virgil Global Card\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("The global search for application Cards by email:\n"

@@ -70,7 +70,7 @@ static void checkFormatRecipientArg(const std::pair<std::string, std::string>& p
 int MAIN(int argc, char** argv) {
     try {
         std::string description = "Verify data and signature with given user's identifier"
-                                  " or with its Virgil Card.\n";
+                                  " or with its Virgil Card.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r vcard:bob/bob.vcard\n\n");

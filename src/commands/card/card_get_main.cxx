@@ -63,7 +63,7 @@ static void writeCard(const std::string& pathTofolder, const vsdk::models::CardM
 int MAIN(int argc, char** argv) {
     try {
         std::string description = "Return a Private/Global Virgil Card by card-id or a group of "
-                                  "Private/Global Cards connected with public-key-id\n";
+                                  "Private/Global Cards connected with public-key-id\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Receive a Private/Global Card by card-id:\n"

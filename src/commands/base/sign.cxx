@@ -60,7 +60,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Sign data with given user's Private Key.\n";
+        std::string description = "Sign data with given user's Private Key.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key\n\n");

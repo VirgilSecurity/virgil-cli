@@ -64,7 +64,7 @@ namespace vcli = virgil::cli;
 int MAIN(int argc, char** argv) {
     try {
         std::string description = "Revoke a group of Private Cards from the Public Keys Service connected by "
-                                  "public-key-id + card-id of one of the Cards from the group.\n";
+                                  "public-key-id + card-id of one of the Cards from the group.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Revoke a chain of Virgil Private Cards with confirmed identities connected by "

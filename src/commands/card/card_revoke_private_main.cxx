@@ -61,7 +61,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Revoke a Private Virgil Card from the Virgil Public Key service.\n";
+        std::string description = "Revoke a Private Virgil Card from the Virgil Public Key service.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Revoke a Private Virgil Card with a confirmed identity:\n"

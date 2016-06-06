@@ -61,7 +61,7 @@ int MAIN(int argc, char** argv) {
     try {
         std::string description = "Verify an Identity for Global Virgil Card.\n"
                                   "1. Send 'confirmation_code' on the email;"
-                                  "2. Return 'action_id'.";
+                                  "2. Return 'action_id'.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Verify an Identity:\n"

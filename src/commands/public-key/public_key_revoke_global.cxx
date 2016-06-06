@@ -67,7 +67,7 @@ static vsdk::dto::ValidatedIdentity getValidatedIdentity(const bool verbose, con
 int MAIN(int argc, char** argv) {
     try {
         std::string description = "Revoke a chain of Global Virgil Cards connected by public-key-id from "
-                                  "Virgil Keys Service.\n";
+                                  "Virgil Keys Service.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Revoke a chain of Global Virgil Cards by public-key-id from Virgil Keys Service:\n"

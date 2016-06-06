@@ -69,7 +69,7 @@ static void printProcessGeneratingPrivate(const std::string& algorithmType);
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Generate Elliptic Curve or RSA Private Key.\n";
+        std::string description = "Generate Elliptic Curve or RSA Private Key.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Generate Curve25519 Private Key(default), your password will be requested:\n"

@@ -62,7 +62,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Search for the Private Virgil Card[s] from the Virgil Keys Service\n";
+        std::string description = "Search for the Private Virgil Card[s] from the Virgil Keys Service\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Search for the Private Virgil Card[s] with a confirmed Identity:\n"
