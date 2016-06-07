@@ -1,45 +1,82 @@
 language: cpp
-branches:
-  only:
-    - master
-    - v2.0.0
-    - openwrt
-    - /^release*$/
+sudo: false
+
+cache:
+  cache: true
+  directories:
+    - $HOME/.ccache
+
+env:
+  global:
+    - USE_CCACHE=1
+    - CCACHE_COMPRESS=1
+    - CCACHE_MAXSIZE=200M
+    - CCACHE_CPP2=1
+    - BUILD_DIR_NAME=build
+
 
 matrix:
   include:
-    - compiler: gcc
-      addons:
+    # 1 Linux GCC Builds
+    - os: Linux
+    compiler: gcc
+    addons: &gcc48
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+          - libcurl4-openssl-dev
+        packages:
+          - g++-4.8
+      env: COMPILER='ccache g++-4.8' BUILD_TYPE='Release'
+
+    - os: Linux
+    compiler: gcc
+    addons: *gcc48
+    env: COMPILER='ccache g++-4.8' BUILD_TYPE='Debug'
+
+
+    - os: linux
+      compiler: gcc
+      addons: &gcc49
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.9
-            - libcurl4-openssl-dev
-      env:
-        - CUSTOM_CC=gcc-4.9
-        - CUSTOM_CXX=g++-4.9
-    - compiler: gcc
-      addons:
+        sources:
+          - ubuntu-toolchain-r-test
+          - libcurl4-openssl-dev
+        packages:
+          - g++-4.9
+      env: COMPILER='ccache g++-4.9' BUILD_TYPE='Release'
+
+    - os: linux
+      compiler: gcc
+      addons: *gcc49
+      env: COMPILER='ccache g++-4.9' BUILD_TYPE='Debug'
+
+
+    - os: linux
+      compiler: gcc
+      addons: &gcc5
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-5
-            - libcurl4-openssl-dev
-      env:
-        - CUSTOM_CC=gcc-5
-        - CUSTOM_CXX=g++-5
-env:
-  global:
-    - BUILD_DIR_NAME=build
+        sources:
+          - ubuntu-toolchain-r-test
+          - libcurl4-openssl-dev
+        packages:
+          - g++-5
+      env: COMPILER='ccache g++-5' BUILD_TYPE='Release'
+
+    - os: linux
+      compiler: gcc
+      addons: *gcc5
+      env: COMPILER='ccache g++-5' BUILD_TYPE='Debug'
+
+
 before_install:
   - bash ./ci/install-cmake.sh
+
 install:
 - export CC="$CUSTOM_CC" CXX="$CUSTOM_CXX"
+
 before_script:
   - bash ./ci/configure.sh
+
 script:
   - bash ./ci/run.sh
-sudo: false
-Status API Training Shop Blog About
