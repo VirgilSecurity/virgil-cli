@@ -36,20 +36,13 @@
 #
 
 set -ev
-
-# Run CMake
-cd "${TRAVIS_BUILD_DIR}"
-if [ -d "${BUILD_DIR_NAME}" ]; then
-    rm -rf "${BUILD_DIR_NAME}"
-fi
-
-mkdir "${BUILD_DIR_NAME}"
-cd "${BUILD_DIR_NAME}"
+CMAKE_VERSION_MAJOR=3.3
+CMAKE_VERSION="${CMAKE_VERSION_MAJOR}.0"
 
 if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-    export PATH=$HOME/cmake/bin:$PATH
+    if [ ! -d "$HOME/cmake/bin" ] || [[ "`$HOME/cmake/bin/make --version`" != *"${CMAKE_VERSION}"* ]]; then
+        curl -L -O http://www.cmake.org/files/v${CMAKE_VERSION_MAJOR}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+        tar -xzf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+        cp -fa cmake-${CMAKE_VERSION}-Linux-x86_64/. $HOME/cmake/
+    fi
 fi
-
-cmake --version
-
-cmake "-DCMAKE_BUILD_TYPE=${BUILD_TYPE}" ..
