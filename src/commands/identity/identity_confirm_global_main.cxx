@@ -71,7 +71,7 @@ int MAIN(int argc, char** argv) {
                            "virgil identity-confirm-global -d email:alice@domain.com -t 60 -c 10 -o "
                            "alice/validated-identity.txt\n\n");
 
-        examples.push_back("Identity confirmation with requests number limit = 1 and time validity limit = 3600:\n"
+        examples.push_back("Identity confirmation with requests number limit = 2 and time validity limit = 3600:\n"
                            "virgil identity-confirm-global --action-id alice/action_id.txt --confirmation-code <code>"
                            " -o alice/validated-identity.txt\n\n");
 

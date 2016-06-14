@@ -20,38 +20,38 @@ Revoke a group of global Virgil Cards from the Public Keys Service connected by 
 
 # OPTIONS
 
-   -f <file>,  --validated-identity <file>  (accepted multiple times)
-     (OR required)  Validated Identity, see 'virgil
-     identity-confirm-global'
-         -- OR --
-   -d <arg>,  --identity <arg>  (accepted multiple times)
-     (OR required)  Identity user, for example: -d email:alice@domain.com
+        -f <file>,  --validated-identity <file>  (accepted multiple times)
+         (OR required)  Validated Identity, see 'virgil
+         identity-confirm-global'
+             -- OR --
+        -d <arg>,  --identity <arg>  (accepted multiple times)
+         (OR required)  Identity user, for example: -d email:alice@domain.com
 
 
-   -e <arg>,  --public-key-id <arg>
-     (required)  Public Key identifier
+        -e <arg>,  --public-key-id <arg>
+         (required)  Public Key identifier
 
 
-   -a <arg>,  --card-id <arg>
-     (required)  global Virgil Card identifier
+        -a <arg>,  --card-id <arg>
+         (required)  global Virgil Card identifier
 
-   -k <file>,  --key <file>
-     (required)  Private key
+        -k <file>,  --key <file>
+         (required)  Private key
 
-   -p <arg>,  --private-key-password <arg>
-     Private Key Password.
+        -p <arg>,  --private-key-password <arg>
+         Private Key Password.
 
-   -V,  --VERBOSE
-     Show detailed information
+        -V,  --VERBOSE
+         Show detailed information
 
-   --,  --ignore_rest
-     Ignores the rest of the labeled arguments following this flag.
+        --,  --ignore_rest
+         Ignores the rest of the labeled arguments following this flag.
 
-   --version
-     Displays version information and exits.
+        --version
+         Displays version information and exits.
 
-   -h,  --help
-     Displays usage information and exits.
+        -h,  --help
+         Displays usage information and exits.
 
 
 # EXAMPLES
