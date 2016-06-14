@@ -34,20 +34,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_COMMON_CONFIG_H
-#define VIRGIL_CLI_COMMON_CONFIG_H
+#include <cli/consts.h>
 
-#include <string>
-
-/**
- * @brief Token that unique identifies your application.
- * @note This constant is configured within CMake.
- */
-extern const std::string VIRGIL_ACCESS_TOKEN;
-
-#if !defined(WIN32)
-extern const std::string INSTALL_CONFIG_FILE_GLOBAL_DIR;
-extern const std::string INSTALL_CONFIG_FILE_LOCAL_DIR;
-#endif
-
-#endif /* VIRGIL_CLI_COMMON_CONFIG_H */
+const std::string VIRGIL_ACCESS_TOKEN = "@VIRGIL_ACCESS_TOKEN@";
