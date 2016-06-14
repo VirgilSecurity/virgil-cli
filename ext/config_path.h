@@ -46,8 +46,14 @@
 #ifndef CONFGI_PATH_H
 #define CONFGI_PATH_H
 
-#if defined(WIN32)
+#ifdef _WIN32
 #include "config_path_window.h"
+#elif __unix__
+#include "config_path_unix.h"
+#elif __linux__
+#include "config_path_linux.h"
+#elif __APPLE__
+#include "config_path_apple.h"
 #endif
 
 #endif
