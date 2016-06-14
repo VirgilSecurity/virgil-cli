@@ -22,133 +22,122 @@ stack functionality:
 COMMON COMMANDS
 ===============
 
-**keygen**  
-Generate Private Key with given parameters.
+**virgil-keygen**(1) Generate [a private
+key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key)
+with provided parameters.
 
-**key2pub**  
-Extract Public Key from the Private Key.
+**virgil-key2pub**(1) Extract [a public
+key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#public-key)
+from the private key.
 
-**encrypt**  
-Encrypt data for given recipients which can be defined by Virgil Keys
-and by passwords.
+**virgil-encrypt**(1) Encrypt data for given recipients who can be
+defined by their Virgil Keys and by passwords.
 
-**decrypt**  
-Decrypt data for given recipient which can be defined by Virgil Public
-Key or by password.
+**virgil-decrypt**(1) Decrypt data for a given recipient who can be
+defined by his public key or by his password.
 
-**sign**  
-Sign data with Private Key.
+**virgil-sign**(1) Sign data with the private key.
 
-**verify**  
-Verify data and signature with Public Key.
+**virgil-verify**(1) Verify data and signature with the public key.
 
-**hash**  
-Derives the obfuscated data from incoming parameters using
-PBKDF function.
+**virgil-hash**(1) Derives the obfuscated data from incoming parameters
+using [PBKDF
+function](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#pbkdf-function).
+
+**virgil-config**(1) Get information about Virgil CLI configuration
+file.
 
 IDENTITY SERVICE COMMANDS
 =========================
 
-**identity-confirm-global**  
+**virgil-identity-confirm-global**(1)  
 Confirmation of the Identity. Returns validation\_token which is
-required for operations with Cards and confirmed identity:
+required for operations with [global Virgil
+Cards](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card)
+and [the confirmed
+Identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity):
 
-1.  `card-create-global(1)`;
-2.  `card-revoke-global(1)`;
-3.  `public-key-revoke-global(1)`.
+1.  **virgil-card-create-global**(1);
+2.  **virgil-card-revoke-global**(1);
+3.  **virgil-public-key-revoke-global**(1).
 
-**identity-confirm-private**  
-Confirmation of the Identity. Returns validation\_token which is
-required for operations with Cards and confirmed identity:
+**virgil-identity-confirm-private**(1) Confirmation of the Identity.
+Returns the validation\_token which is required for the operations with
+[private Virgil
+Cards](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-virgil-card)
+and the confirmed identity:
 
-1.  `card-create-private(1)`;
-2.  `card-revoke-private(1)`;
-3.  `public-key-revoke-private(1)`.
+1.  **virgil-card-create-private**(1);
+2.  **virgil-card-revoke-private**((1);
+3.  **virgil-public-key-revoke-private**(1).
 
-**identity-verify**  
-Verify an identity Returns action\_id.
+**virgil-identity-verify**(1) Verify an identity Returns [action
+id](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#action-id).
 
-**identity-validate**  
-Validates the passed token. Checks whether validation\_token is valid.
-It has time and usage limits.
+**virgil-identity-valid**(1) Validates the passed token. Checks whether
+[time](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#time-to-live)
+and
+[usage](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#count-to-live)
+limits for [validation
+token](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#validation-token)
+are not exceeded.
 
 KEYS SERVICE COMMANDS
 =====================
 
-**public-key-get**  
-Get user's Virgil Public Key from the Virgil Keys service.
+**virgil-public-key-get**(1) Get user's Virgil Public Key from the
+Virgil Keys service.
 
-**public-key-revoke-global**  
-Revoke a group of Global Virgil Cards from the Public Keys Service
-connected by public-key-id + card-id of one of the Cards from the group
+**virgil-public-key-revoke-global**(1) Revoke a group of global Virgil
+Cards from the Public Keys Service connected by
+[public-key-id](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#public-key-id)
++
+[card-id](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#card-id)
+of one of the Cards from the group.
 
-**public-key-revoke-private**  
-Revoke a group of Private Virgil Cards from the Public Keys Service
-connected by public-key-id + card-id of one of the Cards from the group
+**virgil-public-key-revoke-private**(1) Revoke a group of private Virgil
+Cards from the Public Keys Service connected by
+[public-key-id](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#public-key-id)
++
+[card-id](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#card-id)
+of one of the Cards from the group.
 
 VIRGIL CARD SERVICE COMMANDS
 ============================
 
-**card-create-global**  
-Create a Global Virgil Card. Creates a Global Virgil Card. This means
-identity-verify; identity-confirm-global.
+**virgil-card-create-global**(1) Create a global Virgil Card. This means
+**virgil-identity-verify**(1) **virgil-identity-confirm-global**(1).
 
-**card-create-private**  
-Create a Private Virgil Card. Creates a Private Virgil Card. This
-means identity-confirm-private.
+**virgil-card-create-private**(1) Create a private Virgil Card. This
+means **virgil-identity-confirm-private**(1).
 
-**card-search-global**  
-Search Card by email or application name search
+**virgil-card-search-global**(1) Search for a global Virgil Card from
+the Virgil Keys Service by:
 
-**card-search-private**  
-Search Card by type:value; search including Cards with unconfirmed
-Identity;
+1.  application\_name - search an application global Virgil Card.
+2.  email - search a global Virgil Card.
 
-**card-get**  
-Get user's Virgil Card from the Virgil Keys service.
+**virgil-card-search-private**(1) Search the private Virgil Card from
+the Virgil Keys Service.
 
-**card-revoke-private**  
-Revoke a Private Virgil Card by card-id.
+**virgil-card-get**(1) Get user's [Virgil
+Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#virgil-card)
+from the Virgil Keys service.
 
-**card-revoke-global**  
-Revoke a Global Virgil Card by card-id.
+**virgil-card-revoke-private**(1) Revoke a private Virgil Card by the
+card-id.
+
+**virgil-card-revoke-global**(1) Revoke a global Virgil Card by the
+card-id.
 
 PRIVATE KEYS SERVICE COMMANDS
 =============================
 
-**private-key-add**  
-Add existing Private Key to the Private Keys Service.
+**virgil-private-key-add**(1) Add existing the private key to the
+Private Keys Service.
 
-**private-key-get**  
-Get Private Key from the Virgil Private Keys Service.
+**virgil-private-key-get**(1) Get the private key from the Virgil
+Private Keys Service.
 
-**private-key-del**  
-Delete Private Key object from the Private Keys Service.
-
-SEE ALSO
-========
-
-keygen(1)  
-key2pub(1)  
-encrypt(1)  
-decrypt(1)  
-sign(1)  
-verify(1)  
-hash(1)  
-identity-verify(1)  
-identity-confirm-global(1)  
-identity-confirm-private(1)  
-identity-valid(1)  
-public-key-get(1)  
-public-key-revoke-global(1)  
-public-key-revoke-private(1)  
-card-create-global(1)  
-card-create-private(1)  
-card-search-global(1)  
-card-search-private(1)  
-card-get(1)  
-card-revoke-private(1)  
-card-revoke-global(1)  
-private-key-add(1)  
-private-key-get(1)  
-private-key-del(1)
+**virgil-private-key-del**(1) Delete the private key object from the
+Private Keys Service.

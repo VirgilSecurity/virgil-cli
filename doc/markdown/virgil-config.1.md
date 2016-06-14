@@ -1,0 +1,59 @@
+NAME
+====
+
+**config** -- get information about Virgil CLI configuration file.
+
+SYNOPSIS
+========
+
+        virgil config  [-o <file>] [--global] [--local] [--template] [--] [--version]
+               [-h]
+
+DESCRIPTION
+===========
+
+Get information about Virgil CLI configuration file.
+
+OPTIONS
+=======
+
+        -o <file>,  --out <file>
+         If omitted, stdout is used.
+
+        --global
+         Get path to the configuration file for all users.
+
+        --local
+         Get path to the configuration file for current user.
+
+        --template
+         Get a template configuration file.
+
+        --,  --ignore_rest
+         Ignores the rest of the labeled arguments following this flag.
+
+        --version
+         Displays version information and exits.
+
+        -h,  --help
+         Displays usage information and exits.
+
+EXAMPLES
+========
+
+1.  Get path to a configuration file for current user:
+
+        virgil config --local
+
+2.  Get path to the configuration file for all users:
+
+        virgil config --global
+
+3.  Get a template a configuration file:
+
+        virgil config --template
+
+SEE ALSO
+========
+
+**virgil**(1)
