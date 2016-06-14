@@ -12,8 +12,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to sign data with a provided user's \[Private
-Key\](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary\#pri
+The utility allows you to sign data with a provided user's [Private
+Key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key)
 
 OPTIONS
 =======

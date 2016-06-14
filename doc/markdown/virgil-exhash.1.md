@@ -1,9 +1,8 @@
 NAME
 ====
 
-**exhash** -- derives hash from the given data with \[PBKDF
-function\](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary\#pbkdf
-function.
+**exhash** -- derives hash from the given data with [PBKDF
+function](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#pbkdf-function)
 
 SYNOPSIS
 ========

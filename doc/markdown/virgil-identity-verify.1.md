@@ -1,8 +1,8 @@
 NAME
 ====
 
-**identity-verify** -- verify an Identity for \[a global Virgil
-Card\](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary\#global-virgil-card
+**identity-verify** -- verify an Identity for [a global Virgil
+Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card)
 
 SYNOPSIS
 ========

@@ -19,27 +19,38 @@ connected by public-key-id + card-id of one of the Cards from the group
 OPTIONS
 =======
 
--f <file>, --validated-identity <file> (accepted multiple times) (OR
-required) Validated Identity, see 'virgil identity-confirm-global' -- OR
--- -d <arg>, --identity <arg> (accepted multiple times) (OR required)
-Identity user, for example: -d email:alice@domain.com
+        -f <file>,  --validated-identity <file>  (accepted multiple times)
+         (OR required)  Validated Identity, see 'virgil
+         identity-confirm-global'
+             -- OR --
+        -d <arg>,  --identity <arg>  (accepted multiple times)
+         (OR required)  Identity user, for example: -d email:alice@domain.com
 
--e <arg>, --public-key-id <arg> (required) Public Key identifier
 
--a <arg>, --card-id <arg> (required) global Virgil Card identifier
+        -e <arg>,  --public-key-id <arg>
+         (required)  Public Key identifier
 
--k <file>, --key <file> (required) Private key
 
--p <arg>, --private-key-password <arg> Private Key Password.
+        -a <arg>,  --card-id <arg>
+         (required)  global Virgil Card identifier
 
--V, --VERBOSE Show detailed information
+        -k <file>,  --key <file>
+         (required)  Private key
 
---, --ignore\_rest Ignores the rest of the labeled arguments following
-this flag.
+        -p <arg>,  --private-key-password <arg>
+         Private Key Password.
 
---version Displays version information and exits.
+        -V,  --VERBOSE
+         Show detailed information
 
--h, --help Displays usage information and exits.
+        --,  --ignore_rest
+         Ignores the rest of the labeled arguments following this flag.
+
+        --version
+         Displays version information and exits.
+
+        -h,  --help
+         Displays usage information and exits.
 
 EXAMPLES
 ========
