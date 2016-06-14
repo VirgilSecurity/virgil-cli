@@ -1,7 +1,7 @@
 NAME
 ====
 
-**key2pub** -- get Public Key from the Private Key Service
+**key2pub** -- get a public key from the Private Key Service
 
 SYNOPSIS
 ========
@@ -11,10 +11,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to extract [a public
-key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#public-key)
-from [the private
-key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key).
+The utility allows you to extract [a public key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#public-key) from [the private key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key).
 
 OPTIONS
 =======
@@ -29,7 +26,7 @@ OPTIONS
          Private Key Password.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -51,6 +48,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-keygen**(1)
+virgil(1)
+virgil-config(1)
+virgil-keygen(1)

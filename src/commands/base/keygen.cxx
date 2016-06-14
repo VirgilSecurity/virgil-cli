@@ -135,7 +135,7 @@ int MAIN(int argc, char** argv) {
             "", "no-password-input", "If parameter -p, --private-key-password is omitted, password won’t be requested.",
             false);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(notShadowInputArg);

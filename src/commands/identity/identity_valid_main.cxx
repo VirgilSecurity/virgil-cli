@@ -76,7 +76,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> validatedIdentityArg(
             "f", "validated-identity", "Validated identity (see 'virgil identity-confirm-global')", true, "", "file");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(validatedIdentityArg);

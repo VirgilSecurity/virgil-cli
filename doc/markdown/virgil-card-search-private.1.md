@@ -1,9 +1,7 @@
 NAME
 ====
 
-**card-search-private** -- search for [a private Virgil
-Card(s)](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-virgil-card)
-from the Keys Service.
+**card-search-private** -- search for [a Private Virgil Card(s)](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-virgil-card) from the Keys Service.
 
 SYNOPSIS
 ========
@@ -14,14 +12,13 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to search for a private Virgil Card from the
-Virgil Keys Service.
+Search for a Private Virgil Card from the Virgil Keys Service
 
 OPTIONS
 =======
 
         -o <arg>,  --out <arg>
-         Folder in which will be saved a Virgil Cards
+         Folder where Virgil Cards will be saved.
 
         -d <arg>,  --identity <arg>
          (required)  Identity value or obfuscated identity value (see 'virgil hash')
@@ -30,10 +27,10 @@ OPTIONS
          (required)  Identity type or obfuscated identity type (see 'virgil hash')
 
         -u,  --unconfirmed
-         Search Cards include unconfirmed identity
+         Includes unconfirmed identities into Cards search.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -47,28 +44,26 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Search for private Virgil Cards with a confirmed Identity:
+1.  Search for Private Virgil Cards with a confirmed Identity:
 
         virgil card-search-private -d alice@gmail.com -t email -o alice/
 
-2.  Search for Cards with a confirmed Identity and an uncorfirmaed
-    Identity:
+2.  Search for Cards with a confirmed Identity and an uncorfirmaed Identity:
 
         virgil card-search-private -d alice@gmail.com -t email -o alice-with-unconfirmed-identity/ -u
 
-3.  Search for private Virgil Cards with a confirmed Identity:
+3.  Search for Private Virgil Cards with a confirmed Identity:
 
         virgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o alice/
 
-4.  Search for private Virgil Cards with a confirmed Identity and an
-    uncorfirmaed Identity:
+4.  Search for Private Virgil Cards with a confirmed Identity and an uncorfirmaed Identity:
 
         virgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o alice/ -u
 
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-card-create-private**(1)  
-**virgil-card-get**(1)
+virgil(1)
+virgil-config(1)
+virgil-card-create-private(1)
+virgil-card-get(1)

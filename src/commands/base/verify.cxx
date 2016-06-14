@@ -68,8 +68,8 @@ static void checkFormatRecipientArg(const std::pair<std::string, std::string>& p
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Verify data and signature with given user's identifier"
-                                  " or with its Virgil Card.\n\n";
+        std::string description = "The utility allows you to verify data and signature"
+                                  "  with a provided user's identifier or with his public key.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r vcard:bob/bob.vcard\n\n");
@@ -95,12 +95,12 @@ int MAIN(int argc, char** argv) {
             "r", "recipient", "Recipient defined in format:\n"
                               "[id|vcard|pubkey]:<value>\n"
                               "where:\n"
-                              "\t* if id, then <value> - recipient's UUID associated with Virgil Card identifier;\n"
-                              "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
-                              "\t* if pubkey, then <value> - recipient's Public Key.\n",
+                              "\t* if id, then <value> - recipient's UUID associated with a Virgil Card identifier;\n"
+                              "\t* if vcard, then <value> - recipient's Virgil Card(s) file\n\t  stored locally;\n"
+                              "\t* if pubkey, then <value> - recipient's public key.\n",
             true, "", "arg");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(recipientArg);

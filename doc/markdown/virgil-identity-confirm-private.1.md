@@ -1,8 +1,7 @@
 NAME
 ====
 
-**identity-confirm-private** -- generate validation token based on
-application's private key.
+**identity-confirm-private** -- generate validation token based on application's private key.
 
 SYNOPSIS
 ========
@@ -14,19 +13,11 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-Provides helper methods to generate validation token based on
-application's private key. It is required for the following operations:
+Provides helper methods to generate validation token based on application's private key. It is required for the following operations:
 
-1.  Create [a private Virgil
-    Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-virgil-card)
-    with [a confirmed
-    Identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity).
-    See 'virgil card-create-private';
-2.  Revoke a private Virgil Card, a group of Cards. See
-    **virgil-card-revoke-private**(1), **virgil
-    public-key-revoke-private**(1);
-3.  Get a private key from the Private Keys Service. See **virgil
-    private-key-get**(1).
+1.  Create [a Private Virgil Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-virgil-card) with [a confirmed Identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity). See 'virgil-card-create-private(1)';
+2.  Revoke a Private Virgil Card, a group of Cards. See `virgil-card-revoke-private(1)`, `virgil-public-key-revoke-private(1)`;
+3.  Get a private key from the Private Keys Service. See `virgil-private-key-get(1)`.
 
 OPTIONS
 =======
@@ -47,7 +38,7 @@ OPTIONS
          Password to be used for Application Private Key encryption.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -74,8 +65,7 @@ On success, *validated identity model*:
             "validation_token": *validation_token*
         }
 
-2.  Obfuscated identity ( see **virgil-exhash**(1) ) value and identity
-    type
+2.  Obfuscated identity ( see **virgil-exhash**(1) ) value and identity type
 
         -d, --identity = "xSf79dt6Bl6/WwHmO/KrIlaWrUxX2GLV7l7Jo+SCZSqT48Cq6mMWNDTkUPeMp82r"
         -t, --identity-type = "WHTbiO4KeZUYC4tm5DWVJfacwdlmLkJZnhJKbMCFAdjC0hSkdHs3EnIWlPt+Lnni"
@@ -86,13 +76,12 @@ On success, *validated identity model*:
             "validation_token": *validation_token*
         }
 
-is returned. On error, throw an exception.
+is returned. On error, exception is thrown.
 
 EXAMPLES
 ========
 
-1.  Generate [a validation
-    token](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#validation-token):
+1.  Generate [a validation token](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#validation-token):
 
         virgil identity-confirm-private -d alice@domain.com -t email -o validated-identity-private.txt --app-key application-private.key
 
@@ -103,8 +92,8 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-card-create-private**(1)  
-**virgil-card-revoke-private**(1)  
-**virgil-private-key-get**(1)
+virgil(1)
+virgil-config(1)
+virgil-card-create-private(1)
+virgil-card-revoke-private(1)
+virgil-private-key-get(1)

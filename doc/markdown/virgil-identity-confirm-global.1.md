@@ -1,8 +1,7 @@
 NAME
 ====
 
-**identity-confirm-global** -- confirm identity for [a global Virgil
-Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card).
+**identity-confirm-global** -- confirm identity for [a Global Virgil Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card).
 
 SYNOPSIS
 ========
@@ -14,21 +13,11 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-It is required to pass **identity-confirm** if you want to confirm your
-Identity so that other people can be sure that a received signature,
-encrypted data came from you. After entering your email
-[*confirmation\_code*](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmation-code)
-will be sent to you, you have to enter it to receive [a validated
-Identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity).
-**validated-identity** consists of *validation\_token* and your
-Identity. It is required for the following operations:
+It is required to pass **identity-confirm** if you want to confirm your Identity so that other people can be sure that a received signature, encrypted data came from you. After entering your email [*confirmation\_code*](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmation-code) will be sent to you, you have to enter it to receive [a validated Identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity). **validated-identity** consists of *validation\_token* and your Identity. It is required for the following operations:
 
-1.  Create a global Virgil Card. See **virgil card-create-global**(1);
-2.  Revoke a global Virgil Card, a group of Cards. See
-    **virgil-card-revoke-global**(1), **virgil
-    public-key-revoke-global**(1);
-3.  Get a private key from the Private Keys Service. See
-    **virgil-private-key-get**(1).
+1.  Create a Global Virgil Card. See `virgil-card-create-global(1)`;
+2.  Revoke a Global Virgil Card, a group of Cards. See `virgil-card-revoke-global(1)`, `virgil-public-key-revoke-global(1)`;
+3.  Get a private key from the Private Keys Service. See `virgil-private-key-get(1)`.
 
 OPTIONS
 =======
@@ -52,7 +41,7 @@ OPTIONS
          Count to live, by default = 2.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -74,23 +63,20 @@ On success, *validated identity model*:
         "validation_token": *validation_token*
     }
 
-is returned. On error, throw an exception.
+is returned. On error, exception is thrown.
 
 EXAMPLES
 ========
 
-1.  Identity confirmation with requests number limit = 2 and time
-    validity limit = 3600:
+1.  Identity confirmation with requests number limit = 2 and time validity limit = 3600:
 
         virgil identity-confirm-global -d email:alice@gmail.com -o validated-identity.txt
 
-2.  Identity confirmation with requests number limit = 10 and time
-    validity limit = 60:
+2.  Identity confirmation with requests number limit = 10 and time validity limit = 60:
 
         virgil identity-confirm-global -d email:alice@gmail.com -o validated-identity.txt -l 60 -c 10
 
-3.  Identity confirmation with requests number limit = 2 and time
-    validity limit = 3600:
+3.  Identity confirmation with requests number limit = 2 and time validity limit = 3600:
 
         virgil identity-verify -d email:user@domain.com -o userDomain/action_id.txt
         virgil identity-confirm-global --action-id userDomain/action_id.txt --confirmation-code <code> -o alice/validated-identity.txt
@@ -98,8 +84,8 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-card-create-global**(1)  
-**virgil-card-revoke-global**(1)  
-**virgil-private-key-get**(1)
+virgil(1)
+virgil-config(1)
+virgil-card-create-global(1)
+virgil-card-revoke-global(1)
+virgil-private-key-get(1)

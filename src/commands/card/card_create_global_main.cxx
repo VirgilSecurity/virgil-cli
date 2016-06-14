@@ -70,7 +70,7 @@ int MAIN(int argc, char** argv) {
                            "virgil card-create-global -f alice/validated_identity_global.txt "
                            "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a Global Virgil Card, with confirming of identity:\n"
+        examples.push_back("Create a Global Virgil Card, with Identity confirmation:\n"
                            "virgil card-create-global -d alice@domain.com "
                            "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
@@ -106,7 +106,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
                                                            "", "arg");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);

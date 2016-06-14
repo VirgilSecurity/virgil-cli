@@ -59,7 +59,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Get the Private key from the Private Key Service\n\n";
+        std::string description = "Get a Private key from the Private Key Service\n\n";
 
         std::vector<std::string> examples;
         examples.push_back(
@@ -72,8 +72,7 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted, stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Global/Private Virgil Card identifier", true, "",
-                                               "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "arg");
 
         TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity",
                                                           "Validated Identity for Private Virgil Card - see 'virgil "
@@ -81,7 +80,7 @@ int MAIN(int argc, char** argv) {
                                                           "'virgil identity-confirm-global'",
                                                           true, "", "file");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(validatedIdentityArg);

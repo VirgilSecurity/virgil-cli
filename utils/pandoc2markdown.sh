@@ -57,5 +57,5 @@ do
         outdir=$2
         mkdir -p "$outdir"
     fi
-    pandoc -s -t markdown_strict "$i" -o "$outdir/$filename.md"
+    pandoc -s -t markdown_github "$i" -o "$outdir/$filename.md"
 done

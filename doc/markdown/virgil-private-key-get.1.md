@@ -1,7 +1,7 @@
 NAME
 ====
 
-private-key-get -- get a private key from the Private Keys Service.
+**private-key-get** -- get a private key from the Private Keys Service.
 
 SYNOPSIS
 ========
@@ -12,8 +12,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-This utility allows you to get a private key from the Private Keys
-Service.
+This utility allows you to get a private key from the Private Keys Service.
 
 OPTIONS
 =======
@@ -22,15 +21,15 @@ OPTIONS
         Private Key. If omitted, stdout is used.
 
         -a <arg>,  --card-id <arg>
-        (required)  Global/private Virgil Card identifier
+        (required)  Virgil Card identifier
 
         -f <file>,  --validated-identity <file>
-        (required)  Validated Identity for private Virgil Card - see 'virgil
-        identity-confirm-private', for global Virgil Card - see 'virgil
+        (required)  Validated Identity for Private Virgil Card - see 'virgil
+        identity-confirm-private', for Global Virgil Card - see 'virgil
         identity-confirm-global'
 
         -V,  --VERBOSE
-        Show detailed information
+        Shows detailed information.
 
         --,  --ignore_rest
         Ignores the rest of the labeled arguments following this flag.
@@ -51,9 +50,9 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-keygen**(1)  
-**virgil-private-key-add**(1)  
-**virgil-identity-confirm-private**(1)  
-**virgil-identity-confirm-global**(1)
+virgil(1)
+virgil-config(1)
+virgil-keygen(1)
+virgil-private-key-add(1)
+virgil-identity-confirm-private(1)
+virgil-identity-confirm-global(1)

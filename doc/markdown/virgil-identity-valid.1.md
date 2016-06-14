@@ -1,8 +1,7 @@
 NAME
 ====
 
-**identity-validate** -- check *validated-identity* received by
-*identity-confirm-global*
+**identity-validate** -- check *validated-identity* received by *identity-confirm-global*
 
 SYNOPSIS
 ========
@@ -12,9 +11,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-Checks
-[*validated-identity*](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity)
-received by \*identity-con
+Checks [*validated-identity*](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity) received by *identity-confirm-global*
 
 OPTIONS
 =======
@@ -26,7 +23,7 @@ OPTIONS
          (required)  Validated identity (see 'virgil identity-confirm-global')
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -50,6 +47,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-identity-confirm-global**(1)
+virgil(1)
+virgil-config(1)
+virgil-identity-confirm-global(1)

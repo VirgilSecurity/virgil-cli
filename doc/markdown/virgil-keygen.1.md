@@ -1,9 +1,7 @@
 NAME
 ====
 
-**keygen** -- generate [a private
-key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key)
-with provided parameters.
+**keygen** -- generate [a private key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key) with provided parameters.
 
 SYNOPSIS
 ========
@@ -16,8 +14,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to generate an Elliptic Curve private key or an
-RSA private key.
+The utility allows you to generate an Elliptic Curve private key or an RSA private key.
 
 OPTIONS
 =======
@@ -25,13 +22,9 @@ OPTIONS
         -o <file>,  --out <file>
          Private key. If omitted, stdout is used.
 
-        -a <bp256r1|bp384r1|bp512r1|secp192r1|secp224r1|secp256r1|secp384r1
-          |secp521r1|secp192k1|secp224k1|secp256k1|ed25519|rsa3072|rsa4096
-          |rsa8192>,  --algorithm <bp256r1|bp384r1|bp512r1|secp192r1|secp224r1
-          |secp256r1|secp384r1|secp521r1|secp192k1|secp224k1|secp256k1|curve25519
-          |rsa3072|rsa4096|rsa8192>
-         Generate elliptic curve key or RSA key with one of the following
-         positions:
+        -a <alg>,  --algorithm <alg>
+         Generate an Elliptic Curve key or an RSA key with one of the following
+         options:
 
             * bp256r1 - 256-bits Brainpool curve;
 
@@ -67,11 +60,11 @@ OPTIONS
          Password to be used for private key encryption.
 
         --no-password-input
-         If parameter -p, --private-key-password is omitted, password won’t
+         If parameter -p, --private-key-password is omitted and password won’t
          be requested.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -85,27 +78,25 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Generate Elliptic 384-bits NIST Curve Private Key(default), your
-    password will be requested:
+1.  Generate a Curve25519 private key(default), your password will be requested:
 
         virgil keygen -o private.key
 
-2.  Generate Elliptic Curve Private Key with password protection:
+2.  Generate an Elliptic Curve private key with password protection:
 
         virgil keygen -o private.key -p STRONGPASS
 
-3.  Generate Elliptic 521-bits NIST Curve Private Key, your password
-    will be requested:
+3.  Generate an Elliptic 521-bits NIST Curve private key, your password will be requested:
 
         virgil keygen -o private.key -a secp521r1
 
-4.  Generate RSA Private Key, your password will be requested:
+4.  Generate 8192-bits RSA private key, your password will be requested:
 
         virgil keygen -a rsa8192 -o private.key
 
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-key2pub**(1)
+virgil(1)
+virgil-config(1)
+virgil-key2pub(1)

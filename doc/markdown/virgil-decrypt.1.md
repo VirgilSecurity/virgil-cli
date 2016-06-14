@@ -1,12 +1,7 @@
 NAME
 ====
 
-**decrypt** -- decrypt data with given
-[password](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key-password)
-or given [Private
-Key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key)
-+
-[`recipient-id`](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#recipients-identifier).
+**decrypt** -- decrypt data with given [password](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key-password) or given [Private Key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key) + [`recipient-id`](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#recipients-identifier).
 
 SYNOPSIS
 ========
@@ -17,11 +12,9 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to decrypt data with a provided password or a
-provided comination of private key + `recipient-id`.
+The utility allows you to decrypt data with a provided password or a provided comination of private key + `recipient-id`.
 
-`recipient-id` is an identifier which is associated with the public key.
-If a *sender* has a Virgil Card, his `recipient-id` is his Card's id.
+`recipient-id` is an identifier which is associated with the public key. If a *sender* has a Virgil Card, his `recipient-id` is his Card's id.
 
 OPTIONS
 =======
@@ -51,7 +44,7 @@ OPTIONS
 
             * if password, then <value> - recipient's password;
 
-            * if id, then <value> - recipient's UUID associated with Virgil Card
+            * if id, then <value> - recipient's UUID associated with a Virgil Card
          identifier;
 
             * if vcard, then <value> - recipient's Virgil Card/Cards file
@@ -60,14 +53,14 @@ OPTIONS
 
             * if email, then <value> - recipient's email;
 
-            * if private, then set type:value for searching private Virgil Card[s].
+            * if private, then set type:value for searching Private Virgil Card(s).
 
          For example: private:email:<obfuscator_email>. ( obfiscator - see
          'virgil hash')
 
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -81,18 +74,17 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Decrypt plain.txt.enc for a user identified by his password:
+1.  Decrypt *plain.txt.enc* for a user identified by his password:
 
         virgil decrypt -i plain.txt.enc -o plain.txt -r password:strong_password
 
-2.  Decrypt plain.txt.enc for Bob identified by his private key +
-    recipient-id \[id|vcard|email|private\]:
+2.  Decrypt *plain.txt.enc* for Bob identified by his private key + `recipient-id` \[id|vcard|email|private\]:
 
         virgil decrypt -i plain.txt.enc -o plain.txt -k bob/private.key -r id:<recipient_id>
 
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-encrypt**(1)
+virgil(1)
+virgil-config(1)
+virgil-encrypt(1)

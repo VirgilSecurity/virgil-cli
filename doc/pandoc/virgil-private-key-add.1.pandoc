@@ -27,7 +27,7 @@ The utility allows you to add a private key to the Private Keys Service. Pay att
 # OPTIONS
 
         -a <arg>,  --card-id <arg>
-         (required)  Global/private Virgil Card identifier
+         (required)  Virgil Card identifier
 
         -k <file>,  --key <file>
          (required)  Private Key
@@ -36,7 +36,7 @@ The utility allows you to add a private key to the Private Keys Service. Pay att
          Private Key Password.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -57,9 +57,9 @@ The utility allows you to add a private key to the Private Keys Service. Pay att
 
 # SEE ALSO
 
-**virgil**(1)\
-**virgil-config**(1)\
-**virgil-private-key-del**(1)\
-**virgil-keygen**(1)\
-**virgil-identity-confirm-private**(1)\
-**virgil-identity-confirm-global**(1)
+virgil(1)\
+virgil-config(1)\
+virgil-private-key-del(1)\
+virgil-keygen(1)\
+virgil-identity-confirm-private(1)\
+virgil-identity-confirm-global(1)

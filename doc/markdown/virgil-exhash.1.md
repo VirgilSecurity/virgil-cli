@@ -1,8 +1,7 @@
 NAME
 ====
 
-**exhash** -- derives hash from the given data with [PBKDF
-function](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#pbkdf-function)
+**exhash** -- derives hash from the given data with [PBKDF function](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#pbkdf-function)
 
 SYNOPSIS
 ========
@@ -13,8 +12,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-Derives the obfuscated data from incoming parameters using PBKDF
-function.
+Derives the obfuscated data from incoming parameters using PBKDF function.
 
 OPTIONS
 =======
@@ -47,7 +45,7 @@ OPTIONS
          Iterations count. Default - 2048
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -72,5 +70,5 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-card-create-private**(1)
+virgil(1)
+virgil-card-create-private(1)

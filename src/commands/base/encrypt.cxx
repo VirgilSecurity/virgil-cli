@@ -93,10 +93,10 @@ int MAIN(int argc, char** argv) {
                                   "the Card.\n\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Alice encrypts the data for Bob using his email (searching the Global Virgil Card[s]):\n"
+        examples.push_back("Alice encrypts the data for Bob using his email (searching the Global Virgil Card(s)):\n"
                            "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n\n");
 
-        examples.push_back("Alice encrypts the data for Bob using his email (searching the Private Virgil Card[s]):\n"
+        examples.push_back("Alice encrypts the data for Bob using his email (searching the Private Virgil Card(s)):\n"
                            "virgil encrypt -i plain.txt -o plain.txt.enc private:email:bob@domain.com\n\n");
 
         examples.push_back(
@@ -135,14 +135,14 @@ int MAIN(int argc, char** argv) {
             "\t* if id, then <value> - recipient's UUID associated with Virgil\n\t Card identifier;\n"
             "\t* if vcard, then <value> - recipient's the Virgil Card file\n\t  stored locally;\n"
             "\t* if email, then <value> - recipient's email;\n"
-            "\t* if pubkey, then <value> - recipient's Public Key + identifier, for example:\n"
+            "\t* if pubkey, then <value> - recipient's public key + identifier, for example:\n"
             " pubkey:bob/public.key:ForBob.\n"
-            "\t* if private, then set type:value for searching Private Virgil Card[s]  with confirmed identity (see "
+            "\t* if private, then set type:value for searching Private Virgil Card(s)  with confirmed identity (see "
             "'card-create-private'). "
             " For example: private:<obfuscator_type>:<obfuscator_value>. ( obfiscator - see 'virgil hash')",
             false, "recipient", false);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(recipientsArg);
@@ -175,11 +175,11 @@ int MAIN(int argc, char** argv) {
                         auto pairTypeAndValue = vcli::parsePair(recipientsPair.second);
                         std::string type = pairTypeAndValue.first;
                         std::string value = pairTypeAndValue.second;
-                        bool isSearchPrivateCard = true; // search the Private Virgil Card[s] with confirmed identity
+                        bool isSearchPrivateCard = true; // search the Private Virgil Card(s) with confirmed identity
                         cards = vcli::getRecipientCards(verboseArg.isSet(), type, value, isSearchPrivateCard);
                     } else {
                         // Else recipientsPair.first [id | vcard | email]
-                        bool isSearchPrivateCard = false; // search the Global Virgil Card[s]
+                        bool isSearchPrivateCard = false; // search the Global Virgil Card(s)
                         cards = vcli::getRecipientCards(verboseArg.isSet(), recipientsPair.first, recipientsPair.second,
                                                         isSearchPrivateCard);
                     }

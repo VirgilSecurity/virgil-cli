@@ -78,8 +78,7 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
-                                            "arg");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Folder where Virgil Cards will be saved.", false, "", "arg");
 
         TCLAP::ValueArg<std::string> applicationNameArg(
             "c", "application-name", "Application name, name = 'com.virgilsecurity.*' - get all Cards\n", true, "",
@@ -87,7 +86,7 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> emailArg("e", "email", "email", true, "", "arg");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.xorAdd(emailArg, applicationNameArg);
@@ -102,7 +101,7 @@ int MAIN(int argc, char** argv) {
                 servicesHub.card().searchGlobal(applicationNameArg.getValue(), vsdk::dto::IdentityType::Application);
             if (appCards.empty()) {
                 if (verboseArg.isSet()) {
-                    std::cout << "Card[s] by application name: " << applicationNameArg.getValue()
+                    std::cout << "Card(s) by application name: " << applicationNameArg.getValue()
                               << " haven't been found." << std::endl;
                 }
             }
@@ -111,7 +110,7 @@ int MAIN(int argc, char** argv) {
             appCards = servicesHub.card().searchGlobal(emailArg.getValue(), vsdk::dto::IdentityType::Email);
             if (appCards.empty()) {
                 if (verboseArg.isSet()) {
-                    std::cout << "Card[s] by email: " << emailArg.getValue() << " haven't been found." << std::endl;
+                    std::cout << "Card(s) by email: " << emailArg.getValue() << " haven't been found." << std::endl;
                 }
             }
         }

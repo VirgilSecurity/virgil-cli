@@ -12,8 +12,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to sign data with a provided user's [private
-key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key)
+The utility allows you to sign data with a provided user's [private key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key)
 
 OPTIONS
 =======
@@ -25,13 +24,13 @@ OPTIONS
          Digest sign. If omitted, stdout is used.
 
         -k <file>,  --key <file>
-         (required)  Signer's Private Key.
+         (required)  Signer's private key.
 
         -p <arg>,  --private-key-password <arg>
          Private Key Password.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -52,6 +51,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-verify**(1)
+virgil(1)
+virgil-config(1)
+virgil-verify(1)

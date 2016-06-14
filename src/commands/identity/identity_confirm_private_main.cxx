@@ -107,7 +107,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> appPrivateKeyPasswordArg(
             "", "app-key-password", "Password to be used for Application Private Key encryption.", false, "", "arg");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(appPrivateKeyPasswordArg);

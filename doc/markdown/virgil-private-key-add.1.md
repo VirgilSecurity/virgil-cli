@@ -12,23 +12,18 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to add a private key to the Private Keys Service.
-Pay attention to these statements:
+The utility allows you to add a private key to the Private Keys Service. Pay attention to these statements:
 
-1.  Make sure that you have registered and confirmed your account for
-    the Keys Service.
-2.  Make sure that you have a public/private key pair and you have
-    already uploaded the public key to the Keys Service.
-3.  Make sure that you have your private key on your machine
-    saved locally.
-4.  Make sure that you have registered an application at [Virgil
-    Security, Inc](https://developer.virgilsecurity.com/account/signin).
+1.  Make sure that you have registered and confirmed your account for the Keys Service.
+2.  Make sure that you have a public/private key pair and you have already uploaded the public key to the Keys Service.
+3.  Make sure that you have your private key on your machine saved locally.
+4.  Make sure that you have registered an application at [Virgil Security, Inc](https://developer.virgilsecurity.com/account/signin).
 
 OPTIONS
 =======
 
         -a <arg>,  --card-id <arg>
-         (required)  Global/private Virgil Card identifier
+         (required)  Virgil Card identifier
 
         -k <file>,  --key <file>
          (required)  Private Key
@@ -37,7 +32,7 @@ OPTIONS
          Private Key Password.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -58,9 +53,9 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-private-key-del**(1)  
-**virgil-keygen**(1)  
-**virgil-identity-confirm-private**(1)  
-**virgil-identity-confirm-global**(1)
+virgil(1)
+virgil-config(1)
+virgil-private-key-del(1)
+virgil-keygen(1)
+virgil-identity-confirm-private(1)
+virgil-identity-confirm-global(1)

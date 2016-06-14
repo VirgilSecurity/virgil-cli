@@ -1,8 +1,7 @@
 NAME
 ====
 
-**card-revoke-global** -- revoke a global Virgil Card from the Keys
-Service.
+**card-revoke-global** -- revoke a Global Virgil Card from the Keys Service.
 
 SYNOPSIS
 ========
@@ -13,8 +12,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to revoke a global Virgil Card from the Keys
-Service.
+The utility allows you to revoke a Global Virgil Card from the Keys Service.
 
 OPTIONS
 =======
@@ -28,7 +26,7 @@ OPTIONS
 
 
         -a <arg>,  --card-id <arg>
-         (required)  virgil Card identifier
+         (required)  Virgil Card identifier
 
         -k <file>,  --key <file>
          (required)  Private key
@@ -37,7 +35,7 @@ OPTIONS
          Private Key Password.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -51,21 +49,18 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Revoke [a global Virgil
-    Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card):
+1.  Revoke [a Global Virgil Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card):
 
         virgil card-revoke-global -a <card_id> -f validated-identities.txt -k private.key
 
-2.  Revoke [a global Virgil
-    Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card)
-    with a confirming identity:
+2.  Revoke [a Global Virgil Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card). After entering your email confirmation code will be sent to you, you have to enter it to revoke card:
 
         virgil card-revoke-global -a <card_id> -d alice@domain.com -k alice/private.key
 
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-card-create-global**(1)  
-**virgil-public-key-revoke-global**(1)
+virgil(1)
+virgil-config(1)
+virgil-card-create-global(1)
+virgil-public-key-revoke-global(1)

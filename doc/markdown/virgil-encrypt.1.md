@@ -12,16 +12,9 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to encrypt data with a password or a combination
-of [public
-key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#public-key)
-+
-[`recipient-id`](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#recipients-identifier).
+The utility allows you to encrypt data with a password or a combination of [public key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#public-key) + [`recipient-id`](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#recipients-identifier).
 
-`recipient-id` is an identifier which will be associated with the public
-key. If a *sender* has [a Virgil
-Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#virgil-card),
-his recipient-id is the Card's id. Public key is saved in the Card.
+`recipient-id` is an identifier which will be associated with the public key. If a *sender* has [a Virgil Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#virgil-card), his recipient-id is the Card's id. Public key is saved in the Card.
 
 OPTIONS
 =======
@@ -37,7 +30,7 @@ OPTIONS
          becomes a part of the encrypted data.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -69,47 +62,43 @@ OPTIONS
 
             * if email, then <value> - recipient's email;
 
-            * if pubkey, then <value> - recipient's Public Key + identifier, for example:
+            * if pubkey, then <value> - recipient's public key + identifier, for example:
                 pubkey:bob/public.key:ForBob.
 
             * if private, then set type:value for searching Private Virgil
-                Card[s]  with confirmed identity (see 'virgil card-create-private').
+                Card(s)  with confirmed identity (see 'virgil card-create-private').
                 For example: private:<obfuscated_type>:<obfuscated_value> ( obfiscator - see 'virgil hash')
 
 EXAMPLES
 ========
 
-1.  Alice encrypts the data for Bob using his email (searching the
-    global Virgil Card\[s\]):
+1.  Alice encrypts *plain.txt* for Bob using his email (searching the Global Virgil Card(s)):
 
         virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com
 
-2.  Alice encrypts the data for Bob using his email (searching the
-    private Virgil Card\[s\]):
+2.  Alice encrypts *plain.txt* for Bob using his email (searching the Private Virgil Card(s)):
 
         virgil encrypt -i plain.txt -o plain.txt.enc private:email:bob@domain.com
 
-3.  Alice encrypts the data for Bob using his email (searching the
-    private Virgil Card\[s\]):
+3.  Alice encrypts *plain.txt* for Bob using his email (searching the Private Virgil Card(s)):
 
         virgil encrypt -i plain.txt -o plain.txt.enc private:<obfuscated_type>:<obfuscated_value>
 
-4.  Alice encrypts the data for Bob and Tom using their emails:
+4.  Alice encrypts *plain.txt* for Bob and Tom using their emails:
 
         virgil encrypt -i plain.txt -o plain.txt.venc email:bob@domain.com email:tom@domain.com
 
-5.  Alice encrypts the data with a password:
+5.  Alice encrypts *plain.txt* with a password:
 
         virgil encrypt -i plain.txt -o plain.txt.venc password:strong_password
 
-6.  Alice encrypts the data with a combination of Public Key +
-    recipient-id:
+6.  Alice encrypts *plain.txt* with a combination of Public Key + recipient-id:
 
         virgil encrypt -i plain.txt -o plain.txt.venc pubkey:public.key:ForBob
 
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-decrypt**(1)
+virgil(1)
+virgil-config(1)
+virgil-decrypt(1)

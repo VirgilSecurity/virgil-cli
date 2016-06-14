@@ -61,17 +61,17 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Search for the Private Virgil Card[s] from the Virgil Keys Service\n\n";
+        std::string description = "Search for the Private Virgil Card(s) from the Virgil Keys Service\n\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Search for the Private Virgil Card[s] with a confirmed Identity:\n"
+        examples.push_back("Search for the Private Virgil Card(s) with a confirmed Identity:\n"
                            "virgil card-search-private -d alice@gmail.com -t email -o alice/\n\n");
 
         examples.push_back(
             "Search for Private Virgil Card with a confirmed Identity and an unconfirmaed Identity:\n"
             "virgil card-search-private -d alice@gmail.com -t email -o alice-with-unconfirmed-identity/ -u\n\n");
 
-        examples.push_back("Search for the Private Virgil Card[s] with a confirmed Identity:\n"
+        examples.push_back("Search for the Private Virgil Card(s) with a confirmed Identity:\n"
                            "virgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o alice/\n\n");
 
         examples.push_back("Search for Private Virgil Card with a confirmed Identity and an unconfirmaed Identity:\n"
@@ -83,8 +83,7 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Folder in which will be saved a Virgil Cards", false, "",
-                                            "arg");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Folder where Virgil Cards will be saved.", false, "", "arg");
 
         TCLAP::ValueArg<std::string> identityArg(
             "d", "identity", "Identity value or obfuscated identity value (see 'virgil hash')", true, "", "arg");
@@ -92,9 +91,10 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> identityTypeArg(
             "t", "identity-type", "Identity type or obfuscated identity type (see 'virgil hash')", true, "", "arg");
 
-        TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", "Search Cards include unconfirmed identity", false);
+        TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", "Includes unconfirmed identities into Cards search.",
+                                        false);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(unconfirmedArg);

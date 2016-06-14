@@ -1,8 +1,7 @@
 NAME
 ====
 
-**identity-verify** -- verify an Identity for [a global Virgil
-Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card)
+**identity-verify** -- verify an Identity for \[a Global Virgil Card\](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary\#global-virgil-card
 
 SYNOPSIS
 ========
@@ -12,8 +11,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to verify an Identity for a global Virgil Card
-with such steps:
+The utility allows you to verify an Identity for a Global Virgil Card with such steps:
 
 1.  Send a `confirmation_code` to an email.
 2.  Get an `action_id` as a result.
@@ -28,7 +26,7 @@ OPTIONS
          Action id. If omitted stdout is used.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -42,9 +40,7 @@ OPTIONS
 RETURN VALUE
 ============
 
-On success,
-[*action\_id*](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#action-id)
-is returned. On error, exception is thrown.
+On success, [*action\_id*](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#action-id) is returned. On error, exception is thrown.
 
 EXAMPLES
 ========
@@ -54,6 +50,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-identity-confirm-global**(1)
+virgil(1)
+virgil-config(1)
+virgil-identity-confirm-global(1)

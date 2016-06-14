@@ -12,8 +12,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to verify data and signature with a provided
-user's identifier or with his public key.
+The utility allows you to verify data and signature with a provided user's identifier or with his public key.
 
 OPTIONS
 =======
@@ -37,18 +36,18 @@ OPTIONS
 
          where:
 
-            * if id, then <value> - recipient's UUID associated with Virgil Card
+            * if id, then <value> - recipient's UUID associated with a Virgil Card
          identifier;
 
-            * if vcard, then <value> - recipient's Virgil Card/Cards file
+            * if vcard, then <value> - recipient's Virgil Card(s) file
 
               stored locally;
 
-            * if pubkey, then <value> - recipient's Public Key.
+            * if pubkey, then <value> - recipient's public key.
 
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -70,6 +69,6 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-sign**(1)
+virgil(1)
+virgil-config(1)
+virgil-sign(1)

@@ -1,7 +1,7 @@
 NAME
 ====
 
-**card-get** -- return global/private Virgil Card(s)
+**card-get** -- return Global/Private Virgil Card(s)
 
 SYNOPSIS
 ========
@@ -12,19 +12,16 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to get a private/global Virgil Card by
-[`card-id`](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#card-id)
-or a group of private/global Cards connected with a
-[`public-key-id`](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#public-key-id).
+The utility allows you to get a Private/Global Virgil Card by [`card-id`](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#card-id) or a group of Private/Global Cards connected with a [`public-key-id`](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#public-key-id).
 
 OPTIONS
 =======
 
         -o <arg>,  --out <arg>
-         Folder in which will be saved a Virgil Cards
+         Folder where Virgil Cards will be saved.
 
         -a <arg>,  --card-id <arg>
-         (required)  Global/private Virgil Card identifier
+         (required)  Virgil Card identifier
 
         -e <arg>,  --public-key-id <arg>
          Public Key identifier
@@ -37,7 +34,7 @@ OPTIONS
          Private Key Password.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -51,21 +48,20 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Return a private/global Virgil Card by card-id:
+1.  Return a Private/Global Virgil Card by card-id:
 
         virgil card-get -a <card_id> -o cards/
 
-2.  Return a group of private/global Virgil Cards connected with
-    public-key-id, card-id belongs to one of the Cards:
+2.  Return a group of Private/Global Virgil Cards connected with public-key-id, card-id belongs to one of the Cards:
 
         virgil card-get -a <card_id> -e <public_key_id> -k private.key -o cards/
 
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-card-create-global**(1)  
-**virgil-card-create-private**(1)  
-**virgil-card-search-global**(1)  
-**virgil-card-search-private**(1)
+virgil(1)
+virgil-config(1)
+virgil-card-create-global(1)
+virgil-card-create-private(1)
+virgil-card-search-global(1)
+virgil-card-search-private(1)

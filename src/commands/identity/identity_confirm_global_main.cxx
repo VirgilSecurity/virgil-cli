@@ -60,7 +60,7 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Confirm identity for a global Virgil Card\n\n";
+        std::string description = "Confirm identity for a Global Virgil Card\n\n";
 
         std::vector<std::string> examples;
         examples.push_back(
@@ -94,7 +94,7 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<int> countToLiveArg("c", "count-to-live", "Count to live, by default = 2.", false, 2, "int");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(countToLiveArg);

@@ -1,9 +1,7 @@
 NAME
 ====
 
-**card-revoke-private** -- revoke [a private Virgil
-Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-virgil-card)
-from the Keys Service.
+**card-revoke-private** -- revoke [a Private Virgil Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-virgil-card) from the Keys Service.
 
 SYNOPSIS
 ========
@@ -14,14 +12,13 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to revoke a private Virgil Card from the Keys
-Service.
+The utility allows you to revoke a Private Virgil Card from the Keys Service.
 
 OPTIONS
 =======
 
         -a <arg>,  --card-id <arg>
-         (required)  private Virgil Card identifier
+         (required)  Private Virgil Card identifier
 
         -f <file>,  --validated-identity <file>
          Private Validated identity. See 'virgil identity-confirm-private'
@@ -33,7 +30,7 @@ OPTIONS
          Private Key Password.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -47,20 +44,18 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Revoke a private Virgil Card with [a confirmed
-    identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity):
+1.  Revoke a Private Virgil Card with [a confirmed identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity):
 
         virgil card-revoke -a <card_id> -f validated-identities.txt -k private.key
 
-2.  Revoke Virgil Card with [an unconfirmed
-    Identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#unconfirmed-identity):
+2.  Revoke Virgil Card with [an unconfirmed Identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#unconfirmed-identity):
 
         virgil card-revoke -a <card_id> -k private.key
 
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-card-create-private**(1)  
-**virgil-public-key-revoke-private**(1)
+virgil(1)
+virgil-config(1)
+virgil-card-create-private(1)
+virgil-public-key-revoke-private(1)

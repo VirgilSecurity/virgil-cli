@@ -105,7 +105,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
                                                            "", "arg");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
@@ -157,7 +157,7 @@ int MAIN(int argc, char** argv) {
 
         if (verboseArg.isSet()) {
             std::string messageSuccess =
-                "Card[s] with public-key-id:" + publicKeyIdArg.getValue() + " has been revoked";
+                "Card(s) with public-key-id:" + publicKeyIdArg.getValue() + " has been revoked";
             std::cout << messageSuccess << std::endl;
         }
 

@@ -1,8 +1,7 @@
 NAME
 ====
 
-**card-create-private** -- create [a private Virgil
-Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-virgil-card).
+**card-create-private** -- create [a Private Virgil Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-virgil-card).
 
 SYNOPSIS
 ========
@@ -14,16 +13,7 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-A Virgil Card is the main entity of the Public Keys Service, it includes
-the information about the user and his public key. The Virgil Card
-identifies the user by one of his available types, such as an email, a
-phone number, etc. The Virgil Card might be *global* and *private*. The
-difference is whether Virgil Services take part in the Identity
-verification. *Private Cards* are created when a developer is using his
-own service for verification instead of Virgil Identity Service or
-avoids verification at all. In this case, validation token is generated
-using app's Private Key created in our [Developer
-portal](https://developer.virgilsecurity.com/dashboard/).
+A Virgil Card is the main entity of the Public Keys Service, it includes the information about the user and his public key. The Virgil Card identifies the user by one of his available types, such as an email, a phone number, etc. The Virgil Card might be *global* and *private*. The difference is whether Virgil Services take part in the Identity verification. *Private Cards* are created when a developer is using his own service for verification instead of Virgil Identity Service or avoids verification at all. In this case, validation token is generated using app's Private Key created in our [Developer portal](https://developer.virgilsecurity.com/dashboard/).
 
 Connections between Cards can be created. Cards can be with:
 
@@ -32,8 +22,7 @@ Connections between Cards can be created. Cards can be with:
 3.  multiple public keys and *multiple* Identities;
 4.  multiple public keys and *one* Identity;
 5.  one public key and *one* Identity connected with `public-key-id`;
-6.  one public key and *multiple* Identities connected with
-    `public-key-id`.
+6.  one public key and *multiple* Identities connected with `public-key-id`.
 
 OPTIONS
 =======
@@ -52,7 +41,7 @@ OPTIONS
          (OR required)  Validated identity. See 'identity-confirm-private'
 
         -o <file>,  --out <file>
-         private Virgil Card. If omitted, stdout is used.
+         Private Virgil Card. If omitted, stdout is used.
 
         -k <file>,  --key <file>
          (required)  Private key
@@ -61,7 +50,7 @@ OPTIONS
          Private Key Password.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -75,29 +64,26 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Create a private Virgil Card with a confirmed Identity:
+1.  Create a Private Virgil Card with a confirmed Identity:
 
         virgil card-create-private -f alice/validated_identity.txt --public-key public.key -k alice/private.key -o alice/my_card.vcard
 
-2.  Create a connection with an already existing a private Virgil Card
-    with a confirmed Identity by public-key-id:
+2.  Create a connection with an already existing a Private Virgil Card with a confirmed Identity by public-key-id:
 
         virgil card-create-private -f alice/validated_identity.txt -e <pub_key_id> -k alice/private.key -o alice/my_card.vcard
 
-3.  Create a private Virgil Card with [an unconfirmed
-    Identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#unconfirmed-identity):
+3.  Create a Private Virgil Card with [an unconfirmed Identity](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#unconfirmed-identity):
 
         virgil card-create-private -d <identity_type>:<identity_value> --public_key alice/public.key -k alice/private.key -o alice/anonim_card1.vcard
 
-4.  Create a connection with an already existing a private Virgil Card
-    with an unconfirmed Identity by public-key-id:
+4.  Create a connection with an already existing a Private Virgil Card with an unconfirmed Identity by public-key-id:
 
         virgil card-create-private -d <identity_type>:<identity_value> -e <pub_key_id> -k alice/private.key -o alice/anonim_card2.vcard
 
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-keygen**(1)  
-**virgil-identity-confirm-private**(1)
+virgil(1)
+virgil-config(1)
+virgil-keygen(1)
+virgil-identity-confirm-private(1)

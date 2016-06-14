@@ -1,9 +1,7 @@
 NAME
 ====
 
-**card-search-global** -- search for [a global Virgil
-Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card)
-from the Virgil K
+**card-search-global** -- search for [a Global Virgil Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card) from the Virgil K
 
 SYNOPSIS
 ========
@@ -14,27 +12,26 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-The utility allows you to search for a global Virgil Card from the
-Virgil Keys Service by:
+The utility allows you to search for a Global Virgil Card from the Virgil Keys Service by:
 
-1.  `application_name` - search an application global Virgil Card.
-2.  `email` - search a global Virgil Card.
+1.  `application_name` - search an application Global Virgil Card.
+2.  `email` - search a Global Virgil Card.
 
 OPTIONS
 =======
 
         -e <arg>,  --email <arg>
-         (OR required)  email
+         (OR required)  Email.
              -- OR --
         -c <arg>,  --application-name <arg>
          (OR required)  Application name, name = 'com.virgilsecurity.*' - get
          all Cards
 
         -o <arg>,  --out <arg>
-         Folder in which will be saved a Virgil Cards
+         Folder where Virgil Cards will be saved.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -48,11 +45,11 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Search for global Virgil Card by user's email:
+1.  Search for Global Virgil Card by user's email:
 
         virgil card-search-global -e alice@mailinator.com -o alice/
 
-2.  Search for application global Virgil Card by application name:
+2.  Search for application Global Virgil Cards by application name:
 
         virgil card-search-global -c <app_name> -o all_app_cards/
 
@@ -63,7 +60,7 @@ EXAMPLES
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-card-create-global**(1)  
-**virgil-card-get**(1)
+virgil(1)
+virgil-config(1)
+virgil-card-create-global(1)
+virgil-card-get(1)

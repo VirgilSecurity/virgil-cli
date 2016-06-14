@@ -47,7 +47,7 @@ Derives the obfuscated data from incoming parameters using PBKDF function.
          Iterations count. Default - 2048
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -72,5 +72,5 @@ Derives the obfuscated data from incoming parameters using PBKDF function.
 
 # SEE ALSO
 
-**virgil**(1)\
-**virgil-card-create-private**(1)
+virgil(1)\
+virgil-card-create-private(1)

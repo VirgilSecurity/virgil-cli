@@ -104,7 +104,7 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<int> iterationsArg("c", "iterations", "Iterations count. Default - 2048", false, 2048, "int");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
 
         cmd.add(verboseArg);
         cmd.add(iterationsArg);

@@ -14,7 +14,7 @@
 
 # DESCRIPTION
 
-Checks [*validated-identity*](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity) received by *identity-con
+Checks [*validated-identity*](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#confirmed-identity) received by *identity-confirm-global*
 
 
 # OPTIONS
@@ -26,7 +26,7 @@ Checks [*validated-identity*](https://github.com/VirgilSecurity/virgil/wiki/Virg
          (required)  Validated identity (see 'virgil identity-confirm-global')
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -50,6 +50,6 @@ On success, "true" is returned else "false".
 
 # SEE ALSO
 
-**virgil**(1)\
-**virgil-config**(1)\
-**virgil-identity-confirm-global**(1)
+virgil(1)\
+virgil-config(1)\
+virgil-identity-confirm-global(1)

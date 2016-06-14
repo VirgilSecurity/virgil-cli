@@ -1,26 +1,24 @@
 NAME
 ====
 
-**virgil-private-key-del** -- delete the private key from the Private
-Keys Service
+**private-key-del** -- delete a private key from the Private Keys Service
 
 SYNOPSIS
 ========
 
-        virgil virgil-private-key-del  -a <arg> -k <file> [-p <arg>] [-V] [--] [--version]
+        virgil private-key-del  -a <arg> -k <file> [-p <arg>] [-V] [--] [--version]
                         [-h]
 
 DESCRIPTION
 ===========
 
-The utility allows you to delete the private key from the Private Keys
-Service.
+The utility allows you to delete the private key from the Private Keys Service.
 
 OPTIONS
 =======
 
         -a <arg>,  --card-id <arg>
-         (required)  Global/private Virgil Card identifier
+         (required)  Virgil Card identifier
 
         -k <file>,  --key <file>
          (required)  Private Key
@@ -29,7 +27,7 @@ OPTIONS
          Private Key Password.
 
         -V,  --VERBOSE
-         Show detailed information
+         Shows detailed information.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -43,15 +41,15 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Delete the private key from the Private Keys Service:
+1.  Delete a private key from the Private Keys Service:
 
         virgil private-key-del -k private.key -a <card_id>
 
 SEE ALSO
 ========
 
-**virgil**(1)  
-**virgil-config**(1)  
-**virgil-keygen**(1)  
-**virgil-identity-confirm-private**(1)  
-**virgil-identity-confirm-global**(1)
+virgil(1)
+virgil-config(1)
+virgil-keygen(1)
+virgil-identity-confirm-private(1)
+virgil-identity-confirm-global(1)
