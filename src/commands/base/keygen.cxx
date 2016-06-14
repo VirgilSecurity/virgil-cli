@@ -110,7 +110,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValuesConstraint<std::string> allowedAlg(alg);
 
         TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm", "Generate elliptic curve key or RSA key with one"
-                                                                    "of the following positions:\n"
+                                                                    " of the following positions:\n"
                                                                     "\t* bp256r1 - 256-bits Brainpool curve;\n"
                                                                     "\t* bp384r1 - 384-bits Brainpool curve;\n"
                                                                     "\t* bp512r1 - 512-bits Brainpool curve;\n"
@@ -126,7 +126,7 @@ int MAIN(int argc, char** argv) {
                                                                     "\t* rsa3072 - 3072-bits \"RSA\" key;\n"
                                                                     "\t* rsa4096 - 4096-bits \"RSA\" key;\n"
                                                                     "\t* rsa8192 - 8192-bits \"RSA\" key",
-                                                  false, "secp384r1", &allowedAlg);
+                                                  false, "curve25519", &allowedAlg);
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
             "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
