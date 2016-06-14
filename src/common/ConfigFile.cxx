@@ -115,15 +115,14 @@ vcli::ConfigFile vcli::readConfigFile(const bool verbose) {
     std::string identityServiceUri;
     std::string publicServiceUri;
     std::string privateServiceUri;
+
     if (localConfigFile.virgilAccessToken.empty()) {
-        if (globalConfigFile.virgilAccessToken == "@" || globalConfigFile.virgilAccessToken.empty()) {
-            throw std::runtime_error("Don't set Virgil Access Token."
-                                     "That set Virgil Access Token see 'virgil config'.");
+        if (globalConfigFile.virgilAccessToken.empty()) {
+            throw std::runtime_error("Don't set a Virgil Access Token."
+                                     "To set a Virgil Access Token, see 'virgil config'.");
         }
 
         localConfigFile.virgilAccessToken = globalConfigFile.virgilAccessToken;
-    } else {
-        identityServiceUri = localConfigFile.virgilAccessToken;
     }
 
     if (localConfigFile.serviceUri.getIdentityService().empty()) {
