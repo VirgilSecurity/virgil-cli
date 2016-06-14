@@ -62,13 +62,13 @@ Derives the obfuscated data from incoming parameters using PBKDF function.
 
 # EXAMPLES
 
-1. Generate hash (alg - sha384, iterations - 2048 default):
+1. Underlying hash - SHA384 (default), iterations - 2048 (default):
 
-        virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt
+        virgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt
 
-1. Generate hash sha512 and count of iterations - 4096:
+1. Underlying hash - SHA512, iterations - 4096:
 
-        virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096
+        virgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096
 
 
 # SEE ALSO

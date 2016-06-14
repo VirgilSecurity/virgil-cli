@@ -8,13 +8,54 @@
 
 # SYNOPSIS
 
-        virgil config  [-o <file>] [--global] [--local] [--template] [--] [--version]
-               [-h]
+        virgil config  [-o <file>] [-g] [-l] [-t] [--] [--version] [-h]
 
 
 # DESCRIPTION
 
 Get information about Virgil CLI configuration file.
+
+If don't set Virgil Access Token during the application build (cmake -DVIRGIL_ACCESS_TOKEN = <VIRGIL_ACCESS_TOKEN> ..)
+or whether it should be changed, you can create a configuration file.
+
+With 'virgil config' utility you can find out what path should be based on a configuration file
+and how it should look.
+
+The Virgil Access Token definitely need for following utilites.
+
+Private Virgil Card:
+
+1. **virgil-card-create-private**(1)
+1. **virgil-card-revoke-private**(1)
+1. **virgil-public-key-revoke-private**(1)
+1. **virgil-card-search-private**(1)
+
+Global Virgil Card:
+
+1. **virgil-identity-verify**(1)
+1. **virgil-identity-valid**(1)
+1. **virgil-identity-confirm-global**(1)
+
+1. **virgil-card-create-global**(1)
+1. **virgil-card-revoke-global**(1)
+1. **virgil-public-key-revoke-global**(1)
+1. **virgil-card-search-global**(1)
+
+Common:
+
+1. **virgil-card-get**(1)
+
+1. **virgil-public-key-get**(1)
+
+1. **virgil-private-key-add**(1)
+1. **virgil-private-key-get**(1)
+1. **virgil-private-key-del**(1)
+
+Part of the functionality, which refers to the search for Cards on Virgil Keys Service:
+
+1. **virgil-verify**(1)
+1. **virgil-encrypt**(1)
+1. **virgil-decrypt**(1)
 
 
 # OPTIONS
@@ -22,14 +63,15 @@ Get information about Virgil CLI configuration file.
         -o <file>,  --out <file>
          If omitted, stdout is used.
 
-        --global
-         Get path to the configuration file for all users.
 
-        --local
-         Get path to the configuration file for current user.
+        -g,  --global
+         Show path to the configuration file applied for all users.
 
-        --template
-         Get a template configuration file.
+        -l,  --local
+         Show path to the configuration file applied for current user.
+
+        -t,  --template
+         Show configuration file template.
 
         --,  --ignore_rest
          Ignores the rest of the labeled arguments following this flag.
@@ -43,15 +85,15 @@ Get information about Virgil CLI configuration file.
 
 # EXAMPLES
 
-1. Get path to a configuration file for current user:
-
-        virgil config --local
-
-1. Get path to the configuration file for all users:
+1. Show path to the configuration file applied for all users:
 
         virgil config --global
 
-1. Get a template a configuration file:
+1. Show path to the configuration file applied for current user:
+
+        virgil config --local
+
+1. Show configuration file template:
 
         virgil config --template
 

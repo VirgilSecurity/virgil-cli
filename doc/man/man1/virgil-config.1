@@ -10,13 +10,68 @@ file.
 .IP
 .nf
 \f[C]
-\ \ \ \ virgil\ config\ \ [\-o\ <file>]\ [\-\-global]\ [\-\-local]\ [\-\-template]\ [\-\-]\ [\-\-version]
-\ \ \ \ \ \ \ \ \ \ \ [\-h]
+\ \ \ \ virgil\ config\ \ [\-o\ <file>]\ [\-g]\ [\-l]\ [\-t]\ [\-\-]\ [\-\-version]\ [\-h]
 \f[]
 .fi
 .SH DESCRIPTION
 .PP
 Get information about Virgil CLI configuration file.
+.PP
+If don't set Virgil Access Token during the application build (cmake
+\-DVIRGIL_ACCESS_TOKEN = ..) or whether it should be changed, you can
+create a configuration file.
+.PP
+With `virgil config' utility you can find out what path should be based
+on a configuration file and how it should look.
+.PP
+The Virgil Access Token definitely need for following utilites.
+.PP
+Private Virgil Card:
+.IP "1." 3
+\f[B]virgil\-card\-create\-private\f[](1)
+.IP "2." 3
+\f[B]virgil\-card\-revoke\-private\f[](1)
+.IP "3." 3
+\f[B]virgil\-public\-key\-revoke\-private\f[](1)
+.IP "4." 3
+\f[B]virgil\-card\-search\-private\f[](1)
+.PP
+Global Virgil Card:
+.IP "1." 3
+\f[B]virgil\-identity\-verify\f[](1)
+.IP "2." 3
+\f[B]virgil\-identity\-valid\f[](1)
+.IP "3." 3
+\f[B]virgil\-identity\-confirm\-global\f[](1)
+.IP "4." 3
+\f[B]virgil\-card\-create\-global\f[](1)
+.IP "5." 3
+\f[B]virgil\-card\-revoke\-global\f[](1)
+.IP "6." 3
+\f[B]virgil\-public\-key\-revoke\-global\f[](1)
+.IP "7." 3
+\f[B]virgil\-card\-search\-global\f[](1)
+.PP
+Common:
+.IP "1." 3
+\f[B]virgil\-card\-get\f[](1)
+.IP "2." 3
+\f[B]virgil\-public\-key\-get\f[](1)
+.IP "3." 3
+\f[B]virgil\-private\-key\-add\f[](1)
+.IP "4." 3
+\f[B]virgil\-private\-key\-get\f[](1)
+.IP "5." 3
+\f[B]virgil\-private\-key\-del\f[](1)
+.PP
+Part of the functionality, which refers to the search for Cards on
+Virgil Keys Service:
+.IP "1." 3
+\f[B]virgil\-verify\f[](1)
+.IP "2." 3
+\f[B]virgil\-encrypt\f[](1)
+.IP "3." 3
+\f[B]virgil\-decrypt\f[](1)
 .SH OPTIONS
 .IP
 .nf
@@ -24,14 +79,15 @@ Get information about Virgil CLI configuration file.
 \ \ \ \ \-o\ <file>,\ \ \-\-out\ <file>
 \ \ \ \ \ If\ omitted,\ stdout\ is\ used.
 
-\ \ \ \ \-\-global
-\ \ \ \ \ Get\ path\ to\ the\ configuration\ file\ for\ all\ users.
 
-\ \ \ \ \-\-local
-\ \ \ \ \ Get\ path\ to\ the\ configuration\ file\ for\ current\ user.
+\ \ \ \ \-g,\ \ \-\-global
+\ \ \ \ \ Show\ path\ to\ the\ configuration\ file\ applied\ for\ all\ users.
 
-\ \ \ \ \-\-template
-\ \ \ \ \ Get\ a\ template\ configuration\ file.
+\ \ \ \ \-l,\ \ \-\-local
+\ \ \ \ \ Show\ path\ to\ the\ configuration\ file\ applied\ for\ current\ user.
+
+\ \ \ \ \-t,\ \ \-\-template
+\ \ \ \ \ Show\ configuration\ file\ template.
 
 \ \ \ \ \-\-,\ \ \-\-ignore_rest
 \ \ \ \ \ Ignores\ the\ rest\ of\ the\ labeled\ arguments\ following\ this\ flag.
@@ -45,17 +101,7 @@ Get information about Virgil CLI configuration file.
 .fi
 .SH EXAMPLES
 .IP "1." 3
-Get path to a configuration file for current user:
-.RS 4
-.IP
-.nf
-\f[C]
-virgil\ config\ \-\-local
-\f[]
-.fi
-.RE
-.IP "2." 3
-Get path to the configuration file for all users:
+Show path to the configuration file applied for all users:
 .RS 4
 .IP
 .nf
@@ -64,8 +110,18 @@ virgil\ config\ \-\-global
 \f[]
 .fi
 .RE
+.IP "2." 3
+Show path to the configuration file applied for current user:
+.RS 4
+.IP
+.nf
+\f[C]
+virgil\ config\ \-\-local
+\f[]
+.fi
+.RE
 .IP "3." 3
-Get a template a configuration file:
+Show configuration file template:
 .RS 4
 .IP
 .nf
