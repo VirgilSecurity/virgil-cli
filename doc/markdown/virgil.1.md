@@ -40,8 +40,7 @@ defined by his public key or by his password.
 
 **virgil-verify**(1) Verify data and signature with the public key.
 
-**virgil-hash**(1) Derives the obfuscated data from incoming parameters
-using [PBKDF
+**virgil-exhash**(1) Derives hash from the given data with [PBKDF
 function](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#pbkdf-function).
 
 **virgil-config**(1) Get information about Virgil CLI configuration

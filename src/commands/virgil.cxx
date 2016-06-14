@@ -48,7 +48,7 @@
 typedef int (*main_func)(int argc, char** argv);
 
 // simple-action
-int hash_main(int argc, char** argv);
+int exhash_main(int argc, char** argv);
 int keygen_main(int argc, char** argv);
 int key2pub_main(int argc, char** argv);
 int encrypt_main(int argc, char** argv);
@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
 
     std::map<std::string, main_func> commandsMap;
     // simple-action
-    commandsMap["hash"] = &hash_main;
+    commandsMap["exhash"] = &exhash_main;
     commandsMap["keygen"] = &keygen_main;
     commandsMap["key2pub"] = &key2pub_main;
     commandsMap["encrypt"] = &encrypt_main;
@@ -155,8 +155,7 @@ void print_usage(std::ostream& out, const char* programName) {
                       "interact with Virgil Private Keys Service.\n\n"
 
                       "COMMON COMMANDS:\n"
-                      "hash                        Derives the obfuscated data from incoming parameters using\n"
-                      "                            PBKDF function.\n\n"
+                      "exhash                      Derives hash from the given data with PBKDF function.\n\n"
 
                       "keygen                      Generate private key with given parameters.\n\n"
 

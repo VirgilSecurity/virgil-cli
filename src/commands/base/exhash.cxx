@@ -57,20 +57,20 @@ namespace vcli = virgil::cli;
 #ifdef SPLIT_CLI
 #define MAIN main
 #else
-#define MAIN hash_main
+#define MAIN exhash_main
 #endif
 
 static vcrypto::foundation::VirgilPBKDF::Hash hash_alg(const std::string& param);
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Derives the obfuscated data from incoming parameters using PBKDF function.\n\n";
+        std::string description = "Derives hash from the given data with PBKDF function.\n\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Generate hash (alg - sha384, iterations - 2048 default):\n"
+        examples.push_back("Underlying hash - SHA384 (default), iterations - 2048 (default):\n"
                            "virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt\n\n");
 
-        examples.push_back("Generate hash sha512 and count of iterations - 4096:\n"
+        examples.push_back("Underlying hash - SHA512, iterations - 4096:\n"
                            "virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096\n\n");
 
         std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
@@ -81,8 +81,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> inArg("i", "in", "The string value to be hashed. If omitted, stdout is used.",
                                            false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Obfuscated data. If omitted, stdout is used.", false, "",
-                                            "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Hash. If omitted, stdout is used.", false, "", "file");
 
         std::vector<std::string> alg;
         alg.push_back("sha1");
@@ -95,17 +94,15 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> saltArg("s", "salt", "The hash salt.", true, "", "file");
 
         TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm",
-                                                  "Generate hash with one"
-                                                  " of the following positions:\n"
+                                                  "Underlying hash algorithm:\n"
                                                   "\t* sha1 -   secure Hash Algorithm 1;\n"
-                                                  "\t* sha224 - secure Hash Algorithm 2  that are 224 bits;\n"
-                                                  "\t* sha256 - secure Hash Algorithm 2  that are 256 bits;\n"
-                                                  "\t* sha384 - secure Hash Algorithm 2  that are 384 bits(default);\n"
-                                                  "\t* sha512 - secure Hash Algorithm 2  that are 512 bits;\n",
+                                                  "\t* sha224 - secure Hash Algorithm 2, that are 224 bits;\n"
+                                                  "\t* sha256 - secure Hash Algorithm 2, that are 256 bits;\n"
+                                                  "\t* sha384 - secure Hash Algorithm 2, that are 384 bits(default);\n"
+                                                  "\t* sha512 - secure Hash Algorithm 2, that are 512 bits;\n",
                                                   false, "sha384", &allowedAlg);
 
-        TCLAP::ValueArg<int> iterationsArg("c", "iterations", "The count of iterations. Default - 2048", false, 2048,
-                                           "int");
+        TCLAP::ValueArg<int> iterationsArg("c", "iterations", "Iterations count. Default - 2048", false, 2048, "int");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 
