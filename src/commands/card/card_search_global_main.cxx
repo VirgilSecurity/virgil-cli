@@ -139,8 +139,8 @@ int MAIN(int argc, char** argv) {
                           << " have been received " << appCards.size() << " Cards." << std::endl;
             } else {
                 // emailArg.isSet
-                std::cout << "For the entered email:" << emailArg.getValue()
-                          << " have been received " << appCards.size() << " Cards." << std::endl;
+                std::cout << "For the entered email:" << emailArg.getValue() << " have been received "
+                          << appCards.size() << " Cards." << std::endl;
             }
         }
 

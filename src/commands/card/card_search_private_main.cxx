@@ -162,7 +162,8 @@ int MAIN(int argc, char** argv) {
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "card-search-private. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "card-search-private. Error: " << exception.error() << " for arg " << exception.argId()
+                  << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
         std::cerr << "card-search-private. Error: " << exception.what() << std::endl;

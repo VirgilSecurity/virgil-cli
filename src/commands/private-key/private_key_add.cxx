@@ -76,12 +76,13 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Global/Private Virgil Card identifier", true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Global/Private Virgil Card identifier", true, "",
+                                               "arg");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
-            "p", "private-key-password", "Private Key Password.", false, "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
+                                                           "", "arg");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 

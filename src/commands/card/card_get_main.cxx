@@ -86,8 +86,8 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", false, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
-            "p", "private-key-password", "Private Key Password.", false, "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
+                                                           "", "arg");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 
