@@ -39,9 +39,11 @@
 
 #include <string>
 
+#include <config_path.h>
+
 #include <virgil/sdk/ServiceUri.h>
 
-#include <cli/config.h>
+#include <cli/consts.h>
 
 namespace virgil {
 namespace cli {

@@ -46,7 +46,6 @@
 #include <virgil/sdk/dto/ValidatedIdentity.h>
 #include <virgil/sdk/ServiceUri.h>
 
-#include <cli/config.h>
 #include <cli/ConfigFile.h>
 
 namespace virgil {

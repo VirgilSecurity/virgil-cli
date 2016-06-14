@@ -45,7 +45,6 @@
 #include <virgil/sdk/io/Marshaller.h>
 
 #include <cli/version.h>
-#include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 
