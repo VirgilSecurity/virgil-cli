@@ -1,12 +1,12 @@
 NAME
 ====
 
-virgil\*\* -- command line tool for using Virgil Security full stack functionality.
+**virgil** -- command line tool for using Virgil Security full stack functionality.
 
 SYNOPSIS
 ========
 
-virgil\*\* *command* \[*command\_opts*\] \[*command\_args*\]
+**virgil** *command* \[*command\_opts*\] \[*command\_args*\]
 
 DESCRIPTION
 ===========

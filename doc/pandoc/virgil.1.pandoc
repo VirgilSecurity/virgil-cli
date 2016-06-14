@@ -4,11 +4,11 @@
 
 # NAME
 
-virgil** -- command line tool for using Virgil Security full stack functionality.
+**virgil** -- command line tool for using Virgil Security full stack functionality.
 
 # SYNOPSIS
 
-virgil** *command* [*command_opts*] [*command_args*]
+**virgil** *command* [*command_opts*] [*command_args*]
 
 # DESCRIPTION
 
