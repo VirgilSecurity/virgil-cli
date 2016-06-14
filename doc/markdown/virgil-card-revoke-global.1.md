@@ -56,7 +56,9 @@ EXAMPLES
 
         virgil card-revoke-global -a <card_id> -f validated-identities.txt -k private.key
 
-2.  Revoke a global Virgil Card with a confirming identity:
+2.  Revoke [a global Virgil
+    Card](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#global-virgil-card)
+    with a confirming identity:
 
         virgil card-revoke-global -a <card_id> -d alice@domain.com -k alice/private.key
 

@@ -64,13 +64,13 @@ int MAIN(int argc, char** argv) {
                                   "2. email - search a Virgil Global Card\n\n";
 
         std::vector<std::string> examples;
-        examples.push_back("The global search for application Cards by email:\n"
+        examples.push_back("Search for global Virgil Card by user's email:\n"
                            "virgil card-search-global -e alice@mailinator.com\n\n");
 
-        examples.push_back("The global search for application Global Virgil Cards by application name:\n"
+        examples.push_back("Search for application global Virgil Card by application name:\n"
                            "virgil card-search-global -c <app_name>\n\n");
 
-        examples.push_back("Get all application cards:\n"
+        examples.push_back("Get all application Cards:\n"
                            "virgil card-search-global -c \"com.virgilsecurity.*\"\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);

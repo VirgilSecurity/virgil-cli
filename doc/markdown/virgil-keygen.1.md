@@ -1,8 +1,8 @@
 NAME
 ====
 
-**keygen** -- generate [a Private
-Key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key)
+**keygen** -- generate [a private
+key](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-key)
 with provided parameters.
 
 SYNOPSIS

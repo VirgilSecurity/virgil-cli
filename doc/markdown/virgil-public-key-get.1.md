@@ -39,6 +39,9 @@ OPTIONS
 EXAMPLES
 ========
 
+1.  Get a public key by its
+    [`public-key-id`](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#public-key-id):
+
         virgil public-key-get -o public.vkey -e <public_key_id>
 
 SEE ALSO

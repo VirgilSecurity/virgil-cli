@@ -47,15 +47,15 @@ The utility allows you to search for a global Virgil Card from the Virgil Keys S
 
 # EXAMPLES
 
-1.  The global search global Virgil Cards by email:
+1.  Search for global Virgil Card by user's email:
 
         virgil card-search-global -e alice@mailinator.com -o alice/
 
-1.  The global search for application global Virgil Cards by application name:
+1.  Search for application global Virgil Card by application name:
 
         virgil card-search-global -c <app_name> -o all_app_cards/
 
-1. Get all application cards:
+1. Get all application Cards:
 
         virgil card-search-global -c "com.virgilsecurity.*" -o all_app_cards/
 

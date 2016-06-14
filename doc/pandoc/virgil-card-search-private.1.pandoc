@@ -4,7 +4,9 @@
 
 # NAME
 
-**card-search-private** -- search for a private Virgil Card[s] from the Virgil Keys Service
+**card-search-private** -- search for [a private Virgil Card\(s\)](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#private-virgil-card) from
+the Keys Service.
+
 
 # SYNOPSIS
 
@@ -14,7 +16,7 @@
 
 # DESCRIPTION
 
-Search for a private Virgil Card from the Virgil Keys Service
+The utility allows you to search for a private Virgil Card from the Virgil Keys Service.
 
 
 # OPTIONS

@@ -66,19 +66,19 @@ int MAIN(int argc, char** argv) {
                                   "public-key-id + card-id of one of the Cards from the group.\n\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Revoke a chain of Virgil Private Cards with confirmed identities connected by "
+        examples.push_back("Revoke a chain of private Virgil Cards with confirmed identities connected by "
                            "public-key-id from Public Keys Service:\n"
                            "virgil public-key-revoke-private -a <card_id> -k alice/private.key -f "
                            "alice/private-main-validated-identity.txt -f "
                            "alice/private-reserve-validated-identity.txt\n\n");
 
-        examples.push_back("Revoke a chain of Virgil Private Cards with unconfirmed identities connected by "
+        examples.push_back("Revoke a chain of private Virgil Cards with unconfirmed identities connected by "
                            "public-key-id from Public Keys Service:\n"
                            "virgil public-key-revoke-private -a <card_id> -k alice/private.key -d "
                            "email:alice_main@domain.com -d email:alice_reserve@domain.com\n\n");
 
-        examples.push_back("Revoke a chain of Virgil Private Cards with unconfirmed identities and obfuscator identity "
-                           "value and/or type connected by public-key-id from Public Keys Service:\n"
+        examples.push_back("Revoke a chain of private Virgil Cards with unconfirmed identities and obfuscator identity"
+                           " value and/or type connected by public-key-id from Public Keys Service:\n"
                            "virgil public-key-revoke-private -a <card_id> -k alice/private.key -d "
                            "<obfuscator_type>:<obfuscator_value_1> -d <obfuscator_type>:<obfuscator_value_2>\n\n");
 

@@ -51,11 +51,11 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Return a Private/global Virgil Card by card-id:
+1.  Return a private/global Virgil Card by card-id:
 
         virgil card-get -a <card_id> -o cards/
 
-2.  Return a group of Private/global Virgil Cards connected with
+2.  Return a group of private/global Virgil Cards connected with
     public-key-id, card-id belongs to one of the Cards:
 
         virgil card-get -a <card_id> -e <public_key_id> -k private.key -o cards/

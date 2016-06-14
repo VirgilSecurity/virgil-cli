@@ -1,7 +1,7 @@
 NAME
 ====
 
-**encrypt** -- encrypt data for given recipients
+**encrypt** -- encrypt data for provided recipients.
 
 SYNOPSIS
 ========

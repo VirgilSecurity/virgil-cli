@@ -12,8 +12,8 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-Verify data and signature with given user's identifier or with its
-Public Key.
+The utility allows you to verify data and signature with a provided
+user's identifier or with his public key.
 
 OPTIONS
 =======
@@ -25,7 +25,7 @@ OPTIONS
          Verification result: success | failure. If omitted, stdout is used.
 
         --return-status
-         Only return status, ignore '-o, --out'
+         Just returns status, ignores '-o, --out'
 
         -s <file>,  --sign <file>
          (required)  Digest sign.

@@ -87,7 +87,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> outArg(
             "o", "out", "Verification result: success | failure. If omitted, stdout is used.", false, "", "file");
 
-        TCLAP::SwitchArg returnStatusArg("", "return-status", "Only return status, ignore '-o, --out'", false);
+        TCLAP::SwitchArg returnStatusArg("", "return-status", "Just returns status, ignores '-o, --out'", false);
 
         TCLAP::ValueArg<std::string> signArg("s", "sign", "Digest sign.", true, "", "file");
 

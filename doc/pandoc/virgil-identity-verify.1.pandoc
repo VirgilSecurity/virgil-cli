@@ -43,7 +43,7 @@ The utility allows you to verify an Identity for a global Virgil Card with such 
 
 # RETURN VALUE
 
-On success, *action_id* is returned. On error, throw an exception.
+On success, [*action_id*](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#action-id) is returned. On error, exception is thrown.
 
 
 # EXAMPLES

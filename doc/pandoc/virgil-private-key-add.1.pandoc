@@ -21,7 +21,7 @@ The utility allows you to add a private key to the Private Keys Service. Pay att
     already uploaded the public key to the Keys Service.
 1.  Make sure that you have your private key on your machine saved locally.
 1.  Make sure that you have registered an application at [Virgil
-    Security, Inc](https://developer.virgilsecurity.com/account/signin
+    Security, Inc](https://developer.virgilsecurity.com/account/signin).
 
 
 # OPTIONS

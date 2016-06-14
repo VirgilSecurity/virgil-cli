@@ -81,12 +81,12 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  Decrypt data for user identified by password:
+1.  Decrypt plain.txt.enc for a user identified by his password:
 
         virgil decrypt -i plain.txt.enc -o plain.txt -r password:strong_password
 
-2.  Decrypt data for Bob identified by his Private Key + recipient-id
-    \[id|vcard|email|private\]:
+2.  Decrypt plain.txt.enc for Bob identified by his private key +
+    recipient-id \[id|vcard|email|private\]:
 
         virgil decrypt -i plain.txt.enc -o plain.txt -k bob/private.key -r id:<recipient_id>
 

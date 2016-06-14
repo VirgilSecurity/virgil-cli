@@ -42,7 +42,9 @@ OPTIONS
 RETURN VALUE
 ============
 
-On success, *action\_id* is returned. On error, throw an exception.
+On success,
+[*action\_id*](https://github.com/VirgilSecurity/virgil/wiki/Virgil-Glossary#action-id)
+is returned. On error, exception is thrown.
 
 EXAMPLES
 ========

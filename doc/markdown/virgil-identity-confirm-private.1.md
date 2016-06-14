@@ -74,7 +74,8 @@ On success, *validated identity model*:
             "validation_token": *validation_token*
         }
 
-2.  Obfuscated identity (see 'virgil hash') value and identity type
+2.  Obfuscated identity ( see **virgil-exhash**(1) ) value and identity
+    type
 
         -d, --identity = "xSf79dt6Bl6/WwHmO/KrIlaWrUxX2GLV7l7Jo+SCZSqT48Cq6mMWNDTkUPeMp82r"
         -t, --identity-type = "WHTbiO4KeZUYC4tm5DWVJfacwdlmLkJZnhJKbMCFAdjC0hSkdHs3EnIWlPt+Lnni"

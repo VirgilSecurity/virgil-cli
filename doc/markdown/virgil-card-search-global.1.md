@@ -48,16 +48,15 @@ OPTIONS
 EXAMPLES
 ========
 
-1.  The global search global Virgil Cards by email:
+1.  Search for global Virgil Card by user's email:
 
         virgil card-search-global -e alice@mailinator.com -o alice/
 
-2.  The global search for application global Virgil Cards by application
-    name:
+2.  Search for application global Virgil Card by application name:
 
         virgil card-search-global -c <app_name> -o all_app_cards/
 
-3.  Get all application cards:
+3.  Get all application Cards:
 
         virgil card-search-global -c "com.virgilsecurity.*" -o all_app_cards/
 

@@ -21,8 +21,8 @@ Pay attention to these statements:
     already uploaded the public key to the Keys Service.
 3.  Make sure that you have your private key on your machine
     saved locally.
-4.  Make sure that you have registered an application at \[Virgil
-    Security, Inc\](https://developer.virgilsecurity.com/account/signin
+4.  Make sure that you have registered an application at [Virgil
+    Security, Inc](https://developer.virgilsecurity.com/account/signin).
 
 OPTIONS
 =======

@@ -66,16 +66,16 @@ int MAIN(int argc, char** argv) {
         std::string description = "Create a Private Virgil Card.\n\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Create a Private Virgil Card with a confirmed identity:\n"
+        examples.push_back("Create a private Virgil Card with a confirmed identity:\n"
                            "virgil card-create-private -f alice/validated_identity.txt "
                            "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a connection with an already existing a Private Virgil Card with a confirmed "
+        examples.push_back("Create a connection with an already existing a private Virgil Card with a confirmed "
                            "Identity by public-key-id:\n"
                            "virgil card-create-private -f alice/validated_identity.txt "
                            "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        examples.push_back("Create a Private Virgil Card with an unconfirmed Identity:\n"
+        examples.push_back("Create a private Virgil Card with an unconfirmed Identity:\n"
                            "virgil card-create-private -d <identity_type>:<identity_value> --public_key "
                            "alice/public.key -k alice/private.key "
                            "-o alice/anonim_card1.vcard\n\n");

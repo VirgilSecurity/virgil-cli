@@ -65,10 +65,10 @@ int MAIN(int argc, char** argv) {
                                   "Private/Global Cards connected with public-key-id\n\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Receive a Private/Global Card by card-id:\n"
+        examples.push_back("Receive a private/global Virgil Card by card-id:\n"
                            "virgil card-get -a <card-id> -o cards/\n\n");
 
-        examples.push_back("Return a group of Private/Global Cards connected with public-key-id, card-id belongs to "
+        examples.push_back("Return a group of private/global Cards connected with public-key-id, card-id belongs to "
                            "one of the Cards:\n"
                            "virgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n\n");
 

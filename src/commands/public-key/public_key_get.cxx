@@ -62,7 +62,7 @@ int MAIN(int argc, char** argv) {
         std::string description = "Get Global/Private Virgil Public Key from the Public Key Service.\n\n";
 
         std::vector<std::string> examples;
-        examples.push_back("Get Virgil Public Key:\n"
+        examples.push_back("Get a public key by its `public-key-id`:\n"
                            "virgil public-key-get -o alice/public.key -e <public_key_id>\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);

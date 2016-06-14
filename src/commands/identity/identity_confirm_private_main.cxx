@@ -72,11 +72,11 @@ int MAIN(int argc, char** argv) {
         std::string description = "Provides helper methods to generate validation token based on the"
                                   "application's private key. It is required for the following"
                                   "operations:\n"
-                                  "1. create a Private Virgil Card with a confirmed Identity. "
+                                  "1. Create a private Virgil Card with a confirmed Identity. "
                                   "See 'virgil card-create-private';\n"
-                                  "2. revoke a Private Virgil Card, a group of Cards."
+                                  "2. Revoke a Private Virgil Card, a group of Cards."
                                   "See 'virgil card-revoke-private', 'virgil public-key-revoke';\n"
-                                  "3. get a Private key from the Private Keys Service."
+                                  "3. Get a private key from the Private Keys Service."
                                   "See 'virgil private-key-get'.\n\n";
 
         std::vector<std::string> examples;
