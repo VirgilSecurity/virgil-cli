@@ -55,6 +55,7 @@ int encrypt_main(int argc, char** argv);
 int decrypt_main(int argc, char** argv);
 int sign_main(int argc, char** argv);
 int verify_main(int argc, char** argv);
+int config_main(int argc, char** argv);
 
 // module-action
 int identity_verify_main(int argc, char** argv);
@@ -108,6 +109,7 @@ int main(int argc, char** argv) {
     commandsMap["decrypt"] = &decrypt_main;
     commandsMap["sign"] = &sign_main;
     commandsMap["verify"] = &verify_main;
+    commandsMap["config"] = &config_main;
 
     // module-action
     commandsMap["identity-verify"] = &identity_verify_main;
@@ -168,7 +170,9 @@ void print_usage(std::ostream& out, const char* programName) {
 
                       "sign                        Sign data with Private Key.\n\n"
 
-                      "verify                      Verify data with Virgil Public Key.\n\n\n"
+                      "verify                      Verify data with Virgil Public Key.\n\n"
+
+                      "config                      Get information about Virgil CLI configuration file.\n\n\n"
 
                       "CARD COMMANDS:\n"
 
