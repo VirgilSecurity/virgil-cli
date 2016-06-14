@@ -41,35 +41,35 @@
 #include <vector>
 #include <map>
 
-namespace virgil { namespace cli {
+namespace virgil {
+namespace cli {
 
-/**
- * @brief Parse string pair.
- *
- * Pair format: <key>:<value>.
- * @param str - string to be parsed.
- * @return Parsed string pair as std::pair<std::string, std::string>.
- * @throw std::invalid_argument - if given format is invalid.
- *
- * Note, all whitespaces before <key> and after <key> will be trimmed.
- * Note, all whitespaces before <value> and after <value> will be trimmed.
- */
-std::pair<std::string, std::string> parse_pair(const std::string& str);
+    /**
+     * @brief Parse string pair.
+     *
+     * Pair format: <key>:<value>.
+     * @param str - string to be parsed.
+     * @return Parsed string pair as std::pair<std::string, std::string>.
+     * @throw std::invalid_argument - if given format is invalid.
+     *
+     * Note, all whitespaces before <key> and after <key> will be trimmed.
+     * Note, all whitespaces before <value> and after <value> will be trimmed.
+     */
+    std::pair<std::string, std::string> parsePair(const std::string& str);
 
-/**
- * @brief Parse array of string pairs.
- *
- * Pair format: <key>:<value>.
- * @param arr - array of strings to be parsed.
- * @return Parsed string pairs.
- * @throw std::invalid_argument - if given format is invalid.
- *
- * Note, all whitespaces before <key> and after <key> will be trimmed.
- * Note, all whitespaces before <value> and after <value> will be trimmed.
- */
-std::multimap<std::string, std::string> parse_pair_array(const std::vector<std::string>& pairs);
-
-}}
+    /**
+     * @brief Parse array of string pairs.
+     *
+     * Pair format: <key>:<value>.
+     * @param arr - array of strings to be parsed.
+     * @return Parsed string pairs.
+     * @throw std::invalid_argument - if given format is invalid.
+     *
+     * Note, all whitespaces before <key> and after <key> will be trimmed.
+     * Note, all whitespaces before <value> and after <value> will be trimmed.
+     */
+    std::multimap<std::string, std::string> parsePairArray(const std::vector<std::string>& pairs);
+}
+}
 
 #endif /* VIRGIL_COMMON_PAIR_H */
-

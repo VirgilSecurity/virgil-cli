@@ -38,38 +38,89 @@
 #define VIRGIL_CLI_COMMON_UTIL_H
 
 #include <string>
+#include <vector>
 
 #include <virgil/crypto/VirgilByteArray.h>
-#include <virgil/sdk/keys/model/PublicKey.h>
 
-namespace vc = virgil::crypto;
-namespace vskm = virgil::sdk::keys::model;
+#include <virgil/sdk/models/CardModel.h>
+#include <virgil/sdk/dto/ValidatedIdentity.h>
+#include <virgil/sdk/ServiceUri.h>
 
-namespace virgil { namespace cli {
+#include <cli/ConfigFile.h>
 
-/**
- * @brief Retive Virgil Public Key from the Virgil Public Key service.
- */
-vskm::PublicKey get_virgil_public_key(const std::string& recipientId, const std::string& recipientIdType);
+namespace virgil {
+namespace cli {
 
-/**
- * @brief Read Virgil Public Key from the file.
- */
-vskm::PublicKey read_virgil_public_key(std::istream& file);
+    std::string inputShadow();
 
-/**
- * @brief Read bytes from the given source.
- * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
- */
-vc::VirgilByteArray read_bytes(const std::string& in);
+    /**
+     * @brief Set private key pass if need. Private key pass asks the user.
+     * @param privateKey - user private key
+     */
+    virgil::crypto::VirgilByteArray setPrivateKeyPass(const virgil::crypto::VirgilByteArray& privateKey);
 
-/**
- * @brief Write bytes to the given destination.
- * @param out - if empty or equal to "-" then 'stdout' is used, otherwise - path to file.
- */
-void write_bytes(const std::string& out, const vc::VirgilByteArray& data);
-void write_bytes(const std::string& out, const std::string& data);
+    bool isPublicKeyModel(const std::string& publicKey);
 
-}}
+    bool isPrivateKeyModel(const std::string& privateKey);
+
+    //-------------------------------------------------------------------------------------
+
+    void printVersion(std::ostream& out, const char* programName);
+
+    //-------------------------------------------------------------------------------------
+
+    void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg);
+
+    void checkFormatIdentity(const std::string& args, const std::string& type);
+
+    //-------------------------------------------------------------------------------------
+
+    virgil::crypto::VirgilByteArray readFileBytes(const std::string& in);
+
+    /**
+     * @brief Read bytes from the given source.
+     * @param in - if empty or equal to "-" then 'stdin' is used, otherwise - path to file.
+     */
+    std::string readInput(const std::string& in);
+
+    virgil::sdk::dto::ValidatedIdentity readValidateIdentity(const std::string& in);
+
+    virgil::sdk::models::CardModel readCard(const std::string& in);
+
+    /**
+     * @brief Read public key from the public key model or public key byte array source
+     * @param in - path to file.
+     */
+    virgil::crypto::VirgilByteArray readPublicKey(const std::string& in);
+
+    /**
+     * @brief Read private key from the private key model or private key byte array source
+     * @param in - path to file.
+     */
+    virgil::crypto::VirgilByteArray readPrivateKey(const std::string& in);
+
+    //-------------------------------------------------------------------------------------
+
+    /**
+     * @brief Write bytes to the given destination.
+     * @param out - if empty then 'stdout' ispath to file.
+     */
+    void writeBytes(const std::string& out, const virgil::crypto::VirgilByteArray& data);
+    void writeBytes(const std::string& out, const std::string& data);
+
+    void writeOutput(const std::string& out, const std::string& data);
+
+    std::string getDescriptionMessage(const std::string description, std::vector<std::string> examples);
+
+    //-------------------------------------------------------------------------------------
+
+    std::vector<virgil::sdk::models::CardModel> getRecipientCards(const bool verbose, const std::string& type,
+                                                                  const std::string& value,
+                                                                  const bool isSearchForPrivateCard);
+
+    std::vector<std::string> getRecipientCardsId(const bool verbose, const std::string& type, const std::string& value,
+                                                 const bool isSearchForPrivateCard);
+}
+}
 
 #endif /* VIRGIL_CLI_COMMON_UTIL_H */

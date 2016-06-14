@@ -1,32 +1,67 @@
 language: cpp
+sudo: false
+
 branches:
   only:
     - master
     - develop
-    - /^release-.*$/
-compiler:
-  - g++
-  - clang++
-os:
-  - linux
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - gcc-4.8
-      - g++-4.8
-      - libcurl4-openssl-dev
-      - python-yaml
-install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+    - release
+
+cache:
+  directories:
+    - $HOME/cmake
+
 env:
   global:
     - BUILD_DIR_NAME=build
+    - BUILD_TYPE='Release'
+
+matrix:
+  include:
+    # 1 Linux GCC Builds
+    - os: linux
+      compiler: g++
+      env: COMPILER='g++-4.8'
+      addons:
+        apt:
+         sources: ['ubuntu-toolchain-r-test']
+         packages: ['g++-4.8', 'libcurl4-openssl-dev']
+
+    - os: linux
+      compiler: g++
+      env: COMPILER='g++-4.9'
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-4.9', 'libcurl4-openssl-dev']
+
+    - os: linux
+      compiler: g++
+      env: COMPILER='g++-5'
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-5', 'libcurl4-openssl-dev']
+
+    # 2 OSX Clang Builds
+    - os: osx
+      osx_image: xcode6.4
+      compiler: clang++
+      env: COMPILER='clang++'
+
+    - os: osx
+      osx_image: xcode7
+      compiler: clang++
+      env: COMPILER='clang++'
+
 before_install:
-  - bash ./ci/install-cmake.sh
+  - bash ./ci/install-deps.sh
+
+install:
+  - export CXX=${COMPILER}
+
 before_script:
   - bash ./ci/configure.sh
+
 script:
   - bash ./ci/run.sh
-sudo: false

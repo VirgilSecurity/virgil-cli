@@ -37,16 +37,19 @@
 
 set -ev
 
-# Configure CMake arguments
-CMAKE_ARGS=""
-
 # Run CMake
 cd "${TRAVIS_BUILD_DIR}"
 if [ -d "${BUILD_DIR_NAME}" ]; then
-    rm -fr "${BUILD_DIR_NAME}"
+    rm -rf "${BUILD_DIR_NAME}"
 fi
+
 mkdir "${BUILD_DIR_NAME}"
 cd "${BUILD_DIR_NAME}"
 
-$HOME/cmake/cmake-3.2.2-Linux-x86_64/bin/cmake --version
-$HOME/cmake/cmake-3.2.2-Linux-x86_64/bin/cmake ${CMAKE_ARGS} ..
+if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+    export PATH=$HOME/cmake/bin:$PATH
+fi
+
+cmake --version
+
+cmake "-DCMAKE_BUILD_TYPE=${BUILD_TYPE}" ..

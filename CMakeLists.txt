@@ -36,6 +36,7 @@
 
 # Configurable variables:
 #     - INSTALL_BIN_DIR_NAME  - name of the directory where binaries will be installed.
+#     - INSTALL_LIB_DIR_NAME  - name of the directory where libraries will be installed.
 #     - INSTALL_MAN_DIR_NAME  - name of the directory where man pages will be installed.
 #     - INSTALL_DOC_DIR_NAME  - name of the directory where documentation will be installed.
 #
@@ -49,14 +50,35 @@ cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 
 project (virgil_cli)
 
+# Configure version
+set (CLI_VERSION_MAJOR 2)
+set (CLI_VERSION_MINOR 0)
+set (CLI_VERSION_PATCH 0)
+set (CLI_VERSION ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH})
+message (STATUS "CLI version: " ${CLI_VERSION})
+
+# Configurable variables
+## Installation directories
+set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
+set (INSTALL_LIB_DIR_NAME lib CACHE STRING "Installation directory name for libraries")
+set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
+
+# Configure application token
+set (VIRGIL_ACCESS_TOKEN ${TOKEN} CACHE STRING
+        "Application specific token acquired from the Virgil Security")
+
+## Crosscompiling
+set (UCLIBC OFF CACHE BOOL "Enable pathches if CLI is build with uClibc++")
+
+## Link with shared library if defined
+set (BUILD_SHARED_LIBS OFF CACHE BOOL "Force to link with shared libraries")
+
 # Configure path to custom modules
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Define enviroment parameters
-include (check_pointer_size)
-check_pointer_size (POINTER_SIZE)
-if (POINTER_SIZE)
-    message (STATUS "Compiler pointer size: " ${POINTER_SIZE} " bytes")
+if (CMAKE_SIZEOF_VOID_P)
+    message (STATUS "Compiler pointer size: " ${CMAKE_SIZEOF_VOID_P} " bytes")
 else ()
     message (STATUS "Compiler pointer size: UNDEFINED")
 endif ()
@@ -67,7 +89,7 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Inspect system
 set (SYSTEM_ARCH x86)
-if (POINTER_SIZE EQUAL 8)
+if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     set (SYSTEM_ARCH x64)
 endif ()
 string (TOLOWER "${CMAKE_SYSTEM_NAME}" SYSTEM_NAME)
@@ -87,125 +109,132 @@ if (MSVC)
     set (CURL_LIBRARY_DLL "${EXT_PREBUILD_MSVC_DIR}/${SYSTEM_ARCH}/libcurl/lib/libcurl.dll")
 endif (MSVC)
 
-# Configure version
-set (CLI_VERSION_MAJOR 0)
-set (CLI_VERSION_MINOR 3)
-set (CLI_VERSION_PATCH 4)
-set (CLI_VERSION ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH})
-message (STATUS "CLI version: " ${CLI_VERSION})
-
-# Configure path variables
-set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
-set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
-
-# Configure application token
-set (VIRGIL_APP_TOKEN "a9b7434cda37b327bdd075bbde201b5d" CACHE STRING
-        "Application specific token acquired from the Virgil Security")
-
-if (NOT VIRGIL_APP_TOKEN)
-    message (FATAL_ERROR "VIRGIL_APP_TOKEN configuration is not defined.")
+if (UNIX)
+    if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        # Use relative to executable RPATH for OS X
+        set (CMAKE_INSTALL_NAME_DIR "@executable_path/../lib")
+    else ()
+        # Use full RPATH for all UNIX systems except OS X, see https://cmake.org/Wiki/CMake_RPATH_handling
+        set (CMAKE_SKIP_BUILD_RPATH  FALSE)
+        set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+        set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR_NAME}")
+        set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    endif ()
 endif ()
 
-# Find dependencies
+# Add system external dependencies
 find_package (CURL REQUIRED)
-include_directories (${CURL_INCLUDE_DIRS})
 
-include (virgil)
-virgil_add_dependency ("crypto"
-    VIRGIL_CRYPTO_DEPENDENCIES
-    VIRGIL_CRYPTO_INCLUDE_DIRS
-    VIRGIL_CRYPTO_LIBRARIES
+# Add in-house external dependencies
+include (virgil_depends)
+
+virgil_depends (
+    PACKAGE_NAME "virgil_sdk"
+    CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/virgil_sdk"
 )
-include_directories (${VIRGIL_CRYPTO_INCLUDE_DIRS})
 
-virgil_add_dependency ("keys-public"
-    VIRGIL_KEYS_PUBLIC_DEPENDENCIES
-    VIRGIL_KEYS_PUBLIC_INCLUDE_DIRS
-    VIRGIL_KEYS_PUBLIC_LIBRARIES
-)
-include_directories (${VIRGIL_KEYS_PUBLIC_INCLUDE_DIRS})
+virgil_find_package (virgil_sdk 3.2.0 EXACT)
+virgil_find_package (virgil_crypto) # Installed as virgil_sdk dependency, so found version will be appropriate
+virgil_find_package (nlohman_json)  # Installed as virgil_sdk dependency, so found version will be appropriate
+virgil_find_package (restless)      # Installed as virgil_sdk dependency, so found version will be appropriate
+virgil_find_package (mbedtls)       # Installed as virgil_sdk dependency, so found version will be appropriate
 
-# Use tclap lib
-include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/ext")
-message (STATUS "TCLAP library: ON")
-
-#
-include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-# Define sources list
-aux_source_directory ("src/common" SRC_LIST)
-aux_source_directory ("src/commands" SRC_LIST)
-
-foreach (src_file ${SRC_LIST})
+# Grab source directory tree
+file (GLOB_RECURSE SRC_LIST "src/*.cxx")
+foreach (SRC_FILE ${SRC_LIST})
+    string (REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/src/" "" SRC_REL_PATH ${SRC_FILE})
     configure_file (
-        "${CMAKE_CURRENT_SOURCE_DIR}/${src_file}"
-        "${CMAKE_CURRENT_BINARY_DIR}/${src_file}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/${SRC_REL_PATH}"
+        "${CMAKE_CURRENT_BINARY_DIR}/src/${SRC_REL_PATH}"
         @ONLY
     )
 endforeach ()
+file (GLOB_RECURSE SRC_LIST "${CMAKE_CURRENT_BINARY_DIR}/src/*.cxx")
 
-aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/common SRC_COMMON)
-aux_source_directory(${CMAKE_CURRENT_BINARY_DIR}/src/commands SRC_COMMANDS)
-
-add_executable (virgil_cli ${SRC_COMMON} ${SRC_COMMANDS})
-target_link_libraries (virgil_cli ${VIRGIL_CRYPTO_LIBRARIES} ${VIRGIL_KEYS_PUBLIC_LIBRARIES} ${CURL_LIBRARIES})
-add_dependencies (virgil_cli ${VIRGIL_CRYPTO_DEPENDENCIES} ${VIRGIL_KEYS_PUBLIC_DEPENDENCIES})
+add_executable (virgil_cli ${SRC_LIST})
+target_include_directories (virgil_cli PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/ext"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CURL_INCLUDE_DIRS}"
+)
+target_link_libraries (virgil_cli virgil::security::virgil_sdk ${CURL_LIBRARIES})
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
+# Install shared libraries
+if (BUILD_SHARED_LIBS)
+    install (DIRECTORY "${VIRGIL_DEPENDS_PREFIX}/lib/" DESTINATION "${INSTALL_LIB_DIR_NAME}"
+        PATTERN "cmake" EXCLUDE
+        PATTERN "pkgconfig" EXCLUDE
+    )
+endif ()
+
 # Install virgil_cli
-install (TARGETS virgil_cli DESTINATION ${INSTALL_BIN_DIR_NAME})
+install (TARGETS virgil_cli
+    RUNTIME DESTINATION ${INSTALL_BIN_DIR_NAME}
+    LIBRARY DESTINATION ${INSTALL_LIB_DIR_NAME}
+)
 
-if (MSVC)
-    install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
-    install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
-endif (MSVC)
-
-if (UNIX)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
-endif (UNIX)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
+else ()
+    # win32
+    if (MSVC)
+        install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
+        install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
+    endif (MSVC)
+endif ()
+
 
 # Pack
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY
     "The Virgil Security CLI program is a command line tool for using Virgil Security stack functionality. "
     "It can be used to encrypt, decrypt, sign and verify data. "
-    "Functionality also includes interaction with Virgil Public Keys Service."
+    "Functionality also includes interaction with Virgil Public Keys Service and Virgil Private Keys Service."
 )
-set (CPACK_PACKAGE_NAME "Virgil Security CLI")
-set (CPACK_PACKAGE_VENDOR "Virgil Security Inc.")
+
+set (CPACK_PACKAGE_NAME "virgil ${CLI_VERSION}-${SYSTEM_ARCH}")
+set (CPACK_PACKAGE_VENDOR "Virgil Security Inc")
 set (CPACK_PACKAGE_VERSION_MAJOR "${CLI_VERSION_MAJOR}")
 set (CPACK_PACKAGE_VERSION_MINOR "${CLI_VERSION_MINOR}")
 set (CPACK_PACKAGE_VERSION_PATCH "${CLI_VERSION_PATCH}")
 set (CPACK_PACKAGE_FILE_NAME
-    "virgil-cli-${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}-${SYSTEM_NAME}-${SYSTEM_ARCH}"
-)
+    "virgil ${CLI_VERSION}-${SYSTEM_ARCH}")
+
+set(CPACK_MONOLITHIC_INSTALL TRUE)
+
 set (CPACK_PACKAGE_INSTALL_DIRECTORY "Virgil Security CLI")
-set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY
-        "Virgil Security CLI ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}")
+set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY "virgil ${CLI_VERSION_MAJOR}.${CLI_VERSION_MINOR}.${CLI_VERSION_PATCH}-${SYSTEM_NAME}-${SYSTEM_ARCH}")
+
+set (CPACK_PACKAGE_EXECUTABLES "virgil" "virgil-${SYSTEM_ARCH}")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+
 if (MSVC)
+    set(CPACK_GENERATOR "NSIS")
+
+    set (CPACK_NSIS_MODIFY_PATH "ON")
+    set (CPACK_NSIS_DISPLAY_NAME "Virgil Security CLI")
     set (CPACK_NSIS_CONTACT "support@virgilsecurity.com")
-    set (CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_REGISTRY_KEY}")
+
     set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS
-        # Add executable folder to the PATH
-        "Push \\\"PATH\\\""
-        "Push \\\"A\\\""
-        "Push \\\"HKLM\\\""
-        "Push \\\"$INSTDIR\\\\${INSTALL_BIN_DIR_NAME}\\\""
-        "Call AddToPath"
-        "Pop \\\$0"
-        # Install MSVC redistributable package
         "ExecWait '\\\"$INSTDIR\\\\install\\\\vc_redist.${SYSTEM_ARCH}.exe\\\" /install /quiet'"
+
+        "Push \\\$R0"
+        "ExpandEnvStrings \\\$R0 '%COMSPEC%'"
+        "CreateShortCut \\\"$SMPROGRAMS\\\\Virgil Security CLI\\\\virgil-${SYSTEM_ARCH}.lnk\\\" \\\"$R0\\\"  \\\"/k set PATH=$INSTDIR\\\\bin\\\""
+        "CreateShortCut \\\"$DESKTOP\\\\virgil-${SYSTEM_ARCH}.lnk\\\" \\\"$R0\\\"  \\\"/k set PATH=$INSTDIR\\\\bin\\\""
     )
+
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}")
+
     set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
-        # Remove executable folder from the PATH
-        "Push \\\"PATH\\\""
-        "Push \\\"R\\\""
-        "Push \\\"HKLM\\\""
-        "Push \\\"$INSTDIR\\\\${INSTALL_BIN_DIR_NAME}\\\""
-        "Call un.RemoveFromPath"
-        "Pop \\\$0"
+        "Delete \\\"$SMPROGRAMS\\\\Virgil Security CLI\\\\virgil.lnk\\\""
+        "Delete \\\"$DESKTOP\\\\virgil-${SYSTEM_ARCH}.lnk\\\""
     )
+
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}")
+
 endif (MSVC)
+
 INCLUDE(CPack)

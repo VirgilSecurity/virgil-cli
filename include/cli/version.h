@@ -42,7 +42,7 @@ namespace virgil {
 /**
  * @brief Returns CLI version.
  */
-const char * cli_version();
+const char* cli_version();
 
 } // virgil
 
