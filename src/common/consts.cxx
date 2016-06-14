@@ -34,27 +34,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_CONFIG_H
-#define VIRGIL_CLI_CONFIG_H
-
-#include <string>
-
-#include <config_path.h>
-
-#include <virgil/sdk/ServiceUri.h>
-
 #include <cli/consts.h>
 
-namespace virgil {
-namespace cli {
-
-    struct ConfigFile {
-        std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
-        virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
-    };
-
-    ConfigFile readConfigFile(const bool verbose);
-}
-}
-
-#endif /* VIRGIL_CLI_CONFIG_H */
+const std::string VIRGIL_ACCESS_TOKEN = "@VIRGIL_ACCESS_TOKEN@";

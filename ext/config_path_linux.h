@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,20 +34,61 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_COMMON_CONFIG_H
-#define VIRGIL_CLI_COMMON_CONFIG_H
+/**
+ * @brief Cross platform methods for obtaining paths to configuration files.
+ *
+ * Copyright (C) 2013 Adam Nielsen <malvineous@shikadi.net>
+ *
+ * This code is placed in the public domain. You are free to use it for any
+ * purpose. If you add new platform support, please contribute a patch!
+ */
+
+#ifndef CONFIG_PATH_H_LINUX
+#define CONFIG_PATH_H_LINUX
 
 #include <string>
+#include <stdlib.h>
+#include <pwd.h>
+#include <unistd.h>
 
 /**
- * @brief Token that unique identifies your application.
- * @note This constant is configured within CMake.
+ * @brief Get an absolute path to a configuration file, for all users.
+ *
+ * Output is typically:
+ *
+ *   Linux: /etc/virgil-cli/virgil-cli.conf
+*
+ * @return get an absolute path, for all users.
  */
-extern const std::string VIRGIL_ACCESS_TOKEN;
+static inline std::string get_user_config_folder(const std::string& appname) {
+    return "/etc/" + appname;
+}
 
-#if !defined(WIN32)
-extern const std::string INSTALL_CONFIG_FILE_GLOBAL_DIR;
-extern const std::string INSTALL_CONFIG_FILE_LOCAL_DIR;
-#endif
+/**
+ * @brief Get an absolute path to a configuration file, specific to this user.
+ *
+ * Output is typically:
+ *
+ *   Linux: "Users/John/.config/virgil-cli/virgil-cli.conf";
+ *
+ * @param appname
+ *   Short name of the application.  Avoid using spaces or version numbers, and
+ *   use lowercase if possible.
+ *
+ * @return get an absolute path, specific to this user.
+ */
+static inline std::string get_all_user_config_folder(const std::string& appname) {
+    char* homeDir = getenv("HOME");
+    if (!homeDir) {
+        struct passwd* pwd = getpwuid(getuid());
+        if (pwd) {
+            homeDir = pwd->pw_dir;
+        }
+    }
 
-#endif /* VIRGIL_CLI_COMMON_CONFIG_H */
+    std::string pathLocalConfigFile(homeDir);
+    pathLocalConfigFile += "/.config/" + appname;
+    return pathLocalConfigFile;
+}
+
+#endif /* CONFIG_PATH_H_LINUX */

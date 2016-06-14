@@ -43,7 +43,6 @@
 #include <virgil/sdk/ServicesHub.h>
 
 #include <cli/version.h>
-#include <cli/config.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 

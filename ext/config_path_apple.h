@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,27 +34,60 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_CONFIG_H
-#define VIRGIL_CLI_CONFIG_H
+/**
+ * @brief Cross platform methods for obtaining paths to configuration files.
+ *
+ * Copyright (C) 2013 Adam Nielsen <malvineous@shikadi.net>
+ *
+ * This code is placed in the public domain. You are free to use it for any
+ * purpose. If you add new platform support, please contribute a patch!
+ */
+
+#ifndef CONFIG_PATH_H_APPLE
+#define CONFIG_PATH_H_APPLE
 
 #include <string>
+#include <stdlib.h>
+#include <pwd.h>
+#include <unistd.h>
 
-#include <config_path.h>
+/**
+ * @brief Get an absolute path to a configuration file, for all users.
+ *
+ * Output is typically:
+ *
+ *     Apple: "Users/John/Library/Application Support/appname/appname.conf";
+*
+ * @return get an absolute path, for all users.
+ */
+static inline std::string get_user_config_folder(const std::string& appname) {
+    char* homeDir = getenv("HOME");
+    if (!homeDir) {
+        struct passwd* pwd = getpwuid(getuid());
+        if (pwd) {
+            homeDir = pwd->pw_dir;
+        }
+    }
 
-#include <virgil/sdk/ServiceUri.h>
-
-#include <cli/consts.h>
-
-namespace virgil {
-namespace cli {
-
-    struct ConfigFile {
-        std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
-        virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
-    };
-
-    ConfigFile readConfigFile(const bool verbose);
+    std::string pathLocalConfigFile(homeDir);
+    return pathLocalConfigFile + "/Library/Application Support/" + appname;
 }
+
+/**
+ * @brief Get an absolute path to a configuration file, specific to this user.
+ *
+ * Output is typically:
+ *
+ *     Apple: "/private/etc/appname/appname.conf";
+ *
+ * @param appname
+ *   Short name of the application.  Avoid using spaces or version numbers, and
+ *   use lowercase if possible.
+ *
+ * @return get an absolute path, specific to this user.
+ */
+static inline std::string get_all_user_config_folder(const std::string& appname) {
+    return "/private/etc/" + appname;
 }
 
-#endif /* VIRGIL_CLI_CONFIG_H */
+#endif /* CONFIG_PATH_H_APPLE */

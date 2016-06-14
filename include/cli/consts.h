@@ -34,27 +34,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_CONFIG_H
-#define VIRGIL_CLI_CONFIG_H
+#ifndef VIRGIL_CLI_COMMON_CONSTS_H
+#define VIRGIL_CLI_COMMON_CONSTS_H
 
 #include <string>
 
-#include <config_path.h>
+/**
+ * @brief Token that unique identifies your application.
+ * @note This constant is configured within CMake.
+ */
+extern const std::string VIRGIL_ACCESS_TOKEN;
 
-#include <virgil/sdk/ServiceUri.h>
-
-#include <cli/consts.h>
-
-namespace virgil {
-namespace cli {
-
-    struct ConfigFile {
-        std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
-        virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
-    };
-
-    ConfigFile readConfigFile(const bool verbose);
-}
-}
-
-#endif /* VIRGIL_CLI_CONFIG_H */
+#endif /* VIRGIL_CLI_COMMON_CONSTS_H */

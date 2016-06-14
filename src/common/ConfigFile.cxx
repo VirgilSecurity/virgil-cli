@@ -42,22 +42,17 @@
 #include <stdexcept>
 
 #include <cli/ini.hpp>
-
-#if defined(WIN32)
-#include <config_path.h>
-#include <Windows.h>
-#endif
-
 #include <cli/ConfigFile.h>
 
+namespace vcli = virgil::cli;
 namespace vsdk = virgil::sdk;
 
-static virgil::cli::ConfigFile iniToConfigFile(const std::string& ini) {
+static vcli::ConfigFile iniToConfigFile(const std::string& ini) {
     try {
         std::stringstream ss(ini);
         INI::Parser iniParser(ss);
 
-        virgil::cli::ConfigFile configFile;
+        vcli::ConfigFile configFile;
         configFile.virgilAccessToken = iniParser.top()("Virgil Access Token")["token"];
         configFile.serviceUri =
             vsdk::ServiceUri(iniParser.top()("URI")["identity-service"], iniParser.top()("URI")["public-key-service"],
@@ -71,15 +66,14 @@ static virgil::cli::ConfigFile iniToConfigFile(const std::string& ini) {
     }
 }
 
-static virgil::cli::ConfigFile readGlobalConfigFile(const std::string& pathGlobalConfigFile, const bool verbose) {
+static vcli::ConfigFile readGlobalConfigFile(const std::string& pathGlobalConfigFile, const bool verbose) {
     std::ifstream inGlobalConfigFile(pathGlobalConfigFile, std::ios::in | std::ios::binary);
     if (!inGlobalConfigFile) {
-        virgil::cli::ConfigFile defaultConfigFile;
+        vcli::ConfigFile defaultConfigFile;
         if (verbose) {
             std::cout << "Can't read global config file by path:" << pathGlobalConfigFile << std::endl;
             std::cout << "Set default values." << std::endl;
         }
-
         return defaultConfigFile;
     }
 
@@ -87,28 +81,18 @@ static virgil::cli::ConfigFile readGlobalConfigFile(const std::string& pathGloba
     return iniToConfigFile(ini);
 }
 
-virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
-    std::string pathGlobalConfigFile;
-    std::string pathLocalConfigFile;
-
+vcli::ConfigFile vcli::readConfigFile(const bool verbose) {
+    std::string configFileName;
 #if defined(WIN32)
-    pathGlobalConfigFile = get_all_user_config_folder("virgil-cli");
-    pathGlobalConfigFile += "\\virgil-cli.ini";
-
-    pathLocalConfigFile = get_user_config_folder("virgil-cli");
-    pathLocalConfigFile += "\\virgil-cli.ini";
+    configFileName = "\\virgil-cli.ini";
 #else
-    pathGlobalConfigFile = INSTALL_CONFIG_FILE_GLOBAL_DIR + "/virgil-cli.conf";
-    pathLocalConfigFile = INSTALL_CONFIG_FILE_LOCAL_DIR + "/virgil-cli.conf";
+    configFileName = "/virgil-cli.conf";
 #endif
 
-    if (verbose) {
-        std::cout << "pathGlobalConfigFile = " << pathGlobalConfigFile << std::endl;
-        std::cout << "pathLocalConfigFile = " << pathLocalConfigFile << std::endl;
-        std::cout << std::endl;
-    }
+    std::string pathGlobalConfigFile = get_all_user_config_folder("virgil-cli") + configFileName;
+    std::string pathLocalConfigFile = get_user_config_folder("virgil-cli") + configFileName;
 
-    virgil::cli::ConfigFile globalConfigFile = readGlobalConfigFile(pathGlobalConfigFile, verbose);
+    vcli::ConfigFile globalConfigFile = readGlobalConfigFile(pathGlobalConfigFile, verbose);
 
     std::ifstream inLocalConfigFile(pathLocalConfigFile, std::ios::in | std::ios::binary);
     if (!inLocalConfigFile) {
@@ -117,16 +101,26 @@ virgil::cli::ConfigFile virgil::cli::readConfigFile(const bool verbose) {
             std::cout << "Set values from global config." << std::endl;
         }
 
+        if (globalConfigFile.virgilAccessToken == "@" || globalConfigFile.virgilAccessToken.empty()) {
+            throw std::runtime_error("The Virgil Access Token was not set. "
+                                     "That set Virgil Access Token see 'virgil config'.");
+        }
+
         return globalConfigFile;
     }
 
     std::string ini((std::istreambuf_iterator<char>(inLocalConfigFile)), std::istreambuf_iterator<char>());
-    virgil::cli::ConfigFile localConfigFile = iniToConfigFile(ini);
+    vcli::ConfigFile localConfigFile = iniToConfigFile(ini);
 
     std::string identityServiceUri;
     std::string publicServiceUri;
     std::string privateServiceUri;
     if (localConfigFile.virgilAccessToken.empty()) {
+        if (globalConfigFile.virgilAccessToken == "@" || globalConfigFile.virgilAccessToken.empty()) {
+            throw std::runtime_error("Don't set Virgil Access Token."
+                                     "That set Virgil Access Token see 'virgil config'.");
+        }
+
         localConfigFile.virgilAccessToken = globalConfigFile.virgilAccessToken;
     } else {
         identityServiceUri = localConfigFile.virgilAccessToken;

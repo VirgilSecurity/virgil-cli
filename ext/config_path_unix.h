@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,11 +34,61 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/config.h>
+/**
+ * @brief Cross platform methods for obtaining paths to configuration files.
+ *
+ * Copyright (C) 2013 Adam Nielsen <malvineous@shikadi.net>
+ *
+ * This code is placed in the public domain. You are free to use it for any
+ * purpose. If you add new platform support, please contribute a patch!
+ */
 
-const std::string VIRGIL_ACCESS_TOKEN = "@VIRGIL_ACCESS_TOKEN@";
+#ifndef CONFIG_PATH_H_UNIX
+#define CONFIG_PATH_H_UNIX
 
-#if !defined(WIN32)
-const std::string INSTALL_CONFIG_FILE_GLOBAL_DIR = "@INSTALL_CONFIG_FILE_GLOBAL_DIR@";
-const std::string INSTALL_CONFIG_FILE_LOCAL_DIR = "@INSTALL_CONFIG_FILE_LOCAL_DIR@";
-#endif
+#include <string>
+#include <stdlib.h>
+#include <pwd.h>
+#include <unistd.h>
+
+/**
+ * @brief Get an absolute path to a configuration file, for all users.
+ *
+ * Output is typically:
+ *
+ *   Unix: /etc/virgil-cli/virgil-cli.conf
+*
+ * @return get an absolute path, for all users.
+ */
+static inline std::string get_user_config_folder(const std::string& appname) {
+    return "/etc/" + appname;
+}
+
+/**
+ * @brief Get an absolute path to a configuration file, specific to this user.
+ *
+ * Output is typically:
+ *
+ *     Umix: "Users/John/.config/virgil-cli/virgil-cli.conf";
+ *
+ * @param appname
+ *   Short name of the application.  Avoid using spaces or version numbers, and
+ *   use lowercase if possible.
+ *
+ * @return get an absolute path, specific to this user.
+ */
+static inline std::string get_all_user_config_folder(const std::string& appname) {
+    char* homeDir = getenv("HOME");
+    if (!homeDir) {
+        struct passwd* pwd = getpwuid(getuid());
+        if (pwd) {
+            homeDir = pwd->pw_dir;
+        }
+    }
+
+    std::string pathLocalConfigFile(homeDir);
+    pathLocalConfigFile += "/.config/" + appname;
+    return pathLocalConfigFile;
+}
+
+#endif /* CONFIG_PATH_H_UNIX */
