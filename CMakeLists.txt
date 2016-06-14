@@ -63,6 +63,10 @@ set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for exec
 set (INSTALL_LIB_DIR_NAME lib CACHE STRING "Installation directory name for libraries")
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
 
+# Configure application token
+set (VIRGIL_ACCESS_TOKEN ${TOKEN} CACHE STRING
+        "Application specific token acquired from the Virgil Security")
+
 ## Crosscompiling
 set (UCLIBC OFF CACHE BOOL "Enable pathches if CLI is build with uClibc++")
 
@@ -104,40 +108,6 @@ if (MSVC)
     set (CMAKE_PREFIX_PATH "${EXT_PREBUILD_MSVC_DIR}/${SYSTEM_ARCH}/libcurl" ${CMAKE_PREFIX_PATH})
     set (CURL_LIBRARY_DLL "${EXT_PREBUILD_MSVC_DIR}/${SYSTEM_ARCH}/libcurl/lib/libcurl.dll")
 endif (MSVC)
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    # Global:
-    set (CONFIG_FILE_GLOBAL_DIR "/etc/virgil-cli")
-
-    # Local:
-    set (CONFIG_FILE_LOCAL_DIR "$ENV{HOME}/.config/virgil-cli")
-
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    # Global:
-    set (CONFIG_FILE_GLOBAL_DIR "/private/etc/virgil-cli")
-
-    # Local:
-    set (CONFIG_FILE_LOCAL_DIR "$ENV{HOME}/Library/Application Support/virgil-cli")
-
-else ()
-    # win32
-endif ()
-
-set (INSTALL_CONFIG_FILE_GLOBAL_DIR ${CONFIG_FILE_GLOBAL_DIR} CACHE STRING "Path by config file for all users")
-set (INSTALL_CONFIG_FILE_LOCAL_DIR ${CONFIG_FILE_LOCAL_DIR} CACHE STRING "Path by config file for current user")
-
-message (STATUS "Path by config file for all users:" ${INSTALL_CONFIG_FILE_GLOBAL_DIR})
-message (STATUS "Path by config file for current user:" ${INSTALL_CONFIG_FILE_LOCAL_DIR})
-
-set(TOKEN "eyJpZCI6ImQ1MTMwMzIyLTk3MTUtNGNlZi04ZmUyLTJmZjE1MmNjNWViNyIsImFwcGxpY2F0aW9uX2NhcmRfaWQiOiIyNGFiNTVlZi01Y2RkLTQxOTQtOGJiNi05ODZkNjBkMTY4ODciLCJ0dGwiOi0xLCJjdGwiOi0xLCJwcm9sb25nIjowfQ==.MFcwDQYJYIZIAWUDBAICBQAERjBEAiAzRyMgG8cGPLKUdsXhLSCNKZ9JYDeqU8W0gryz07VMeQIgV0d6qUGCmQLdeb/pSb2hVuOhYO+HfiRlYmIRmdkPgPU=")
-
-# Configure application token
-set (VIRGIL_ACCESS_TOKEN ${TOKEN} CACHE STRING
-        "Application specific token acquired from the Virgil Security")
-
-if (NOT VIRGIL_ACCESS_TOKEN)
-    message (FATAL_ERROR "VIRGIL_ACCESS_TOKEN configuration is not defined.")
-endif ()
 
 if (UNIX)
     if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -205,42 +175,14 @@ install (TARGETS virgil_cli
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    # Local
-    install (
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.conf
-        DESTINATION ${INSTALL_CONFIG_FILE_LOCAL_DIR}
-    )
-
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
-
-    # Global
-    install (
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.conf
-        DESTINATION ${INSTALL_CONFIG_FILE_GLOBAL_DIR}
-    )
-
-
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    # Local
-    install (
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.conf
-        DESTINATION ${INSTALL_CONFIG_FILE_LOCAL_DIR}
-    )
-
     install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
-
-    # Global
-    install (
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.conf
-        DESTINATION ${INSTALL_CONFIG_FILE_GLOBAL_DIR}
-    )
-
 else ()
     # win32
     if (MSVC)
         install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
         install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
-        install (PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/data/virgil-cli.ini" DESTINATION "install")
     endif (MSVC)
 endif ()
 
@@ -282,14 +224,6 @@ if (MSVC)
         "ExpandEnvStrings \\\$R0 '%COMSPEC%'"
         "CreateShortCut \\\"$SMPROGRAMS\\\\Virgil Security CLI\\\\virgil-${SYSTEM_ARCH}.lnk\\\" \\\"$R0\\\"  \\\"/k set PATH=$INSTDIR\\\\bin\\\""
         "CreateShortCut \\\"$DESKTOP\\\\virgil-${SYSTEM_ARCH}.lnk\\\" \\\"$R0\\\"  \\\"/k set PATH=$INSTDIR\\\\bin\\\""
-
-        "SetShellVarContext current"
-        "CreateDirectory \\\"$APPDATA\\\\virgil-cli\\\""
-        "CopyFiles \\\"install\\\\virgil-cli.ini\\\" \\\"$APPDATA\\\\virgil-cli\\\""
-
-        "SetShellVarContext all"
-        "CreateDirectory \\\"$APPDATA\\\\virgil-cli\\\""
-        "CopyFiles \\\"install\\\\virgil-cli.ini\\\" \\\"$APPDATA\\\\virgil-cli\\\""
     )
 
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}")
@@ -297,20 +231,6 @@ if (MSVC)
     set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
         "Delete \\\"$SMPROGRAMS\\\\Virgil Security CLI\\\\virgil.lnk\\\""
         "Delete \\\"$DESKTOP\\\\virgil-${SYSTEM_ARCH}.lnk\\\""
-
-        "SetShellVarContext current"
-        # Remove config file
-        # example C:\Users\John\AppData\Roaming\virgil-cli
-        "Delete \\\"$APPDATA\\\\virgil-cli\\\\virgil-cli.ini\\\""
-        # Remove directory
-        "RMDir \\\"$APPDATA\\\\virgil-cli\\\""
-
-        "SetShellVarContext all"
-        # Remove config file
-        # example C:\ProgramData\virgil-cli
-        "Delete \\\"$APPDATA\\\\virgil-cli\\\\virgil-cli.ini\\\""
-        # Remove directory
-        "RMDir \\\"$APPDATA\\\\virgil-cli\\\""
     )
 
     string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}")
