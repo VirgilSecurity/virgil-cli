@@ -82,11 +82,11 @@ static vcli::ConfigFile readGlobalConfigFile(const std::string& pathGlobalConfig
 }
 
 vcli::ConfigFile vcli::readConfigFile(const bool verbose) {
-    std::string configFileName;
+    std::string configFileName =
 #if defined(WIN32)
-    configFileName = "\\virgil-cli.ini";
+        "\\virgil-cli.ini";
 #else
-    configFileName = "/virgil-cli.conf";
+        "/virgil-cli.conf";
 #endif
 
     std::string pathGlobalConfigFile = get_all_user_config_folder("virgil-cli") + configFileName;
