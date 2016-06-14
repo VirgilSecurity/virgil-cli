@@ -91,7 +91,8 @@ int MAIN(int argc, char** argv) {
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "virgil Card. If omitted, stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", "Private Virgil Card. If omitted, stdout is used.", false, "",
+                                            "file");
 
         TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity: type:value", true, "", "arg");
 
@@ -104,8 +105,8 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
-            "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
+                                                           "", "arg");
 
         TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Show detailed information", false);
 

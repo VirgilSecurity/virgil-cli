@@ -94,13 +94,14 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> saltArg("s", "salt", "The hash salt.", true, "", "file");
 
-        TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm", "Generate hash with one"
-                                                                    "of the following positions:\n"
-                                                                    "\t* sha1 -   secure Hash Algorithm 1;\n"
-                                                                    "\t* sha224 - hash algorithm;\n"
-                                                                    "\t* sha256 - hash algorithm;\n"
-                                                                    "\t* sha384 - hash algorithm(default);\n"
-                                                                    "\t* sha512 - hash algorithm;\n",
+        TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm",
+                                                  "Generate hash with one"
+                                                  " of the following positions:\n"
+                                                  "\t* sha1 -   secure Hash Algorithm 1;\n"
+                                                  "\t* sha224 - secure Hash Algorithm 2  that are 224 bits;\n"
+                                                  "\t* sha256 - secure Hash Algorithm 2  that are 256 bits;\n"
+                                                  "\t* sha384 - secure Hash Algorithm 2  that are 384 bits(default);\n"
+                                                  "\t* sha512 - secure Hash Algorithm 2  that are 512 bits;\n",
                                                   false, "sha384", &allowedAlg);
 
         TCLAP::ValueArg<int> iterationsArg("c", "iterations", "The count of iterations. Default - 2048", false, 2048,

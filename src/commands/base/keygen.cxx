@@ -129,7 +129,7 @@ int MAIN(int argc, char** argv) {
                                                   false, "curve25519", &allowedAlg);
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
-            "p", "private-key-password", "Password to be used for Private Key encryption.", false, "", "arg");
+            "p", "private-key-password", "Password to be used for private key encryption.", false, "", "arg");
 
         TCLAP::SwitchArg notShadowInputArg(
             "", "no-password-input", "If parameter -p, --private-key-password is omitted, password won’t be requested.",
