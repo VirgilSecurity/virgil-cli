@@ -103,7 +103,7 @@ int MAIN(int argc, char** argv) {
         alg.push_back("secp192k1");
         alg.push_back("secp224k1");
         alg.push_back("secp256k1");
-        alg.push_back("ed25519");
+        alg.push_back("curve25519");
         alg.push_back("rsa3072");
         alg.push_back("rsa4096");
         alg.push_back("rsa8192");
@@ -122,7 +122,7 @@ int MAIN(int argc, char** argv) {
                                                                     "\t* secp192k1 - 192-bits \"Koblitz\" curve;\n"
                                                                     "\t* secp224k1 - 224-bits \"Koblitz\" curve;\n"
                                                                     "\t* secp256k1 - 256-bits \"Koblitz\" curve;\n"
-                                                                    "\t* ed25519 - Curve25519 (default);\n"
+                                                                    "\t* curve25519 - Curve25519 (default);\n"
                                                                     "\t* rsa3072 - 3072-bits \"RSA\" key;\n"
                                                                     "\t* rsa4096 - 4096-bits \"RSA\" key;\n"
                                                                     "\t* rsa8192 - 8192-bits \"RSA\" key",
@@ -207,7 +207,7 @@ static vcrypto::VirgilKeyPair::Type key_group_from_param(const std::string& para
     keyGroup["secp192k1"] = vcrypto::VirgilKeyPair::Type_EC_SECP192K1;
     keyGroup["secp224k1"] = vcrypto::VirgilKeyPair::Type_EC_SECP224K1;
     keyGroup["secp256k1"] = vcrypto::VirgilKeyPair::Type_EC_SECP256K1;
-    keyGroup["ed25519"] = vcrypto::VirgilKeyPair::Type_EC_M255;
+    keyGroup["curve25519"] = vcrypto::VirgilKeyPair::Type_EC_M255;
     keyGroup["rsa3072"] = vcrypto::VirgilKeyPair::Type_RSA_3072;
     keyGroup["rsa4096"] = vcrypto::VirgilKeyPair::Type_RSA_4096;
     keyGroup["rsa8192"] = vcrypto::VirgilKeyPair::Type_RSA_8192;
@@ -233,7 +233,7 @@ static void printProcessGeneratingPrivate(const std::string& algorithmType) {
     algTypeDescription["secp192k1"] = "192-bits \"Koblitz\" curve";
     algTypeDescription["secp224k1"] = "224-bits \"Koblitz\" curve";
     algTypeDescription["secp256k1"] = "256-bits \"Koblitz\" curve";
-    algTypeDescription["ed25519"] = "Curve25519 (default)";
+    algTypeDescription["curve25519"] = "Curve25519 (default)";
     algTypeDescription["rsa3072"] = "RSA 3072-bits ";
     algTypeDescription["rsa4096"] = "RSA 4096-bits";
     algTypeDescription["rsa8192"] = "RSA 8192-bits";
