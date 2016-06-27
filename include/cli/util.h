@@ -85,8 +85,6 @@ namespace cli {
 
     virgil::sdk::dto::ValidatedIdentity readValidateIdentity(const std::string& in);
 
-    virgil::sdk::models::CardModel readCard(const std::string& in);
-
     /**
      * @brief Read public key from the public key model or public key byte array source
      * @param in - path to file.

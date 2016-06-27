@@ -34,27 +34,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_CONFIG_H
-#define VIRGIL_CLI_CONFIG_H
+#ifndef VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H
+#define VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H
 
-#include <string>
+#include <vector>
 
-#include <config_path.h>
+#include <virgil/sdk/ServicesHub.h>
 
-#include <virgil/sdk/ServiceUri.h>
+namespace virgil_cli {
+namespace wrapper {
+    namespace sdk {
 
-#include <cli/consts.h>
+        class CardClient {
+        public:
+            CardClient();
+            explicit CardClient(const virgil::sdk::ServicesHub& servicesHub);
 
-namespace virgil {
-namespace cli {
+        public:
+            virgil::sdk::models::CardModel getCardById(const std::string& recipientId);
+            std::vector<virgil::sdk::models::CardModel> getGlobalCards(const std::string& email);
+            std::vector<virgil::sdk::models::CardModel>
+            getConfirmedPrivateCards(const std::string& value, const std::string& type = std::string());
 
-    struct ConfigFile {
-        std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
-        virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
-    };
+        private:
+            virgil::sdk::ServicesHub initFromConfigFile();
 
-    ConfigFile readConfigFile();
+        private:
+            virgil::sdk::ServicesHub servicesHub_;
+        };
+
+        virgil::sdk::models::CardModel readCard(const std::string& in);
+    }
 }
 }
 
-#endif /* VIRGIL_CLI_CONFIG_H */
+#endif /* VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H */

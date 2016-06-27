@@ -104,7 +104,7 @@ int MAIN(int argc, char** argv) {
         cmd.parse(argc, argv);
 
         bool includeUnconfirmed = unconfirmedArg.getValue();
-        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vcli::ConfigFile configFile = vcli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
         std::vector<vsdk::models::CardModel> foundCards;
         foundCards = servicesHub.card().search(identityArg.getValue(), identityTypeArg.getValue(), includeUnconfirmed);

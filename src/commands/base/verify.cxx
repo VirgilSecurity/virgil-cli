@@ -149,7 +149,7 @@ int MAIN(int argc, char** argv) {
         } else {
             // type [id|vcard]
             if (type == "id") {
-                vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+                vcli::ConfigFile configFile = vcli::readConfigFile();
                 vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
                 if (verboseArg.isSet()) {
