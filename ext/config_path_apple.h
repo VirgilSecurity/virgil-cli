@@ -57,7 +57,7 @@
  * Output is typically:
  *
  *     Apple: "Users/John/Library/Application Support/appname/appname.conf";
-*
+ *
  * @return get an absolute path, for all users.
  */
 static inline std::string get_user_config_folder(const std::string& appname) {
