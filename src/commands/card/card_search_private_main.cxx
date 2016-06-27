@@ -114,6 +114,7 @@ int MAIN(int argc, char** argv) {
                 std::cout << "Cards by type:" << identityTypeArg.getValue() << "; value:" << identityArg.getValue()
                           << " haven't been found." << std::endl;
             }
+            return EXIT_SUCCESS;
         }
 
         size_t countCardUnconfirmedIdentity = 0;

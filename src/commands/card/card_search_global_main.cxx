@@ -112,6 +112,7 @@ int MAIN(int argc, char** argv) {
                 if (verboseArg.isSet()) {
                     std::cout << "Card(s) by email: " << emailArg.getValue() << " haven't been found." << std::endl;
                 }
+                return EXIT_SUCCESS;
             }
         }
 

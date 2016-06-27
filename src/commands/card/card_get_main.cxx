@@ -122,7 +122,7 @@ int MAIN(int argc, char** argv) {
                               << " and public-key-id: " << publicKeyIdArg.getValue() << " haven't been found."
                               << std::endl;
                 }
-                return EXIT_FAILURE;
+                return EXIT_SUCCESS;
             }
 
             for (auto&& foundCard : foundCards) {
