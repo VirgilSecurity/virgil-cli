@@ -133,7 +133,7 @@ virgil_depends (
     CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/virgil_sdk"
 )
 
-virgil_find_package (virgil_sdk 3.2.0 EXACT)
+virgil_find_package (virgil_sdk 3.2.2 EXACT)
 virgil_find_package (virgil_crypto) # Installed as virgil_sdk dependency, so found version will be appropriate
 virgil_find_package (nlohman_json)  # Installed as virgil_sdk dependency, so found version will be appropriate
 virgil_find_package (restless)      # Installed as virgil_sdk dependency, so found version will be appropriate
