@@ -1,6 +1,14 @@
 virgil CLI ChangeLog (Sorted per date)
 
-= Version v2.0.0 released 2016-06-06
+= Version v2.0.0-beta.1 released 2016-06-28
+
+## Bugfix
+  * [CLI-82] Local and global configs definition mismatch
+  * [CLI-83] Encryption with the same recipient id-s in one request is possible
+  * Fix name from 'key-gen' to 'keygen' in std::cerr
+
+
+= Version v2.0.0-beta released 2016-06-06
 
 ## Changes:
   * Fix bugs
