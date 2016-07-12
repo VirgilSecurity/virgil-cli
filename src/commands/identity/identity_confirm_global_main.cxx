@@ -84,7 +84,7 @@ int MAIN(int argc, char** argv) {
                                             "file");
 
         TCLAP::ValueArg<std::string> identityArg(vcli::kIdentity_ShortName, vcli::kIdentity_LongName,
-                                                 vcli::kGlobalIdentity_Description, true, "",
+                                                 vcli::kGlobalIdentity_Description, false, "",
                                                  vcli::kIdentity_TypedDesc);
 
         TCLAP::ValueArg<std::string> actionIdArg("", "action-id", "Action id.", false, "", "file");
