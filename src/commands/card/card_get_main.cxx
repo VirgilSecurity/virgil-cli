@@ -46,6 +46,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
@@ -61,9 +62,6 @@ static void writeCard(const std::string& pathTofolder, const vsdk::models::CardM
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Return a Private/Global Virgil Card by card-id or a group of "
-                                  "Private/Global Cards connected with public-key-id\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Receive a private/global Virgil Card by card-id:\n"
                            "virgil card-get -a <card-id> -o cards/\n\n");
@@ -72,23 +70,31 @@ int MAIN(int argc, char** argv) {
                            "one of the Cards:\n"
                            "virgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage =
+            virgil::cli::getDescriptionMessage(vcli::kCardCreateGlobal_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Folder where Virgil Cards will be saved.", false, "", "arg");
+        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kCardCreateGlobal_Output_Description, false, "", "arg");
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg(vcli::kCardId_ShortName, vcli::kCardId_LongName,
+                                               vcli::kCardId_Description, true, "", vcli::kCardId_TypeDesc);
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", false, "", "arg");
+        TCLAP::ValueArg<std::string> publicKeyIdArg(vcli::kPublicKeyId_ShortName, vcli::kPublicKeyId_LongName,
+                                                    vcli::kPublicKeyId_Description, false, "",
+                                                    vcli::kPublicKeyId_TypeDesc);
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", false, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg(vcli::kPrivateKey_ShortName, vcli::kPrivateKey_LongName,
+                                                   vcli::kPrivateKey_Description, false, "",
+                                                   vcli::kPrivateKey_TypeDesc);
 
-        TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
-                                                           "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
+            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);

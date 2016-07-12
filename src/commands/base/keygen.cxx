@@ -50,6 +50,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vcli = virgil::cli;
@@ -69,8 +70,6 @@ static void printProcessGeneratingPrivate(const std::string& algorithmType);
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Generate Elliptic Curve or RSA Private Key.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Generate Curve25519 Private Key(default), your password will be requested:\n"
                            "virgil keygen -o alice/private.key\n\n");
@@ -84,12 +83,12 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Generate 8192-bits RSA Private Key, your password will be requested:\n"
                            "virgil keygen -o alice/private.key -a rsa8192\n\n");
 
-        std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = vcli::getDescriptionMessage(vcli::kKeygen_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Private key. If omitted, stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kKeygen_Output_Description, false, "", "file");
 
         std::vector<std::string> alg;
         alg.push_back("bp256r1");
@@ -109,24 +108,8 @@ int MAIN(int argc, char** argv) {
         alg.push_back("rsa8192");
         TCLAP::ValuesConstraint<std::string> allowedAlg(alg);
 
-        TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm", "Generate elliptic curve key or RSA key with one"
-                                                                    " of the following positions:\n"
-                                                                    "\t* bp256r1 - 256-bits Brainpool curve;\n"
-                                                                    "\t* bp384r1 - 384-bits Brainpool curve;\n"
-                                                                    "\t* bp512r1 - 512-bits Brainpool curve;\n"
-                                                                    "\t* secp192r1 - 192-bits NIST curve;\n"
-                                                                    "\t* secp224r1 - 224-bits NIST curve;\n"
-                                                                    "\t* secp256r1 - 256-bits NIST curve;\n"
-                                                                    "\t* secp384r1 - 384-bits NIST curve;\n"
-                                                                    "\t* secp521r1 - 521-bits NIST curve;\n"
-                                                                    "\t* secp192k1 - 192-bits \"Koblitz\" curve;\n"
-                                                                    "\t* secp224k1 - 224-bits \"Koblitz\" curve;\n"
-                                                                    "\t* secp256k1 - 256-bits \"Koblitz\" curve;\n"
-                                                                    "\t* curve25519 - Curve25519 (default);\n"
-                                                                    "\t* rsa3072 - 3072-bits \"RSA\" key;\n"
-                                                                    "\t* rsa4096 - 4096-bits \"RSA\" key;\n"
-                                                                    "\t* rsa8192 - 8192-bits \"RSA\" key",
-                                                  false, "curve25519", &allowedAlg);
+        TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm", vcli::kKeygen_Algorithm_Description, false,
+                                                  "curve25519", &allowedAlg);
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
             "p", "private-key-password", "Password to be used for private key encryption.", false, "", "arg");
@@ -135,7 +118,8 @@ int MAIN(int argc, char** argv) {
             "", "no-password-input", "If parameter -p, --private-key-password is omitted, password won’t be requested.",
             false);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(notShadowInputArg);

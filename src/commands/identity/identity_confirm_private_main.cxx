@@ -52,6 +52,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 using json = nlohmann::json;
 
@@ -69,16 +70,6 @@ vcrypto::VirgilByteArray readVKeys(const std::string& pathTofile);
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Provides helper methods to generate validation token based on the"
-                                  "application's private key. It is required for the following"
-                                  "operations:\n"
-                                  "1. Create a private Virgil Card with a confirmed Identity. "
-                                  "See 'virgil card-create-private';\n"
-                                  "2. Revoke a Private Virgil Card, a group of Cards."
-                                  "See 'virgil card-revoke-private', 'virgil public-key-revoke';\n"
-                                  "3. Get a private key from the Private Keys Service."
-                                  "See 'virgil private-key-get'.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back(
             "Generate a validation-token:\n"
@@ -90,7 +81,8 @@ int MAIN(int argc, char** argv) {
             "virgil identity-confirm-private -d <obfuscate_value> -t <obfuscate_type> -o validated-identity.txt "
             "--app-key application-private.key\n\n");
 
-        std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage =
+            vcli::getDescriptionMessage(vcli::kIdentityConfirmPrivate_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
@@ -107,7 +99,8 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> appPrivateKeyPasswordArg(
             "", "app-key-password", "Password to be used for Application Private Key encryption.", false, "", "arg");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(appPrivateKeyPasswordArg);

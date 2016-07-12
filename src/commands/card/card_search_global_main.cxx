@@ -46,6 +46,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
@@ -59,10 +60,6 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Search for a Global Virgil Card from the Virgil Keys Service by:.\n"
-                                  "1. application_name - search an application Virgil Global Card\n"
-                                  "2. email - search a Virgil Global Card\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Search for global Virgil Card by user's email:\n"
                            "virgil card-search-global -e alice@mailinator.com\n\n");
@@ -73,7 +70,8 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Get all application Cards:\n"
                            "virgil card-search-global -c \"com.virgilsecurity.*\"\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage =
+            virgil::cli::getDescriptionMessage(vcli::kCardSearchGlobal_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
@@ -86,7 +84,8 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> emailArg("e", "email", "email", true, "", "arg");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.xorAdd(emailArg, applicationNameArg);

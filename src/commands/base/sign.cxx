@@ -48,6 +48,7 @@
 
 #include <cli/version.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vcli = virgil::cli;
@@ -60,29 +61,28 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Sign data with given user's Private Key.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key\n\n");
 
         examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key -p STRONGPASS\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kSign_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be signed. If omitted, stdin is used.", false, "",
-                                           "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kSign_Input_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Digest sign. If omitted, stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kSign_Output_Description, false, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private Key.", true, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
-                                                           "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
+            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
