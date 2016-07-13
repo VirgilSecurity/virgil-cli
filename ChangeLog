@@ -1,6 +1,6 @@
 virgil CLI ChangeLog (Sorted per date)
 
-= Version v2.0.0-beta.1 released 2016-06-28
+= Version v2.0.0-beta1 released 2016-06-28
 
 ## Bugfix
   * [CLI-82] Local and global configs definition mismatch
