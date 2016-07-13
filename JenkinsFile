@@ -2,7 +2,7 @@ stage 'VCS checkout'
 
 node('master'){
 	deleteDir()
-  git branch: 'hotfix', url: 'https://github.com/VirgilSecurity/virgil-cli.git'
+  git branch: 'master', url: 'https://github.com/VirgilSecurity/virgil-cli.git'
 	stash includes: '**', name: 'src'
 }
 
