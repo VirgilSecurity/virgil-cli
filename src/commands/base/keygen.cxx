@@ -184,10 +184,10 @@ int MAIN(int argc, char** argv) {
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "key-gen. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "keygen. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "key-gen. Error: " << exception.what() << std::endl;
+        std::cerr << "keygen. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

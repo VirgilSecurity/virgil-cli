@@ -86,7 +86,7 @@ int MAIN(int argc, char** argv) {
         std::string arg = "-d, --identity";
         vcli::checkFormatIdentity(arg, identityPair.first);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vcli::ConfigFile configFile = vcli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
         std::string userEmail = identityPair.second;

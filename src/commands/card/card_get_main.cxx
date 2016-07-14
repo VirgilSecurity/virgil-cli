@@ -98,7 +98,7 @@ int MAIN(int argc, char** argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vcli::ConfigFile configFile = vcli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
         std::string pathTofolder = outArg.getValue();
 
@@ -122,7 +122,7 @@ int MAIN(int argc, char** argv) {
                               << " and public-key-id: " << publicKeyIdArg.getValue() << " haven't been found."
                               << std::endl;
                 }
-                return EXIT_FAILURE;
+                return EXIT_SUCCESS;
             }
 
             for (auto&& foundCard : foundCards) {

@@ -52,13 +52,13 @@
 #include <unistd.h>
 
 /**
- * @brief Get an absolute path to a configuration file, for all users.
+ * @brief Get an absolute path to a configuration file, specific to this user.
  *
  * Output is typically:
  *
  *     Apple: "Users/John/Library/Application Support/appname/appname.conf";
-*
- * @return get an absolute path, for all users.
+ *
+ * @return get an absolute path, specific to this user.
  */
 static inline std::string get_user_config_folder(const std::string& appname) {
     char* homeDir = getenv("HOME");
@@ -74,7 +74,7 @@ static inline std::string get_user_config_folder(const std::string& appname) {
 }
 
 /**
- * @brief Get an absolute path to a configuration file, specific to this user.
+ * @brief Get an absolute path to a configuration file, for all users.
  *
  * Output is typically:
  *
@@ -84,7 +84,7 @@ static inline std::string get_user_config_folder(const std::string& appname) {
  *   Short name of the application.  Avoid using spaces or version numbers, and
  *   use lowercase if possible.
  *
- * @return get an absolute path, specific to this user.
+ * @return get an absolute path, for all users.
  */
 static inline std::string get_all_user_config_folder(const std::string& appname) {
     return "/private/etc/" + appname;

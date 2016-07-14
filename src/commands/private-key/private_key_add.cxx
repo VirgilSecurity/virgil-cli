@@ -103,7 +103,7 @@ int MAIN(int argc, char** argv) {
         }
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vcli::ConfigFile configFile = vcli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
         servicesHub.privateKey().add(cardId, credentials);
 

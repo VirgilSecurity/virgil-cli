@@ -198,15 +198,6 @@ vsdk::dto::ValidatedIdentity virgil::cli::readValidateIdentity(const std::string
     return vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::fromJson(validatedIdentityStr);
 }
 
-vsdk::models::CardModel virgil::cli::readCard(const std::string& in) {
-    std::ifstream inFile(in, std::ios::in | std::ios::binary);
-    if (!inFile) {
-        throw std::invalid_argument("cannot read file: " + in);
-    }
-    std::string cardStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-    return vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(cardStr);
-}
-
 virgil::crypto::VirgilByteArray virgil::cli::readPublicKey(const std::string& in) {
     vcrypto::VirgilByteArray publicKey;
     std::string pathToPublicKeyFile = in;
@@ -298,7 +289,7 @@ std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool v
                                                                     const std::string& value,
                                                                     const bool isSearchForPrivateCard) {
     std::vector<vsdk::models::CardModel> recipientCards;
-    ConfigFile configFile = readConfigFile(verbose);
+    ConfigFile configFile = readConfigFile();
     vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
     if (isSearchForPrivateCard) {

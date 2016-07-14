@@ -52,32 +52,15 @@
 #include <unistd.h>
 
 /**
- * @brief Get an absolute path to a configuration file, for all users.
- *
- * Output is typically:
- *
- *   Linux: /etc/virgil-cli/virgil-cli.conf
-*
- * @return get an absolute path, for all users.
- */
-static inline std::string get_user_config_folder(const std::string& appname) {
-    return "/etc/" + appname;
-}
-
-/**
  * @brief Get an absolute path to a configuration file, specific to this user.
  *
  * Output is typically:
  *
- *   Linux: "Users/John/.config/virgil-cli/virgil-cli.conf";
- *
- * @param appname
- *   Short name of the application.  Avoid using spaces or version numbers, and
- *   use lowercase if possible.
+ *     Linux: "Users/John/.config/virgil-cli/virgil-cli.conf";
  *
  * @return get an absolute path, specific to this user.
  */
-static inline std::string get_all_user_config_folder(const std::string& appname) {
+static inline std::string get_user_config_folder(const std::string& appname) {
     char* homeDir = getenv("HOME");
     if (!homeDir) {
         struct passwd* pwd = getpwuid(getuid());
@@ -89,6 +72,22 @@ static inline std::string get_all_user_config_folder(const std::string& appname)
     std::string pathLocalConfigFile(homeDir);
     pathLocalConfigFile += "/.config/" + appname;
     return pathLocalConfigFile;
+}
+
+/**
+ * @brief Get an absolute path to a configuration file, for all users.
+ *
+ * Output is typically:
+ *
+ *     Linux: /etc/virgil-cli/virgil-cli.conf
+ *
+ * @param appname
+ *   Short name of the application.  Avoid using spaces or version numbers, and
+ *   use lowercase if possible.
+ * @return get an absolute path, for all users.
+ */
+static inline std::string get_all_user_config_folder(const std::string& appname) {
+    return "/etc/" + appname;
 }
 
 #endif /* CONFIG_PATH_H_LINUX */

@@ -93,7 +93,7 @@ int MAIN(int argc, char** argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile(verboseArg.isSet());
+        vcli::ConfigFile configFile = vcli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
         std::vector<vsdk::models::CardModel> appCards;
         if (applicationNameArg.isSet()) {
@@ -112,6 +112,7 @@ int MAIN(int argc, char** argv) {
                 if (verboseArg.isSet()) {
                     std::cout << "Card(s) by email: " << emailArg.getValue() << " haven't been found." << std::endl;
                 }
+                return EXIT_SUCCESS;
             }
         }
 

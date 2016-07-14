@@ -2,10 +2,9 @@ stage 'VCS checkout'
 
 node('master'){
 	deleteDir()
-  git branch: 'v2.0.0', url: 'https://github.com/VirgilSecurity/virgil-cli.git'
+	checkout scm
 	stash includes: '**', name: 'src'
 }
-
 
 stage 'Build'
 
