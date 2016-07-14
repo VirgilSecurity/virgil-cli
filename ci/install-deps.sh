@@ -39,12 +39,4 @@ set -ev
 
 if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     bash ./ci/install-cmake-for-linux.sh
-else
-    if [[ -z "which curl" ]]; then
-        brew install curl --with-openssl
-    fi
-
-    if [[ -z "which cmake" ]]; then
-        brew install cmake
-    fi
 fi
