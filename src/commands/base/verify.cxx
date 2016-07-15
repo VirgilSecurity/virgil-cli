@@ -53,6 +53,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
@@ -68,39 +69,29 @@ static void checkFormatRecipientArg(const std::pair<std::string, std::string>& p
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "The utility allows you to verify data and signature"
-                                  "  with a provided user's identifier or with his public key.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r vcard:bob/bob.vcard\n\n");
 
         examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r pubkey:bob/public.key\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kVerify_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be verified. If omitted, stdin is used.", false, "",
-                                           "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kVerify_Input_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg(
-            "o", "out", "Verification result: success | failure. If omitted, stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kVerify_Output_Description, false, "", "file");
 
-        TCLAP::SwitchArg returnStatusArg("", "return-status", "Just returns status, ignores '-o, --out'", false);
+        TCLAP::SwitchArg returnStatusArg("", "return-status", vcli::kVerify_SwitchReturnStatus_Description, false);
 
-        TCLAP::ValueArg<std::string> signArg("s", "sign", "Digest sign.", true, "", "file");
+        TCLAP::ValueArg<std::string> signArg("s", "sign", vcli::kVerify_SignDigest_Description, true, "", "file");
 
-        TCLAP::ValueArg<std::string> recipientArg(
-            "r", "recipient", "Recipient defined in format:\n"
-                              "[id|vcard|pubkey]:<value>\n"
-                              "where:\n"
-                              "\t* if id, then <value> - recipient's UUID associated with a Virgil Card identifier;\n"
-                              "\t* if vcard, then <value> - recipient's Virgil Card(s) file\n\t  stored locally;\n"
-                              "\t* if pubkey, then <value> - recipient's public key.\n",
-            true, "", "arg");
+        TCLAP::ValueArg<std::string> recipientArg("r", "recipient", vcli::kVerify_Recipient_Description, true, "",
+                                                  "arg");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(recipientArg);

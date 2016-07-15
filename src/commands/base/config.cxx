@@ -47,6 +47,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcli = virgil::cli;
@@ -57,105 +58,121 @@ namespace vcli = virgil::cli;
 #define MAIN config_main
 #endif
 
+static std::string configFileName =
+#if defined(WIN32)
+    "\\virgil-cli.ini";
+#else
+    "/virgil-cli.conf";
+#endif
+
+static std::string getTemplateConfig();
+
+static void createGlobalConfigFile(const bool verbose);
+
+static void createLocalConfigFile(const bool verbose);
+
+static std::string readGlobalConfigFile(const bool verbose);
+
+static std::string readLocalConfigFile(const bool verbose);
+
 int MAIN(int argc, char** argv) {
     try {
         std::string description = "Get information about Virgil CLI configuration file.\n\n";
 
         std::vector<std::string> examples;
         examples.push_back("Show path to the configuration file applied for all users:\n"
-                           "virgil config --global\n\n");
+                           "virgil config --global --path\n\n");
 
         examples.push_back("Show path to the configuration file applied for current user:\n"
-                           "virgil config --local\n\n");
+                           "virgil config --local --path\n\n");
 
         examples.push_back("Show configuration file template:\n"
                            "virgil config --template\n\n");
+
+        examples.push_back("Create a global configuration file from template:\n"
+                           "virgil config --global --create\n\n");
+
+        examples.push_back("Create a local configuration file from template:\n"
+                           "virgil config --local --create\n\n");
+
+        examples.push_back("Show the global configuration file:\n"
+                           "virgil config --global --list\n\n");
+
+        examples.push_back("Show the local configuration file:\n"
+                           "virgil config --local --list\n\n");
 
         std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "If omitted, stdout is used.\n", false, "", "file");
+        TCLAP::SwitchArg isGlobalConfigFileArg("g", "global", "The configuration file applied for all users.", false);
 
-        TCLAP::SwitchArg showGlobalConfigFilePathArg(
-            "g", "global", "Show path to the configuration file applied for all users.", false);
-
-        TCLAP::SwitchArg showLocalConfigFilePathArg(
-            "l", "local", "Show path to the configuration file applied for current user.", false);
+        TCLAP::SwitchArg isLocalConfigFileArg("l", "local", "The configuration file applied for current user.", false);
 
         TCLAP::SwitchArg showTemplateArg("t", "template", "Show configuration file template.", false);
 
+        TCLAP::SwitchArg createConfigFileArg("c", "create", "Create a configuration file from template.", false);
+
+        TCLAP::SwitchArg showConfigFileArg("", "list", "Show the configuration file.", false);
+
+        TCLAP::SwitchArg showPathConfigFileArg("p", "path", "Show path to the configuration file.", false);
+
+        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+
+        cmd.add(verboseArg);
+        cmd.add(showPathConfigFileArg);
+        cmd.add(showConfigFileArg);
+        cmd.add(createConfigFileArg);
         cmd.add(showTemplateArg);
-        cmd.add(showLocalConfigFilePathArg);
-        cmd.add(showGlobalConfigFilePathArg);
-        cmd.add(outArg);
+        cmd.add(isLocalConfigFileArg);
+        cmd.add(isGlobalConfigFileArg);
         cmd.parse(argc, argv);
 
-        std::string configFileName =
-#if defined(WIN32)
-            "\\virgil-cli.ini";
-#else
-            "/virgil-cli.conf";
-#endif
+        const bool all = isLocalConfigFileArg.getValue() && isGlobalConfigFileArg.getValue();
 
-        const bool showAll = !showGlobalConfigFilePathArg.getValue() && !showLocalConfigFilePathArg.getValue() &&
-                             !showTemplateArg.getValue();
-
-        const bool isMultipleInfo = showAll ||
-                                    (showGlobalConfigFilePathArg.getValue() && showLocalConfigFilePathArg.getValue()) ||
-                                    (showGlobalConfigFilePathArg.getValue() && showTemplateArg.getValue()) ||
-                                    (showLocalConfigFilePathArg.getValue() && showTemplateArg.getValue());
-
-        std::string data;
-        if (showGlobalConfigFilePathArg.getValue() || showAll) {
-            std::string pathGlobalConfigFile = get_all_user_config_folder("virgil-cli") + configFileName;
-            data += (isMultipleInfo ? "> Global configuration file path: " : "") + pathGlobalConfigFile + "\n";
-        }
-
-        if (showLocalConfigFilePathArg.getValue() || showAll) {
+        if (showPathConfigFileArg.getValue()) {
             std::string pathLocalConfigFile = get_user_config_folder("virgil-cli") + configFileName;
-            data += (isMultipleInfo ? "> Local configuration file path: " : "") + pathLocalConfigFile + "\n";
+            std::string pathGlobalConfigFile = get_all_user_config_folder("virgil-cli") + configFileName;
+
+            if (all) {
+                std::cout << "> Local configuration file path: " << pathLocalConfigFile << "\n";
+                std::cout << "> Global configuration file path: " << pathGlobalConfigFile << "\n";
+            } else if (isLocalConfigFileArg.getValue()) {
+                std::cout << pathLocalConfigFile << "\n";
+            } else {
+                // isGlobalConfigFileArg
+                std::cout << pathGlobalConfigFile << "\n";
+            }
         }
 
-        if (showTemplateArg.getValue() || showAll) {
-            vcli::ConfigFile defaultConfig;
-            std::string config = isMultipleInfo ? "> Configuration file template:\n" : "";
-            config +=
-                "; First, you must create a free Virgil Security developer's account by signing up\n"
-                "; here - https://developer.virgilsecurity.com/account/signup. Once you have your\n"
-                "; account you can sign in and generate an access token for your application.\n"
-                ";\n"
-                "; The access token provides authenticated secure access to Virgil Keys Services and is passed with\n"
-                "; every API call. The access token also allows the API to associate your app’s requests with your\n"
-                "; Virgil Security developer's account.\n\n"
-
-                "[Virgil Access Token]\n";
-
-            config += "token=<VIRGIL_ACCESS_TOKEN>\n\n";
-
-            config += "; This class provide base URIs for the Virgil Security services\n"
-                      "[URI]\n\n"
-
-                      "; Base URI of the Virgil Identity Service\n"
-                      "identity-service=";
-
-            config += defaultConfig.serviceUri.getIdentityService() + "\n\n";
-
-            config += "; base URI of the Virgil Keys Service\n"
-                      "public-key-service=";
-
-            config += defaultConfig.serviceUri.getPublicKeyService() + "\n\n";
-
-            config += "; base URI of the Virgil Private Service\n"
-                      "private-key-service=";
-
-            config += defaultConfig.serviceUri.getPrivateKeyService() + "\n";
-
-            data += config;
+        if (createConfigFileArg.getValue()) {
+            if (all) {
+                createLocalConfigFile(verboseArg.getValue());
+                createGlobalConfigFile(verboseArg.getValue());
+            } else if (isLocalConfigFileArg.getValue()) {
+                createLocalConfigFile(verboseArg.getValue());
+            } else {
+                // isGlobalConfigFileArg
+                createGlobalConfigFile(verboseArg.getValue());
+            }
         }
 
-        vcli::writeOutput(outArg.getValue(), data);
+        if (showConfigFileArg.getValue()) {
+            if (all) {
+                std::cout << readLocalConfigFile(verboseArg.getValue());
+                std::cout << readGlobalConfigFile(verboseArg.getValue());
+            } else if (isLocalConfigFileArg.getValue()) {
+                std::cout << readLocalConfigFile(verboseArg.getValue());
+            } else {
+                // isGlobalConfigFileArg
+                std::cout << readGlobalConfigFile(verboseArg.getValue());
+            }
+        }
+
+        if (showTemplateArg.getValue()) {
+            std::cout << getTemplateConfig();
+        }
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "config. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
@@ -166,4 +183,78 @@ int MAIN(int argc, char** argv) {
     }
 
     return EXIT_SUCCESS;
+}
+
+std::string getTemplateConfig() {
+    vcli::ConfigFile defaultConfig;
+    std::string config;
+    config += "; First, you must create a free Virgil Security developer's account by signing up\n"
+              "; here - https://developer.virgilsecurity.com/account/signup. Once you have your\n"
+              "; account you can sign in and generate an access token for your application.\n"
+              ";\n"
+              "; The access token provides authenticated secure access to Virgil Keys Services and is passed with\n"
+              "; every API call. The access token also allows the API to associate your app’s requests with your\n"
+              "; Virgil Security developer's account.\n\n"
+
+              "[Virgil Access Token]\n";
+    config += "token=<VIRGIL_ACCESS_TOKEN>\n\n";
+
+    config += "; This class provide base URIs for the Virgil Security services\n"
+              "[URI]\n\n"
+
+              "; Base URI of the Virgil Identity Service\n"
+              "identity-service=";
+    config += defaultConfig.serviceUri.getIdentityService() + "\n\n";
+
+    config += "; base URI of the Virgil Keys Service\n"
+              "public-key-service=";
+    config += defaultConfig.serviceUri.getPublicKeyService() + "\n\n";
+
+    config += "; base URI of the Virgil Private Service\n"
+              "private-key-service=";
+    config += defaultConfig.serviceUri.getPrivateKeyService() + "\n";
+
+    return config;
+}
+
+void createGlobalConfigFile(const bool verbose) {
+    std::string pathGlobalConfigFile = get_all_user_config_folder("virgil-cli") + configFileName;
+    vcli::writeOutput(pathGlobalConfigFile, getTemplateConfig());
+    if (verbose) {
+        std::cout << "Create a global configuration file from template by path:" + pathGlobalConfigFile << "\n";
+    }
+}
+
+void createLocalConfigFile(const bool verbose) {
+    std::string pathLocalConfigFile = get_user_config_folder("virgil-cli") + configFileName;
+    vcli::writeOutput(pathLocalConfigFile, getTemplateConfig());
+    if (verbose) {
+        std::cout << "Create a local configuration file from template by path:" + pathLocalConfigFile << "\n";
+    }
+}
+
+std::string readGlobalConfigFile(const bool verbose) {
+    std::string pathGlobalConfigFile = get_all_user_config_folder("virgil-cli") + configFileName;
+    std::ifstream inGlobalConfigFile(pathGlobalConfigFile, std::ios::in | std::ios::binary);
+    if (!inGlobalConfigFile) {
+        throw std::invalid_argument("Can't read a global configuration file by path:" + pathGlobalConfigFile);
+    }
+    if (verbose) {
+        std::cout << "Read a global config file"
+                  << "\n";
+    }
+    return std::string((std::istreambuf_iterator<char>(inGlobalConfigFile)), std::istreambuf_iterator<char>());
+}
+
+std::string readLocalConfigFile(const bool verbose) {
+    std::string pathLocalConfigFile = get_user_config_folder("virgil-cli") + configFileName;
+    std::ifstream inLocalConfigFile(pathLocalConfigFile, std::ios::in | std::ios::binary);
+    if (!inLocalConfigFile) {
+        throw std::invalid_argument("Can't read a local configuration file by path:" + pathLocalConfigFile);
+    }
+    if (verbose) {
+        std::cout << "Read a local configuration file"
+                  << "\n";
+    }
+    return std::string((std::istreambuf_iterator<char>(inLocalConfigFile)), std::istreambuf_iterator<char>());
 }

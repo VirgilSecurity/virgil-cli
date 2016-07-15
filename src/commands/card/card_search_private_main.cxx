@@ -48,6 +48,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
@@ -61,8 +62,6 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Search for the Private Virgil Card(s) from the Virgil Keys Service\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Search for the Private Virgil Card(s) with a confirmed Identity:\n"
                            "virgil card-search-private -d alice@gmail.com -t email -o alice/\n\n");
@@ -78,12 +77,13 @@ int MAIN(int argc, char** argv) {
                            "virgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o "
                            "alice-with-unconfirmed-identity/ -u\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage =
+            virgil::cli::getDescriptionMessage(vcli::kCardSearchPrivate_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Folder where Virgil Cards will be saved.", false, "", "arg");
+        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kCardSearchPrivate_Description, false, "", "arg");
 
         TCLAP::ValueArg<std::string> identityArg(
             "d", "identity", "Identity value or obfuscated identity value (see 'virgil hash')", true, "", "arg");
@@ -91,10 +91,11 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> identityTypeArg(
             "t", "identity-type", "Identity type or obfuscated identity type (see 'virgil hash')", true, "", "arg");
 
-        TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", "Includes unconfirmed identities into Cards search.",
+        TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", vcli::kCardSearchPrivate_UnconfirmedIdentity_Description,
                                         false);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(unconfirmedArg);

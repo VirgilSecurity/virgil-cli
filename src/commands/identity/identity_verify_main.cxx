@@ -45,6 +45,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
@@ -58,24 +59,24 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Verify an Identity for Global Virgil Card.\n"
-                                  "1. Send 'confirmation_code' on the email;"
-                                  "2. Return 'action_id'.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Verify an Identity:\n"
                            "virgil identity-verify -d email:user@domain.com\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage =
+            virgil::cli::getDescriptionMessage(vcli::kIdentityVerify_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> identityArg("d", "identity", "Identity email", true, "", "arg");
+        TCLAP::ValueArg<std::string> identityArg(vcli::kIdentity_ShortName, vcli::kIdentity_LongName,
+                                                 vcli::kGlobalIdentity_Description, true, "",
+                                                 vcli::kIdentity_TypedDesc);
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Action id. If omitted stdout is used.", false, "", "file");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(outArg);

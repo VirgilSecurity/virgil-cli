@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,42 +34,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_COMMON_PAIR_H
-#define VIRGIL_COMMON_PAIR_H
-
-#include <string>
-#include <vector>
-#include <map>
+#ifndef VIRGIL_CLI_DESCRIPTION_UTILITIES_PUBLIC_KEY_H
+#define VIRGIL_CLI_DESCRIPTION_UTILITIES_PUBLIC_KEY_H
 
 namespace virgil {
 namespace cli {
 
-    /**
-     * @brief Parse string pair.
-     *
-     * Pair format: <key>:<value>.
-     * @param str - string to be parsed.
-     * @return Parsed string pair as std::pair<std::string, std::string>.
-     * @throw std::invalid_argument - if given format is invalid.
-     *
-     * Note, all whitespaces before <key> and after <key> will be trimmed.
-     * Note, all whitespaces before <value> and after <value> will be trimmed.
-     */
-    std::pair<std::string, std::string> parsePair(const std::string& str);
+    /* public-key-revoke-global */
+    const char* const kPublicKeyRevokeGlobal_Description =
+        "Revoke a chain of Global Virgil Cards connected by public-key-id from "
+        "Virgil Keys Service.\n\n";
+    /* public-key-revoke-global */
 
-    /**
-     * @brief Parse array of string pairs.
-     *
-     * Pair format: <key>:<value>.
-     * @param pairs - array of strings to be parsed.
-     * @return Parsed string pairs.
-     * @throw std::invalid_argument - if given format is invalid.
-     *
-     * Note, all whitespaces before <key> and after <key> will be trimmed.
-     * Note, all whitespaces before <value> and after <value> will be trimmed.
-     */
-    std::multimap<std::string, std::string> parsePairArray(const std::vector<std::string>& pairs);
+    /**************************************************************/
+
+    /* public-key-revoke-private */
+    const char* const kPublicKeyRevokePrivate_Description =
+        "Revoke a group of Private Cards from the Public Keys Service connected by "
+        "public-key-id + card-id of one of the Cards from the group.\n\n";
+    /* public-key-revoke-private */
+
+    /**************************************************************/
+
+    /* public-key-get */
+    const char* const kPublicKeyGet_Description =
+        "Get Global/Private Virgil Public Key from the Virgil Keys Service.\n\n";
+    /* public-key-get */
 }
 }
 
-#endif /* VIRGIL_COMMON_PAIR_H */
+#endif /* VIRGIL_CLI_DESCRIPTION_UTILITIES_PUBLIC_KEY_H */

@@ -46,6 +46,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
@@ -59,13 +60,11 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Check 'validated-identity' received by 'identity-confirm-global'\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Validated identity:\n"
                            "virgil identity-valid -f alice/validated-identity.txt\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kIdentityValid_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
@@ -74,9 +73,11 @@ int MAIN(int argc, char** argv) {
                                             "file");
 
         TCLAP::ValueArg<std::string> validatedIdentityArg(
-            "f", "validated-identity", "Validated identity (see 'virgil identity-confirm-global')", true, "", "file");
+            vcli::kValidatedIdentity_ShortName, vcli::kValidatedIdentity_LongName,
+            vcli::kGlobalValidatedIdentity_Description, true, "", vcli::kValidatedIdentity_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(validatedIdentityArg);

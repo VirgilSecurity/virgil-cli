@@ -53,6 +53,7 @@
 #include <cli/pair.h>
 #include <cli/version.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
@@ -68,11 +69,6 @@ static void reset(std::istream& in);
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Decrypt data with given password or given Private Key + recipient-id. "
-                                  "recipient-id is an identifier which is connected with Public Key. "
-                                  "If a sender has a Card, his recipient-id is Card's id. Also, Public "
-                                  "Key is saved in the Card.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Decrypt *plain.txt.enc* for a user identified by his password:\n"
                            "virgil decrypt -i plain.txt.enc -o plain.txt -r password:strong_password\n\n");
@@ -81,42 +77,31 @@ int MAIN(int argc, char** argv) {
             "Decrypt *plain.txt.enc* for Bob identified by his private key + `recipient-id` [id|vcard|email|private]:\n"
             "virgil decrypt -i plain.txt.enc -o plain.txt -k bob/private.key -r id:<recipient_id>\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kDecrypt_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be decrypted. If omitted, stdin is used.", false, "",
-                                           "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kDecrypt_Input_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Decrypted data. If omitted, stdout is used.", false, "",
-                                            "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kDecrypt_Output_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info",
-                                                    "Content info. Use this option if"
-                                                    " content info is not embedded in the encrypted data.",
-                                                    false, "", "file");
+        TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info", vcli::kDecrypt_ContentInfo_Description, false,
+                                                    "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key.", false, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg(vcli::kPrivateKey_ShortName, vcli::kPrivateKey_LongName,
+                                                   vcli::kPrivateKey_Description, false, "",
+                                                   vcli::kPrivateKey_TypeDesc);
 
-        TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
-                                                           "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
+            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::ValueArg<std::string> recipientArg(
-            "r", "recipient", "Recipient defined in format:\n"
-                              "[password|id|vcard|email|private]:<value>\n"
-                              "where:\n"
-                              "\t* if password, then <value> - recipient's password;\n"
-                              "\t* if id, then <value> - recipient's UUID associated with a Virgil Card identifier;\n"
-                              "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
-                              "\t* if email, then <value> - recipient's email;\n"
-                              "\t* if private, then set type:value for searching Private Virgil Card(s).\n"
-                              "For example:\n"
-                              "1. private:<obfuscator_type>:<obfuscator_email>. ( obfiscator - see 'virgil hash')\n"
-                              "2. private:<identity_type>:<identity_value>; private:email:alice@domain.com\n",
-            true, "", "arg");
+        TCLAP::ValueArg<std::string> recipientArg("r", "recipient", vcli::kDecrypt_Recipient_Description, true, "",
+                                                  "arg");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(recipientArg);

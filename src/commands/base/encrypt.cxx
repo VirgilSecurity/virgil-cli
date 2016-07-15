@@ -51,6 +51,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 #include <cli/wrapper/sdk/CardClient.h>
 
 namespace vcrypto = virgil::crypto;
@@ -65,12 +66,6 @@ static void addKeyRecipient(const vsdk::models::CardModel& card, const std::stri
 
 int encrypt_main(int argc, char** argv) {
     try {
-        std::string description = "The utility allows you to encrypt data with a password or combination "
-                                  "of Public Key + recipient-id. recipient-id is an identifier which "
-                                  "will be connected with the Public Key. If a sender has a Card, his "
-                                  "recipient-id is the Card's id. Also, the Public Keys is saved in  "
-                                  "the Card.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Alice encrypts the data for Bob using his email (searching the Global Virgil Card(s)):\n"
                            "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n\n");
@@ -88,40 +83,23 @@ int encrypt_main(int argc, char** argv) {
         examples.push_back("Alice encrypts the data with a combination of Public Key + recipient-id:\n"
                            "virgil encrypt -i plain.txt -o plain.txt.enc pubkey:bob/public.key:ForBob\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kEncrypt_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Data to be encrypted. If omitted, stdin is used.", false, "",
-                                           "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kEncrypt_Input_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Encrypted data. If omitted, stdout is used.", false, "",
-                                            "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kEncrypt_Output_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> contentInfoArg(
-            "c", "content-info", "Content info - meta information about encrypted data. If omitted, becomes a part of"
-                                 " the encrypted data.",
-            false, "", "file");
+        TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info", vcli::kEncrypt_ContentInfo_Description, false,
+                                                    "", "file");
 
-        TCLAP::UnlabeledMultiArg<std::string> recipientsArg(
-            "recipient",
-            "Contains information about one recipient.\n"
-            "Format:\n"
-            "[password|id|vcard|email|pubkey|private]:<value>\n"
-            "where:\n"
-            "\t* if password, then <value> - recipient's password;\n"
-            "\t* if id, then <value> - recipient's UUID associated with Virgil\n\t Card identifier;\n"
-            "\t* if vcard, then <value> - recipient's the Virgil Card file\n\t  stored locally;\n"
-            "\t* if email, then <value> - recipient's email;\n"
-            "\t* if pubkey, then <value> - recipient's public key + identifier, for example:\n"
-            " pubkey:bob/public.key:ForBob.\n"
-            "\t* if private, then set type:value for searching Private Virgil Card(s)  with confirmed identity (see "
-            "'card-create-private'). "
-            " For example: private:<obfuscator_type>:<obfuscator_value>. ( obfiscator - see 'virgil hash')",
-            false, "recipient", false);
+        TCLAP::UnlabeledMultiArg<std::string> recipientsArg("recipient", vcli::kDecrypt_Recipient_Description, false,
+                                                            "recipient", false);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(recipientsArg);
@@ -155,10 +133,9 @@ int encrypt_main(int argc, char** argv) {
                     } else {
                         auto it = recipientIdArgs.find(recipientId);
                         if (it != recipientIdArgs.end()) {
-                            std::string argContainsRecipientId;
                             std::string error = "recipient-id must be unique.\n";
-                            error += "This recipient-id has already been used in this argument.";
-                            error += it->second;
+                            error += "This recipient-id has already been used in this argument:\n";
+                            error += it->second + ".";
                             throw std::invalid_argument(error);
                         }
                     }
@@ -273,10 +250,9 @@ void addKeyRecipient(const vsdk::models::CardModel& card, const std::string& arg
     } else {
         auto it = recipientIdArgs.find(recipientId);
         if (it != recipientIdArgs.end()) {
-            std::string argContainsRecipientId;
             std::string error = "recipient-id must be unique.\n";
-            error += "This recipient-id has already been used in this argument.";
-            error += it->second;
+            error += "This recipient-id has already been used in this argument:\n";
+            error += it->second + ".";
             throw std::invalid_argument(error);
         }
     }

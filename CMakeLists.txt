@@ -54,7 +54,7 @@ project (virgil_cli)
 set (VIRGIL_CLI_VERSION_MAJOR 2)
 set (VIRGIL_CLI_VERSION_MINOR 0)
 set (VIRGIL_CLI_VERSION_PATCH 0)
-set (VIRGIL_CLI_VERSION_PRE_RELEASE "beta1")
+set (VIRGIL_CLI_VERSION_PRE_RELEASE "beta2")
 
 if (VIRGIL_CLI_VERSION_PRE_RELEASE)
     set (VIRGIL_CLI_VERSION ${VIRGIL_CLI_VERSION_MAJOR}.${VIRGIL_CLI_VERSION_MINOR}.${VIRGIL_CLI_VERSION_PATCH}-${VIRGIL_CLI_VERSION_PRE_RELEASE})
@@ -141,11 +141,12 @@ virgil_depends (
     CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/virgil_sdk"
 )
 
-virgil_find_package (virgil_sdk 3.2.0 EXACT)
-virgil_find_package (virgil_crypto) # Installed as virgil_sdk dependency, so found version will be appropriate
-virgil_find_package (nlohman_json)  # Installed as virgil_sdk dependency, so found version will be appropriate
-virgil_find_package (restless)      # Installed as virgil_sdk dependency, so found version will be appropriate
-virgil_find_package (mbedtls)       # Installed as virgil_sdk dependency, so found version will be appropriate
+# Installed as virgil_sdk dependency, so found version will be appropriate
+virgil_find_package (virgil_sdk 3.2.3 EXACT)
+virgil_find_package (virgil_crypto 1.8.1 EXACT)
+virgil_find_package (nlohman_json)
+virgil_find_package (restless)
+virgil_find_package (mbedtls)
 
 # Grab source directory tree
 file (GLOB_RECURSE SRC_LIST "src/*.cxx")
