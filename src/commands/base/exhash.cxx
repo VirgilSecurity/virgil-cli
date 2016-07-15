@@ -49,6 +49,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
@@ -64,8 +65,6 @@ static vcrypto::foundation::VirgilPBKDF::Hash hash_alg(const std::string& param)
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Derives hash from the given data with PBKDF function.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Underlying hash - SHA384 (default), iterations - 2048 (default):\n"
                            "virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt\n\n");
@@ -73,15 +72,14 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Underlying hash - SHA512, iterations - 4096:\n"
                            "virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096\n\n");
 
-        std::string descriptionMessage = vcli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = vcli::getDescriptionMessage(vcli::kExhash_Descritpion, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "The string value to be hashed. If omitted, stdout is used.",
-                                           false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kExhash_Input_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Hash. If omitted, stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kExhash_Output_Description, false, "", "file");
 
         std::vector<std::string> alg;
         alg.push_back("sha1");
@@ -91,20 +89,15 @@ int MAIN(int argc, char** argv) {
         alg.push_back("sha512");
         TCLAP::ValuesConstraint<std::string> allowedAlg(alg);
 
-        TCLAP::ValueArg<std::string> saltArg("s", "salt", "The hash salt.", true, "", "file");
+        TCLAP::ValueArg<std::string> saltArg("s", "salt", vcli::kExhash_Salt_Descritpion, true, "", "file");
 
-        TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm",
-                                                  "Underlying hash algorithm:\n"
-                                                  "\t* sha1 -   secure Hash Algorithm 1;\n"
-                                                  "\t* sha224 - secure Hash Algorithm 2, that are 224 bits;\n"
-                                                  "\t* sha256 - secure Hash Algorithm 2, that are 256 bits;\n"
-                                                  "\t* sha384 - secure Hash Algorithm 2, that are 384 bits(default);\n"
-                                                  "\t* sha512 - secure Hash Algorithm 2, that are 512 bits;\n",
-                                                  false, "sha384", &allowedAlg);
+        TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm", vcli::kExhash_Algorithm_Description, false,
+                                                  "sha384", &allowedAlg);
 
-        TCLAP::ValueArg<int> iterationsArg("c", "iterations", "Iterations count. Default - 2048", false, 2048, "int");
+        TCLAP::ValueArg<int> iterationsArg("c", "iterations", vcli::kExhash_Iterations_Description, false, 2048, "int");
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(iterationsArg);

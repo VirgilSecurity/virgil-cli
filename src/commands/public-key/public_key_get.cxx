@@ -46,6 +46,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
@@ -59,13 +60,11 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Get Global/Private Virgil Public Key from the Virgil Keys Service.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Get a public key by its `public-key-id`:\n"
                            "virgil public-key-get -o alice/public.key -e <public_key_id>\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kPublicKeyGet_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
@@ -73,9 +72,12 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted, stdout is used.", false, "",
                                             "file");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg("e", "public-key-id", "Public Key identifier\n", true, "", "arg");
+        TCLAP::ValueArg<std::string> publicKeyIdArg(vcli::kPublicKeyId_ShortName, vcli::kPublicKeyId_LongName,
+                                                    vcli::kPublicKeyId_Description, true, "",
+                                                    vcli::kPublicKeyId_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(publicKeyIdArg);

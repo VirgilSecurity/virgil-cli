@@ -46,6 +46,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
@@ -59,24 +60,26 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Delete a Private key from the Private Key Service\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("virgil private-key-del -k private.key -a <card_id>\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kPrivateKeyDel_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Virgil Card identifier", true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg(vcli::kCardId_ShortName, vcli::kCardId_LongName,
+                                               vcli::kCardId_Description, true, "", vcli::kCardId_TypeDesc);
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private Key", true, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg(vcli::kPrivateKey_ShortName, vcli::kPrivateKey_LongName,
+                                                   vcli::kPrivateKey_Description, true, "", vcli::kPrivateKey_TypeDesc);
 
-        TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
-                                                           "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
+            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);

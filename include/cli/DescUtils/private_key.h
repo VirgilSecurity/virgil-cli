@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,42 +34,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_COMMON_PAIR_H
-#define VIRGIL_COMMON_PAIR_H
-
-#include <string>
-#include <vector>
-#include <map>
+#ifndef VIRGIL_CLI_DESCRIPTION_UTILITIES_PRIVATE_KEY_H
+#define VIRGIL_CLI_DESCRIPTION_UTILITIES_PRIVATE_KEY_H
 
 namespace virgil {
 namespace cli {
 
-    /**
-     * @brief Parse string pair.
-     *
-     * Pair format: <key>:<value>.
-     * @param str - string to be parsed.
-     * @return Parsed string pair as std::pair<std::string, std::string>.
-     * @throw std::invalid_argument - if given format is invalid.
-     *
-     * Note, all whitespaces before <key> and after <key> will be trimmed.
-     * Note, all whitespaces before <value> and after <value> will be trimmed.
-     */
-    std::pair<std::string, std::string> parsePair(const std::string& str);
+    /* private-key-add */
+    const char* const kPrivateKeyAdd_Description =
+        "Add given Private Key into the Private Keys Service.\n"
+        "General statements::\n"
+        "1. Make sure that you have registered and confirmed your account for the Public Keys Service\n"
+        "2. Make sure that you have a public/private key pair and you have already uploaded the public key\n"
+        "to the Public Keys Service\n"
+        "3. Make sure that you have your private key saved locally\n"
+        "4. Make sure that you have registered an application at Virgil Security, Inc.\n\n";
+    /* private-key-add */
 
-    /**
-     * @brief Parse array of string pairs.
-     *
-     * Pair format: <key>:<value>.
-     * @param pairs - array of strings to be parsed.
-     * @return Parsed string pairs.
-     * @throw std::invalid_argument - if given format is invalid.
-     *
-     * Note, all whitespaces before <key> and after <key> will be trimmed.
-     * Note, all whitespaces before <value> and after <value> will be trimmed.
-     */
-    std::multimap<std::string, std::string> parsePairArray(const std::vector<std::string>& pairs);
+    /**************************************************************/
+
+    /* private-key-del */
+    const char* const kPrivateKeyDel_Description = "Delete a Private key from the Private Key Service\n\n";
+    /* private-key-del */
+
+    /**************************************************************/
+
+    /* private-key-get */
+    const char* const kPrivateKeyGet_Description = "Get a Private key from the Private Key Service\n\n";
+    /* private-key-get */
 }
 }
 
-#endif /* VIRGIL_COMMON_PAIR_H */
+#endif /* VIRGIL_CLI_DESCRIPTION_UTILITIES_PRIVATE_KEY_H */

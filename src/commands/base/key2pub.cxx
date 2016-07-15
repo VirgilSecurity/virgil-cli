@@ -46,6 +46,7 @@
 
 #include <cli/version.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
@@ -66,26 +67,26 @@ inline bool is_asn1(const vcrypto::VirgilByteArray& data) {
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Extract Public Key from the Private Key.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("virgil key2pub -i private.key -o public.key\n\n");
 
         examples.push_back("virgil key2pub -i private.key -o public.key -p STRONGPASS\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kKey2pub_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", "Private key. If omitted, stdin is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kKey2pub_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", "Public key. If omitted, stdout is used.", false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kKey2pub_Output_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
-                                                           "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
+            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);

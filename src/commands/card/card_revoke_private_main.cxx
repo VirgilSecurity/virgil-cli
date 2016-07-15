@@ -47,6 +47,7 @@
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
+#include <cli/DescUtils/all.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
@@ -60,8 +61,6 @@ namespace vcli = virgil::cli;
 
 int MAIN(int argc, char** argv) {
     try {
-        std::string description = "Revoke a Private Virgil Card from the Virgil Public Key service.\n\n";
-
         std::vector<std::string> examples;
         examples.push_back("Revoke a Private Virgil Card with a confirmed identity:\n"
                            "virgil card-revoke-private -a <card_id> -f private-validated-identities.file "
@@ -70,23 +69,28 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Revoke a Private Virgil Card with a unconfirmed identity:\n"
                            "virgil card-revoke-private -a <card_id> -k private.key\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage =
+            virgil::cli::getDescriptionMessage(vcli::kCardRevokePrivate_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
 
-        TCLAP::ValueArg<std::string> cardIdArg("a", "card-id", "Private Virgil Card identifier", true, "", "arg");
+        TCLAP::ValueArg<std::string> cardIdArg(vcli::kCardId_ShortName, vcli::kCardId_LongName,
+                                               vcli::kCardId_Description, true, "", vcli::kCardId_TypeDesc);
 
         TCLAP::ValueArg<std::string> validatedIdentityArg(
-            "f", "validated-identity", "Private Validated identity. See 'virgil identity-confirm-private'", false, "",
-            "file");
+            vcli::kValidatedIdentity_ShortName, vcli::kValidatedIdentity_LongName, vcli::kPrivateIdentity_Description,
+            false, "", vcli::kValidatedIdentity_TypeDesc);
 
-        TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Private key", true, "", "file");
+        TCLAP::ValueArg<std::string> privateKeyArg(vcli::kPrivateKey_ShortName, vcli::kPrivateKey_LongName,
+                                                   vcli::kPrivateKey_Description, true, "", vcli::kPrivateKey_TypeDesc);
 
-        TCLAP::ValueArg<std::string> privateKeyPasswordArg("p", "private-key-password", "Private Key Password.", false,
-                                                           "", "arg");
+        TCLAP::ValueArg<std::string> privateKeyPasswordArg(
+            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
+            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg("V", "VERBOSE", "Shows detailed information.", false);
+        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
+                                    false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
