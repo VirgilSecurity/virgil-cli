@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -37,13 +37,11 @@
 #ifndef VIRGIL_COMMON_VERSION_H
 #define VIRGIL_COMMON_VERSION_H
 
-namespace virgil {
-
+namespace cli {
 /**
  * @brief Returns CLI version.
  */
 const char* cli_version();
-
-} // virgil
+}
 
 #endif /* VIRGIL_COMMON_VERSION_H */
