@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -37,77 +37,27 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
-#include <iterator>
-#include <stdexcept>
 #include <vector>
-
-#if defined(WIN32)
-#include <config_path.h>
-#include <Windows.h>
-#else
-#include <termios.h>
-#include <unistd.h>
-#endif
 
 #include <virgil/crypto/VirgilByteArray.h>
 #include <virgil/crypto/VirgilKeyPair.h>
 
-#include <nlohman/json.hpp>
-
 #include <virgil/sdk/ServicesHub.h>
 #include <virgil/sdk/io/Marshaller.h>
-#include <virgil/sdk/models/PrivateKeyModel.h>
 
 #include <cli/pair.h>
 #include <cli/version.h>
 #include <cli/util.h>
-
-using json = nlohmann::json;
+#include <cli/InputShadow.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
 
-typedef std::pair<std::string, std::string> PairStringString;
-
-static void setStdinEcho(bool enable) {
-#ifdef WIN32
-    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-    DWORD mode;
-    GetConsoleMode(hStdin, &mode);
-    if (!enable) {
-        mode &= ~ENABLE_ECHO_INPUT;
-    } else {
-        mode |= ENABLE_ECHO_INPUT;
-    }
-    SetConsoleMode(hStdin, mode);
-
-#else
-    struct termios tty;
-    tcgetattr(STDIN_FILENO, &tty);
-    if (!enable) {
-        tty.c_lflag &= ~ECHO;
-    } else {
-        tty.c_lflag |= ECHO;
-    }
-
-    (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
-#endif
-}
-
-std::string virgil::cli::inputShadow() {
-    setStdinEcho(false);
-    std::string str;
-    std::cin >> std::ws;
-    std::cin >> str;
-    setStdinEcho(true);
-    return str;
-}
-
-vcrypto::VirgilByteArray virgil::cli::setPrivateKeyPass(const vcrypto::VirgilByteArray& privateKey) {
+vcrypto::VirgilByteArray cli::setPrivateKeyPass(const vcrypto::VirgilByteArray& privateKey) {
     if (vcrypto::VirgilKeyPair::isPrivateKeyEncrypted(privateKey)) {
         std::string privateKeyPass;
         std::cout << "Enter private key password:" << std::endl;
-        privateKeyPass = inputShadow();
+        privateKeyPass = cli::inputShadow();
         vcrypto::VirgilByteArray privateKeyPassByteArray = vcrypto::str2bytes(privateKeyPass);
         if (vcrypto::VirgilKeyPair::checkPrivateKeyPassword(privateKey, privateKeyPassByteArray)) {
             return privateKeyPassByteArray;
@@ -118,39 +68,12 @@ vcrypto::VirgilByteArray virgil::cli::setPrivateKeyPass(const vcrypto::VirgilByt
     return vcrypto::VirgilByteArray();
 }
 
-bool virgil::cli::isPublicKeyModel(const std::string& publicKey) {
-    std::istringstream iss(publicKey);
-    std::string firstLine;
-    std::getline(iss, firstLine);
-    try {
-        json tmp = json::parse(publicKey);
-        return tmp.is_object() && tmp.find("id") != tmp.end() && tmp.find("public_key") != tmp.end() &&
-               tmp.find("created_at") != tmp.end();
-    } catch (std::exception&) {
-        return false;
-    }
-}
-
-bool virgil::cli::isPrivateKeyModel(const std::string& privateKey) {
-    std::istringstream iss(privateKey);
-    std::string firstLine;
-    std::getline(iss, firstLine);
-    try {
-        json tmp = json::parse(privateKey);
-        return tmp.is_object() && tmp.find("private_key") != tmp.end() && tmp.find("virgil_card_id") != tmp.end();
-    } catch (std::exception&) {
-        return false;
-    }
-}
-
-void virgil::cli::printVersion(std::ostream& out, const char* programName) {
+void cli::printVersion(std::ostream& out, const char* programName) {
     out << programName << "  "
-        << "version: " << virgil::cli_version() << std::endl;
+        << "version: " << cli::cli_version() << std::endl;
 }
 
-//-------------------------------------------------------------------------------------
-
-void virgil::cli::checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
+void cli::checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg) {
     const std::string type = pairRecipientArg.first;
     if (type != "password" && type != "id" && type != "vcard" && type != "email" && type != "pubkey" &&
         type != "private") {
@@ -160,24 +83,26 @@ void virgil::cli::checkFormatRecipientArg(const std::pair<std::string, std::stri
     }
 }
 
-void virgil::cli::checkFormatIdentity(const std::string& args, const std::string& type) {
+void cli::checkFormatIdentity(const std::string& args, const std::string& type) {
     if (type != "email") {
         throw std::invalid_argument(args + " invalid type format: " + type + ". Expected format: '<key>:<value>'. "
                                                                              "Where <key> = [email].");
     }
 }
 
-//-------------------------------------------------------------------------------------
-
-vcrypto::VirgilByteArray virgil::cli::readFileBytes(const std::string& in) {
-    std::ifstream inFile(in, std::ios::in | std::ios::binary);
+std::string cli::readFile(const std::string& pathnameFile) {
+    std::ifstream inFile(pathnameFile, std::ios::in | std::ios::binary);
     if (!inFile) {
-        throw std::invalid_argument("can not read file: " + in);
+        throw std::invalid_argument("can not read file: " + pathnameFile);
     }
-    return vcrypto::VirgilByteArray((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
+    return std::string((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
 }
 
-std::string virgil::cli::readInput(const std::string& in) {
+vcrypto::VirgilByteArray cli::readFileBytes(const std::string& in) {
+    return vcrypto::str2bytes(cli::readFile(in));
+}
+
+std::string cli::readInput(const std::string& in) {
     if (in.empty() || in == "-") {
         return std::string((std::istreambuf_iterator<char>(std::cin)), std::istreambuf_iterator<char>());
     } else {
@@ -189,55 +114,7 @@ std::string virgil::cli::readInput(const std::string& in) {
     }
 }
 
-vsdk::dto::ValidatedIdentity virgil::cli::readValidateIdentity(const std::string& in) {
-    std::ifstream inFile(in, std::ios::in | std::ios::binary);
-    if (!inFile) {
-        throw std::invalid_argument("cannot read file: " + in);
-    }
-    std::string validatedIdentityStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-    return vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::fromJson(validatedIdentityStr);
-}
-
-virgil::crypto::VirgilByteArray virgil::cli::readPublicKey(const std::string& in) {
-    vcrypto::VirgilByteArray publicKey;
-    std::string pathToPublicKeyFile = in;
-    std::ifstream inFile(pathToPublicKeyFile, std::ios::in | std::ios::binary);
-    if (!inFile) {
-        throw std::invalid_argument("cannot read file: " + pathToPublicKeyFile);
-    }
-    std::string publicKeyStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-
-    if (virgil::cli::isPublicKeyModel(publicKeyStr)) {
-        vsdk::models::PublicKeyModel publicKeyModel =
-            vsdk::io::Marshaller<vsdk::models::PublicKeyModel>::fromJson(publicKeyStr);
-        publicKey = publicKeyModel.getKey();
-    } else {
-        publicKey = vcrypto::str2bytes(publicKeyStr);
-    }
-    return publicKey;
-}
-
-virgil::crypto::VirgilByteArray virgil::cli::readPrivateKey(const std::string& in) {
-    vcrypto::VirgilByteArray privateKey;
-    std::string pathToPrivateKeyFile = in;
-    std::ifstream inFile(pathToPrivateKeyFile, std::ios::in | std::ios::binary);
-    if (!inFile) {
-        throw std::invalid_argument("cannot read file: " + pathToPrivateKeyFile);
-    }
-    std::string privateKeyStr((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-    if (virgil::cli::isPrivateKeyModel(privateKeyStr)) {
-        vsdk::models::PrivateKeyModel privateKeyModel =
-            vsdk::io::Marshaller<vsdk::models::PrivateKeyModel>::fromJson(privateKeyStr);
-        privateKey = privateKeyModel.getKey();
-    } else {
-        privateKey = vcrypto::str2bytes(privateKeyStr);
-    }
-    return privateKey;
-}
-
-//-------------------------------------------------------------------------------------
-
-void virgil::cli::writeBytes(const std::string& out, const vcrypto::VirgilByteArray& data) {
+void cli::writeBytes(const std::string& out, const vcrypto::VirgilByteArray& data) {
     if (out.empty()) {
         std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(std::cout));
         std::cout << std::endl;
@@ -251,11 +128,11 @@ void virgil::cli::writeBytes(const std::string& out, const vcrypto::VirgilByteAr
     std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(outFile));
 }
 
-void virgil::cli::writeBytes(const std::string& out, const std::string& data) {
-    return virgil::cli::writeBytes(out, virgil::crypto::str2bytes(data));
+void cli::writeBytes(const std::string& out, const std::string& data) {
+    return cli::writeBytes(out, virgil::crypto::str2bytes(data));
 }
 
-void virgil::cli::writeOutput(const std::string& out, const std::string& data) {
+void cli::writeOutput(const std::string& out, const std::string& data) {
     if (out.empty()) {
         std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(std::cout));
         std::cout << std::endl;
@@ -264,14 +141,12 @@ void virgil::cli::writeOutput(const std::string& out, const std::string& data) {
 
     std::ofstream outFile(out, std::ios::out | std::ios::binary);
     if (!outFile) {
-        throw std::invalid_argument("cannot write file: " + out);
+        throw std::invalid_argument("can not write file: " + out);
     }
     outFile << data;
 }
 
-//-------------------------------------------------------------------------------------
-
-std::string virgil::cli::getDescriptionMessage(const std::string description, std::vector<std::string> examples) {
+std::string cli::getDescriptionMessage(const std::string description, std::vector<std::string> examples) {
     std::string descriptionMessage;
     descriptionMessage += "\nDESCRIPTION:\n" + description;
     if (!examples.empty()) {
@@ -281,81 +156,4 @@ std::string virgil::cli::getDescriptionMessage(const std::string description, st
         }
     }
     return descriptionMessage;
-}
-
-//-------------------------------------------------------------------------------------
-
-std::vector<vsdk::models::CardModel> virgil::cli::getRecipientCards(const bool verbose, const std::string& type,
-                                                                    const std::string& value,
-                                                                    const bool isSearchForPrivateCard) {
-    std::vector<vsdk::models::CardModel> recipientCards;
-    ConfigFile configFile = readConfigFile();
-    vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
-
-    if (isSearchForPrivateCard) {
-        std::vector<vsdk::models::CardModel> cards;
-        if (verbose) {
-            std::cout << "Searching the Private Virgil Card(s) with confirmed identity by type:" << type
-                      << " value:" << value << "\n\n";
-        }
-        cards = servicesHub.card().search(value, type);
-        if (!cards.empty()) {
-            recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
-            if (verbose) {
-                std::cout << "For the entered type:" << type << "  value:" << value << "have been received "
-                          << cards.size() << " Private Virgil Card(s).\n\n";
-            }
-        } else {
-            throw std::invalid_argument(std::string("Private Virgil Cards by type: ") + type + " value:" + value +
-                                        " haven't been found.");
-        }
-    }
-
-    if (type == "id") {
-        auto card = servicesHub.card().get(value);
-        recipientCards.push_back(card);
-        if (verbose) {
-            std::cout << "For the entered id: " << value << " have been received a Virgil Card." << std::endl;
-        }
-    } else if (type == "email" && !isSearchForPrivateCard) {
-        std::vector<vsdk::models::CardModel> cards;
-        if (verbose) {
-            std::cout << "Searching the Global Virgil Card(s) by type:" << type << " value:" << value << "\n\n";
-        }
-        cards = servicesHub.card().searchGlobal(value, vsdk::dto::IdentityType::Email);
-        if (!cards.empty()) {
-            recipientCards.insert(std::end(recipientCards), std::begin(cards), std::end(cards));
-            if (verbose) {
-                std::cout << "For the entered type:" << type << "  value:" << value << "have been received "
-                          << cards.size() << " Virgil Card(s).\n\n";
-            }
-        } else {
-            throw std::invalid_argument(std::string("Global Virgil Cards by email: ") + value + " haven't been found.");
-        }
-    } else if (type == "vcard") {
-        std::string pathTofile = value;
-        std::ifstream inFile(pathTofile, std::ios::in | std::ios::binary);
-        if (!inFile) {
-            throw std::invalid_argument("cannot read file: " + pathTofile);
-        }
-        std::string jsonCard((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-        vsdk::models::CardModel card = vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(jsonCard);
-        if (verbose) {
-            std::cout << "A Virgil Card by path " << pathTofile << " read." << std::endl;
-        }
-        recipientCards.push_back(card);
-    }
-
-    return recipientCards;
-}
-
-std::vector<std::string> virgil::cli::getRecipientCardsId(const bool verbose, const std::string& type,
-                                                          const std::string& value, const bool isSearchForPrivateCard) {
-    std::vector<vsdk::models::CardModel> recipientCards =
-        virgil::cli::getRecipientCards(verbose, type, value, isSearchForPrivateCard);
-    std::vector<std::string> recipientCardsId;
-    for (const auto& recipientCard : recipientCards) {
-        recipientCardsId.push_back(recipientCard.getId());
-    }
-    return recipientCardsId;
 }

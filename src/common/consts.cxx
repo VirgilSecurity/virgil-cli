@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -36,4 +36,4 @@
 
 #include <cli/consts.h>
 
-const std::string VIRGIL_ACCESS_TOKEN = "@VIRGIL_ACCESS_TOKEN@";
+const std::string cli::VIRGIL_ACCESS_TOKEN = "@VIRGIL_ACCESS_TOKEN@";

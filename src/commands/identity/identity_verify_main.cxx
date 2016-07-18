@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,8 +35,6 @@
  */
 
 #include <iostream>
-#include <string>
-#include <stdexcept>
 
 #include <tclap/CmdLine.h>
 
@@ -49,51 +47,41 @@
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN identity_verify_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int identity_verify_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Verify an Identity:\n"
                            "virgil identity-verify -d email:user@domain.com\n");
 
-        std::string descriptionMessage =
-            virgil::cli::getDescriptionMessage(vcli::kIdentityVerify_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kIdentityVerify_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> identityArg(vcli::kIdentity_ShortName, vcli::kIdentity_LongName,
-                                                 vcli::kGlobalIdentity_Description, true, "",
-                                                 vcli::kIdentity_TypedDesc);
+        TCLAP::ValueArg<std::string> identityArg(cli::kIdentity_ShortName, cli::kIdentity_LongName,
+                                                 cli::kGlobalIdentity_Description, true, "", cli::kIdentity_TypedDesc);
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Action id. If omitted stdout is used.", false, "", "file");
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(outArg);
         cmd.add(identityArg);
         cmd.parse(argc, argv);
 
-        auto identityPair = vcli::parsePair(identityArg.getValue());
+        auto identityPair = cli::parsePair(identityArg.getValue());
         std::string arg = "-d, --identity";
-        vcli::checkFormatIdentity(arg, identityPair.first);
+        cli::checkFormatIdentity(arg, identityPair.first);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile();
+        cli::ConfigFile configFile = cli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
         std::string userEmail = identityPair.second;
         std::string actionId = servicesHub.identity().verify(userEmail, vsdk::dto::VerifiableIdentityType::Email);
 
-        vcli::writeBytes(outArg.getValue(), actionId);
+        cli::writeBytes(outArg.getValue(), actionId);
         if (verboseArg.isSet()) {
             std::cout << "An Identity with email:" << userEmail << " verified" << std::endl;
             std::cout << "Now you can confirm the Identity with a command identity-confirm-global" << std::endl;

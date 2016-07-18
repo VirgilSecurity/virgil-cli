@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -40,18 +40,17 @@
 #include <iterator>
 #include <stdexcept>
 
-#include <cli/ini.hpp>
+#include <ini_parser/ini.hpp>
 #include <cli/ConfigFile.h>
 
-namespace vcli = virgil::cli;
 namespace vsdk = virgil::sdk;
 
-static vcli::ConfigFile iniToConfigFile(const std::string& ini) {
+static cli::ConfigFile iniToConfigFile(const std::string& ini) {
     try {
         std::stringstream ss(ini);
         INI::Parser iniParser(ss);
 
-        vcli::ConfigFile configFile;
+        cli::ConfigFile configFile;
         configFile.virgilAccessToken = iniParser.top()("Virgil Access Token")["token"];
         configFile.serviceUri =
             vsdk::ServiceUri(iniParser.top()("URI")["identity-service"], iniParser.top()("URI")["public-key-service"],
@@ -65,10 +64,10 @@ static vcli::ConfigFile iniToConfigFile(const std::string& ini) {
     }
 }
 
-static vcli::ConfigFile readGlobalConfigFile(const std::string& pathGlobalConfigFile) {
+static cli::ConfigFile readGlobalConfigFile(const std::string& pathGlobalConfigFile) {
     std::ifstream inGlobalConfigFile(pathGlobalConfigFile, std::ios::in | std::ios::binary);
     if (!inGlobalConfigFile) {
-        vcli::ConfigFile defaultConfigFile;
+        cli::ConfigFile defaultConfigFile;
         return defaultConfigFile;
     }
 
@@ -76,7 +75,7 @@ static vcli::ConfigFile readGlobalConfigFile(const std::string& pathGlobalConfig
     return iniToConfigFile(ini);
 }
 
-vcli::ConfigFile vcli::readConfigFile() {
+cli::ConfigFile cli::readConfigFile() {
     std::string configFileName =
 #if defined(WIN32)
         "\\virgil-cli.ini";
@@ -87,7 +86,7 @@ vcli::ConfigFile vcli::readConfigFile() {
     std::string pathGlobalConfigFile = get_all_user_config_folder("virgil-cli") + configFileName;
     std::string pathLocalConfigFile = get_user_config_folder("virgil-cli") + configFileName;
 
-    vcli::ConfigFile globalConfigFile = readGlobalConfigFile(pathGlobalConfigFile);
+    cli::ConfigFile globalConfigFile = readGlobalConfigFile(pathGlobalConfigFile);
 
     std::ifstream inLocalConfigFile(pathLocalConfigFile, std::ios::in | std::ios::binary);
     if (!inLocalConfigFile) {
@@ -99,7 +98,7 @@ vcli::ConfigFile vcli::readConfigFile() {
     }
 
     std::string ini((std::istreambuf_iterator<char>(inLocalConfigFile)), std::istreambuf_iterator<char>());
-    vcli::ConfigFile localConfigFile = iniToConfigFile(ini);
+    cli::ConfigFile localConfigFile = iniToConfigFile(ini);
 
     std::string identityServiceUri;
     std::string publicServiceUri;

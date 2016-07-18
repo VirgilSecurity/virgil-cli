@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -39,10 +39,12 @@
 
 #include <string>
 
+namespace cli {
 /**
  * @brief Token that unique identifies your application.
  * @note This constant is configured within CMake.
  */
 extern const std::string VIRGIL_ACCESS_TOKEN;
+}
 
 #endif /* VIRGIL_CLI_COMMON_CONSTS_H */

@@ -37,43 +37,39 @@
 #ifndef VIRGIL_CLI_DESCRIPTION_UTILITIES_IDENTITY_H
 #define VIRGIL_CLI_DESCRIPTION_UTILITIES_IDENTITY_H
 
-namespace virgil {
 namespace cli {
+/* identity-confirm-global */
+const char* const kIdentityConfirmGlobal_Description = "Confirm identity for a Global Virgil Card\n\n";
+/* identity-confirm-global */
 
-    /* identity-confirm-global */
-    const char* const kIdentityConfirmGlobal_Description = "Confirm identity for a Global Virgil Card\n\n";
-    /* identity-confirm-global */
+/**************************************************************/
 
-    /**************************************************************/
+/* identity-confirm-private */
+const char* const kIdentityConfirmPrivate_Description =
+    "Provides helper methods to generate validation token based on the"
+    "application's private key. It is required for the following"
+    "operations:\n"
+    "1. Create a private Virgil Card with a confirmed Identity. "
+    "See 'virgil card-create-private';\n"
+    "2. Revoke a Private Virgil Card, a group of Cards."
+    "See 'virgil card-revoke-private', 'virgil public-key-revoke';\n"
+    "3. Get a private key from the Private Keys Service."
+    "See 'virgil private-key-get'.\n\n";
+/* identity-confirm-private */
 
-    /* identity-confirm-private */
-    const char* const kIdentityConfirmPrivate_Description =
-        "Provides helper methods to generate validation token based on the"
-        "application's private key. It is required for the following"
-        "operations:\n"
-        "1. Create a private Virgil Card with a confirmed Identity. "
-        "See 'virgil card-create-private';\n"
-        "2. Revoke a Private Virgil Card, a group of Cards."
-        "See 'virgil card-revoke-private', 'virgil public-key-revoke';\n"
-        "3. Get a private key from the Private Keys Service."
-        "See 'virgil private-key-get'.\n\n";
-    /* identity-confirm-private */
+/**************************************************************/
 
-    /**************************************************************/
+/* identity-valid */
+const char* const kIdentityValid_Description = "Check 'validated-identity' received by 'identity-confirm-global'\n\n";
+/* identity-valid */
 
-    /* identity-valid */
-    const char* const kIdentityValid_Description =
-        "Check 'validated-identity' received by 'identity-confirm-global'\n\n";
-    /* identity-valid */
+/**************************************************************/
 
-    /**************************************************************/
-
-    /* identity-verify */
-    const char* const kIdentityVerify_Description = "Verify an Identity for Global Virgil Card.\n"
-                                                    "1. Send 'confirmation_code' on the email;"
-                                                    "2. Return 'action_id'.\n\n";
-    /* identity-verify */
-}
+/* identity-verify */
+const char* const kIdentityVerify_Description = "Verify an Identity for Global Virgil Card.\n"
+                                                "1. Send 'confirmation_code' on the email;"
+                                                "2. Return 'action_id'.\n\n";
+/* identity-verify */
 }
 
 #endif /* VIRGIL_CLI_DESCRIPTION_UTILITIES_IDENTITY_H */

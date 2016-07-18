@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -36,9 +36,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <iterator>
-#include <stdexcept>
-#include <string>
 
 #include <tclap/CmdLine.h>
 
@@ -49,40 +46,34 @@
 #include <cli/version.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/wrapper/sdk/PrivateKey.h>
 
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
+namespace wsdk = cli::wrapper::sdk;
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN sign_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int sign_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key\n\n");
 
         examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key -p STRONGPASS\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kSign_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kSign_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kSign_Input_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", cli::kSign_Input_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kSign_Output_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kSign_Output_Description, false, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyArg("k", "key", "Signer's Private Key.", true, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
-            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
-            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
+            cli::kPrivateKeyPassword_ShortName, cli::kPrivateKeyPassword_LongName, cli::kPrivateKeyPassword_Description,
+            false, "", cli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
@@ -105,12 +96,12 @@ int MAIN(int argc, char** argv) {
         }
 
         // Read private key
-        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(privateKeyArg.getValue());
+        vcrypto::VirgilByteArray privateKey = wsdk::readPrivateKey(privateKeyArg.getValue());
         vcrypto::VirgilByteArray privateKeyPassword;
         if (privateKeyPasswordArg.isSet()) {
             privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
         } else {
-            privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+            privateKeyPassword = cli::setPrivateKeyPass(privateKey);
         }
 
         // Create signer
@@ -121,13 +112,13 @@ int MAIN(int argc, char** argv) {
         vcrypto::VirgilByteArray sign = signer.sign(dataSource, privateKey, privateKeyPassword);
 
         // Prepare output. Write sign to the output.
-        vcli::writeBytes(outArg.getValue(), sign);
+        cli::writeBytes(outArg.getValue(), sign);
 
         if (verboseArg.isSet()) {
             std::cout << "File signed" << std::endl;
         }
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "sing. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "sign. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
         std::cerr << "sign. Error: " << exception.what() << std::endl;

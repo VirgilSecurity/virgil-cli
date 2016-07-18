@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -36,10 +36,7 @@
 
 #include <algorithm>
 #include <iostream>
-#include <iterator>
 #include <map>
-#include <stdexcept>
-#include <string>
 
 #include <tclap/CmdLine.h>
 
@@ -51,9 +48,10 @@
 #include <cli/pair.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/wrapper/sdk/PrivateKey.h>
+#include <cli/inputShadow.h>
 
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
 
 /**
   * @brief Convert string representation of the Elliptic Curve or RSA group to the appropriate constant.
@@ -62,13 +60,7 @@ static vcrypto::VirgilKeyPair::Type key_group_from_param(const std::string& para
 
 static void printProcessGeneratingPrivate(const std::string& algorithmType);
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN keygen_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int keygen_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Generate Curve25519 Private Key(default), your password will be requested:\n"
@@ -83,12 +75,12 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Generate 8192-bits RSA Private Key, your password will be requested:\n"
                            "virgil keygen -o alice/private.key -a rsa8192\n\n");
 
-        std::string descriptionMessage = vcli::getDescriptionMessage(vcli::kKeygen_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kKeygen_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kKeygen_Output_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kKeygen_Output_Description, false, "", "file");
 
         std::vector<std::string> alg;
         alg.push_back("bp256r1");
@@ -108,7 +100,7 @@ int MAIN(int argc, char** argv) {
         alg.push_back("rsa8192");
         TCLAP::ValuesConstraint<std::string> allowedAlg(alg);
 
-        TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm", vcli::kKeygen_Algorithm_Description, false,
+        TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm", cli::kKeygen_Algorithm_Description, false,
                                                   "curve25519", &allowedAlg);
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
@@ -118,8 +110,7 @@ int MAIN(int argc, char** argv) {
             "", "no-password-input", "If parameter -p, --private-key-password is omitted, password won’t be requested.",
             false);
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(notShadowInputArg);
@@ -140,14 +131,14 @@ int MAIN(int argc, char** argv) {
                 std::cin >> answer;
                 if (answer == "Y" || answer == "y") {
                     std::cout << "Enter private key password:" << std::endl;
-                    std::string password = vcli::inputShadow();
+                    std::string password = cli::inputShadow();
                     privateKeyPassword = vcrypto::str2bytes(password);
                     std::cout << std::endl;
                 }
             }
         }
 
-        // default algorithmArg = secp384r1
+        // default algorithmArg = curve25519
         std::string algorithmType = algorithmArg.getValue();
         if (verboseArg.isSet()) {
             printProcessGeneratingPrivate(algorithmType);
@@ -162,7 +153,7 @@ int MAIN(int argc, char** argv) {
             privateKey = keyPair.privateKey();
         }
 
-        vcli::writeBytes(outArg.getValue(), privateKey);
+        cli::writeBytes(outArg.getValue(), privateKey);
         if (verboseArg.isSet()) {
             std::cout << "Private key has been generated.\n";
         }

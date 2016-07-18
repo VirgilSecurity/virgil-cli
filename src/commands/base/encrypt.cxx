@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -53,11 +53,12 @@
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
 #include <cli/wrapper/sdk/CardClient.h>
+#include <cli/wrapper/sdk/Card.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
-namespace vcli = virgil::cli;
-namespace wsdk = virgil_cli::wrapper::sdk;
+
+namespace wsdk = cli::wrapper::sdk;
 
 static void checkFormatRecipientsArg(const std::vector<std::string>& recipientsData);
 
@@ -83,23 +84,22 @@ int encrypt_main(int argc, char** argv) {
         examples.push_back("Alice encrypts the data with a combination of Public Key + recipient-id:\n"
                            "virgil encrypt -i plain.txt -o plain.txt.enc pubkey:bob/public.key:ForBob\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kEncrypt_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kEncrypt_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kEncrypt_Input_Description, false, "", "file");
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kEncrypt_Output_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", cli::kEncrypt_Input_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info", vcli::kEncrypt_ContentInfo_Description, false,
+        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kEncrypt_Output_Description, false, "", "file");
+
+        TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info", cli::kEncrypt_ContentInfo_Description, false,
                                                     "", "file");
 
-        TCLAP::UnlabeledMultiArg<std::string> recipientsArg("recipient", vcli::kDecrypt_Recipient_Description, false,
+        TCLAP::UnlabeledMultiArg<std::string> recipientsArg("recipient", cli::kDecrypt_Recipient_Description, false,
                                                             "recipient", false);
-
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
 
         cmd.add(verboseArg);
         cmd.add(recipientsArg);
@@ -113,7 +113,7 @@ int encrypt_main(int argc, char** argv) {
         vcrypto::VirgilStreamCipher cipher;
         std::map<std::string, std::string> recipientIdArgs;
         for (const auto& recipientArg : recipientsArg.getValue()) {
-            auto recipientPair = vcli::parsePair(recipientArg);
+            auto recipientPair = cli::parsePair(recipientArg);
             if (recipientPair.first == "password") {
                 vcrypto::VirgilByteArray pwd = virgil::crypto::str2bytes(recipientPair.second);
                 cipher.addPasswordRecipient(pwd);
@@ -122,10 +122,10 @@ int encrypt_main(int argc, char** argv) {
                 if (recipientPair.first == "pubkey") {
                     // pubkey:<path-pub-key>:<recipient-id>
                     // recipientPair.second == <path-pub-key>:<recipient-id>
-                    auto pubkeyAndRecipientId = vcli::parsePair(recipientPair.second);
+                    auto pubkeyAndRecipientId = cli::parsePair(recipientPair.second);
                     std::string pathPublicKeyFile = pubkeyAndRecipientId.first;
 
-                    auto publicKeyBytes = vcli::readFileBytes(pathPublicKeyFile);
+                    auto publicKeyBytes = cli::readFileBytes(pathPublicKeyFile);
                     std::string recipientId = pubkeyAndRecipientId.second;
                     if (!cipher.keyRecipientExists(vcrypto::str2bytes(recipientId))) {
                         cipher.addKeyRecipient(vcrypto::str2bytes(recipientId), publicKeyBytes);
@@ -143,7 +143,7 @@ int encrypt_main(int argc, char** argv) {
                 } else {
                     wsdk::CardClient cardClient;
                     if (recipientPair.first == "private") {
-                        auto typeAndValue = vcli::parsePair(recipientPair.second);
+                        auto typeAndValue = cli::parsePair(recipientPair.second);
                         std::string type = typeAndValue.first;
                         std::string value = typeAndValue.second;
                         auto privateCards = cardClient.getConfirmedPrivateCards(type, value);
@@ -229,12 +229,12 @@ int encrypt_main(int argc, char** argv) {
 
 void checkFormatRecipientsArg(const std::vector<std::string>& recipientsData) {
     for (const auto& recipientData : recipientsData) {
-        auto recipientPair = vcli::parsePair(recipientData);
+        auto recipientPair = cli::parsePair(recipientData);
         if (recipientPair.first == "pubkey" || recipientPair.first == "private") {
             // pubkey:<path-pub-key>:<recipient-id>
             // private:<type>:<value> - for example: private:phone:<phone-number>
             // recipientPair.second == <path-pub-key>:<recipient-id> or <type>:<value>
-            vcli::parsePair(recipientPair.second);
+            cli::parsePair(recipientPair.second);
             continue;
         }
     }

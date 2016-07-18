@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -37,9 +37,6 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <iterator>
-#include <stdexcept>
-#include <string>
 #include <vector>
 
 #include <tclap/CmdLine.h>
@@ -50,18 +47,14 @@
 #include <cli/pair.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/wrapper/sdk/PrivateKey.h>
+#include <cli/wrapper/sdk/ValidatedIdentity.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
+namespace wsdk = cli::wrapper::sdk;
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN public_key_revoke_private_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int public_key_revoke_private_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Revoke a chain of private Virgil Cards with confirmed identities connected by "
@@ -80,36 +73,34 @@ int MAIN(int argc, char** argv) {
                            "virgil public-key-revoke-private -a <card_id> -k alice/private.key -d "
                            "<obfuscator_type>:<obfuscator_value_1> -d <obfuscator_type>:<obfuscator_value_2>\n\n");
 
-        std::string descriptionMessage =
-            virgil::cli::getDescriptionMessage(vcli::kPublicKeyRevokePrivate_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kPublicKeyRevokePrivate_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg(vcli::kPublicKeyId_ShortName, vcli::kPublicKeyId_LongName,
-                                                    vcli::kPublicKeyId_Description, true, "",
-                                                    vcli::kPublicKeyId_TypeDesc);
+        TCLAP::ValueArg<std::string> publicKeyIdArg(cli::kPublicKeyId_ShortName, cli::kPublicKeyId_LongName,
+                                                    cli::kPublicKeyId_Description, true, "",
+                                                    cli::kPublicKeyId_TypeDesc);
 
-        TCLAP::ValueArg<std::string> cardIdArg(vcli::kCardId_ShortName, vcli::kCardId_LongName,
-                                               vcli::kCardId_Description, true, "", vcli::kCardId_TypeDesc);
+        TCLAP::ValueArg<std::string> cardIdArg(cli::kCardId_ShortName, cli::kCardId_LongName, cli::kCardId_Description,
+                                               true, "", cli::kCardId_TypeDesc);
 
         TCLAP::MultiArg<std::string> identityArg("d", "identity", "User identifier for Private Virgil Card with "
                                                                   "unconfirmed identity",
                                                  true, "arg");
 
         TCLAP::MultiArg<std::string> validatedIdentityArg(
-            vcli::kValidatedIdentity_ShortName, vcli::kValidatedIdentity_LongName,
-            vcli::kPrivateValidatedIdentity_Description, true, vcli::kValidatedIdentity_TypeDesc);
+            cli::kValidatedIdentity_ShortName, cli::kValidatedIdentity_LongName,
+            cli::kPrivateValidatedIdentity_Description, true, cli::kValidatedIdentity_TypeDesc);
 
-        TCLAP::ValueArg<std::string> privateKeyArg(vcli::kPrivateKey_ShortName, vcli::kPrivateKey_LongName,
-                                                   vcli::kPrivateKey_Description, true, "", vcli::kPrivateKey_TypeDesc);
+        TCLAP::ValueArg<std::string> privateKeyArg(cli::kPrivateKey_ShortName, cli::kPrivateKey_LongName,
+                                                   cli::kPrivateKey_Description, true, "", cli::kPrivateKey_TypeDesc);
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
-            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
-            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
+            cli::kPrivateKeyPassword_ShortName, cli::kPrivateKeyPassword_LongName, cli::kPrivateKeyPassword_Description,
+            false, "", cli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
@@ -120,23 +111,23 @@ int MAIN(int argc, char** argv) {
         cmd.parse(argc, argv);
 
         std::string pathPrivateKey = privateKeyArg.getValue();
-        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
+        vcrypto::VirgilByteArray privateKey = wsdk::readPrivateKey(pathPrivateKey);
         vcrypto::VirgilByteArray privateKeyPassword;
         if (privateKeyPasswordArg.isSet()) {
             privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
         } else {
-            privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+            privateKeyPassword = cli::setPrivateKeyPass(privateKey);
         }
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile();
+        cli::ConfigFile configFile = cli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
         if (validatedIdentityArg.isSet()) {
             std::vector<vsdk::dto::ValidatedIdentity> validatedIdentities;
             std::vector<std::string> validatedIdentityFiles = validatedIdentityArg.getValue();
             for (const auto& validatedIdentityFile : validatedIdentityFiles) {
-                vsdk::dto::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityFile);
+                vsdk::dto::ValidatedIdentity validatedIdentity = wsdk::readValidatedIdentity(validatedIdentityFile);
                 validatedIdentities.push_back(validatedIdentity);
             }
 
@@ -148,7 +139,7 @@ int MAIN(int argc, char** argv) {
             std::vector<std::string> identitiesStr = identityArg.getValue();
             std::vector<vsdk::dto::Identity> identities;
             for (const auto& identityStr : identitiesStr) {
-                auto identityPair = vcli::parsePair(identityStr);
+                auto identityPair = cli::parsePair(identityStr);
                 std::string recipientType = identityPair.first;
                 std::string recipientValue = identityPair.second;
                 vsdk::dto::Identity identity(recipientValue, recipientType);

@@ -34,35 +34,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H
-#define VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H
+#include <virgil/sdk/io/Marshaller.h>
 
-#include <vector>
+#include <cli/wrapper/sdk/Card.h>
+#include <cli/util.h>
 
-#include <virgil/sdk/ServicesHub.h>
+namespace vsdk = virgil::sdk;
+namespace wsdk = cli::wrapper::sdk;
 
-namespace cli {
-namespace wrapper {
-    namespace sdk {
-        class CardClient {
-        public:
-            CardClient();
-            explicit CardClient(const virgil::sdk::ServicesHub& servicesHub);
-
-        public:
-            virgil::sdk::models::CardModel getCardById(const std::string& recipientId);
-            std::vector<virgil::sdk::models::CardModel> getGlobalCards(const std::string& email);
-            std::vector<virgil::sdk::models::CardModel>
-            getConfirmedPrivateCards(const std::string& value, const std::string& type = std::string());
-
-        private:
-            virgil::sdk::ServicesHub initFromConfigFile();
-
-        private:
-            virgil::sdk::ServicesHub servicesHub_;
-        };
-    }
-}
+vsdk::models::CardModel wsdk::readCard(const std::string& inPathnameFile) {
+    std::string jCardStr = cli::readFile(inPathnameFile);
+    return vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(jCardStr);
 }
 
-#endif /* VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H */
+void wsdk::writeCard(const std::string& outPathnameFile, const vsdk::models::CardModel& card) {
+    std::string jCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(card);
+    cli::writeOutput(jCardStr, outPathnameFile);
+}

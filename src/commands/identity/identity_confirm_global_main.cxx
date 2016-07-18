@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,8 +35,6 @@
  */
 
 #include <iostream>
-#include <string>
-#include <stdexcept>
 #include <fstream>
 
 #include <tclap/CmdLine.h>
@@ -48,18 +46,12 @@
 #include <cli/pair.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/InputShadow.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN identity_confirm_global_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int identity_confirm_global_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back(
@@ -74,18 +66,16 @@ int MAIN(int argc, char** argv) {
                            "virgil identity-confirm-global --action-id alice/action_id.txt --confirmation-code <code>"
                            " -o alice/validated-identity.txt\n\n");
 
-        std::string descriptionMessage =
-            virgil::cli::getDescriptionMessage(vcli::kIdentityConfirmGlobal_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kIdentityConfirmGlobal_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Validated identity. If omitted, stdout is used.", false, "",
                                             "file");
 
-        TCLAP::ValueArg<std::string> identityArg(vcli::kIdentity_ShortName, vcli::kIdentity_LongName,
-                                                 vcli::kGlobalIdentity_Description, false, "",
-                                                 vcli::kIdentity_TypedDesc);
+        TCLAP::ValueArg<std::string> identityArg(cli::kIdentity_ShortName, cli::kIdentity_LongName,
+                                                 cli::kGlobalIdentity_Description, false, "", cli::kIdentity_TypedDesc);
 
         TCLAP::ValueArg<std::string> actionIdArg("", "action-id", "Action id.", false, "", "file");
 
@@ -96,8 +86,7 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<int> countToLiveArg("c", "count-to-live", "Count to live, by default = 2.", false, 2, "int");
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(countToLiveArg);
@@ -108,7 +97,7 @@ int MAIN(int argc, char** argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile();
+        cli::ConfigFile configFile = cli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
         std::string recipientType;
         std::string recipientValue;
@@ -128,11 +117,11 @@ int MAIN(int argc, char** argv) {
         } else if (!actionIdArg.isSet() && !confirmationCodeArg.isSet()) {
 
             if (identityArg.isSet()) {
-                auto identityPair = vcli::parsePair(identityArg.getValue());
+                auto identityPair = cli::parsePair(identityArg.getValue());
                 recipientType = identityPair.first;
                 recipientValue = identityPair.second;
                 std::string arg = "-d, --identity";
-                vcli::checkFormatIdentity(arg, recipientType);
+                cli::checkFormatIdentity(arg, recipientType);
 
                 if (verboseArg.isSet()) {
                     std::cout << "Send confirmation-code to " << recipientValue << std::endl;
@@ -141,7 +130,7 @@ int MAIN(int argc, char** argv) {
 
                 std::cout << "Enter confirmation code that was sent on - " << recipientType << ":" << recipientValue
                           << std::endl;
-                confirmationCode = vcli::inputShadow();
+                confirmationCode = cli::inputShadow();
 
             } else {
                 throw std::invalid_argument("-d, --identity -- is not set");
@@ -160,7 +149,7 @@ int MAIN(int argc, char** argv) {
         std::string validatedIdentityStr =
             vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
 
-        vcli::writeBytes(outArg.getValue(), validatedIdentityStr);
+        cli::writeBytes(outArg.getValue(), validatedIdentityStr);
 
         if (verboseArg.isSet()) {
             std::cout << "Identity " << recipientType << ":" << recipientValue << "  is confirmed." << std::endl;

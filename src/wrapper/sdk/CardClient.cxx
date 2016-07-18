@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,18 +34,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <fstream>
-#include <stdexcept>
-#include <iterator>
-
-#include <virgil/sdk/io/Marshaller.h>
-
 #include <cli/wrapper/sdk/CardClient.h>
 #include <cli/ConfigFile.h>
 
 namespace vsdk = virgil::sdk;
-namespace wsdk = virgil_cli::wrapper::sdk;
-namespace vcli = virgil::cli;
+namespace wsdk = cli::wrapper::sdk;
 
 wsdk::CardClient::CardClient() : servicesHub_(initFromConfigFile()) {
 }
@@ -67,15 +60,6 @@ std::vector<vsdk::models::CardModel> wsdk::CardClient::getConfirmedPrivateCards(
 }
 
 vsdk::ServicesHub wsdk::CardClient::initFromConfigFile() {
-    vcli::ConfigFile configFile = vcli::readConfigFile();
+    cli::ConfigFile configFile = cli::readConfigFile();
     return vsdk::ServicesHub(configFile.virgilAccessToken, configFile.serviceUri);
-}
-
-virgil::sdk::models::CardModel wsdk::readCard(const std::string& in) {
-    std::ifstream inFile(in, std::ios::in | std::ios::binary);
-    if (!inFile) {
-        throw std::invalid_argument("can't read file by path: " + in);
-    }
-    std::string jsonCard((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-    return vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(jsonCard);
 }

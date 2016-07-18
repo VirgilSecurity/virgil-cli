@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -54,20 +54,17 @@
 #include <cli/version.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/wrapper/sdk/CardClient.h>
+#include <cli/wrapper/sdk/Card.h>
+#include <cli/wrapper/sdk/PrivateKey.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
-namespace vcli = virgil::cli;
-
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN decrypt_main
-#endif
+namespace wsdk = cli::wrapper::sdk;
 
 static void reset(std::istream& in);
 
-int MAIN(int argc, char** argv) {
+int decrypt_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Decrypt *plain.txt.enc* for a user identified by his password:\n"
@@ -77,31 +74,29 @@ int MAIN(int argc, char** argv) {
             "Decrypt *plain.txt.enc* for Bob identified by his private key + `recipient-id` [id|vcard|email|private]:\n"
             "virgil decrypt -i plain.txt.enc -o plain.txt -k bob/private.key -r id:<recipient_id>\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kDecrypt_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kDecrypt_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kDecrypt_Input_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", cli::kDecrypt_Input_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kDecrypt_Output_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kDecrypt_Output_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info", vcli::kDecrypt_ContentInfo_Description, false,
+        TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info", cli::kDecrypt_ContentInfo_Description, false,
                                                     "", "file");
 
-        TCLAP::ValueArg<std::string> privateKeyArg(vcli::kPrivateKey_ShortName, vcli::kPrivateKey_LongName,
-                                                   vcli::kPrivateKey_Description, false, "",
-                                                   vcli::kPrivateKey_TypeDesc);
+        TCLAP::ValueArg<std::string> privateKeyArg(cli::kPrivateKey_ShortName, cli::kPrivateKey_LongName,
+                                                   cli::kPrivateKey_Description, false, "", cli::kPrivateKey_TypeDesc);
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
-            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
-            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
+            cli::kPrivateKeyPassword_ShortName, cli::kPrivateKeyPassword_LongName, cli::kPrivateKeyPassword_Description,
+            false, "", cli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::ValueArg<std::string> recipientArg("r", "recipient", vcli::kDecrypt_Recipient_Description, true, "",
+        TCLAP::ValueArg<std::string> recipientArg("r", "recipient", cli::kDecrypt_Recipient_Description, true, "",
                                                   "arg");
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(recipientArg);
@@ -112,8 +107,8 @@ int MAIN(int argc, char** argv) {
         cmd.add(inArg);
         cmd.parse(argc, argv);
 
-        auto recipientFormat = vcli::parsePair(recipientArg.getValue());
-        vcli::checkFormatRecipientArg(recipientFormat);
+        auto recipientFormat = cli::parsePair(recipientArg.getValue());
+        cli::checkFormatRecipientArg(recipientFormat);
 
         // Create cipher
         vcrypto::VirgilStreamCipher cipher;
@@ -173,13 +168,13 @@ int MAIN(int argc, char** argv) {
             // type = [id|vcard|email]
             // Read private key
             std::string pathToPrivateKeyFile = privateKeyArg.getValue();
-            vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathToPrivateKeyFile);
+            vcrypto::VirgilByteArray privateKey = wsdk::readPrivateKey(pathToPrivateKeyFile);
 
             vcrypto::VirgilByteArray privateKeyPassword;
             if (privateKeyPasswordArg.isSet()) {
                 privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
             } else {
-                privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+                privateKeyPassword = cli::setPrivateKeyPass(privateKey);
             }
 
             // type = [id|vcard|email|private]
@@ -191,46 +186,54 @@ int MAIN(int argc, char** argv) {
                 return EXIT_SUCCESS;
             }
 
-            std::vector<std::string> recipientCardsId;
+            if (type == "vcard") {
+                std::string pathVCardFile = value;
+                auto card = wsdk::readCard(pathVCardFile);
+                cipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(card.getId()), privateKey,
+                                      privateKeyPassword);
+                return EXIT_SUCCESS;
+            }
+
+            wsdk::CardClient cardClient;
+            std::vector<vsdk::models::CardModel> cards;
             if (type == "private") {
                 // private:<type>:<value>
-                auto pairTypeAndValue = vcli::parsePair(value);
+                auto pairTypeAndValue = cli::parsePair(value);
                 std::string type = pairTypeAndValue.first;
                 std::string value = pairTypeAndValue.second;
 
-                bool isSearchPrivateCard = true; // search the Private Virgil Card(s)
-                recipientCardsId = vcli::getRecipientCardsId(verboseArg.isSet(), type, value, isSearchPrivateCard);
-            } else {
-                // type = [id|vcard|email]
-                bool isSearchPrivateCard = false; // search the Global Virgil Card(s)
-                recipientCardsId = vcli::getRecipientCardsId(verboseArg.isSet(), type, value, isSearchPrivateCard);
+                auto privateCards = cardClient.getConfirmedPrivateCards(value, type);
+                cards.insert(cards.end(), privateCards.begin(), privateCards.end());
             }
 
-            if (recipientCardsId.empty()) {
-                if (verboseArg.isSet()) {
-                    std::cout << "Cards by " << type << ":" << value << " haven't been found." << std::endl;
-                    return EXIT_FAILURE;
-                }
+            if (type == "email") {
+                std::string email = value;
+                auto globalCards = cardClient.getGlobalCards(email);
+                cards.insert(cards.end(), globalCards.begin(), globalCards.end());
+            }
+
+            if (cards.empty()) {
+                throw std::runtime_error(std::string("Cards by ") + type + ":" + value + " haven't been found.");
             }
 
             size_t countErrorDecryptWithKey = 0;
             vcrypto::VirgilByteArray encryptedData((std::istreambuf_iterator<char>(inStream->rdbuf())),
                                                    std::istreambuf_iterator<char>());
 
-            for (const auto& recipientCardId : recipientCardsId) {
+            for (const auto& card : cards) {
                 try {
                     if (inArg.getValue().empty() || inArg.getValue() == "-") {
                         vcrypto::VirgilCipher cipher;
                         vcrypto::VirgilByteArray decryptedData = cipher.decryptWithKey(
-                            encryptedData, vcrypto::str2bytes(recipientCardId), privateKey, privateKeyPassword);
+                            encryptedData, vcrypto::str2bytes(card.getId()), privateKey, privateKeyPassword);
 
-                        vcli::writeBytes(outArg.getValue(), decryptedData);
+                        cli::writeBytes(outArg.getValue(), decryptedData);
                         break;
                     } else {
                         reset(*inStream);
                         vcrypto::VirgilStreamCipher streamCipher;
-                        streamCipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(recipientCardId),
-                                                    privateKey, privateKeyPassword);
+                        streamCipher.decryptWithKey(dataSource, dataSink, vcrypto::str2bytes(card.getId()), privateKey,
+                                                    privateKeyPassword);
                         break;
                     }
 
@@ -242,7 +245,7 @@ int MAIN(int argc, char** argv) {
                 }
             }
 
-            if (countErrorDecryptWithKey == recipientCardsId.size()) {
+            if (countErrorDecryptWithKey == cards.size()) {
                 throw std::runtime_error("File can’t be decrypted:\n"
                                          "wrong card-id or/and private key.\n");
             }

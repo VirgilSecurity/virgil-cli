@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -36,8 +36,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <stdexcept>
-#include <string>
 #include <vector>
 
 #include <tclap/CmdLine.h>
@@ -50,13 +48,6 @@
 #include <cli/DescUtils/all.h>
 
 namespace vsdk = virgil::sdk;
-namespace vcli = virgil::cli;
-
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN config_main
-#endif
 
 static std::string configFileName =
 #if defined(WIN32)
@@ -75,7 +66,7 @@ static std::string readGlobalConfigFile(const bool verbose);
 
 static std::string readLocalConfigFile(const bool verbose);
 
-int MAIN(int argc, char** argv) {
+int config_main(int argc, char** argv) {
     try {
         std::string description = "Get information about Virgil CLI configuration file.\n\n";
 
@@ -101,10 +92,10 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Show the local configuration file:\n"
                            "virgil config --local --list\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
         TCLAP::SwitchArg isGlobalConfigFileArg("g", "global", "The configuration file applied for all users.", false);
 
@@ -186,7 +177,7 @@ int MAIN(int argc, char** argv) {
 }
 
 std::string getTemplateConfig() {
-    vcli::ConfigFile defaultConfig;
+    cli::ConfigFile defaultConfig;
     std::string config;
     config += "; First, you must create a free Virgil Security developer's account by signing up\n"
               "; here - https://developer.virgilsecurity.com/account/signup. Once you have your\n"
@@ -219,7 +210,7 @@ std::string getTemplateConfig() {
 
 void createGlobalConfigFile(const bool verbose) {
     std::string pathGlobalConfigFile = get_all_user_config_folder("virgil-cli") + configFileName;
-    vcli::writeOutput(pathGlobalConfigFile, getTemplateConfig());
+    cli::writeOutput(pathGlobalConfigFile, getTemplateConfig());
     if (verbose) {
         std::cout << "Create a global configuration file from template by path:" + pathGlobalConfigFile << "\n";
     }
@@ -227,7 +218,7 @@ void createGlobalConfigFile(const bool verbose) {
 
 void createLocalConfigFile(const bool verbose) {
     std::string pathLocalConfigFile = get_user_config_folder("virgil-cli") + configFileName;
-    vcli::writeOutput(pathLocalConfigFile, getTemplateConfig());
+    cli::writeOutput(pathLocalConfigFile, getTemplateConfig());
     if (verbose) {
         std::cout << "Create a local configuration file from template by path:" + pathLocalConfigFile << "\n";
     }
