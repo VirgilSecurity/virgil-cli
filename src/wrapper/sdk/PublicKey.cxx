@@ -34,35 +34,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H
-#define VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H
+#include <nlohman/json.hpp>
 
-#include <vector>
+#include <virgil/sdk/io/Marshaller.h>
 
-#include <virgil/sdk/ServicesHub.h>
+#include <cli/wrapper/sdk/PublicKey.h>
+#include <cli/util.h>
 
-namespace cli {
-namespace wrapper {
-    namespace sdk {
-        class CardClient {
-        public:
-            CardClient();
-            explicit CardClient(const virgil::sdk::ServicesHub& servicesHub);
+using json = nlohmann::json;
+namespace vsdk = virgil::sdk;
+namespace wsdk = cli::wrapper::sdk;
 
-        public:
-            virgil::sdk::models::CardModel getCardById(const std::string& recipientId);
-            std::vector<virgil::sdk::models::CardModel> getGlobalCards(const std::string& email);
-            std::vector<virgil::sdk::models::CardModel>
-            getConfirmedPrivateCards(const std::string& value, const std::string& type = std::string());
-
-        private:
-            virgil::sdk::ServicesHub initFromConfigFile();
-
-        private:
-            virgil::sdk::ServicesHub servicesHub_;
-        };
+bool wsdk::isPublicKeyModel(const std::string& jsonPublicKeyStr) {
+    try {
+        json tmp = json::parse(jsonPublicKeyStr);
+        return tmp.is_object() && tmp.find("id") != tmp.end() && tmp.find("public_key") != tmp.end() &&
+               tmp.find("created_at") != tmp.end();
+    } catch (std::exception&) {
+        return false;
+    } catch (...) {
+        return false;
     }
 }
+
+vsdk::models::PublicKeyModel wsdk::readPublicKeyModel(const std::string& inPathnameFile) {
+    std::string jPublicKeyModelStr = cli::readFile(inPathnameFile);
+    return vsdk::io::Marshaller<vsdk::models::PublicKeyModel>::fromJson(jPublicKeyModelStr);
 }
 
-#endif /* VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H */
+virgil::crypto::VirgilByteArray wsdk::readPublicKey(const std::string& inPathnameFile) {
+    std::string publicKeyStr = cli::readFile(inPathnameFile);
+    if (wsdk::isPublicKeyModel(publicKeyStr)) {
+        auto publicKey = vsdk::io::Marshaller<vsdk::models::PublicKeyModel>::fromJson(publicKeyStr);
+        return publicKey.getKey();
+    }
+    return virgil::crypto::str2bytes(publicKeyStr);
+}
+
+void wsdk::writePublicKeyModel(const std::string& outPathnameFile, const vsdk::models::PublicKeyModel& PublicKeyModel) {
+    std::string jPublicKeyModelStr = vsdk::io::Marshaller<vsdk::models::PublicKeyModel>::toJson<4>(PublicKeyModel);
+    cli::writeOutput(jPublicKeyModelStr, outPathnameFile);
+}

@@ -37,32 +37,29 @@
 #ifndef VIRGIL_CLI_DESCRIPTION_UTILITIES_PRIVATE_KEY_H
 #define VIRGIL_CLI_DESCRIPTION_UTILITIES_PRIVATE_KEY_H
 
-namespace virgil {
 namespace cli {
+/* private-key-add */
+const char* const kPrivateKeyAdd_Description =
+    "Add given Private Key into the Private Keys Service.\n"
+    "General statements::\n"
+    "1. Make sure that you have registered and confirmed your account for the Public Keys Service\n"
+    "2. Make sure that you have a public/private key pair and you have already uploaded the public key\n"
+    "to the Public Keys Service\n"
+    "3. Make sure that you have your private key saved locally\n"
+    "4. Make sure that you have registered an application at Virgil Security, Inc.\n\n";
+/* private-key-add */
 
-    /* private-key-add */
-    const char* const kPrivateKeyAdd_Description =
-        "Add given Private Key into the Private Keys Service.\n"
-        "General statements::\n"
-        "1. Make sure that you have registered and confirmed your account for the Public Keys Service\n"
-        "2. Make sure that you have a public/private key pair and you have already uploaded the public key\n"
-        "to the Public Keys Service\n"
-        "3. Make sure that you have your private key saved locally\n"
-        "4. Make sure that you have registered an application at Virgil Security, Inc.\n\n";
-    /* private-key-add */
+/**************************************************************/
 
-    /**************************************************************/
+/* private-key-del */
+const char* const kPrivateKeyDel_Description = "Delete a Private key from the Private Key Service\n\n";
+/* private-key-del */
 
-    /* private-key-del */
-    const char* const kPrivateKeyDel_Description = "Delete a Private key from the Private Key Service\n\n";
-    /* private-key-del */
+/**************************************************************/
 
-    /**************************************************************/
-
-    /* private-key-get */
-    const char* const kPrivateKeyGet_Description = "Get a Private key from the Private Key Service\n\n";
-    /* private-key-get */
-}
+/* private-key-get */
+const char* const kPrivateKeyGet_Description = "Get a Private key from the Private Key Service\n\n";
+/* private-key-get */
 }
 
 #endif /* VIRGIL_CLI_DESCRIPTION_UTILITIES_PRIVATE_KEY_H */

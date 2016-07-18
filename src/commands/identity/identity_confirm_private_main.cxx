@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,8 +35,6 @@
  */
 
 #include <iostream>
-#include <stdexcept>
-#include <string>
 #include <fstream>
 
 #include <tclap/CmdLine.h>
@@ -58,17 +56,10 @@ using json = nlohmann::json;
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
-
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN identity_confirm_private_main
-#endif
 
 vcrypto::VirgilByteArray readVKeys(const std::string& pathTofile);
 
-int MAIN(int argc, char** argv) {
+int identity_confirm_private_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back(
@@ -81,11 +72,10 @@ int MAIN(int argc, char** argv) {
             "virgil identity-confirm-private -d <obfuscate_value> -t <obfuscate_type> -o validated-identity.txt "
             "--app-key application-private.key\n\n");
 
-        std::string descriptionMessage =
-            vcli::getDescriptionMessage(vcli::kIdentityConfirmPrivate_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kIdentityConfirmPrivate_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
         TCLAP::ValueArg<std::string> outArg("o", "validation-token",
                                             "A Validated Identity. If omitted, stdout is used.", false, "", "file");
@@ -99,8 +89,7 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> appPrivateKeyPasswordArg(
             "", "app-key-password", "Password to be used for Application Private Key encryption.", false, "", "arg");
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(appPrivateKeyPasswordArg);
@@ -120,7 +109,7 @@ int MAIN(int argc, char** argv) {
         if (appPrivateKeyPasswordArg.isSet()) {
             privateKeyPassword = vcrypto::str2bytes(appPrivateKeyPasswordArg.getValue());
         } else {
-            privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+            privateKeyPassword = cli::setPrivateKeyPass(privateKey);
         }
         vsdk::Credentials appCredentials(privateKey, privateKeyPassword);
 
@@ -137,7 +126,7 @@ int MAIN(int argc, char** argv) {
         std::string validatedIdentityStr =
             vsdk::io::Marshaller<vsdk::dto::ValidatedIdentity>::toJson<4>(validatedIdentity);
 
-        vcli::writeOutput(outArg.getValue(), validatedIdentityStr);
+        cli::writeOutput(outArg.getValue(), validatedIdentityStr);
 
         if (verboseArg.isSet()) {
             std::cout << "The validated-identity for a Private Virgil Card generated" << std::endl;

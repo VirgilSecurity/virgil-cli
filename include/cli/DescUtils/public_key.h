@@ -37,30 +37,26 @@
 #ifndef VIRGIL_CLI_DESCRIPTION_UTILITIES_PUBLIC_KEY_H
 #define VIRGIL_CLI_DESCRIPTION_UTILITIES_PUBLIC_KEY_H
 
-namespace virgil {
 namespace cli {
+/* public-key-revoke-global */
+const char* const kPublicKeyRevokeGlobal_Description =
+    "Revoke a chain of Global Virgil Cards connected by public-key-id from "
+    "Virgil Keys Service.\n\n";
+/* public-key-revoke-global */
 
-    /* public-key-revoke-global */
-    const char* const kPublicKeyRevokeGlobal_Description =
-        "Revoke a chain of Global Virgil Cards connected by public-key-id from "
-        "Virgil Keys Service.\n\n";
-    /* public-key-revoke-global */
+/**************************************************************/
 
-    /**************************************************************/
+/* public-key-revoke-private */
+const char* const kPublicKeyRevokePrivate_Description =
+    "Revoke a group of Private Cards from the Public Keys Service connected by "
+    "public-key-id + card-id of one of the Cards from the group.\n\n";
+/* public-key-revoke-private */
 
-    /* public-key-revoke-private */
-    const char* const kPublicKeyRevokePrivate_Description =
-        "Revoke a group of Private Cards from the Public Keys Service connected by "
-        "public-key-id + card-id of one of the Cards from the group.\n\n";
-    /* public-key-revoke-private */
+/**************************************************************/
 
-    /**************************************************************/
-
-    /* public-key-get */
-    const char* const kPublicKeyGet_Description =
-        "Get Global/Private Virgil Public Key from the Virgil Keys Service.\n\n";
-    /* public-key-get */
-}
+/* public-key-get */
+const char* const kPublicKeyGet_Description = "Get Global/Private Virgil Public Key from the Virgil Keys Service.\n\n";
+/* public-key-get */
 }
 
 #endif /* VIRGIL_CLI_DESCRIPTION_UTILITIES_PUBLIC_KEY_H */

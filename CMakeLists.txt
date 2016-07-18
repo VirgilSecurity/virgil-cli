@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015 Virgil Security Inc.
+# Copyright (C) 2016 Virgil Security Inc.
 #
 # Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #
@@ -57,10 +57,18 @@ set (VIRGIL_CLI_VERSION_PATCH 0)
 set (VIRGIL_CLI_VERSION_PRE_RELEASE "beta2")
 
 if (VIRGIL_CLI_VERSION_PRE_RELEASE)
-    set (VIRGIL_CLI_VERSION ${VIRGIL_CLI_VERSION_MAJOR}.${VIRGIL_CLI_VERSION_MINOR}.${VIRGIL_CLI_VERSION_PATCH}-${VIRGIL_CLI_VERSION_PRE_RELEASE})
+    set (VIRGIL_CLI_VERSION
+            ${VIRGIL_CLI_VERSION_MAJOR}
+            .${VIRGIL_CLI_VERSION_MINOR}
+            .${VIRGIL_CLI_VERSION_PATCH}-${VIRGIL_CLI_VERSION_PRE_RELEASE})
 else (VIRGIL_CLI_VERSION_PRE_RELEASE)
-    set (VIRGIL_CLI_VERSION ${VIRGIL_CLI_VERSION_MAJOR}.${VIRGIL_CLI_VERSION_MINOR}.${VIRGIL_CLI_VERSION_PATCH})
+    set (VIRGIL_CLI_VERSION
+            ${VIRGIL_CLI_VERSION_MAJOR}.${VIRGIL_CLI_VERSION_MINOR}
+            .${VIRGIL_CLI_VERSION_PATCH})
 endif (VIRGIL_CLI_VERSION_PRE_RELEASE)
+
+string (REGEX REPLACE ";" "" VIRGIL_CLI_VERSION "${VIRGIL_CLI_VERSION}")
+
 
 message (STATUS "Virgil CLI version: " ${VIRGIL_CLI_VERSION})
 
@@ -142,8 +150,15 @@ virgil_depends (
 )
 
 # Installed as virgil_sdk dependency, so found version will be appropriate
-virgil_find_package (virgil_sdk 3.2.3 EXACT)
-virgil_find_package (virgil_crypto 1.8.1 EXACT)
+set (VIRGIL_SDK_CPP_LIB_VERSION "3.2.3")
+set (VIRGIL_CRYPTO_LIB_VERSION "1.8.1")
+
+message (STATUS
+        "Install virgil-sdk-cpp lib v${VIRGIL_SDK_CPP_LIB_VERSION} "
+        "based on virgil-crypro lib v${VIRGIL_CRYPTO_LIB_VERSION}")
+
+virgil_find_package (virgil_sdk ${VIRGIL_SDK_CPP_LIB_VERSION} EXACT)
+virgil_find_package (virgil_crypto ${VIRGIL_CRYPTO_LIB_VERSION} EXACT)
 virgil_find_package (nlohman_json)
 virgil_find_package (restless)
 virgil_find_package (mbedtls)
@@ -153,19 +168,19 @@ file (GLOB_RECURSE SRC_LIST "src/*.cxx")
 foreach (SRC_FILE ${SRC_LIST})
     string (REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/src/" "" SRC_REL_PATH ${SRC_FILE})
     configure_file (
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/${SRC_REL_PATH}"
-        "${CMAKE_CURRENT_BINARY_DIR}/src/${SRC_REL_PATH}"
-        @ONLY
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/${SRC_REL_PATH}"
+            "${CMAKE_CURRENT_BINARY_DIR}/src/${SRC_REL_PATH}"
+            @ONLY
     )
 endforeach ()
 file (GLOB_RECURSE SRC_LIST "${CMAKE_CURRENT_BINARY_DIR}/src/*.cxx")
 
 add_executable (virgil_cli ${SRC_LIST})
 target_include_directories (virgil_cli PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/ext"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${CURL_INCLUDE_DIRS}"
-)
+        "${CMAKE_CURRENT_SOURCE_DIR}/ext"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${CURL_INCLUDE_DIRS}"
+        )
 target_link_libraries (virgil_cli virgil::security::virgil_sdk ${CURL_LIBRARIES})
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 

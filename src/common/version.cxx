@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <string>
+
 #include <cli/version.h>
 
-namespace virgil {
-
+namespace cli {
 const char* cli_version() {
-    return "@CLI_VERSION@";
+    std::string txt = "@VIRGIL_CLI_VERSION@\n";
+    txt += "virgil-sdk-cpp lib v@VIRGIL_SDK_CPP_LIB_VERSION@"
+           " based on virgil-crypto lib v@VIRGIL_CRYPTO_LIB_VERSION@";
+    return txt.data();
 }
-
-} // virgil
+} // cli

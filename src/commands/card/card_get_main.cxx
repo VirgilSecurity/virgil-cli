@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,8 +35,6 @@
  */
 
 #include <iostream>
-#include <string>
-#include <stdexcept>
 
 #include <tclap/CmdLine.h>
 
@@ -47,20 +45,15 @@
 #include <cli/pair.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/wrapper/sdk/PrivateKey.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
-
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN card_get_main
-#endif
+namespace wsdk = cli::wrapper::sdk;
 
 static void writeCard(const std::string& pathTofolder, const vsdk::models::CardModel& card);
 
-int MAIN(int argc, char** argv) {
+int card_get_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Receive a private/global Virgil Card by card-id:\n"
@@ -70,31 +63,28 @@ int MAIN(int argc, char** argv) {
                            "one of the Cards:\n"
                            "virgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n\n");
 
-        std::string descriptionMessage =
-            virgil::cli::getDescriptionMessage(vcli::kCardCreateGlobal_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardCreateGlobal_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kCardCreateGlobal_Output_Description, false, "", "arg");
+        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kCardCreateGlobal_Output_Description, false, "", "arg");
 
-        TCLAP::ValueArg<std::string> cardIdArg(vcli::kCardId_ShortName, vcli::kCardId_LongName,
-                                               vcli::kCardId_Description, true, "", vcli::kCardId_TypeDesc);
+        TCLAP::ValueArg<std::string> cardIdArg(cli::kCardId_ShortName, cli::kCardId_LongName, cli::kCardId_Description,
+                                               true, "", cli::kCardId_TypeDesc);
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg(vcli::kPublicKeyId_ShortName, vcli::kPublicKeyId_LongName,
-                                                    vcli::kPublicKeyId_Description, false, "",
-                                                    vcli::kPublicKeyId_TypeDesc);
+        TCLAP::ValueArg<std::string> publicKeyIdArg(cli::kPublicKeyId_ShortName, cli::kPublicKeyId_LongName,
+                                                    cli::kPublicKeyId_Description, false, "",
+                                                    cli::kPublicKeyId_TypeDesc);
 
-        TCLAP::ValueArg<std::string> privateKeyArg(vcli::kPrivateKey_ShortName, vcli::kPrivateKey_LongName,
-                                                   vcli::kPrivateKey_Description, false, "",
-                                                   vcli::kPrivateKey_TypeDesc);
+        TCLAP::ValueArg<std::string> privateKeyArg(cli::kPrivateKey_ShortName, cli::kPrivateKey_LongName,
+                                                   cli::kPrivateKey_Description, false, "", cli::kPrivateKey_TypeDesc);
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
-            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
-            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
+            cli::kPrivateKeyPassword_ShortName, cli::kPrivateKeyPassword_LongName, cli::kPrivateKeyPassword_Description,
+            false, "", cli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
@@ -104,18 +94,18 @@ int MAIN(int argc, char** argv) {
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile();
+        cli::ConfigFile configFile = cli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
         std::string pathTofolder = outArg.getValue();
 
         if (publicKeyIdArg.isSet() && privateKeyArg.isSet()) {
             std::string pathPrivateKey = privateKeyArg.getValue();
-            vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
+            vcrypto::VirgilByteArray privateKey = wsdk::readPrivateKey(pathPrivateKey);
             vcrypto::VirgilByteArray privateKeyPassword;
             if (privateKeyPasswordArg.isSet()) {
                 privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
             } else {
-                privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+                privateKeyPassword = cli::setPrivateKeyPass(privateKey);
             }
             vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
@@ -157,12 +147,11 @@ int MAIN(int argc, char** argv) {
 static void writeCard(const std::string& pathTofolder, const vsdk::models::CardModel& card) {
     std::string cardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(card);
     if (pathTofolder.empty()) {
-        vcli::writeBytes(pathTofolder, cardStr);
+        cli::writeBytes(pathTofolder, cardStr);
         return;
     }
 
     std::string identity = card.getCardIdentity().getValue();
-    std::string cardId = card.getId();
     std::string fileName = identity + "-id-" + card.getId() + ".vcard";
-    vcli::writeBytes(pathTofolder + "/" + fileName, cardStr);
+    cli::writeBytes(pathTofolder + "/" + fileName, cardStr);
 }

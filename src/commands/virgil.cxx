@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
         print_usage(std::cout, argv[0]);
         return EXIT_SUCCESS;
     } else if (firstArg == "--version") {
-        virgil::cli::printVersion(std::cout, argv[0]);
+        cli::printVersion(std::cout, argv[0]);
         return EXIT_SUCCESS;
     }
 

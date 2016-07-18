@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -47,10 +47,11 @@
 #include <cli/version.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/wrapper/sdk/PrivateKey.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
-namespace vcli = virgil::cli;
+namespace wsdk = cli::wrapper::sdk;
 
 /**
  * @brief Returns whether underling data is ASN.1 structure or not.
@@ -59,34 +60,27 @@ inline bool is_asn1(const vcrypto::VirgilByteArray& data) {
     return data.size() > 0 && data[0] == 0x30;
 }
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN key2pub_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int key2pub_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("virgil key2pub -i private.key -o public.key\n\n");
 
         examples.push_back("virgil key2pub -i private.key -o public.key -p STRONGPASS\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kKey2pub_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kKey2pub_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kKey2pub_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", cli::kKey2pub_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kKey2pub_Output_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kKey2pub_Output_Description, false, "", "file");
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
-            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
-            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
+            cli::kPrivateKeyPassword_ShortName, cli::kPrivateKeyPassword_LongName, cli::kPrivateKeyPassword_Description,
+            false, "", cli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
@@ -95,9 +89,9 @@ int MAIN(int argc, char** argv) {
         cmd.parse(argc, argv);
 
         // Prepare input. Read private key.
-        std::string privateKeyStr = vcli::readInput(inArg.getValue());
+        std::string privateKeyStr = cli::readInput(inArg.getValue());
         vcrypto::VirgilByteArray privateKey;
-        if (vcli::isPrivateKeyModel(privateKeyStr)) {
+        if (wsdk::isPrivateKeyModel(privateKeyStr)) {
             vsdk::models::PrivateKeyModel privateKeyModel =
                 vsdk::io::Marshaller<vsdk::models::PrivateKeyModel>::fromJson(privateKeyStr);
             privateKey = privateKeyModel.getKey();
@@ -109,7 +103,7 @@ int MAIN(int argc, char** argv) {
         if (privateKeyPasswordArg.isSet()) {
             privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
         } else {
-            privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+            privateKeyPassword = cli::setPrivateKeyPass(privateKey);
         }
 
         // Extract public key.
@@ -119,7 +113,7 @@ int MAIN(int argc, char** argv) {
         vcrypto::VirgilByteArray publicKey =
             is_asn1(privateKey) ? cipher.exportPublicKeyToDER() : cipher.exportPublicKeyToPEM();
 
-        virgil::cli::writeBytes(outArg.getValue(), publicKey);
+        cli::writeBytes(outArg.getValue(), publicKey);
         if (verboseArg.isSet()) {
             std::cout << "Public Key has been extracted from the Private Key" << std::endl;
         }

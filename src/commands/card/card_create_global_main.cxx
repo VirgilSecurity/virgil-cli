@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,14 +35,12 @@
  */
 
 #include <iostream>
-#include <string>
 #include <vector>
-#include <stdexcept>
 
 #include <tclap/CmdLine.h>
 
-#include <virgil/crypto/VirgilKeyPair.h>
 #include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/crypto/VirgilKeyPair.h>
 
 #include <virgil/sdk/ServicesHub.h>
 #include <virgil/sdk/io/Marshaller.h>
@@ -51,18 +49,16 @@
 #include <cli/pair.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/wrapper/sdk/PrivateKey.h>
+#include <cli/wrapper/sdk/PublicKey.h>
+#include <cli/wrapper/sdk/ValidatedIdentity.h>
+#include <cli/InputShadow.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
-namespace vcli = virgil::cli;
+namespace wsdk = cli::wrapper::sdk;
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN card_create_global_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int card_create_global_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Create a Global Virgil Card:\n"
@@ -83,38 +79,35 @@ int MAIN(int argc, char** argv) {
                            "virgil card-create-global -d alice@domain.com "
                            "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
 
-        std::string descriptionMessage =
-            virgil::cli::getDescriptionMessage(vcli::kCardCreateGlobal_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardCreateGlobal_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Global Virgil Card. If omitted, stdout is used.", false, "",
                                             "file");
 
         TCLAP::ValueArg<std::string> validatedIdentityArg(
-            vcli::kValidatedIdentity_ShortName, vcli::kValidatedIdentity_LongName,
-            vcli::kGlobalValidatedIdentity_Description, true, "", vcli::kValidatedIdentity_TypeDesc);
+            cli::kValidatedIdentity_ShortName, cli::kValidatedIdentity_LongName,
+            cli::kGlobalValidatedIdentity_Description, true, "", cli::kValidatedIdentity_TypeDesc);
 
-        TCLAP::ValueArg<std::string> identityArg(vcli::kIdentity_ShortName, vcli::kIdentity_LongName,
-                                                 vcli::kGlobalIdentity_Description, true, "",
-                                                 vcli::kIdentity_TypedDesc);
+        TCLAP::ValueArg<std::string> identityArg(cli::kIdentity_ShortName, cli::kIdentity_LongName,
+                                                 cli::kGlobalIdentity_Description, true, "", cli::kIdentity_TypedDesc);
 
         TCLAP::ValueArg<std::string> publicKeyArg("", "public-key", "Public key", true, "", "file");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg(vcli::kPublicKeyId_ShortName, vcli::kPublicKeyId_LongName,
-                                                    vcli::kPublicKeyId_Description, true, "",
-                                                    vcli::kPublicKeyId_TypeDesc);
+        TCLAP::ValueArg<std::string> publicKeyIdArg(cli::kPublicKeyId_ShortName, cli::kPublicKeyId_LongName,
+                                                    cli::kPublicKeyId_Description, true, "",
+                                                    cli::kPublicKeyId_TypeDesc);
 
-        TCLAP::ValueArg<std::string> privateKeyArg(vcli::kPrivateKey_ShortName, vcli::kPrivateKey_LongName,
-                                                   vcli::kPrivateKey_Description, true, "", vcli::kPrivateKey_TypeDesc);
+        TCLAP::ValueArg<std::string> privateKeyArg(cli::kPrivateKey_ShortName, cli::kPrivateKey_LongName,
+                                                   cli::kPrivateKey_Description, true, "", cli::kPrivateKey_TypeDesc);
 
         TCLAP::ValueArg<std::string> privateKeyPasswordArg(
-            vcli::kPrivateKeyPassword_ShortName, vcli::kPrivateKeyPassword_LongName,
-            vcli::kPrivateKeyPassword_Description, false, "", vcli::kPrivateKeyPassword_TypeDesc);
+            cli::kPrivateKeyPassword_ShortName, cli::kPrivateKeyPassword_LongName, cli::kPrivateKeyPassword_Description,
+            false, "", cli::kPrivateKeyPassword_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(privateKeyPasswordArg);
@@ -125,19 +118,19 @@ int MAIN(int argc, char** argv) {
         cmd.parse(argc, argv);
 
         std::string pathPrivateKey = privateKeyArg.getValue();
-        vcrypto::VirgilByteArray privateKey = vcli::readPrivateKey(pathPrivateKey);
+        vcrypto::VirgilByteArray privateKey = wsdk::readPrivateKey(pathPrivateKey);
         vcrypto::VirgilByteArray privateKeyPassword;
         if (privateKeyPasswordArg.isSet()) {
             privateKeyPassword = vcrypto::str2bytes(privateKeyPasswordArg.getValue());
         } else {
-            privateKeyPassword = vcli::setPrivateKeyPass(privateKey);
+            privateKeyPassword = cli::setPrivateKeyPass(privateKey);
         }
 
         vcrypto::VirgilByteArray publicKey;
         std::string publicKeyId;
         if (publicKeyArg.isSet()) {
             std::string pathPublicKey = publicKeyArg.getValue();
-            publicKey = vcli::readFileBytes(pathPublicKey);
+            publicKey = wsdk::readPublicKey(pathPublicKey);
             if (!vcrypto::VirgilKeyPair::isKeyPairMatch(publicKey, privateKey, privateKeyPassword)) {
                 throw std::runtime_error("Public key and Private key doesn't math to each other");
             }
@@ -149,13 +142,13 @@ int MAIN(int argc, char** argv) {
 
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile();
+        cli::ConfigFile configFile = cli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
         vsdk::models::CardModel card;
         if (validatedIdentityArg.isSet()) {
             vsdk::dto::ValidatedIdentity validatedIdentity =
-                vcli::readValidateIdentity(validatedIdentityArg.getValue());
+                wsdk::readValidatedIdentity(validatedIdentityArg.getValue());
             if (publicKeyArg.isSet()) {
                 card = servicesHub.card().create(validatedIdentity, publicKey, credentials);
                 if (verboseArg.isSet()) {
@@ -181,7 +174,7 @@ int MAIN(int argc, char** argv) {
 
             std::cout << "Enter confirmation code which was sent on you identity - " << recipientType << ":"
                       << recipientValue << std::endl;
-            std::string confirmationCode = vcli::inputShadow();
+            std::string confirmationCode = cli::inputShadow();
 
             if (verboseArg.isSet()) {
                 std::cout << "Confirme identity " << recipientValue << std::endl;
@@ -209,7 +202,7 @@ int MAIN(int argc, char** argv) {
         }
 
         std::string cardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(card);
-        vcli::writeBytes(outArg.getValue(), cardStr);
+        cli::writeBytes(outArg.getValue(), cardStr);
 
     } catch (TCLAP::ArgException& exception) {
         std::cerr << "card-create-global. Error: " << exception.error() << " for arg " << exception.argId()

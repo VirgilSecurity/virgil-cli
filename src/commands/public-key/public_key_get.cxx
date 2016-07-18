@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,8 +35,6 @@
  */
 
 #include <iostream>
-#include <stdexcept>
-#include <string>
 
 #include <tclap/CmdLine.h>
 
@@ -50,48 +48,40 @@
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN public_key_get_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int public_key_get_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Get a public key by its `public-key-id`:\n"
                            "virgil public-key-get -o alice/public.key -e <public_key_id>\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kPublicKeyGet_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kPublicKeyGet_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Virgil Public Key. If omitted, stdout is used.", false, "",
                                             "file");
 
-        TCLAP::ValueArg<std::string> publicKeyIdArg(vcli::kPublicKeyId_ShortName, vcli::kPublicKeyId_LongName,
-                                                    vcli::kPublicKeyId_Description, true, "",
-                                                    vcli::kPublicKeyId_TypeDesc);
+        TCLAP::ValueArg<std::string> publicKeyIdArg(cli::kPublicKeyId_ShortName, cli::kPublicKeyId_LongName,
+                                                    cli::kPublicKeyId_Description, true, "",
+                                                    cli::kPublicKeyId_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(publicKeyIdArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile();
+        cli::ConfigFile configFile = cli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
         std::string publicKeyId = publicKeyIdArg.getValue();
 
         vsdk::models::PublicKeyModel publicKey = servicesHub.publicKey().get(publicKeyId);
         std::string publicKeyStr = vsdk::io::Marshaller<vsdk::models::PublicKeyModel>::toJson<4>(publicKey);
-        vcli::writeBytes(outArg.getValue(), publicKeyStr);
+        cli::writeBytes(outArg.getValue(), publicKeyStr);
 
         if (verboseArg.isSet()) {
             std::cout << "Public key by public-key-id:" << publicKeyIdArg.getValue() << " has been received"

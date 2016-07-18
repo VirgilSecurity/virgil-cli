@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -39,22 +39,19 @@
 
 #include <string>
 
-#include <config_path.h>
+#include <config_path/config_path.h>
 
 #include <virgil/sdk/ServiceUri.h>
 
 #include <cli/consts.h>
 
-namespace virgil {
 namespace cli {
+struct ConfigFile {
+    std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
+    virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
+};
 
-    struct ConfigFile {
-        std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
-        virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
-    };
-
-    ConfigFile readConfigFile();
-}
+ConfigFile readConfigFile();
 }
 
 #endif /* VIRGIL_CLI_CONFIG_H */

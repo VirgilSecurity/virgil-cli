@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,10 +35,7 @@
  */
 
 #include <iostream>
-#include <stdexcept>
-#include <string>
 #include <fstream>
-#include <iterator>
 
 #include <tclap/CmdLine.h>
 
@@ -53,33 +50,26 @@
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
-namespace vcli = virgil::cli;
-
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN exhash_main
-#endif
 
 static vcrypto::foundation::VirgilPBKDF::Hash hash_alg(const std::string& param);
 
-int MAIN(int argc, char** argv) {
+int exhash_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Underlying hash - SHA384 (default), iterations - 2048 (default):\n"
-                           "virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt\n\n");
+                           "virgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt\n\n");
 
         examples.push_back("Underlying hash - SHA512, iterations - 4096:\n"
-                           "virgil hash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096\n\n");
+                           "virgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096\n\n");
 
-        std::string descriptionMessage = vcli::getDescriptionMessage(vcli::kExhash_Descritpion, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kExhash_Descritpion, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kExhash_Input_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", cli::kExhash_Input_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kExhash_Output_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kExhash_Output_Description, false, "", "file");
 
         std::vector<std::string> alg;
         alg.push_back("sha1");
@@ -89,15 +79,14 @@ int MAIN(int argc, char** argv) {
         alg.push_back("sha512");
         TCLAP::ValuesConstraint<std::string> allowedAlg(alg);
 
-        TCLAP::ValueArg<std::string> saltArg("s", "salt", vcli::kExhash_Salt_Descritpion, true, "", "file");
+        TCLAP::ValueArg<std::string> saltArg("s", "salt", cli::kExhash_Salt_Descritpion, true, "", "file");
 
-        TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm", vcli::kExhash_Algorithm_Description, false,
-                                                  "sha384", &allowedAlg);
+        TCLAP::ValueArg<std::string> algorithmArg("a", "algorithm", cli::kExhash_Algorithm_Description, false, "sha384",
+                                                  &allowedAlg);
 
-        TCLAP::ValueArg<int> iterationsArg("c", "iterations", vcli::kExhash_Iterations_Description, false, 2048, "int");
+        TCLAP::ValueArg<int> iterationsArg("c", "iterations", cli::kExhash_Iterations_Description, false, 2048, "int");
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(iterationsArg);
@@ -120,19 +109,19 @@ int MAIN(int argc, char** argv) {
 
         std::string salt((std::istreambuf_iterator<char>(inSaltFile)), std::istreambuf_iterator<char>());
 
-        std::string value = vcli::readInput(inArg.getValue());
+        std::string value = cli::readInput(inArg.getValue());
         auto sequenceBase64 = vsdk::util::obfuscate(value, saltArg.getValue(), hash_alg(algorithmArg.getValue()),
                                                     iterationsArg.getValue());
-        vcli::writeOutput(outArg.getValue(), sequenceBase64);
+        cli::writeOutput(outArg.getValue(), sequenceBase64);
         if (verboseArg.isSet()) {
             std::cout << "The hash generated" << std::endl;
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "hash. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "exhash. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "hash. Error: " << exception.what() << std::endl;
+        std::cerr << "exhash. Error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 

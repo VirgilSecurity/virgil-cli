@@ -34,35 +34,24 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H
-#define VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H
+#ifndef VIRGIL_CLI_WRAPPER_SDK_PUBLIC_KEY_H
+#define VIRGIL_CLI_WRAPPER_SDK_PUBLIC_KEY_H
 
-#include <vector>
+#include <string>
 
-#include <virgil/sdk/ServicesHub.h>
+#include <virgil/crypto/VirgilByteArray.h>
+
+#include <virgil/sdk/models/PublicKeyModel.h>
 
 namespace cli {
 namespace wrapper {
     namespace sdk {
-        class CardClient {
-        public:
-            CardClient();
-            explicit CardClient(const virgil::sdk::ServicesHub& servicesHub);
-
-        public:
-            virgil::sdk::models::CardModel getCardById(const std::string& recipientId);
-            std::vector<virgil::sdk::models::CardModel> getGlobalCards(const std::string& email);
-            std::vector<virgil::sdk::models::CardModel>
-            getConfirmedPrivateCards(const std::string& value, const std::string& type = std::string());
-
-        private:
-            virgil::sdk::ServicesHub initFromConfigFile();
-
-        private:
-            virgil::sdk::ServicesHub servicesHub_;
-        };
+        bool isPublicKeyModel(const std::string& jPublicKeyStr);
+        virgil::sdk::models::PublicKeyModel readPublicKeyModel(const std::string& inPathnameFile);
+        virgil::crypto::VirgilByteArray readPublicKey(const std::string& inPathnameFile);
+        void writePublicKeyModel(const std::string& outPathnameFile, const virgil::sdk::models::PublicKeyModel& card);
     }
 }
 }
 
-#endif /* VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H */
+#endif /* VIRGIL_CLI_WRAPPER_SDK_PUBLIC_KEY_H */

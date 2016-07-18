@@ -34,35 +34,55 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H
-#define VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H
-
-#include <vector>
-
-#include <virgil/sdk/ServicesHub.h>
-
 namespace cli {
-namespace wrapper {
-    namespace sdk {
-        class CardClient {
-        public:
-            CardClient();
-            explicit CardClient(const virgil::sdk::ServicesHub& servicesHub);
 
-        public:
-            virgil::sdk::models::CardModel getCardById(const std::string& recipientId);
-            std::vector<virgil::sdk::models::CardModel> getGlobalCards(const std::string& email);
-            std::vector<virgil::sdk::models::CardModel>
-            getConfirmedPrivateCards(const std::string& value, const std::string& type = std::string());
+enum class ExitCode {
+    /* successful termination */
+    EXIT_OK = 0,
 
-        private:
-            virgil::sdk::ServicesHub initFromConfigFile();
+    /* command line usage error */
+    EXIT_USAGE = 64,
 
-        private:
-            virgil::sdk::ServicesHub servicesHub_;
-        };
-    }
+    /* data format error */
+    EXIT_DATAERR = 65,
+
+    /* cannot open input */
+    EXIT_NOINPUT = 66,
+
+    /* addressee unknown */
+    EXIT_NOUSER = 67,
+
+    /* host name unknown */
+    EXIT_NOHOST = 68,
+
+    /* service unavailable */
+    EXIT_UNAVAILABLE = 69,
+
+    /* internal software error */
+    EXIT_SOFTWARE = 70,
+
+    /* system error (e.g., can't fork) */
+    EXIT_OSERR = 71,
+
+    /* critical OS file missing */
+    EXIT_OSFILE = 72,
+
+    /* can't create (user) output file */
+    EXIT_CANTCREAT = 73,
+
+    /* input/output error */
+    EXIT_IOERR = 74,
+
+    /* temp failure; user is invited to retry */
+    EXIT_TEMPFAIL = 75,
+
+    /* remote error in protocol */
+    EXIT_PROTOCOL = 76,
+
+    /* permission denied */
+    EXIT_NOPERM = 77,
+
+    /* configuration error */
+    EXIT_CONFIG = 78
+};
 }
-}
-
-#endif /* VIRGIL_CLI_WRAPPER_SDK_CARD_CLIENT_H */

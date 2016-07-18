@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,8 +35,6 @@
  */
 
 #include <iostream>
-#include <string>
-#include <stdexcept>
 
 #include <tclap/CmdLine.h>
 
@@ -47,47 +45,41 @@
 #include <cli/pair.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/wrapper/sdk/ValidatedIdentity.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
+namespace wsdk = cli::wrapper::sdk;
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN identity_valid_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int identity_valid_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Validated identity:\n"
                            "virgil identity-valid -f alice/validated-identity.txt\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kIdentityValid_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kIdentityValid_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Return status. If omitted, stdout is used.", false, "",
                                             "file");
 
         TCLAP::ValueArg<std::string> validatedIdentityArg(
-            vcli::kValidatedIdentity_ShortName, vcli::kValidatedIdentity_LongName,
-            vcli::kGlobalValidatedIdentity_Description, true, "", vcli::kValidatedIdentity_TypeDesc);
+            cli::kValidatedIdentity_ShortName, cli::kValidatedIdentity_LongName,
+            cli::kGlobalValidatedIdentity_Description, true, "", cli::kValidatedIdentity_TypeDesc);
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(validatedIdentityArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile();
+        cli::ConfigFile configFile = cli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
-        vsdk::dto::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityArg.getValue());
+        vsdk::dto::ValidatedIdentity validatedIdentity = wsdk::readValidatedIdentity(validatedIdentityArg.getValue());
 
         bool validateToken = servicesHub.identity().validate(validatedIdentity);
         std::string validatedIdentityStr =
@@ -98,13 +90,13 @@ int MAIN(int argc, char** argv) {
                 std::cout << "Validation Token is valid" << std::endl;
                 std::cout << validatedIdentityStr << std::endl;
             }
-            vcli::writeOutput(outArg.getValue(), "true");
+            cli::writeOutput(outArg.getValue(), "true");
         } else {
             if (verboseArg.isSet()) {
                 std::cout << "Validation Token is not valid" << std::endl;
                 std::cout << validatedIdentityStr << std::endl;
             }
-            vcli::writeOutput(outArg.getValue(), "false");
+            cli::writeOutput(outArg.getValue(), "false");
         }
 
     } catch (TCLAP::ArgException& exception) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -52,15 +52,8 @@
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN card_search_private_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int card_search_private_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Search for the Private Virgil Card(s) with a confirmed Identity:\n"
@@ -77,13 +70,12 @@ int MAIN(int argc, char** argv) {
                            "virgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o "
                            "alice-with-unconfirmed-identity/ -u\n\n");
 
-        std::string descriptionMessage =
-            virgil::cli::getDescriptionMessage(vcli::kCardSearchPrivate_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardSearchPrivate_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kCardSearchPrivate_Description, false, "", "arg");
+        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kCardSearchPrivate_Description, false, "", "arg");
 
         TCLAP::ValueArg<std::string> identityArg(
             "d", "identity", "Identity value or obfuscated identity value (see 'virgil hash')", true, "", "arg");
@@ -91,11 +83,10 @@ int MAIN(int argc, char** argv) {
         TCLAP::ValueArg<std::string> identityTypeArg(
             "t", "identity-type", "Identity type or obfuscated identity type (see 'virgil hash')", true, "", "arg");
 
-        TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", vcli::kCardSearchPrivate_UnconfirmedIdentity_Description,
+        TCLAP::SwitchArg unconfirmedArg("u", "unconfirmed", cli::kCardSearchPrivate_UnconfirmedIdentity_Description,
                                         false);
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(unconfirmedArg);
@@ -105,7 +96,7 @@ int MAIN(int argc, char** argv) {
         cmd.parse(argc, argv);
 
         bool includeUnconfirmed = unconfirmedArg.getValue();
-        vcli::ConfigFile configFile = vcli::readConfigFile();
+        cli::ConfigFile configFile = cli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
         std::vector<vsdk::models::CardModel> foundCards;
         foundCards = servicesHub.card().search(identityArg.getValue(), identityTypeArg.getValue(), includeUnconfirmed);
@@ -129,7 +120,7 @@ int MAIN(int argc, char** argv) {
         if (pathTofolder.empty()) {
             for (auto&& foundCard : foundCards) {
                 std::string foundCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(foundCard);
-                vcli::writeBytes(pathTofolder, foundCardStr);
+                cli::writeBytes(pathTofolder, foundCardStr);
             }
         } else {
             for (auto&& foundCard : foundCards) {
@@ -144,7 +135,7 @@ int MAIN(int argc, char** argv) {
 
                 std::string fileName = identity + "-" + isConfirmed + "-id-" + foundCard.getId() + ".vcard";
                 std::string foundCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(foundCard);
-                vcli::writeBytes(pathTofolder + "/" + fileName, foundCardStr);
+                cli::writeBytes(pathTofolder + "/" + fileName, foundCardStr);
             }
         }
 

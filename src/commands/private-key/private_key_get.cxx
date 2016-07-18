@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,8 +35,6 @@
  */
 
 #include <iostream>
-#include <stdexcept>
-#include <string>
 
 #include <tclap/CmdLine.h>
 
@@ -47,32 +45,27 @@
 #include <cli/pair.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/wrapper/sdk/ValidatedIdentity.h>
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
+namespace wsdk = cli::wrapper::sdk;
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN private_key_get_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int private_key_get_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back(
             "virgil private-key-get -a <card_id> -f alice/validated_identity.txt -o alice/private.key\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kPrivateKeyGet_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kPrivateKeyGet_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Private Key. If omitted, stdout is used.", false, "", "file");
 
-        TCLAP::ValueArg<std::string> cardIdArg(vcli::kCardId_ShortName, vcli::kCardId_LongName,
-                                               vcli::kCardId_Description, true, "", vcli::kCardId_TypeDesc);
+        TCLAP::ValueArg<std::string> cardIdArg(cli::kCardId_ShortName, cli::kCardId_LongName, cli::kCardId_Description,
+                                               true, "", cli::kCardId_TypeDesc);
 
         TCLAP::ValueArg<std::string> validatedIdentityArg("f", "validated-identity",
                                                           "Validated Identity for Private Virgil Card - see 'virgil "
@@ -80,8 +73,7 @@ int MAIN(int argc, char** argv) {
                                                           "'virgil identity-confirm-global'",
                                                           true, "", "file");
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(validatedIdentityArg);
@@ -90,14 +82,14 @@ int MAIN(int argc, char** argv) {
         cmd.parse(argc, argv);
 
         std::string cardId = cardIdArg.getValue();
-        vsdk::dto::ValidatedIdentity validatedIdentity = vcli::readValidateIdentity(validatedIdentityArg.getValue());
+        vsdk::dto::ValidatedIdentity validatedIdentity = wsdk::readValidatedIdentity(validatedIdentityArg.getValue());
 
-        vcli::ConfigFile configFile = vcli::readConfigFile();
+        cli::ConfigFile configFile = cli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
 
         vsdk::models::PrivateKeyModel privateKey = servicesHub.privateKey().get(cardId, validatedIdentity);
         std::string privateKeyStr = vsdk::io::Marshaller<vsdk::models::PrivateKeyModel>::toJson<4>(privateKey);
-        vcli::writeBytes(outArg.getValue(), privateKeyStr);
+        cli::writeBytes(outArg.getValue(), privateKeyStr);
 
         if (verboseArg.isSet()) {
             std::cout << "Private key connected with the Card containing card-id:" << cardIdArg.getValue()

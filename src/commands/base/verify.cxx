@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -36,9 +36,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <iterator>
-#include <stdexcept>
-#include <string>
 
 #include <tclap/CmdLine.h>
 
@@ -46,52 +43,45 @@
 #include <virgil/crypto/VirgilStreamSigner.h>
 #include <virgil/crypto/stream/VirgilStreamDataSource.h>
 
-#include <virgil/sdk/ServicesHub.h>
-#include <virgil/sdk/models/CardModel.h>
-#include <virgil/sdk/io/Marshaller.h>
-
 #include <cli/version.h>
 #include <cli/pair.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
+#include <cli/wrapper/sdk/PrivateKey.h>
+#include <cli/wrapper/sdk/PublicKey.h>
+#include <cli/wrapper/sdk/CardClient.h>
+#include <cli/wrapper/sdk/Card.h>
 
 namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
-namespace vcli = virgil::cli;
-
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN verify_main
-#endif
+namespace wsdk = cli::wrapper::sdk;
 
 static void checkFormatRecipientArg(const std::pair<std::string, std::string>& pairRecipientArg);
 
-int MAIN(int argc, char** argv) {
+int verify_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r vcard:bob/bob.vcard\n\n");
 
         examples.push_back("virgil verify -i plain.txt -s plain.txt.sign -r pubkey:bob/public.key\n\n");
 
-        std::string descriptionMessage = virgil::cli::getDescriptionMessage(vcli::kVerify_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kVerify_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> inArg("i", "in", vcli::kVerify_Input_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> inArg("i", "in", cli::kVerify_Input_Description, false, "", "file");
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", vcli::kVerify_Output_Description, false, "", "file");
+        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kVerify_Output_Description, false, "", "file");
 
-        TCLAP::SwitchArg returnStatusArg("", "return-status", vcli::kVerify_SwitchReturnStatus_Description, false);
+        TCLAP::SwitchArg returnStatusArg("", "return-status", cli::kVerify_SwitchReturnStatus_Description, false);
 
-        TCLAP::ValueArg<std::string> signArg("s", "sign", vcli::kVerify_SignDigest_Description, true, "", "file");
+        TCLAP::ValueArg<std::string> signArg("s", "sign", cli::kVerify_SignDigest_Description, true, "", "file");
 
-        TCLAP::ValueArg<std::string> recipientArg("r", "recipient", vcli::kVerify_Recipient_Description, true, "",
+        TCLAP::ValueArg<std::string> recipientArg("r", "recipient", cli::kVerify_Recipient_Description, true, "",
                                                   "arg");
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.add(recipientArg);
@@ -101,7 +91,7 @@ int MAIN(int argc, char** argv) {
         cmd.add(inArg);
         cmd.parse(argc, argv);
 
-        auto recipientFormat = vcli::parsePair(recipientArg.getValue());
+        auto recipientFormat = cli::parsePair(recipientArg.getValue());
         checkFormatRecipientArg(recipientFormat);
 
         // Prepare input
@@ -136,31 +126,23 @@ int MAIN(int argc, char** argv) {
             if (verboseArg.isSet()) {
                 std::cout << "Read public key by path:" << value << std::endl;
             }
-            publicKey = vcli::readPublicKey(pathToPublicKeyFile);
+            publicKey = wsdk::readPublicKey(pathToPublicKeyFile);
         } else {
             // type [id|vcard]
             if (type == "id") {
-                vcli::ConfigFile configFile = vcli::readConfigFile();
-                vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
-
                 if (verboseArg.isSet()) {
                     std::cout << "Download a Virgil Card by id:" << value << std::endl;
                 }
-                auto card = servicesHub.card().get(value);
+                wsdk::CardClient cardClient;
+                auto card = cardClient.getCardById(value);
                 publicKey = card.getPublicKey().getKey();
             } else {
                 // vcard
-                std::string pathTofile = value;
+                std::string pathCardFile = value;
                 if (verboseArg.isSet()) {
-                    std::cout << "Read a Virgil Card by path:" << pathTofile << std::endl;
+                    std::cout << "Read a Virgil Card by path:" << pathCardFile << std::endl;
                 }
-                std::ifstream inFile(pathTofile, std::ios::in | std::ios::binary);
-                if (!inFile) {
-                    throw std::invalid_argument("cannot read file: " + pathTofile);
-                }
-
-                std::string jsonCard((std::istreambuf_iterator<char>(inFile)), std::istreambuf_iterator<char>());
-                auto card = vsdk::io::Marshaller<vsdk::models::CardModel>::fromJson(jsonCard);
+                auto card = wsdk::readCard(pathCardFile);
                 publicKey = card.getPublicKey().getKey();
             }
         }
@@ -172,13 +154,13 @@ int MAIN(int argc, char** argv) {
             if (returnStatusArg.getValue()) {
                 return EXIT_SUCCESS;
             } else {
-                vcli::writeBytes(outArg.getValue(), "success");
+                cli::writeBytes(outArg.getValue(), "success");
             }
         } else {
             if (returnStatusArg.getValue()) {
                 return EXIT_FAILURE;
             } else {
-                vcli::writeBytes(outArg.getValue(), "failure");
+                cli::writeBytes(outArg.getValue(), "failure");
             }
         }
 
