@@ -49,9 +49,19 @@ namespace cli {
 struct ConfigFile {
     std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
     virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
+
+    void setIdentityUrl(const std::string& identityUrl);
+    void setPublicKeyUrl(const std::string& publicKeyUrl);
+    void setPrivateKeyUrl(const std::string& privateKeyUrl);
 };
 
-ConfigFile readConfigFile();
+    ConfigFile iniToConfigFile(const std::string& ini);
+    std::string configFile2ini(const cli::ConfigFile& configFile);
+
+    ConfigFile readConfigFile();
+    ConfigFile readConfigFile(const std::string& path);
+    void writeConfigFile(const ConfigFile& configFile, const std::string& path);
+
 }
 
 #endif /* VIRGIL_CLI_CONFIG_H */

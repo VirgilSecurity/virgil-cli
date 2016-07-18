@@ -37,24 +37,23 @@
 #include <algorithm>
 #include <sstream>
 #include <fstream>
-#include <iterator>
-#include <stdexcept>
 
 #include <ini_parser/ini.hpp>
 #include <cli/ConfigFile.h>
+#include <cli/util.h>
 
 namespace vsdk = virgil::sdk;
 
-static cli::ConfigFile iniToConfigFile(const std::string& ini) {
+cli::ConfigFile cli::iniToConfigFile(const std::string& ini) {
     try {
         std::stringstream ss(ini);
         INI::Parser iniParser(ss);
 
         cli::ConfigFile configFile;
-        configFile.virgilAccessToken = iniParser.top()("Virgil Access Token")["token"];
+        configFile.virgilAccessToken = iniParser.top()["token"];
         configFile.serviceUri =
-            vsdk::ServiceUri(iniParser.top()("URI")["identity-service"], iniParser.top()("URI")["public-key-service"],
-                             iniParser.top()("URI")["private-key-service"]);
+            vsdk::ServiceUri(iniParser.top()("uri")["identity"], iniParser.top()("uri")["public-key"],
+                             iniParser.top()("uri")["private-key"]);
         return configFile;
 
     } catch (std::runtime_error& exception) {
@@ -62,6 +61,35 @@ static cli::ConfigFile iniToConfigFile(const std::string& ini) {
         error += exception.what();
         throw std::runtime_error(error);
     }
+}
+
+std::string cli::configFile2ini(const cli::ConfigFile& configFile) {
+    std::string data;
+    if (!configFile.virgilAccessToken.empty()) {
+        data += "token=" + configFile.virgilAccessToken + "\n";
+    }
+
+    std::string identityUrl = configFile.serviceUri.getIdentityService();
+    std::string publicKeyUrl = configFile.serviceUri.getPublicKeyService();
+    std::string privateKeyUrl = configFile.serviceUri.getPrivateKeyService();
+
+    const bool isUrls = !identityUrl.empty() || !publicKeyUrl.empty() || !privateKeyUrl.empty();
+    if (isUrls) {
+        data += "[uri]\n";
+    }
+
+    if (!identityUrl.empty()) {
+        data += "identity=" + identityUrl + "\n";
+    }
+
+    if (!publicKeyUrl.empty()) {
+        data += "public-key=" + publicKeyUrl + "\n";
+    }
+
+    if (!privateKeyUrl.empty()) {
+        data += "private-key=" + privateKeyUrl + "\n";
+    }
+    return data;
 }
 
 static cli::ConfigFile readGlobalConfigFile(const std::string& pathGlobalConfigFile) {
@@ -72,7 +100,25 @@ static cli::ConfigFile readGlobalConfigFile(const std::string& pathGlobalConfigF
     }
 
     std::string ini((std::istreambuf_iterator<char>(inGlobalConfigFile)), std::istreambuf_iterator<char>());
-    return iniToConfigFile(ini);
+    return cli::iniToConfigFile(ini);
+}
+
+void cli::ConfigFile::setIdentityUrl(const std::string& identityUrl) {
+    using virgil::sdk::ServiceUri;
+    ServiceUri existServiceUri = serviceUri;
+    serviceUri = ServiceUri(identityUrl, existServiceUri.getPublicKeyService(), existServiceUri.getPrivateKeyService());
+}
+
+void cli::ConfigFile::setPublicKeyUrl(const std::string& publicKeyUrl) {
+    using virgil::sdk::ServiceUri;
+    ServiceUri existServiceUri = serviceUri;
+    serviceUri = ServiceUri(existServiceUri.getIdentityService(), publicKeyUrl, existServiceUri.getPrivateKeyService());
+}
+
+void cli::ConfigFile::setPrivateKeyUrl(const std::string& privateKeyUrl) {
+    using virgil::sdk::ServiceUri;
+    ServiceUri existServiceUri = serviceUri;
+    serviceUri = ServiceUri(existServiceUri.getIdentityService(), existServiceUri.getPublicKeyService(), privateKeyUrl);
 }
 
 cli::ConfigFile cli::readConfigFile() {
@@ -108,7 +154,6 @@ cli::ConfigFile cli::readConfigFile() {
         if (globalConfigFile.virgilAccessToken.empty()) {
             throw std::runtime_error("The Virgil Access Token was not set. See 'virgil config' for details.");
         }
-
         localConfigFile.virgilAccessToken = globalConfigFile.virgilAccessToken;
     }
 
@@ -132,4 +177,18 @@ cli::ConfigFile cli::readConfigFile() {
 
     localConfigFile.serviceUri = virgil::sdk::ServiceUri(identityServiceUri, publicServiceUri, privateServiceUri);
     return localConfigFile;
+}
+
+cli::ConfigFile cli::readConfigFile(const std::string& path) {
+    std::string configFileStr = cli::readFile(path);
+    return iniToConfigFile(configFileStr);
+}
+
+void cli::writeConfigFile(const cli::ConfigFile& configFile, const std::string& path) {
+    std::string data = cli::configFile2ini(configFile);
+    std::ofstream outFile(path, std::ios::out | std::ios::binary);
+    if (!outFile) {
+        throw std::invalid_argument("can not write file: " + path);
+    }
+    outFile << data;
 }
