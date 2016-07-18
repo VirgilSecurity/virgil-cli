@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015 Virgil Security Inc.
+ * Copyright (C) 2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -35,8 +35,6 @@
  */
 
 #include <iostream>
-#include <string>
-#include <stdexcept>
 
 #include <tclap/CmdLine.h>
 
@@ -50,15 +48,8 @@
 
 namespace vsdk = virgil::sdk;
 namespace vcrypto = virgil::crypto;
-namespace vcli = virgil::cli;
 
-#ifdef SPLIT_CLI
-#define MAIN main
-#else
-#define MAIN card_search_global_main
-#endif
-
-int MAIN(int argc, char** argv) {
+int card_search_global_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples;
         examples.push_back("Search for global Virgil Card by user's email:\n"
@@ -70,11 +61,10 @@ int MAIN(int argc, char** argv) {
         examples.push_back("Get all application Cards:\n"
                            "virgil card-search-global -c \"com.virgilsecurity.*\"\n\n");
 
-        std::string descriptionMessage =
-            virgil::cli::getDescriptionMessage(vcli::kCardSearchGlobal_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardSearchGlobal_Description, examples);
 
         // Parse arguments.
-        TCLAP::CmdLine cmd(descriptionMessage, ' ', virgil::cli_version());
+        TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
         TCLAP::ValueArg<std::string> outArg("o", "out", "Folder where Virgil Cards will be saved.", false, "", "arg");
 
@@ -84,15 +74,14 @@ int MAIN(int argc, char** argv) {
 
         TCLAP::ValueArg<std::string> emailArg("e", "email", "email", true, "", "arg");
 
-        TCLAP::SwitchArg verboseArg(vcli::kVerbose_ShortName, vcli::kVerbose_LongName, vcli::kVerbose_Description,
-                                    false);
+        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
 
         cmd.add(verboseArg);
         cmd.xorAdd(emailArg, applicationNameArg);
         cmd.add(outArg);
         cmd.parse(argc, argv);
 
-        vcli::ConfigFile configFile = vcli::readConfigFile();
+        cli::ConfigFile configFile = cli::readConfigFile();
         vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
         std::vector<vsdk::models::CardModel> appCards;
         if (applicationNameArg.isSet()) {
@@ -119,7 +108,7 @@ int MAIN(int argc, char** argv) {
         if (pathTofolder.empty()) {
             for (auto&& appCard : appCards) {
                 std::string appCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(appCard);
-                vcli::writeBytes(pathTofolder, appCardStr);
+                cli::writeBytes(pathTofolder, appCardStr);
             }
         } else {
             for (auto&& appCard : appCards) {
@@ -128,7 +117,7 @@ int MAIN(int argc, char** argv) {
 
                 std::string fileName = identity + "-id-" + appCard.getId() + ".vcard";
                 std::string appCardStr = vsdk::io::Marshaller<vsdk::models::CardModel>::toJson<4>(appCard);
-                vcli::writeBytes(pathTofolder + "/" + fileName, appCardStr);
+                cli::writeBytes(pathTofolder + "/" + fileName, appCardStr);
             }
         }
 
