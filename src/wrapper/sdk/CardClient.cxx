@@ -61,5 +61,5 @@ std::vector<vsdk::models::CardModel> wsdk::CardClient::getConfirmedPrivateCards(
 
 vsdk::ServicesHub wsdk::CardClient::initFromConfigFile() {
     cli::ConfigFile configFile = cli::readConfigFile();
-    return vsdk::ServicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+    return vsdk::ServicesHub(configFile.virgilAccessToken, configFile.getServiceUri());
 }

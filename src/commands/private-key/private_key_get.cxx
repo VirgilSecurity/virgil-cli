@@ -85,7 +85,7 @@ int private_key_get_main(int argc, char** argv) {
         vsdk::dto::ValidatedIdentity validatedIdentity = wsdk::readValidatedIdentity(validatedIdentityArg.getValue());
 
         cli::ConfigFile configFile = cli::readConfigFile();
-        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.getServiceUri());
 
         vsdk::models::PrivateKeyModel privateKey = servicesHub.privateKey().get(cardId, validatedIdentity);
         std::string privateKeyStr = vsdk::io::Marshaller<vsdk::models::PrivateKeyModel>::toJson<4>(privateKey);

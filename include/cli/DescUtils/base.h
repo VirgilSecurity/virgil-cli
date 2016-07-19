@@ -42,7 +42,6 @@
 namespace cli {
 /* config */
 const char* const kConfig_Description = "Get information about Virgil CLI configuration file.\n\n";
-const char* const kOutputArg_Description = "If omitted, stdout is used.\n";
 
 const char* const kConfig_SwitchGlobal_Description = "Show path to the configuration file applied for all users.";
 

@@ -92,7 +92,7 @@ int private_key_add_main(int argc, char** argv) {
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
         cli::ConfigFile configFile = cli::readConfigFile();
-        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.getServiceUri());
         servicesHub.privateKey().add(cardId, credentials);
 
         if (verboseArg.isSet()) {
