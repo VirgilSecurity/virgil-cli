@@ -69,31 +69,22 @@ int config_main(int argc, char** argv) {
         std::string description = "Get information about Virgil CLI configuration file.\n";
 
         std::vector<std::string> examples;
-        examples.push_back("1. Set url for Identity Service in configuration file:\n"
-                           "\tvirgil config --local uri.identity <uri_identity>\n");
-
-        examples.push_back("1.1 Set url for Public Key Service in configuration file:\n"
-                           "\tvirgil config --local uri.public-key <uri_public_key>\n");
-
-        examples.push_back("1.2 Set url for Private Key Service in configuration file:\n"
-                           "\tvirgil config --local uri.public-key <uri_private_key>\n\n");
-
-        examples.push_back("2. Show path to the configuration file applied for all users:\n"
+        examples.push_back("1. Show path to the configuration file applied for all users:\n"
                            "\tvirgil config --global --path\n");
 
-        examples.push_back("2.1 Show path to the configuration file applied for current user:\n"
+        examples.push_back("1.1 Show path to the configuration file applied for current user:\n"
                            "\tvirgil config --local --path\n\n");
 
-        examples.push_back("3. Show the global configuration file:\n"
+        examples.push_back("2. Show the global configuration file:\n"
                            "\tvirgil config --global --list\n");
 
-        examples.push_back("3.1 Show the local configuration file:\n"
+        examples.push_back("2.1 Show the local configuration file:\n"
                            "\tvirgil config --local --list\n\n");
 
-        examples.push_back("4 Set Virgil Access Token in configuration file:\n"
+        examples.push_back("3. Set Virgil Access Token in configuration file:\n"
                            "\tvirgil config --global token <VIRGIL_ACCESS_TOKEN>\n");
 
-        examples.push_back("4.1 Set Virgil Access Token in configuration file:\n"
+        examples.push_back("3.1 Set Virgil Access Token in configuration file:\n"
                            "\tvirgil config --local token <VIRGIL_ACCESS_TOKEN>\n");
 
         std::string descriptionMessage = cli::getDescriptionMessage(description, examples);
