@@ -107,7 +107,7 @@ int keygen_main(int argc, char** argv) {
             "p", "private-key-password", "Password to be used for private key encryption.", false, "", "arg");
 
         TCLAP::SwitchArg notShadowInputArg(
-            "", "no-password-input", "If parameter -p, --private-key-password is omitted, password won’t be requested.",
+            "", "no-password", "If parameter -p, --private-key-password is omitted, password won’t be requested.",
             false);
 
         TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
