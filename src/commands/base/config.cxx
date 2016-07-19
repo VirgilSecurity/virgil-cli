@@ -66,8 +66,6 @@ static void showConfigFile(const std::string& path);
 
 int config_main(int argc, char** argv) {
     try {
-        std::string description = "Get information about Virgil CLI configuration file.\n";
-
         std::vector<std::string> examples;
         examples.push_back("1. Show path to the configuration file applied for all users:\n"
                            "\tvirgil config --global --path\n");
@@ -87,7 +85,7 @@ int config_main(int argc, char** argv) {
         examples.push_back("3.1 Set Virgil Access Token in configuration file:\n"
                            "\tvirgil config --local token <VIRGIL_ACCESS_TOKEN>\n");
 
-        std::string descriptionMessage = cli::getDescriptionMessage(description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kConfig_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
