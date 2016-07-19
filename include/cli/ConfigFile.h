@@ -62,7 +62,7 @@ struct ConfigFile {
 
     /**
     * @brief Get Service Uri, if identityUrl and publicKeyUrl and privateKeyUrl
-    * empty.
+    * empty return default ServiceUri
     *
     * @return Service Uri
     */
