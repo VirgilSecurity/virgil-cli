@@ -51,9 +51,9 @@ cli::ConfigFile cli::iniToConfigFile(const std::string& ini) {
 
         cli::ConfigFile configFile;
         configFile.virgilAccessToken = iniParser.top()["token"];
-        configFile.serviceUri =
-            vsdk::ServiceUri(iniParser.top()("uri")["identity"], iniParser.top()("uri")["public-key"],
-                             iniParser.top()("uri")["private-key"]);
+        configFile.setServiceUri(vsdk::ServiceUri(iniParser.top()("uri")["identity"],
+                                                  iniParser.top()("uri")["public-key"],
+                                                  iniParser.top()("uri")["private-key"]));
         return configFile;
 
     } catch (std::runtime_error& exception) {
@@ -69,25 +69,22 @@ std::string cli::configFile2ini(const cli::ConfigFile& configFile) {
         data += "token=" + configFile.virgilAccessToken + "\n";
     }
 
-    std::string identityUrl = configFile.serviceUri.getIdentityService();
-    std::string publicKeyUrl = configFile.serviceUri.getPublicKeyService();
-    std::string privateKeyUrl = configFile.serviceUri.getPrivateKeyService();
-
-    const bool isUrls = !identityUrl.empty() || !publicKeyUrl.empty() || !privateKeyUrl.empty();
+    const bool isUrls =
+        !configFile.identityUrl.empty() || !configFile.publicKeyUrl.empty() || !configFile.privateKeyUrl.empty();
     if (isUrls) {
         data += "[uri]\n";
     }
 
-    if (!identityUrl.empty()) {
-        data += "identity=" + identityUrl + "\n";
+    if (!configFile.identityUrl.empty()) {
+        data += "identity=" + configFile.identityUrl + "\n";
     }
 
-    if (!publicKeyUrl.empty()) {
-        data += "public-key=" + publicKeyUrl + "\n";
+    if (!configFile.publicKeyUrl.empty()) {
+        data += "public-key=" + configFile.publicKeyUrl + "\n";
     }
 
-    if (!privateKeyUrl.empty()) {
-        data += "private-key=" + privateKeyUrl + "\n";
+    if (!configFile.privateKeyUrl.empty()) {
+        data += "private-key=" + configFile.privateKeyUrl + "\n";
     }
     return data;
 }
@@ -95,30 +92,11 @@ std::string cli::configFile2ini(const cli::ConfigFile& configFile) {
 static cli::ConfigFile readGlobalConfigFile(const std::string& pathGlobalConfigFile) {
     std::ifstream inGlobalConfigFile(pathGlobalConfigFile, std::ios::in | std::ios::binary);
     if (!inGlobalConfigFile) {
-        cli::ConfigFile defaultConfigFile;
-        return defaultConfigFile;
+        return cli::ConfigFile();
     }
 
     std::string ini((std::istreambuf_iterator<char>(inGlobalConfigFile)), std::istreambuf_iterator<char>());
     return cli::iniToConfigFile(ini);
-}
-
-void cli::ConfigFile::setIdentityUrl(const std::string& identityUrl) {
-    using virgil::sdk::ServiceUri;
-    ServiceUri existServiceUri = serviceUri;
-    serviceUri = ServiceUri(identityUrl, existServiceUri.getPublicKeyService(), existServiceUri.getPrivateKeyService());
-}
-
-void cli::ConfigFile::setPublicKeyUrl(const std::string& publicKeyUrl) {
-    using virgil::sdk::ServiceUri;
-    ServiceUri existServiceUri = serviceUri;
-    serviceUri = ServiceUri(existServiceUri.getIdentityService(), publicKeyUrl, existServiceUri.getPrivateKeyService());
-}
-
-void cli::ConfigFile::setPrivateKeyUrl(const std::string& privateKeyUrl) {
-    using virgil::sdk::ServiceUri;
-    ServiceUri existServiceUri = serviceUri;
-    serviceUri = ServiceUri(existServiceUri.getIdentityService(), existServiceUri.getPublicKeyService(), privateKeyUrl);
 }
 
 cli::ConfigFile cli::readConfigFile() {
@@ -146,10 +124,6 @@ cli::ConfigFile cli::readConfigFile() {
     std::string ini((std::istreambuf_iterator<char>(inLocalConfigFile)), std::istreambuf_iterator<char>());
     cli::ConfigFile localConfigFile = iniToConfigFile(ini);
 
-    std::string identityServiceUri;
-    std::string publicServiceUri;
-    std::string privateServiceUri;
-
     if (localConfigFile.virgilAccessToken.empty()) {
         if (globalConfigFile.virgilAccessToken.empty()) {
             throw std::runtime_error("The Virgil Access Token was not set. See 'virgil config' for details.");
@@ -157,25 +131,24 @@ cli::ConfigFile cli::readConfigFile() {
         localConfigFile.virgilAccessToken = globalConfigFile.virgilAccessToken;
     }
 
-    if (localConfigFile.serviceUri.getIdentityService().empty()) {
-        identityServiceUri = globalConfigFile.serviceUri.getIdentityService();
+    if (localConfigFile.identityUrl.empty()) {
+        localConfigFile.identityUrl = globalConfigFile.identityUrl;
     } else {
-        identityServiceUri = localConfigFile.serviceUri.getIdentityService();
+        localConfigFile.identityUrl = localConfigFile.identityUrl;
     }
 
-    if (localConfigFile.serviceUri.getPublicKeyService().empty()) {
-        publicServiceUri = globalConfigFile.serviceUri.getPublicKeyService();
+    if (localConfigFile.publicKeyUrl.empty()) {
+        localConfigFile.publicKeyUrl = globalConfigFile.publicKeyUrl;
     } else {
-        publicServiceUri = localConfigFile.serviceUri.getPublicKeyService();
+        localConfigFile.publicKeyUrl = localConfigFile.publicKeyUrl;
     }
 
-    if (localConfigFile.serviceUri.getPrivateKeyService().empty()) {
-        privateServiceUri = globalConfigFile.serviceUri.getPrivateKeyService();
+    if (localConfigFile.privateKeyUrl.empty()) {
+        localConfigFile.privateKeyUrl = globalConfigFile.privateKeyUrl;
     } else {
-        privateServiceUri = localConfigFile.serviceUri.getPrivateKeyService();
+        localConfigFile.privateKeyUrl = localConfigFile.privateKeyUrl;
     }
 
-    localConfigFile.serviceUri = virgil::sdk::ServiceUri(identityServiceUri, publicServiceUri, privateServiceUri);
     return localConfigFile;
 }
 

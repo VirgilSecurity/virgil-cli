@@ -45,23 +45,42 @@
 
 #include <cli/consts.h>
 
+#include <iostream>
+
 namespace cli {
 struct ConfigFile {
     std::string virgilAccessToken = VIRGIL_ACCESS_TOKEN;
-    virgil::sdk::ServiceUri serviceUri = virgil::sdk::ServiceUri();
+    std::string identityUrl;
+    std::string publicKeyUrl;
+    std::string privateKeyUrl;
 
-    void setIdentityUrl(const std::string& identityUrl);
-    void setPublicKeyUrl(const std::string& publicKeyUrl);
-    void setPrivateKeyUrl(const std::string& privateKeyUrl);
+    void setServiceUri(const virgil::sdk::ServiceUri& uri) {
+        identityUrl = uri.getIdentityService();
+        publicKeyUrl = uri.getPublicKeyService();
+        privateKeyUrl = uri.getPrivateKeyService();
+    }
+
+    /**
+    * @brief Get Service Uri, if identityUrl and publicKeyUrl and privateKeyUrl
+    * empty.
+    *
+    * @return Service Uri
+    */
+    virgil::sdk::ServiceUri getServiceUri() const {
+        const bool isUrls = identityUrl.empty() && publicKeyUrl.empty() && privateKeyUrl.empty();
+        return isUrls ? virgil::sdk::ServiceUri() : virgil::sdk::ServiceUri(identityUrl, publicKeyUrl, privateKeyUrl);
+    }
 };
 
-    ConfigFile iniToConfigFile(const std::string& ini);
-    std::string configFile2ini(const cli::ConfigFile& configFile);
+ConfigFile iniToConfigFile(const std::string& ini);
 
-    ConfigFile readConfigFile();
-    ConfigFile readConfigFile(const std::string& path);
-    void writeConfigFile(const ConfigFile& configFile, const std::string& path);
+std::string configFile2ini(const cli::ConfigFile& configFile);
 
+ConfigFile readConfigFile();
+
+ConfigFile readConfigFile(const std::string& path);
+
+void writeConfigFile(const ConfigFile& configFile, const std::string& path);
 }
 
 #endif /* VIRGIL_CLI_CONFIG_H */

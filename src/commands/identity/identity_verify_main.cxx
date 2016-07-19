@@ -76,7 +76,7 @@ int identity_verify_main(int argc, char** argv) {
         cli::checkFormatIdentity(arg, identityPair.first);
 
         cli::ConfigFile configFile = cli::readConfigFile();
-        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.getServiceUri());
 
         std::string userEmail = identityPair.second;
         std::string actionId = servicesHub.identity().verify(userEmail, vsdk::dto::VerifiableIdentityType::Email);

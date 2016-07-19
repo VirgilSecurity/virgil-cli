@@ -97,7 +97,7 @@ int card_search_private_main(int argc, char** argv) {
 
         bool includeUnconfirmed = unconfirmedArg.getValue();
         cli::ConfigFile configFile = cli::readConfigFile();
-        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.getServiceUri());
         std::vector<vsdk::models::CardModel> foundCards;
         foundCards = servicesHub.card().search(identityArg.getValue(), identityTypeArg.getValue(), includeUnconfirmed);
 

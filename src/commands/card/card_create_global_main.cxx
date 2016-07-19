@@ -143,7 +143,7 @@ int card_create_global_main(int argc, char** argv) {
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
         cli::ConfigFile configFile = cli::readConfigFile();
-        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.getServiceUri());
 
         vsdk::models::CardModel card;
         if (validatedIdentityArg.isSet()) {

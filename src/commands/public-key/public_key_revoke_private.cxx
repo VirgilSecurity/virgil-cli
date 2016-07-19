@@ -121,7 +121,7 @@ int public_key_revoke_private_main(int argc, char** argv) {
         vsdk::Credentials credentials(privateKey, privateKeyPassword);
 
         cli::ConfigFile configFile = cli::readConfigFile();
-        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.getServiceUri());
 
         if (validatedIdentityArg.isSet()) {
             std::vector<vsdk::dto::ValidatedIdentity> validatedIdentities;

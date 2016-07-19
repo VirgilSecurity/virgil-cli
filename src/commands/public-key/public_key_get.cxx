@@ -75,7 +75,7 @@ int public_key_get_main(int argc, char** argv) {
         cmd.parse(argc, argv);
 
         cli::ConfigFile configFile = cli::readConfigFile();
-        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.serviceUri);
+        vsdk::ServicesHub servicesHub(configFile.virgilAccessToken, configFile.getServiceUri());
 
         std::string publicKeyId = publicKeyIdArg.getValue();
 
