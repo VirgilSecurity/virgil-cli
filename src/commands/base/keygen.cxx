@@ -49,7 +49,7 @@
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
 #include <cli/wrapper/sdk/PrivateKey.h>
-#include <cli/inputShadow.h>
+#include <cli/InputShadow.h>
 
 namespace vcrypto = virgil::crypto;
 
