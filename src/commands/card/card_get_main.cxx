@@ -55,13 +55,13 @@ static void writeCard(const std::string& pathTofolder, const vsdk::models::CardM
 
 int card_get_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Receive a private/global Virgil Card by card-id:\n"
-                           "virgil card-get -a <card-id> -o cards/\n\n");
+        std::vector<std::string> examples{
+            "Receive a private/global Virgil Card by card-id:\n"
+            "\tvirgil card-get -a <card-id> -o cards/\n",
 
-        examples.push_back("Return a group of private/global Cards connected with public-key-id, card-id belongs to "
-                           "one of the Cards:\n"
-                           "virgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n\n");
+            "Return a group of private/global Cards connected with public-key-id, card-id belongs to "
+            "one of the Cards:\n"
+            "\tvirgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardCreateGlobal_Description, examples);
 

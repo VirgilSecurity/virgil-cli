@@ -61,16 +61,15 @@ vcrypto::VirgilByteArray readVKeys(const std::string& pathTofile);
 
 int identity_confirm_private_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back(
-            "Generate a validation-token:\n"
-            "virgil identity-confirm-private -d <identity_value> -t <identity_type> -o private-validated-identity.txt "
-            "--app-key application-private.key\n\n");
+        std::vector<std::string> examples{
+            "1. Generate a validation-token:\n"
+            "\tvirgil identity-confirm-private -d <identity_value> -t <identity_type> -o "
+            "private-validated-identity.txt "
+            "--app-key application-private.key\n"
 
-        examples.push_back(
-            "Generate a validation-token with obfuscated identity (see 'virgil hash'):\n"
-            "virgil identity-confirm-private -d <obfuscate_value> -t <obfuscate_type> -o validated-identity.txt "
-            "--app-key application-private.key\n\n");
+            "2. Generate a validation-token with obfuscated identity (see 'virgil hash'):\n"
+            "\tvirgil identity-confirm-private -d <obfuscate_value> -t <obfuscate_type> -o validated-identity.txt "
+            "--app-key application-private.key\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kIdentityConfirmPrivate_Description, examples);
 

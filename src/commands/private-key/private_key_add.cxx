@@ -53,9 +53,8 @@ namespace wsdk = cli::wrapper::sdk;
 
 int private_key_add_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Add Private Key to Private Keys Service:\n"
-                           "virgil private-key-add -k private.key -a <card_id>\n\n");
+        std::vector<std::string> examples{"1. Add Private Key to Private Keys Service:\n"
+                                          "\tvirgil private-key-add -k private.key -a <card_id>\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kPrivateKeyAdd_Description, examples);
 

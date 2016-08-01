@@ -53,9 +53,8 @@ namespace wsdk = cli::wrapper::sdk;
 
 int identity_valid_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Validated identity:\n"
-                           "virgil identity-valid -f alice/validated-identity.txt\n\n");
+        std::vector<std::string> examples{"1. Validated identity:\n"
+                                          "\tvirgil identity-valid -f alice/validated-identity.txt\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kIdentityValid_Description, examples);
 

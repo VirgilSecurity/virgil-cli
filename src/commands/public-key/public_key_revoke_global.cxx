@@ -60,15 +60,15 @@ static vsdk::dto::ValidatedIdentity getValidatedIdentity(const bool verbose, con
 
 int public_key_revoke_global_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Revoke a chain of global Virgil Cards by public-key-id from Virgil Keys Service:\n"
-                           "virgil public-key-revoke-global -e <public_key_id> -a <card_id> -k alice/private.key"
-                           " -f alice/validated-identity-main.txt -f alice/validated-identity-reserve.txt\n\n");
+        std::vector<std::string> examples{
+            "1. Revoke a chain of global Virgil Cards by public-key-id from Virgil Keys Service:\n"
+            "\tvirgil public-key-revoke-global -e <public_key_id> -a <card_id> -k alice/private.key"
+            " -f alice/validated-identity-main.txt -f alice/validated-identity-reserve.txt\n",
 
-        examples.push_back("Revoke a chain of global Virgil Cards by public-key-id from Virgil Keys Service, "
-                           "with confirming of identity:\n"
-                           "virgil public-key-revoke-global -e <public_key_id> -a <card_id> -k alice/private.key"
-                           " -d email:alice_main@domain.com -d email:alice_reserve@domain.com\n\n");
+            "2. Revoke a chain of global Virgil Cards by public-key-id from Virgil Keys Service, "
+            "with confirming of identity:\n"
+            "\tvirgil public-key-revoke-global -e <public_key_id> -a <card_id> -k alice/private.key"
+            " -d email:alice_main@domain.com -d email:alice_reserve@domain.com\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kPublicKeyRevokeGlobal_Description, examples);
 

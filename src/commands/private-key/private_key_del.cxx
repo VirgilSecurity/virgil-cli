@@ -53,8 +53,8 @@ namespace wsdk = cli::wrapper::sdk;
 
 int private_key_del_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("virgil private-key-del -k private.key -a <card_id>\n\n");
+        std::vector<std::string> examples{"Delete private key from Private Key Service:\n"
+                                          "\tvirgil private-key-del -k private.key -a <card_id>\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kPrivateKeyDel_Description, examples);
 

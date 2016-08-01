@@ -53,9 +53,9 @@ namespace wsdk = cli::wrapper::sdk;
 
 int private_key_get_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back(
-            "virgil private-key-get -a <card_id> -f alice/validated_identity.txt -o alice/private.key\n\n");
+        std::vector<std::string> examples{
+            "Get private key from Private Key Service:\n"
+            "\tvirgil private-key-get -a <card_id> -f alice/validated_identity.txt -o alice/private.key\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kPrivateKeyGet_Description, examples);
 

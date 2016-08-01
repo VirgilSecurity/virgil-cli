@@ -41,7 +41,7 @@
 
 namespace cli {
 /* config */
-const char* const kConfig_Description = "Get information about Virgil CLI configuration file.\n\n";
+const char* const kConfig_Description = "Get information about Virgil CLI configuration file.";
 
 const char* const kConfig_SwitchGlobal_Description = "Show path to the configuration file applied for all users.";
 
@@ -56,7 +56,7 @@ const char* const kConfig_SwitchTemplate_Description = "Show configuration file 
 const char* const kDecrypt_Description = "Decrypt data with given password or given Private Key + recipient-id. "
                                          "recipient-id is an identifier which is connected with Public Key. "
                                          "If a sender has a Card, his8 recipient-id is Card's id. Also, Public "
-                                         "Key is saved in the Card.\n\n";
+                                         "Key is saved in the Card.";
 
 const char* const kDecrypt_Input_Description = "Data to be decrypted. If omitted, stdin is used.";
 
@@ -86,7 +86,7 @@ const char* const kEncrypt_Description = "The utility allows you to encrypt data
                                          "of Public Key + recipient-id. recipient-id is an identifier which "
                                          "will be connected with the Public Key. If a sender has a Card, his "
                                          "recipient-id is the Card's id. Also, the Public Keys is saved in  "
-                                         "the Card.\n\n";
+                                         "the Card.";
 
 const char* const kEncrypt_Input_Description = "Data to be encrypted. If omitted, stdin is used.";
 
@@ -97,24 +97,23 @@ const char* const kEncrypt_ContentInfo_Description = "Content info - meta inform
 
 const char* const kEncrypt_UnlabeledRecipient_Description =
     "Contains information about one recipient.\n"
-    "Format:\n"
-    "[password|id|vcard|email|pubkey|private]:<value>\n"
+    "Format: [password|id|vcard|email|pubkey|private]:<value>\n"
     "where:\n"
     "\t* if password, then <value> - recipient's password;\n"
-    "\t* if id, then <value> - recipient's UUID associated with Virgil\n\t Card identifier;\n"
-    "\t* if vcard, then <value> - recipient's the Virgil Card file\n\t  stored locally;\n"
+    "\t* if id, then <value> - recipient's UUID associated with Virgil Card identifier;\n"
+    "\t* if vcard, then <value> - recipient's the Virgil Card file stored locally;\n"
     "\t* if email, then <value> - recipient's email;\n"
-    "\t* if pubkey, then <value> - recipient's public key + identifier, for example:\n"
-    " pubkey:bob/public.key:ForBob.\n"
-    "\t* if private, then set type:value for searching Private Virgil Card(s)  with confirmed identity (see "
-    "'card-create-private'). "
-    " For example: private:<obfuscator_type>:<obfuscator_value>. ( obfiscator - see 'virgil hash')";
+    "\t* if pubkey, then <value> - recipient's public key + identifier,\n"
+    "\tfor example: pubkey:bob/public.key:ForBob.\n"
+    "\t* if private, then set type:value for searching Private Virgil Card(s)\n"
+    "\twith confirmed identity (see 'card-create-private').\n"
+    "\tFor example: private:<obfuscator_type>:<obfuscator_value>. ( obfiscator - see 'virgil hash')";
 /* encrypt */
 
 /**************************************************************/
 
 /* exhash */
-const char* const kExhash_Descritpion = "Derives hash from the given data with PBKDF function.\n\n";
+const char* const kExhash_Descritpion = "Derives hash from the given data with PBKDF function.";
 
 const char* const kExhash_Input_Description = "The string value to be hashed. If omitted, stdout is used.";
 
@@ -136,7 +135,7 @@ const char* const kExhash_Iterations_Description = "Iterations count. Default - 
 /**************************************************************/
 
 /* key2pub */
-const char* const kKey2pub_Description = "Extract Public Key from the Private Key.\n\n";
+const char* const kKey2pub_Description = "Extract Public Key from the Private Key.";
 
 const char* const kKey2pub_Input_Description = "Private key. If omitted, stdin is used.";
 
@@ -146,7 +145,7 @@ const char* const kKey2pub_Output_Description = "Public key. If omitted, stdout 
 /**************************************************************/
 
 /* keygen */
-const char* const kKeygen_Description = "Generate Elliptic Curve or RSA Private Key.\n\n";
+const char* const kKeygen_Description = "Generate Elliptic Curve or RSA Private Key.";
 
 const char* const kKeygen_Output_Description = "Private key. If omitted, stdout is used.";
 
@@ -178,7 +177,7 @@ const char* const kKeygen_SwitchNoShadowInput_Description =
 /**************************************************************/
 
 /* sign */
-const char* const kSign_Description = "Sign data with given user's Private Key.\n\n";
+const char* const kSign_Description = "Sign data with given user's Private Key.";
 
 const char* const kSign_Input_Description = "Data to be signed. If omitted, stdin is used.";
 
@@ -191,7 +190,7 @@ const char* const kSign_PrivateKey_Description = "Signer's Private Key.";
 
 /* verify */
 const char* const kVerify_Description = "The utility allows you to verify data and signature"
-                                        "  with a provided user's identifier or with his public key.\n\n";
+                                        "  with a provided user's identifier or with his public key.";
 
 const char* const kVerify_Input_Description = "Data to be verified. If omitted, stdin is used.";
 

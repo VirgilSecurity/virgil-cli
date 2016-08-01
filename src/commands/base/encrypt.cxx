@@ -67,22 +67,21 @@ static void addKeyRecipient(const vsdk::models::CardModel& card, const std::stri
 
 int encrypt_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Alice encrypts the data for Bob using his email (searching the Global Virgil Card(s)):\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n\n");
+        std::vector<std::string> examples{
+            "1. Alice encrypts the data for Bob using his email(searching the Global Virgil Card(s)):\n"
+            "\tvirgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com\n\n"
 
-        examples.push_back("Alice encrypts the data for Bob using his email (searching the Private Virgil Card(s)):\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc private:email:bob@domain.com\n\n");
+            "2. Alice encrypts the data for Bob using his email(searching the Private Virgil Card(s)):\n"
+            "\tvirgil encrypt -i plain.txt -o plain.txt.enc private:email:bob@domain.com\n\n"
 
-        examples.push_back(
-            "Alice encrypts the data for Bob and Tom using their emails:\n"
-            "virgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com\n\n");
+            "3. Alice encrypts the data for Bob and Tom using their emails:\n"
+            "\tvirgil encrypt -i plain.txt -o plain.txt.enc email:bob@domain.com email:tom@domain.com\n\n"
 
-        examples.push_back("Alice encrypts the data with a password:\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc password:strong_password\n\n");
+            "4. Alice encrypts the data with a password:\n"
+            "\tvirgil encrypt -i plain.txt -o plain.txt.enc password:strong_password\n\n"
 
-        examples.push_back("Alice encrypts the data with a combination of Public Key + recipient-id:\n"
-                           "virgil encrypt -i plain.txt -o plain.txt.enc pubkey:bob/public.key:ForBob\n\n");
+            "5. Alice encrypts the data with a combination of Public Key + recipient-id:\n"
+            "\tvirgil encrypt -i plain.txt -o plain.txt.enc pubkey:bob/public.key:ForBob\n\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kEncrypt_Description, examples);
 
@@ -98,8 +97,8 @@ int encrypt_main(int argc, char** argv) {
         TCLAP::ValueArg<std::string> contentInfoArg("c", "content-info", cli::kEncrypt_ContentInfo_Description, false,
                                                     "", "file");
 
-        TCLAP::UnlabeledMultiArg<std::string> recipientsArg("recipient", cli::kDecrypt_Recipient_Description, false,
-                                                            "recipient", false);
+        TCLAP::UnlabeledMultiArg<std::string> recipientsArg("recipient", cli::kEncrypt_UnlabeledRecipient_Description,
+                                                            false, "recipient", false);
 
         cmd.add(verboseArg);
         cmd.add(recipientsArg);
@@ -235,7 +234,6 @@ void checkFormatRecipientsArg(const std::vector<std::string>& recipientsData) {
             // private:<type>:<value> - for example: private:phone:<phone-number>
             // recipientPair.second == <path-pub-key>:<recipient-id> or <type>:<value>
             cli::parsePair(recipientPair.second);
-            continue;
         }
     }
 }

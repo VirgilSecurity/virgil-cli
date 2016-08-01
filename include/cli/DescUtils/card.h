@@ -40,7 +40,7 @@
 
 namespace cli {
 /* card-create-global */
-const char* const kCardCreateGlobal_Description = "Create a Global Virgil Card.\n\n";
+const char* const kCardCreateGlobal_Description = "Create a Global Virgil Card.";
 
 const char* const kCardCreateGlobal_Output_Description = "Global Virgil Card. If omitted, stdout is used.";
 
@@ -53,7 +53,7 @@ const char* const kCardCreateGlobal_PublicKey_Description = "Public key";
 /* card-create-global */
 
 /* card-create-private */
-const char* const kCardCreatePrivate_Description = "Create a Private Virgil Card.\n\n";
+const char* const kCardCreatePrivate_Description = "Create a Private Virgil Card.";
 
 const char* const kCardCreatePrivate_Output_Description = "Private Virgil Card. If omitted, stdout is used.";
 
@@ -69,13 +69,13 @@ const char* const kCardCreatePrivate_PublicKeyId_Description = "Public key ident
 
 /* card-get */
 const char* const kCardGet_Description = "Return a Private/Global Virgil Card by card-id or a group of "
-                                         "Private/Global Cards connected with public-key-id\n\n";
+                                         "Private/Global Cards connected with public-key-id";
 
 const char* const kCardGet_Output_Description = "Folder where Virgil Cards will be saved.";
 /* card-get */
 
 /* card-revoke-global */
-const char* const kCardRevokeGlobal_Description = "Revoke a Global Virgil Card from the Virgil Public Key service.\n\n";
+const char* const kCardRevokeGlobal_Description = "Revoke a Global Virgil Card from the Virgil Public Key service.";
 
 const char* const kCardRevokeGlobal_ValidatedIdentity_Description =
     "Validated identity (see 'virgil identity-confirm-global')";
@@ -83,7 +83,7 @@ const char* const kCardRevokeGlobal_ValidatedIdentity_Description =
 
 /* card-revoke-private */
 const char* const kCardRevokePrivate_Description =
-    "Revoke a Private Virgil Card from the Virgil Public Key service.\n\n";
+    "Revoke a Private Virgil Card from the Virgil Public Key service.";
 /* card-revoke-private */
 
 /* card-search-global */
@@ -95,7 +95,7 @@ const char* const kCardSearchGlobal_Description = "Search for a Global Virgil Ca
 
 /* card-search-private */
 const char* const kCardSearchPrivate_Description =
-    "Search for the Private Virgil Card(s) from the Virgil Keys Service\n\n";
+    "Search for the Private Virgil Card(s) from the Virgil Keys Service";
 
 const char* const kCardSearchPrivate_Output_Description = "Folder where Virgil Cards will be saved.";
 

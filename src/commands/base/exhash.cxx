@@ -55,12 +55,12 @@ static vcrypto::foundation::VirgilPBKDF::Hash hash_alg(const std::string& param)
 
 int exhash_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Underlying hash - SHA384 (default), iterations - 2048 (default):\n"
-                           "virgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt\n\n");
+        std::vector<std::string> examples{
+            "1. Underlying hash - SHA384 (default), iterations - 2048 (default):\n"
+            "\tvirgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt\n",
 
-        examples.push_back("Underlying hash - SHA512, iterations - 4096:\n"
-                           "virgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096\n\n");
+            "2. Underlying hash - SHA512, iterations - 4096:\n"
+            "\tvirgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kExhash_Descritpion, examples);
 

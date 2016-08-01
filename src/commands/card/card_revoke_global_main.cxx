@@ -56,13 +56,13 @@ namespace wsdk = cli::wrapper::sdk;
 
 int card_revoke_global_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Revoke the Virgil Card:\n"
-                           "virgil card-revoke-global -a <card_id> -f alice/validated-identities.txt "
-                           "-k alice/private.key\n\n");
+        std::vector<std::string> examples{
+            "1. Revoke the Virgil Card:\n"
+            "\tvirgil card-revoke-global -a <card_id> -f alice/validated-identities.txt "
+            "-k alice/private.key\n\n",
 
-        examples.push_back("Revoke the Virgil Card with confirming identity:\n"
-                           "virgil card-revoke-global -a <card_id> -d alice@domain.com -k alice/private.key\n\n");
+            "2. Revoke the Virgil Card with confirming identity:\n"
+            "\tvirgil card-revoke-global -a <card_id> -d alice@domain.com -k alice/private.key\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardRevokeGlobal_Description, examples);
 

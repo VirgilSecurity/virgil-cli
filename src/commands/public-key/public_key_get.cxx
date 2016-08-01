@@ -51,9 +51,8 @@ namespace vcrypto = virgil::crypto;
 
 int public_key_get_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Get a public key by its `public-key-id`:\n"
-                           "virgil public-key-get -o alice/public.key -e <public_key_id>\n\n");
+        std::vector<std::string> examples{"1. Get a public key by its `public-key-id`:\n"
+                                          "\tvirgil public-key-get -o alice/public.key -e <public_key_id>\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kPublicKeyGet_Description, examples);
 

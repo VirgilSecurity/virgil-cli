@@ -34,18 +34,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <fstream>
 #include <iostream>
 #include <vector>
 
 #include <tclap/CmdLine.h>
 
 #include <filesystem/path.h>
-#include <filesystem/resolver.h>
 
 #include <cli/ConfigFile.h>
 #include <cli/version.h>
-#include <cli/pair.h>
 #include <cli/util.h>
 #include <cli/DescUtils/all.h>
 
@@ -58,112 +55,84 @@ static const std::string configFileName =
     "/virgil-cli.conf";
 #endif
 
-static std::string getPathFolderConfigFile(const bool isGlobal);
 static void checkUnlabelValueArgs(const std::vector<std::string>& args);
 static void createConfigFile(const std::string& type, const std::string& value, const bool isGlobal);
-static bool isConfigFileExist(const bool isGlobal, const std::string& path);
+static bool isConfigFileExist(const std::string& path);
 static void showConfigFile(const std::string& path);
 
 int config_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("1. Show path to the configuration file applied for all users:\n"
-                           "\tvirgil config --global --path\n");
+        std::vector<std::string> examples{"1. Show path to the configuration file applied for all users:\n"
+                                          "\tvirgil config --global --path\n\n",
 
-        examples.push_back("1.1 Show path to the configuration file applied for current user:\n"
-                           "\tvirgil config --local --path\n\n");
+                                          "1.1 Show path to the configuration file applied for current user:\n"
+                                          "\tvirgil config --local --path\n\n",
 
-        examples.push_back("2. Show the global configuration file:\n"
-                           "\tvirgil config --global --list\n");
+                                          "2. Show the global configuration file:\n"
+                                          "\tvirgil config --global --list\n\n",
 
-        examples.push_back("2.1 Show the local configuration file:\n"
-                           "\tvirgil config --local --list\n\n");
+                                          "2.1 Show the local configuration file:\n"
+                                          "\tvirgil config --local --list\n\n",
 
-        examples.push_back("3. Set Virgil Access Token in configuration file:\n"
-                           "\tvirgil config --global token <VIRGIL_ACCESS_TOKEN>\n");
+                                          "3. Set Virgil Access Token in configuration file:\n"
+                                          "\tvirgil config --global token <VIRGIL_ACCESS_TOKEN>\n\n",
 
-        examples.push_back("3.1 Set Virgil Access Token in configuration file:\n"
-                           "\tvirgil config --local token <VIRGIL_ACCESS_TOKEN>\n");
+                                          "3.1 Set Virgil Access Token in configuration file:\n"
+                                          "\tvirgil config --local token <VIRGIL_ACCESS_TOKEN>\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kConfig_Description, examples);
-
-        // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
-
-        TCLAP::SwitchArg verboseArg(cli::kVerbose_ShortName, cli::kVerbose_LongName, cli::kVerbose_Description, false);
-
-        TCLAP::SwitchArg isGlobalConfigFileArg("g", "global", "The configuration file applied for all users.", false);
-
-        TCLAP::SwitchArg isLocalConfigFileArg("l", "local", "The configuration file applied for current user.", false);
-
+        TCLAP::SwitchArg isGlobalArg("g", "global", "The configuration file applied for all users.", false);
+        TCLAP::SwitchArg isLocalArg("l", "local", "The configuration file applied for current user.", false);
         TCLAP::SwitchArg showConfigFileArg("", "list", "Show the configuration file.", false);
-
         TCLAP::SwitchArg showPathConfigFileArg("p", "path", "Show path to the configuration file.", false);
-
         TCLAP::UnlabeledMultiArg<std::string> valueArgs("value", "", false, "value", false);
 
         cmd.add(valueArgs);
         cmd.add(showPathConfigFileArg);
         cmd.add(showConfigFileArg);
-        cmd.xorAdd(isGlobalConfigFileArg, isLocalConfigFileArg);
-        cmd.add(verboseArg);
+        cmd.xorAdd(isGlobalArg, isLocalArg);
         cmd.parse(argc, argv);
-
-        bool isGlobal = false;
-        if (isGlobalConfigFileArg.isSet()) {
-            isGlobal = isGlobalConfigFileArg.getValue();
-        }
-
-        if (isLocalConfigFileArg.isSet()) {
-            isGlobal = !isLocalConfigFileArg.getValue();
-        }
 
         auto unlabelArgs = valueArgs.getValue();
         if (!unlabelArgs.empty()) {
             checkUnlabelValueArgs(unlabelArgs);
             std::string type = unlabelArgs.at(0);
             std::string value = unlabelArgs.at(1);
-            createConfigFile(type, value, isGlobal);
+            createConfigFile(type, value, isGlobalArg.isSet());
             return EXIT_SUCCESS;
         }
 
         std::string pathFolderConfigFile =
-            isGlobal ? get_all_user_config_folder("virgil-cli") : get_user_config_folder("virgil-cli");
+            isGlobalArg.isSet() ? get_all_user_config_folder("virgil-cli") : get_user_config_folder("virgil-cli");
 
         std::string pathConfigFile = pathFolderConfigFile + configFileName;
+        if ((showConfigFileArg.isSet() || showPathConfigFileArg.isSet()) && !isConfigFileExist(pathConfigFile)) {
+            std::string applied = isGlobalArg.isSet() ? "--global" : "--local";
+            auto error = std::string("There is no configuration file. Use virgil config ") + applied +
+                         " token <token> to create it.";
+            throw std::runtime_error(error);
+        }
 
-        const bool isShowConfigFile = showConfigFileArg.isSet() && showConfigFileArg.getValue();
-        const bool isShowPathConfigFile = showPathConfigFileArg.isSet() && showPathConfigFileArg.getValue();
-        const bool isShowAll = isShowConfigFile && isShowPathConfigFile;
-
+        const bool isShowAll = showConfigFileArg.isSet() && showPathConfigFileArg.isSet();
         if (isShowAll) {
-            // show path
             std::string globalSupportInfo = "; Global configuration file path: " + pathConfigFile;
             std::string localSupportInfo = "; Local configuration file path: " + pathConfigFile;
-            std::string supportInfo = isGlobal ? globalSupportInfo : localSupportInfo;
-            if (isConfigFileExist(isGlobal, pathConfigFile)) {
-                std::cout << supportInfo << std::endl;
-            } else {
-                std::cout << supportInfo << " path is shown although is doesn't exist." << std::endl;
-            }
-
+            std::cout << (isGlobalArg.isSet() ? globalSupportInfo : localSupportInfo) << std::endl;
             showConfigFile(pathConfigFile);
-        } else if (isShowConfigFile) {
+        } else if (showConfigFileArg.isSet()) {
             showConfigFile(pathConfigFile);
+        } else if (showPathConfigFileArg.isSet()) {
+            std::cout << pathConfigFile << std::endl;
         } else {
-            // isShowPathConfigFile
-            if (isConfigFileExist(isGlobal, pathConfigFile)) {
-                std::cout << pathConfigFile << std::endl;
-            } else {
-                std::cout << pathConfigFile << " path is shown although is doesn't exist." << std::endl;
-            }
+            throw std::runtime_error("Required argument[s] missing: list or/and path.");
         }
 
     } catch (TCLAP::ArgException& exception) {
-        std::cerr << "config. Error: " << exception.error() << " for arg " << exception.argId() << std::endl;
+        std::cerr << "config. Error. " << exception.error() << " for arg " << exception.argId() << std::endl;
         return EXIT_FAILURE;
     } catch (std::exception& exception) {
-        std::cerr << "config. Error: " << exception.what() << std::endl;
+        std::cerr << "config. Error. " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -171,7 +140,7 @@ int config_main(int argc, char** argv) {
 }
 
 void checkUnlabelValueArgs(const std::vector<std::string>& args) {
-    if (args.size() > 2 || args.size() < 2) {
+    if (args.size() != 2) {
         throw std::invalid_argument("must be to one 'key value'");
     }
 
@@ -186,17 +155,13 @@ void createConfigFile(const std::string& type, const std::string& value, const b
     std::string pathFolderConfigFile =
         isGlobal ? get_all_user_config_folder("virgil-cli") : get_user_config_folder("virgil-cli");
 
-    filesystem::path pathDirectory(pathFolderConfigFile);
-    const bool isDirectoryConfigFile = pathDirectory.is_directory();
-    cli::ConfigFile configFile;
-    if (!isDirectoryConfigFile) {
-        filesystem::create_directory(pathDirectory);
+    if (!filesystem::path(pathFolderConfigFile).is_directory()) {
+        filesystem::create_directory(pathFolderConfigFile);
     }
 
     const std::string pathConfigFile = pathFolderConfigFile + configFileName;
-    filesystem::path pathFile(pathConfigFile);
-    const bool isConfigFile = pathFile.is_file();
-    if (isConfigFile) {
+    cli::ConfigFile configFile;
+    if (filesystem::path(pathConfigFile).is_file()) {
         cli::ConfigFile existConfigFile = cli::readConfigFile(pathConfigFile);
         configFile = existConfigFile;
     }
@@ -207,31 +172,19 @@ void createConfigFile(const std::string& type, const std::string& value, const b
         configFile.identityUrl = value;
     } else if (type == "uri.public-key") {
         configFile.publicKeyUrl = value;
-    } else {
-        // type == uri.private-key
+    } else if (type == "uri.private-key") {
         configFile.privateKeyUrl = value;
+    } else {
+        return;
     }
 
     cli::writeConfigFile(configFile, pathConfigFile);
 }
 
-static bool isConfigFileExist(const bool isGlobal, const std::string& path) {
-    std::string pathFolderConfigFile =
-        isGlobal ? get_all_user_config_folder("virgil-cli") : get_user_config_folder("virgil-cli");
-
-    filesystem::path pathDirectory(pathFolderConfigFile);
-    const bool isDirectoryConfigFile = pathDirectory.is_directory();
-
-    const std::string pathConfigFile = pathFolderConfigFile + configFileName;
-    filesystem::path pathFile(pathConfigFile);
-    const bool isConfigFile = pathFile.is_file();
-
-    return isDirectoryConfigFile && isConfigFile;
+bool isConfigFileExist(const std::string& path) {
+    return filesystem::path(path).exists() && filesystem::path(path).is_file();
 }
 
 void showConfigFile(const std::string& path) {
-    auto configFile = cli::readConfigFile(path);
-    std::string data = cli::configFile2ini(configFile);
-    std::copy(data.begin(), data.end(), std::ostreambuf_iterator<char>(std::cout));
-    std::cout << std::endl;
+    std::cout << cli::configFile2ini(cli::readConfigFile(path)) << std::endl;
 }

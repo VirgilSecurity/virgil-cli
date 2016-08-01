@@ -56,22 +56,22 @@ namespace wsdk = cli::wrapper::sdk;
 
 int public_key_revoke_private_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Revoke a chain of private Virgil Cards with confirmed identities connected by "
-                           "public-key-id from Public Keys Service:\n"
-                           "virgil public-key-revoke-private -a <card_id> -k alice/private.key -f "
-                           "alice/private-main-validated-identity.txt -f "
-                           "alice/private-reserve-validated-identity.txt\n\n");
+        std::vector<std::string> examples{
+            "1. Revoke a chain of private Virgil Cards with confirmed identities connected by "
+            "public-key-id from Public Keys Service:\n"
+            "\tvirgil public-key-revoke-private -a <card_id> -k alice/private.key -f "
+            "alice/private-main-validated-identity.txt -f "
+            "alice/private-reserve-validated-identity.txt\n\n",
 
-        examples.push_back("Revoke a chain of private Virgil Cards with unconfirmed identities connected by "
-                           "public-key-id from Public Keys Service:\n"
-                           "virgil public-key-revoke-private -a <card_id> -k alice/private.key -d "
-                           "email:alice_main@domain.com -d email:alice_reserve@domain.com\n\n");
+            "2. Revoke a chain of private Virgil Cards with unconfirmed identities connected by "
+            "public-key-id from Public Keys Service:\n"
+            "\tvirgil public-key-revoke-private -a <card_id> -k alice/private.key -d "
+            "email:alice_main@domain.com -d email:alice_reserve@domain.com\n\n",
 
-        examples.push_back("Revoke a chain of private Virgil Cards with unconfirmed identities and obfuscator identity"
-                           " value and/or type connected by public-key-id from Public Keys Service:\n"
-                           "virgil public-key-revoke-private -a <card_id> -k alice/private.key -d "
-                           "<obfuscator_type>:<obfuscator_value_1> -d <obfuscator_type>:<obfuscator_value_2>\n\n");
+            "3. Revoke a chain of private Virgil Cards with unconfirmed identities and obfuscator identity"
+            " value and/or type connected by public-key-id from Public Keys Service:\n"
+            "\tvirgil public-key-revoke-private -a <card_id> -k alice/private.key -d "
+            "<obfuscator_type>:<obfuscator_value_1> -d <obfuscator_type>:<obfuscator_value_2>\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kPublicKeyRevokePrivate_Description, examples);
 

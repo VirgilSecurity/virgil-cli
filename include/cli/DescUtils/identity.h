@@ -39,7 +39,7 @@
 
 namespace cli {
 /* identity-confirm-global */
-const char* const kIdentityConfirmGlobal_Description = "Confirm identity for a Global Virgil Card\n\n";
+const char* const kIdentityConfirmGlobal_Description = "Confirm identity for a Global Virgil Card";
 /* identity-confirm-global */
 
 /**************************************************************/
@@ -60,7 +60,7 @@ const char* const kIdentityConfirmPrivate_Description =
 /**************************************************************/
 
 /* identity-valid */
-const char* const kIdentityValid_Description = "Check 'validated-identity' received by 'identity-confirm-global'\n\n";
+const char* const kIdentityValid_Description = "Check 'validated-identity' received by 'identity-confirm-global'";
 /* identity-valid */
 
 /**************************************************************/
@@ -68,7 +68,7 @@ const char* const kIdentityValid_Description = "Check 'validated-identity' recei
 /* identity-verify */
 const char* const kIdentityVerify_Description = "Verify an Identity for Global Virgil Card.\n"
                                                 "1. Send 'confirmation_code' on the email;"
-                                                "2. Return 'action_id'.\n\n";
+                                                "2. Return 'action_id'.";
 /* identity-verify */
 }
 

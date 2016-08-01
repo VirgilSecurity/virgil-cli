@@ -66,13 +66,13 @@ static void reset(std::istream& in);
 
 int decrypt_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Decrypt *plain.txt.enc* for a user identified by his password:\n"
-                           "virgil decrypt -i plain.txt.enc -o plain.txt -r password:strong_password\n\n");
+        std::vector<std::string> examples{
+            "1. Decrypt *plain.txt.enc* for a user identified by his password:\n"
+            "\tvirgil decrypt -i plain.txt.enc -o plain.txt -r password:strong_password\n\n"
 
-        examples.push_back(
-            "Decrypt *plain.txt.enc* for Bob identified by his private key + `recipient-id` [id|vcard|email|private]:\n"
-            "virgil decrypt -i plain.txt.enc -o plain.txt -k bob/private.key -r id:<recipient_id>\n\n");
+            "2. Decrypt plain.txt.enc for Bob identified by his private key + `recipient-id` "
+            "[id|vcard|email|private]:\n"
+            "\tvirgil decrypt -i plain.txt.enc -o plain.txt -k bob/private.key -r id:<recipient_id>\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kDecrypt_Description, examples);
 

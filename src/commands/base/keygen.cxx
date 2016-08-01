@@ -62,18 +62,18 @@ static void printProcessGeneratingPrivate(const std::string& algorithmType);
 
 int keygen_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Generate Curve25519 Private Key(default), your password will be requested:\n"
-                           "virgil keygen -o alice/private.key\n\n");
+        std::vector<std::string> examples{
+            "1. Generate Curve25519 Private Key(default), your password will be requested:\n"
+            "\tvirgil keygen -o alice/private.key\n\n",
 
-        examples.push_back("Generate Elliptic Curve Private Key with password protection:\n"
-                           "virgil keygen -o alice/private.key\n\n");
+            "2. Generate Elliptic Curve Private Key with password protection:\n"
+            "\tvirgil keygen -o alice/private.key\n\n",
 
-        examples.push_back("Generate Elliptic 521-bits NIST Curve Private Key, your password will be requested:\n"
-                           "virgil keygen -o alice/private.key -a secp521r1\n\n");
+            "3. Generate Elliptic 521-bits NIST Curve Private Key, your password will be requested:\n"
+            "\tvirgil keygen -o alice/private.key -a secp521r1\n\n",
 
-        examples.push_back("Generate 8192-bits RSA Private Key, your password will be requested:\n"
-                           "virgil keygen -o alice/private.key -a rsa8192\n\n");
+            "4. Generate 8192-bits RSA Private Key, your password will be requested:\n"
+            "\tvirgil keygen -o alice/private.key -a rsa8192\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kKeygen_Description, examples);
 

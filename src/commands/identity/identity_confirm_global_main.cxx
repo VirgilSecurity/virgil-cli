@@ -53,18 +53,17 @@ namespace vcrypto = virgil::crypto;
 
 int identity_confirm_global_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back(
-            "Identity confirmation with requests number limit = 2 and time validity limit = 3600:\n"
-            "virgil identity-confirm-global -d email:alice@domain.com -o alice/validated-identity.txt\n\n");
+        std::vector<std::string> examples{
+            "1. Identity confirmation with requests number limit = 2 and time validity limit = 3600:\n"
+            "\tvirgil identity-confirm-global -d email:alice@domain.com -o alice/validated-identity.txt\n",
 
-        examples.push_back("Identity confirmation with requests number limit = 10 and time validity limit = 60:\n"
-                           "virgil identity-confirm-global -d email:alice@domain.com -t 60 -c 10 -o "
-                           "alice/validated-identity.txt\n\n");
+            "2. Identity confirmation with requests number limit = 10 and time validity limit = 60:\n"
+            "\tvirgil identity-confirm-global -d email:alice@domain.com -t 60 -c 10 -o "
+            "alice/validated-identity.txt\n",
 
-        examples.push_back("Identity confirmation with requests number limit = 2 and time validity limit = 3600:\n"
-                           "virgil identity-confirm-global --action-id alice/action_id.txt --confirmation-code <code>"
-                           " -o alice/validated-identity.txt\n\n");
+            "3. Identity confirmation with requests number limit = 2 and time validity limit = 3600:\n"
+            "\tvirgil identity-confirm-global --action-id alice/action_id.txt --confirmation-code <code>"
+            " -o alice/validated-identity.txt\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kIdentityConfirmGlobal_Description, examples);
 

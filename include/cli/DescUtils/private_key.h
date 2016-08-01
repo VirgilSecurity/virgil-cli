@@ -46,19 +46,19 @@ const char* const kPrivateKeyAdd_Description =
     "2. Make sure that you have a public/private key pair and you have already uploaded the public key\n"
     "to the Public Keys Service\n"
     "3. Make sure that you have your private key saved locally\n"
-    "4. Make sure that you have registered an application at Virgil Security, Inc.\n\n";
+    "4. Make sure that you have registered an application at Virgil Security, Inc.";
 /* private-key-add */
 
 /**************************************************************/
 
 /* private-key-del */
-const char* const kPrivateKeyDel_Description = "Delete a Private key from the Private Key Service\n\n";
+const char* const kPrivateKeyDel_Description = "Delete a Private key from the Private Key Service";
 /* private-key-del */
 
 /**************************************************************/
 
 /* private-key-get */
-const char* const kPrivateKeyGet_Description = "Get a Private key from the Private Key Service\n\n";
+const char* const kPrivateKeyGet_Description = "Get a Private key from the Private Key Service";
 /* private-key-get */
 }
 

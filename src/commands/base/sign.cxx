@@ -53,10 +53,12 @@ namespace wsdk = cli::wrapper::sdk;
 
 int sign_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key\n\n");
+        std::vector<std::string> examples{
+            "1. Sign plain.txt with private key"
+            "\tvirgil sign -i plain.txt -o plain.txt.sign -k private.key\n\n",
 
-        examples.push_back("virgil sign -i plain.txt -o plain.txt.sign -k alice/private.key -p STRONGPASS\n\n");
+            "2. Sign plain.txt with private key "
+            "\tvirgil sign -i plain.txt -o plain.txt.sign -k private.key -p STRONGPASS\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kSign_Description, examples);
 

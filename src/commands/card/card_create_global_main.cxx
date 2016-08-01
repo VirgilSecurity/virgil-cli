@@ -58,26 +58,26 @@ namespace vcrypto = virgil::crypto;
 namespace vsdk = virgil::sdk;
 namespace wsdk = cli::wrapper::sdk;
 
+
 int card_create_global_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Create a Global Virgil Card:\n"
-                           "virgil card-create-global -f alice/validated_identity_global.txt "
-                           "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
+        std::vector<std::string> examples{
+            "1. Create a Global Virgil Card:\n"
+            "\tvirgil card-create-global -f validated_identity_global.txt "
+            "--public-key public.key -k private.key -o my_card.vcard\n\n"
 
-        examples.push_back("Create a Global Virgil Card, with Identity confirmation:\n"
-                           "virgil card-create-global -d alice@domain.com "
-                           "--public-key public.key -k alice/private.key -o alice/my_card.vcard\n\n");
+            "2. Create a Global Virgil Card, with Identity confirmation:\n"
+            "\tvirgil card-create-global -d alice@domain.com "
+            "--public-key public.key -k private.key -o my_card.vcard\n\n"
 
-        examples.push_back("Create a connection with already existing the Global Virgil Card, "
-                           "by public-key-id:\n"
-                           "virgil card-create-global -f alice/validated_identity_global.txt "
-                           "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
+            "3. Create a connection with already existing the Global Virgil Card, "
+            "by public-key-id:\n"
+            "\tvirgil card-create-global -f validated_identity_global.txt "
+            "-e <pub_key_id> -k private.key -o my_card.vcard\n\n"
 
-        examples.push_back("Create a connection with already existing Global Virgil Card, by public-key-id."
-                           "With confirming of identity:\n"
-                           "virgil card-create-global -d alice@domain.com "
-                           "-e <pub_key_id> -k alice/private.key -o alice/my_card.vcard\n\n");
+            "4 .Create a connection with already existing Global Virgil Card, by public-key-id."
+            "With confirming of identity:\n"
+            "\tvirgil card-create-global -d alice@domain.com -e <pub_key_id> -k private.key -o my_card.vcard\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardCreateGlobal_Description, examples);
 

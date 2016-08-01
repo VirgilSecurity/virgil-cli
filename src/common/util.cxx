@@ -148,9 +148,9 @@ void cli::writeOutput(const std::string& out, const std::string& data) {
 
 std::string cli::getDescriptionMessage(const std::string description, std::vector<std::string> examples) {
     std::string descriptionMessage;
-    descriptionMessage += "\nDESCRIPTION:\n" + description;
+    descriptionMessage += "DESCRIPTION:\n" + description + "\n";
     if (!examples.empty()) {
-        descriptionMessage += "EXAMPLES:\n";
+        descriptionMessage += "\nEXAMPLES:\n";
         for (const auto& example : examples) {
             descriptionMessage += example;
         }

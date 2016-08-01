@@ -56,13 +56,13 @@ namespace wsdk = cli::wrapper::sdk;
 
 int card_revoke_private_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Revoke a Private Virgil Card with a confirmed identity:\n"
-                           "virgil card-revoke-private -a <card_id> -f private-validated-identities.file "
-                           "-k private.key\n\n");
+        std::vector<std::string> examples{
+            "1. Revoke a Private Virgil Card with a confirmed identity:\n"
+            "\tvirgil card-revoke-private -a <card_id> -f private-validated-identities.file "
+            "-k private.key\n",
 
-        examples.push_back("Revoke a Private Virgil Card with a unconfirmed identity:\n"
-                           "virgil card-revoke-private -a <card_id> -k private.key\n\n");
+            "2. Revoke a Private Virgil Card with a unconfirmed identity:\n"
+            "\tvirgil card-revoke-private -a <card_id> -k private.key\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardRevokePrivate_Description, examples);
 

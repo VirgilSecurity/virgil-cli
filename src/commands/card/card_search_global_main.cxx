@@ -51,15 +51,14 @@ namespace vcrypto = virgil::crypto;
 
 int card_search_global_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Search for global Virgil Card by user's email:\n"
-                           "virgil card-search-global -e alice@mailinator.com\n\n");
+        std::vector<std::string> examples{"1. Search for global Virgil Card by user's email:\n"
+                                          "\tvirgil card-search-global -e alice@mailinator.com\n",
 
-        examples.push_back("Search for application global Virgil Card by application name:\n"
-                           "virgil card-search-global -c <app_name>\n\n");
+                                          "2. Search for application global Virgil Card by application name:\n"
+                                          "\tvirgil card-search-global -c <app_name>\n\n",
 
-        examples.push_back("Get all application Cards:\n"
-                           "virgil card-search-global -c \"com.virgilsecurity.*\"\n\n");
+                                          "3. Get all application Cards:\n"
+                                          "\tvirgil card-search-global -c \"com.virgilsecurity.*\"\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardSearchGlobal_Description, examples);
 

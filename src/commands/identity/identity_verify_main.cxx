@@ -50,9 +50,8 @@ namespace vcrypto = virgil::crypto;
 
 int identity_verify_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples;
-        examples.push_back("Verify an Identity:\n"
-                           "virgil identity-verify -d email:user@domain.com\n");
+        std::vector<std::string> examples{"1. Verify an Identity:\n"
+                                          "\tvirgil identity-verify -d email:user@domain.com\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kIdentityVerify_Description, examples);
 
