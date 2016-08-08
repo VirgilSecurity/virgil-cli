@@ -60,9 +60,12 @@ static void checkFormatRecipientArg(const std::pair<std::string, std::string>& p
 
 int verify_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples{"\tvirgil verify -i plain.txt -s plain.txt.sign -r vcard:bob/bob.vcard\n\n",
+        std::vector<std::string> examples{
+            "1. Bob verifies 'plain.txt.sign' with vcard:\n"
+            "\tvirgil verify -i plain.txt -s plain.txt.sign -r vcard:bob/bob.vcard\n\n",
 
-                                          "\tvirgil verify -i plain.txt -s plain.txt.sign -r pubkey:bob/public.key\n"};
+            "2. Bob verifies 'plain.txt.sign' with public key:\n"
+            "\tvirgil verify -i plain.txt -s plain.txt.sign -r pubkey:bob/public.key\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kVerify_Description, examples);
 

@@ -50,10 +50,10 @@ const char* const kIdentityConfirmPrivate_Description =
     "application's private key. It is required for the following"
     "operations:\n"
     "1. Create a private Virgil Card with a confirmed Identity. "
-    "See 'virgil card-create-private';\n"
-    "2. Revoke a Private Virgil Card, a group of Cards."
-    "See 'virgil card-revoke-private', 'virgil public-key-revoke';\n"
-    "3. Get a private key from the Private Keys Service."
+    "See 'virgil card-create-private'\n"
+    "2. Revoke a Private Virgil Card, a group of Cards. "
+    "See 'virgil card-revoke-private', 'virgil public-key-revoke'\n"
+    "3. Get a private key from the Private Keys Service. "
     "See 'virgil private-key-get'.\n\n";
 /* identity-confirm-private */
 
@@ -67,7 +67,7 @@ const char* const kIdentityValid_Description = "Check 'validated-identity' recei
 
 /* identity-verify */
 const char* const kIdentityVerify_Description = "Verify an Identity for Global Virgil Card.\n"
-                                                "1. Send 'confirmation_code' on the email;"
+                                                "1. Send 'confirmation_code' on the email"
                                                 "2. Return 'action_id'.";
 /* identity-verify */
 }

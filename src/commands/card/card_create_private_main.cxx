@@ -75,7 +75,7 @@ int card_create_private_main(int argc, char** argv) {
 
             "4. Create a connection with an already existing a Private Virgil Card with an unconfirmed"
             "Identity by public-key-id:\n"
-            "virgil card-create-private -d <identity_type>:<identity_value> -e <pub_key_id> -k alice/private.key "
+            "\tvirgil card-create-private -d <identity_type>:<identity_value> -e <pub_key_id> -k alice/private.key "
             "-o alice/anonim_card2.vcard\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardCreatePrivate_Description, examples);

@@ -69,14 +69,11 @@ const char* const kDecrypt_Recipient_Description =
     "Recipient defined in format:\n"
     "[password|id|vcard|email|private]:<value>\n"
     "where:\n"
-    "\t* if password, then <value> - recipient's password;\n"
-    "\t* if id, then <value> - recipient's UUID associated with a Virgil Card identifier;\n"
-    "\t* if vcard, then <value> - recipient's Virgil Card/Cards file\n\t  stored locally;\n"
-    "\t* if email, then <value> - recipient's email;\n"
-    "\t* if private, then set type:value for searching Private Virgil Card(s).\n"
-    "For example:\n"
-    "1. private:<obfuscator_type>:<obfuscator_email>. ( obfiscator - see 'virgil hash')\n"
-    "2. private:<identity_type>:<identity_value>; private:email:alice@domain.com\n";
+    "\t* password:<value> - recipient's password\n"
+    "\t* id:<value> - recipient's UUID associated with a Virgil Card identifier\n"
+    "\t* vcard:<value> - recipient's Virgil Card/Cards file stored locally\n"
+    "\t* email:<value> - recipient's email\n"
+    "\t* private:type:value for searching Private Virgil Card(s).\n";
 /* decrypt */
 
 /**************************************************************/
@@ -99,15 +96,14 @@ const char* const kEncrypt_UnlabeledRecipient_Description =
     "Contains information about one recipient.\n"
     "Format: [password|id|vcard|email|pubkey|private]:<value>\n"
     "where:\n"
-    "\t* if password, then <value> - recipient's password;\n"
-    "\t* if id, then <value> - recipient's UUID associated with Virgil Card identifier;\n"
-    "\t* if vcard, then <value> - recipient's the Virgil Card file stored locally;\n"
-    "\t* if email, then <value> - recipient's email;\n"
-    "\t* if pubkey, then <value> - recipient's public key + identifier,\n"
-    "\tfor example: pubkey:bob/public.key:ForBob.\n"
-    "\t* if private, then set type:value for searching Private Virgil Card(s)\n"
-    "\twith confirmed identity (see 'card-create-private').\n"
-    "\tFor example: private:<obfuscator_type>:<obfuscator_value>. ( obfiscator - see 'virgil hash')";
+    "\t* password:<value> - recipient's password\n"
+    "\t* id:<value> - recipient's UUID associated with Virgil Card\n"
+    "\t  identifier\n"
+    "\t* vcard:<value> - recipient's the Virgil Card file stored locally\n"
+    "\t* email:<value> - recipient's email\n"
+    "\t* pubkey:<value> - recipient's public key + identifier,\n"
+    "\t  for example: pubkey:bob/public.key:ForBob.\n"
+    "\t* private:type:value for searching Private Virgil Card(s)\n";
 /* encrypt */
 
 /**************************************************************/
@@ -122,11 +118,11 @@ const char* const kExhash_Output_Description = "Hash. If omitted, stdout is used
 const char* const kExhash_Salt_Descritpion = "The hash salt.";
 
 const char* const kExhash_Algorithm_Description = "Underlying hash algorithm:\n"
-                                                  "\t* sha1 -   secure Hash Algorithm 1;\n"
-                                                  "\t* sha224 - secure Hash Algorithm 2, that are 224 bits;\n"
-                                                  "\t* sha256 - secure Hash Algorithm 2, that are 256 bits;\n"
-                                                  "\t* sha384 - secure Hash Algorithm 2, that are 384 bits(default);\n"
-                                                  "\t* sha512 - secure Hash Algorithm 2, that are 512 bits;\n";
+                                                  "\t* sha1 -   secure Hash Algorithm 1\n"
+                                                  "\t* sha224 - secure Hash Algorithm 2, that are 224 bits\n"
+                                                  "\t* sha256 - secure Hash Algorithm 2, that are 256 bits\n"
+                                                  "\t* sha384 - secure Hash Algorithm 2, that are 384 bits(default)\n"
+                                                  "\t* sha512 - secure Hash Algorithm 2, that are 512 bits\n";
 
 const char* const kExhash_Iterations_Description = "Iterations count. Default - 2048";
 
@@ -151,20 +147,20 @@ const char* const kKeygen_Output_Description = "Private key. If omitted, stdout 
 
 const char* const kKeygen_Algorithm_Description = "Generate elliptic curve key or RSA key with one"
                                                   " of the following positions:\n"
-                                                  "\t* bp256r1 - 256-bits Brainpool curve;\n"
-                                                  "\t* bp384r1 - 384-bits Brainpool curve;\n"
-                                                  "\t* bp512r1 - 512-bits Brainpool curve;\n"
-                                                  "\t* secp192r1 - 192-bits NIST curve;\n"
-                                                  "\t* secp224r1 - 224-bits NIST curve;\n"
-                                                  "\t* secp256r1 - 256-bits NIST curve;\n"
-                                                  "\t* secp384r1 - 384-bits NIST curve;\n"
-                                                  "\t* secp521r1 - 521-bits NIST curve;\n"
-                                                  "\t* secp192k1 - 192-bits \"Koblitz\" curve;\n"
-                                                  "\t* secp224k1 - 224-bits \"Koblitz\" curve;\n"
-                                                  "\t* secp256k1 - 256-bits \"Koblitz\" curve;\n"
-                                                  "\t* curve25519 - Curve25519 (default);\n"
-                                                  "\t* rsa3072 - 3072-bits \"RSA\" key;\n"
-                                                  "\t* rsa4096 - 4096-bits \"RSA\" key;\n"
+                                                  "\t* bp256r1 - 256-bits Brainpool curve\n"
+                                                  "\t* bp384r1 - 384-bits Brainpool curve\n"
+                                                  "\t* bp512r1 - 512-bits Brainpool curve\n"
+                                                  "\t* secp192r1 - 192-bits NIST curve\n"
+                                                  "\t* secp224r1 - 224-bits NIST curve\n"
+                                                  "\t* secp256r1 - 256-bits NIST curve\n"
+                                                  "\t* secp384r1 - 384-bits NIST curve\n"
+                                                  "\t* secp521r1 - 521-bits NIST curve\n"
+                                                  "\t* secp192k1 - 192-bits \"Koblitz\" curve\n"
+                                                  "\t* secp224k1 - 224-bits \"Koblitz\" curve\n"
+                                                  "\t* secp256k1 - 256-bits \"Koblitz\" curve\n"
+                                                  "\t* curve25519 - Curve25519 (default)\n"
+                                                  "\t* rsa3072 - 3072-bits \"RSA\" key\n"
+                                                  "\t* rsa4096 - 4096-bits \"RSA\" key\n"
                                                   "\t* rsa8192 - 8192-bits \"RSA\" key";
 
 const char* const kKeygen_PrivateKeyPassword_Description = "Password to be used for private key encryption.";
@@ -204,9 +200,9 @@ const char* const kVerify_Recipient_Description =
     "Recipient defined in format:\n"
     "[id|vcard|pubkey]:<value>\n"
     "where:\n"
-    "\t* if id, then <value> - recipient's UUID associated with a Virgil Card identifier;\n"
-    "\t* if vcard, then <value> - recipient's Virgil Card(s) file\n\t  stored locally;\n"
-    "\t* if pubkey, then <value> - recipient's public key.\n";
+    "\t* id:<value> - recipient's UUID associated with a Virgil Card identifier\n"
+    "\t* vcard:<value> - recipient's Virgil Card(s) file\n\t  stored locally\n"
+    "\t* pubkey:<value> - recipient's public key.\n";
 /* verify */
 }
 

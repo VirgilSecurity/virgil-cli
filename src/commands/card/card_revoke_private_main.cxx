@@ -59,7 +59,7 @@ int card_revoke_private_main(int argc, char** argv) {
         std::vector<std::string> examples{
             "1. Revoke a Private Virgil Card with a confirmed identity:\n"
             "\tvirgil card-revoke-private -a <card_id> -f private-validated-identities.file "
-            "-k private.key\n",
+            "-k private.key\n\n",
 
             "2. Revoke a Private Virgil Card with a unconfirmed identity:\n"
             "\tvirgil card-revoke-private -a <card_id> -k private.key\n"};

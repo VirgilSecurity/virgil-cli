@@ -56,19 +56,19 @@ static void writeCard(const std::string& pathTofolder, const vsdk::models::CardM
 int card_get_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples{
-            "Receive a private/global Virgil Card by card-id:\n"
-            "\tvirgil card-get -a <card-id> -o cards/\n",
+            "1. Receive a private/global Virgil Card by card-id:\n"
+            "\tvirgil card-get -a <card-id> -o cards/\n\n",
 
-            "Return a group of private/global Cards connected with public-key-id, card-id belongs to "
+            "2. Return a group of private/global Cards connected with public-key-id, card-id belongs to "
             "one of the Cards:\n"
             "\tvirgil card-get -a <card-id> -e <public-key-id> -k alice/private.key -o cards/\n"};
 
-        std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardCreateGlobal_Description, examples);
+        std::string descriptionMessage = cli::getDescriptionMessage(cli::kCardGet_Description, examples);
 
         // Parse arguments.
         TCLAP::CmdLine cmd(descriptionMessage, ' ', cli::cli_version());
 
-        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kCardCreateGlobal_Output_Description, false, "", "arg");
+        TCLAP::ValueArg<std::string> outArg("o", "out", cli::kCardGet_Output_Description, false, "", "arg");
 
         TCLAP::ValueArg<std::string> cardIdArg(cli::kCardId_ShortName, cli::kCardId_LongName, cli::kCardId_Description,
                                                true, "", cli::kCardId_TypeDesc);

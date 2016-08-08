@@ -41,7 +41,7 @@ namespace cli {
 /* private-key-add */
 const char* const kPrivateKeyAdd_Description =
     "Add given Private Key into the Private Keys Service.\n"
-    "General statements::\n"
+    "General statements:\n"
     "1. Make sure that you have registered and confirmed your account for the Public Keys Service\n"
     "2. Make sure that you have a public/private key pair and you have already uploaded the public key\n"
     "to the Public Keys Service\n"

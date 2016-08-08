@@ -155,7 +155,7 @@ namespace TCLAP {
             s += " {";
             for (ArgVectorIterator it = xorList[i].begin();
                  it != xorList[i].end(); it++)
-                s += (*it)->shortID() + "|";
+                s += (*it)->shortID() + " | ";
 
             s[s.length() - 1] = '}';
         }
@@ -199,7 +199,7 @@ namespace TCLAP {
         for (ArgListIterator it = argList.begin(); it != argList.end(); it++)
             if (!xorHandler.contains((*it))) {
                 spacePrint(os, (*it)->longID(), 75, 4, 3);
-                spacePrint(os, (*it)->getDescription(), 75, 5, 0);
+                spacePrint(os, (*it)->getDescription(), 75, 8, 0);
                 os << std::endl;
             }
 
@@ -229,7 +229,7 @@ namespace TCLAP {
                     while (stringLen >= 0 &&
                            s[stringLen + start] != ' ' &&
                            s[stringLen + start] != ',' &&
-                           s[stringLen + start] != '|')
+                           s[stringLen + start + 1] != '|')
                         stringLen--;
                 }
 

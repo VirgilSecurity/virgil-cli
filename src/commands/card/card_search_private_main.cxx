@@ -57,13 +57,13 @@ int card_search_private_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples{
             "1. Search for the Private Virgil Card(s) with a confirmed Identity:\n"
-            "\tvirgil card-search-private -d alice@gmail.com -t email -o alice/\n"
+            "\tvirgil card-search-private -d alice@gmail.com -t email -o alice/\n\n"
 
             "2. Search for Private Virgil Card with a confirmed Identity and an unconfirmaed Identity:\n"
-            "\tvirgil card-search-private -d alice@gmail.com -t email -o alice-with-unconfirmed-identity/ -u\n"
+            "\tvirgil card-search-private -d alice@gmail.com -t email -o alice-with-unconfirmed-identity/ -u\n\n"
 
             "3. Search for the Private Virgil Card(s) with a confirmed Identity:\n"
-            "\tvirgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o alice/\n"
+            "\tvirgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o alice/\n\n"
 
             "4. Search for Private Virgil Card with a confirmed Identity and an unconfirmaed Identity:\n"
             "\tvirgil card-search-private -d <obfuscated_value> -t <obfuscated_type> -o "

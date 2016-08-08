@@ -62,10 +62,10 @@ inline bool is_asn1(const vcrypto::VirgilByteArray& data) {
 
 int key2pub_main(int argc, char** argv) {
     try {
-        std::vector<std::string> examples{"1. Extract public key from private key:"
+        std::vector<std::string> examples{"1. Extract public key from private key:\n"
                                           "\tvirgil key2pub -i private.key -o public.key\n\n",
 
-                                          "2. Extract public key from private key with password:"
+                                          "2. Extract public key from private key with password:\n"
                                           "\tvirgil key2pub -i private.key -o public.key -p STRONGPASS\n"};
 
         std::string descriptionMessage = cli::getDescriptionMessage(cli::kKey2pub_Description, examples);

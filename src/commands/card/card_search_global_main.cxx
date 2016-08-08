@@ -52,7 +52,7 @@ namespace vcrypto = virgil::crypto;
 int card_search_global_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples{"1. Search for global Virgil Card by user's email:\n"
-                                          "\tvirgil card-search-global -e alice@mailinator.com\n",
+                                          "\tvirgil card-search-global -e alice@mailinator.com\n\n",
 
                                           "2. Search for application global Virgil Card by application name:\n"
                                           "\tvirgil card-search-global -c <app_name>\n\n",

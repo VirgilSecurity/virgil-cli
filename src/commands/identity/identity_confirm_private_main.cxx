@@ -65,7 +65,7 @@ int identity_confirm_private_main(int argc, char** argv) {
             "1. Generate a validation-token:\n"
             "\tvirgil identity-confirm-private -d <identity_value> -t <identity_type> -o "
             "private-validated-identity.txt "
-            "--app-key application-private.key\n"
+            "--app-key application-private.key\n\n"
 
             "2. Generate a validation-token with obfuscated identity (see 'virgil hash'):\n"
             "\tvirgil identity-confirm-private -d <obfuscate_value> -t <obfuscate_type> -o validated-identity.txt "

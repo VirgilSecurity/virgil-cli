@@ -63,7 +63,7 @@ int public_key_revoke_global_main(int argc, char** argv) {
         std::vector<std::string> examples{
             "1. Revoke a chain of global Virgil Cards by public-key-id from Virgil Keys Service:\n"
             "\tvirgil public-key-revoke-global -e <public_key_id> -a <card_id> -k alice/private.key"
-            " -f alice/validated-identity-main.txt -f alice/validated-identity-reserve.txt\n",
+            " -f alice/validated-identity-main.txt -f alice/validated-identity-reserve.txt\n\n",
 
             "2. Revoke a chain of global Virgil Cards by public-key-id from Virgil Keys Service, "
             "with confirming of identity:\n"

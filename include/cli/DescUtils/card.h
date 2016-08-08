@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2016 Virgil Security Inc.
  *
@@ -87,7 +86,7 @@ const char* const kCardRevokePrivate_Description =
 /* card-revoke-private */
 
 /* card-search-global */
-const char* const kCardSearchGlobal_Description = "Search for a Global Virgil Card from the Virgil Keys Service by:.\n"
+const char* const kCardSearchGlobal_Description = "Search for a Global Virgil Card from the Virgil Keys Service by:\n"
                                                   "1. application_name - search an application Virgil Global Card\n"
                                                   "2. email - search a Virgil Global Card\n\n";
 

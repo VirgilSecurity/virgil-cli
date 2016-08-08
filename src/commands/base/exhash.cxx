@@ -57,7 +57,7 @@ int exhash_main(int argc, char** argv) {
     try {
         std::vector<std::string> examples{
             "1. Underlying hash - SHA384 (default), iterations - 2048 (default):\n"
-            "\tvirgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt\n",
+            "\tvirgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt\n\n",
 
             "2. Underlying hash - SHA512, iterations - 4096:\n"
             "\tvirgil exhash -i data.txt -o obfuscated_data.txt -s data_salt.txt -a sha512 -c 4096\n"};
