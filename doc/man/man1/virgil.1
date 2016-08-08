@@ -1,0 +1,215 @@
+.\" Man page generated from reStructuredText.
+.
+.TH "VIRGIL" "1" "Aug 08, 2016" "2.0.0-beta3" "virgil-cli"
+.SH NAME
+virgil \- command line tool for using Virgil Security full stack functionality.
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.SH SYNOPSIS
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil command [command opts] [command args]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH DESCRIPTION
+.sp
+The \fBVirgil\fP program is a command line tool for using Virgil Security stack functionality:
+.INDENT 0.0
+.IP \(bu 2
+encrypt, decrypt, sign and verify data;
+.IP \(bu 2
+interact with Virgil Keys Service;
+.IP \(bu 2
+interact with Virgil Private Keys Service.
+.UNINDENT
+.SH COMMON COMMANDS
+.sp
+\fBvirgil\-keygen(1)\fP
+Generate a private key with provided parameters.
+.sp
+\fBvirgil\-key2pub(1)\fP
+Extract a public key from the private key.
+.sp
+\fBvirgil\-encrypt(1)\fP
+Encrypt data for given recipients who can be defined by their Virgil Keys and by passwords.
+.sp
+\fBvirgil\-decrypt(1)\fP
+Decrypt data for a given recipient who can be defined by his public key or by his password.
+.sp
+\fBvirgil\-sign(1)\fP
+Sign data with the private key.
+.sp
+\fBvirgil\-verify(1)\fP
+Verify data and signature with the public key.
+.sp
+\fBvirgil\-exhash(1)\fP
+Derives hash from the given data with PBKDF function.
+.sp
+\fBvirgil\-config(1)\fP
+Get information about Virgil CLI configuration file.
+.SH IDENTITY SERVICE COMMANDS
+.sp
+\fBvirgil\-identity\-confirm\-global(1)\fP
+Confirmation of the Identity. Returns validation token which is required for operations with Global Virgil Cards and the confirmed Identity:
+.INDENT 0.0
+.IP 1. 3
+\fBvirgil\-card\-create\-global(1)\fP;
+.IP 2. 3
+\fBvirgil\-card\-revoke\-global(1)\fP;
+.IP 3. 3
+\fBvirgil\-public\-key\-revoke\-global(1)\fP\&.
+.UNINDENT
+.sp
+\fBvirgil\-identity\-confirm\-private(1)\fP
+Confirmation of the Identity. Returns the validation token which is required for the operations with Private Virgil Cards and the confirmed identity:
+.INDENT 0.0
+.IP 1. 3
+\fBvirgil\-card\-create\-private(1)\fP;
+.IP 2. 3
+\fBvirgil\-card\-revoke\-private(1)\fP;
+.IP 3. 3
+\fBvirgil\-public\-key\-revoke\-private(1)\fP\&.
+.UNINDENT
+.sp
+\fBvirgil\-identity\-verify(1)\fP
+Verify an identity Returns action id.
+.sp
+\fBvirgil\-identity\-valid(1)\fP
+Validates the passed token. Checks whether time to live and usage count to live limits for validation token are not exceeded.
+.SH KEYS SERVICE COMMANDS
+.sp
+\fBvirgil\-public\-key\-get(1)\fP
+Get user\(aqs Virgil Public Key from the Virgil Keys service.
+.sp
+\fBvirgil\-public\-key\-revoke\-global(1)\fP
+Revoke a group of Global Virgil Cards from the Public Keys Service connected by public\-key\-id + card\-id of one of the Cards from the group.
+.sp
+\fBvirgil\-public\-key\-revoke\-private(1)\fP
+Revoke a group of Private Virgil Cards from the Public Keys Service connected by public\-key\-id + card\-id of one of the Cards from the group.
+.SH VIRGIL CARD SERVICE COMMANDS
+.sp
+\fBvirgil\-card\-create\-global(1)\fP
+Create a Global Virgil Card. This means \fBvirgil\-identity\-verify(1)\fP \fBvirgil\-identity\-confirm\-global(1)\fP\&.
+.sp
+\fBvirgil\-card\-create\-private(1)\fP
+Create a Private Virgil Card. This means \fBvirgil\-identity\-confirm\-private(1)\fP\&.
+.sp
+\fBvirgil\-card\-search\-global(1)\fP
+Search for a Global Virgil Card from the Virgil Keys Service by:
+.INDENT 0.0
+.IP 1. 3
+application name \- search an application global Virgil Card.
+.IP 2. 3
+email \- search a global Virgil Card.
+.UNINDENT
+.sp
+\fBvirgil\-card\-search\-private(1)\fP
+Search the Private Virgil Card from the Virgil Keys Service.
+.sp
+\fBvirgil\-card\-get(1)\fP
+Get user\(aqs Virgil Card from the Virgil Keys service.
+.sp
+\fBvirgil\-card\-revoke\-private(1)\fP
+Revoke a Private Virgil Card by the card\-id.
+.sp
+\fBvirgil\-card\-revoke\-global(1)\fP
+Revoke a Global Virgil Card by the card\-id.
+.SH PRIVATE KEYS SERVICE COMMANDS
+.sp
+\fBvirgil\-private\-key\-add(1)\fP
+Add existing the private key to the Private Keys Service.
+.sp
+\fBvirgil\-private\-key\-get(1)\fP
+Get the private key from the Virgil Private Keys Service.
+.sp
+\fBvirgil\-private\-key\-del(1)\fP
+Delete the private key object from the Private Keys Service.
+.SH SEE ALSO
+.INDENT 0.0
+.IP \(bu 2
+virgil\-quickstart(1)
+.IP \(bu 2
+virgil\-keygen(1)
+.IP \(bu 2
+virgil\-key2pub(1)
+.IP \(bu 2
+virgil\-encrypt(1)
+.IP \(bu 2
+virgil\-decrypt(1)
+.IP \(bu 2
+virgil\-sign(1)
+.IP \(bu 2
+virgil\-verify(1)
+.IP \(bu 2
+virgil\-exhash(1)
+.IP \(bu 2
+virgil\-config(1)
+.IP \(bu 2
+virgil\-identity\-confirm\-global(1)
+.IP \(bu 2
+virgil\-identity\-confirm\-private(1)
+.IP \(bu 2
+virgil\-identity\-verify(1)
+.IP \(bu 2
+virgil\-identity\-valid(1)
+.IP \(bu 2
+virgil\-public\-key\-get(1)
+.IP \(bu 2
+virgil\-public\-key\-revoke\-global(1)
+.IP \(bu 2
+virgil\-public\-key\-revoke\-private(1)
+.IP \(bu 2
+virgil\-card\-create\-global(1)
+.IP \(bu 2
+virgil\-card\-create\-private(1)
+.IP \(bu 2
+virgil\-card\-search\-global(1)
+.IP \(bu 2
+virgil\-card\-search\-private(1)
+.IP \(bu 2
+virgil\-card\-revoke\-private(1)
+.IP \(bu 2
+virgil\-card\-revoke\-global(1)
+.IP \(bu 2
+virgil\-private\-key\-add(1)
+.IP \(bu 2
+virgil\-private\-key\-get(1)
+.IP \(bu 2
+virgil\-private\-key\-del(1)
+.UNINDENT
+.SH AUTHOR
+Virgil Security Inc
+.SH COPYRIGHT
+2016, Virgil Security Inc
+.\" Generated by docutils manpage writer.
+.

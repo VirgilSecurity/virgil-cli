@@ -1,0 +1,566 @@
+.\" Man page generated from reStructuredText.
+.
+.TH "VIRGIL-QUCKSTART" "1" "Aug 08, 2016" "2.0.0-beta3" "virgil-cli"
+.SH NAME
+virgil-quckstart \- 
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.SH DESCRIPTION
+.sp
+The \fBVirgil Security CLI\fP program is a command line tool for using \fI\%Virgil Security\fP stack functionality.
+.sp
+\fBFeatures\fP:
+.INDENT 0.0
+.IP \(bu 2
+encrypt, decrypt, sign and verify data;
+.IP \(bu 2
+interact with \fI\%Virgil Keys Service\fP;
+.IP \(bu 2
+interact with \fI\%Virgil Private Keys Service\fP;
+.IP \(bu 2
+interact with \fI\%Virgil Identity Service\fP\&.
+.UNINDENT
+.SH BUILD UNIX
+.SS Unix toolchain
+.INDENT 0.0
+.IP \(bu 2
+Compiler:
+.INDENT 2.0
+.IP \(bu 2
+\fBg++\fP (version >= 4.8.5), or
+.IP \(bu 2
+\fBclang++\fP (version >= 3.5)
+.UNINDENT
+.IP \(bu 2
+\fI\%CMake\fP (accessible in command prompt). Minimum version: 3.2:
+.INDENT 2.0
+.INDENT 3.5
+\fBFor Ubuntu\fP: \fI\%see this link\fP
+.sp
+\fBFor Mac OS X\fP (make sure you have \fI\%Homebrew\fP installed):
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+brew install cmake
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.IP \(bu 2
+\fI\%Git\fP (accessible in command prompt).
+.IP \(bu 2
+\fI\%libcurl\-devel + SSL\fP:
+.INDENT 2.0
+.INDENT 3.5
+\fBFor Ubuntu\fP (package libcurl4\-openssl\-dev):
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+apt\-get \-y install git libcurl4\-openssl\-dev
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+\fBFor Mac OS X\fP:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+brew install curl \-\-with\-openssl
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SS Unix build steps
+.INDENT 0.0
+.IP 1. 3
+Open terminal.
+.IP 2. 3
+Clone project.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+git clone https://github.com/VirgilSecurity/virgil\-cli.git
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP 3. 3
+Go to the project\(aqs folder.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+cd virgil\-cli
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP 4. 3
+Create folder for the build purposes and go to it.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkdir build && cd build
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP 5. 3
+Configure, build and install.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+cmake .. && make \-j4 && make install
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH BUILD WINDOWS
+.SS Windows MSVC toolchain
+.INDENT 0.0
+.IP \(bu 2
+\fI\%Visual Studio 2015\fP
+.IP \(bu 2
+\fI\%CMake\fP (accessible in command prompt). Minimum version: 3.2.
+.IP \(bu 2
+\fI\%Git\fP (accessible in command prompt).
+.IP \(bu 2
+\fI\%NSIS\fP\&.
+.UNINDENT
+.SS Windows MSVC build steps
+.INDENT 0.0
+.IP 1. 3
+Open \fIVisual Studio Command Prompt\fP\&.
+.IP 2. 3
+Clone project.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+git clone https://github.com/VirgilSecurity/virgil\-cli.git
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP 3. 3
+Go to the project\(aqs folder.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+cd virgil\-cli
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP 4. 3
+Create folder for the build purposes and go to it.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkdir build
+cd build
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP 5. 3
+Configure, build and make installer.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+cmake \-G"NMake Makefiles" \-DCMAKE_BUILD_TYPE=Release ..
+nmake
+nmake package
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH EXAMPLE: VIRGIL CLI WITH COMMITTING TO SERVICES
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+Virgil provides all necessary services for managing and performing operations with your keys. We recommend using Virgil Services to store your keys.
+.UNINDENT
+.UNINDENT
+.sp
+Let\(aqs create two users Alice and Bob and demonstrate the communication between them.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkdir alice
+mkdir bob
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Scenario for Alice is shown below, particularly Generate Keys and Create a Global Virgil Card.
+The same actions are performed for Bob.
+.SS Generate Keys
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+keygen
+.IP \(bu 2
+key2pub
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+1. A private key is generated in the Private Keys Service with a default Elliptic 384\-bits NIST Curve scheme.
+You will be asked to enter the private key password:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil keygen \-o alice/private.key
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP 2. 3
+A public key is generated in the Keys Service using the private key.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil key2pub \-i alice/private.key \-o alice/public.key
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Create a Global Virgil Card
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+card\-create\-global
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.sp
+A Virgil Card is the main entity of the Keys Service, it includes the information about the user and his public key. The Virgil Card identifies the user by one of his available types, such as an email, a phone number, etc.
+Global Virgil Card is automatically verified in Virgil Identity Service, it is globally available to all Virgil users.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil card\-create\-global \-\-public\-key alice/public.key \-k alice/private.key \-o alice/alice.vcard \-d alice@domain.com
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+\fBalice@domain.com\fP \- is your email
+.UNINDENT
+.UNINDENT
+.SS Encrypt Data
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+encrypt
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Bob encrypts \fIplain.txt\fP for Alice.
+.IP \(bu 2
+Bob needs Alice\(aqs Global Card to encrypt some data for her.
+.IP \(bu 2
+He can get it from the Keys Service by indicating Alice\(aqs email.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil encrypt \-i plain.txt \-o plain.txt.enc email:alice@domain.com
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Decrypt Data
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+decrypt
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Alice decrypts \fIplain.txt.enc\fP\&.
+.IP \(bu 2
+Alice uses her private key and her Card.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil decrypt \-i plain.txt.enc \-k alice/private.key \-r vcard:alice/alice.vcard
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Sign Data
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+sign
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Alice signs \fIplain.txt\fP before passing it to Bob.
+.IP \(bu 2
+Alice\(aqs private key is used to create a signature.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil sign \-i plain.txt \-o plain.txt.sign \-k alice/private.key
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Verify Data
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+verify
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Bob verifies \fIplain.txt.sign\fP\&.
+.IP \(bu 2
+He must have Alice\(aqs Virgil Card to verify the signature.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil card\-search\-global \-o bob/ \-e alice@domain.com
+virgil verify \-i plain.txt \-s plain.txt.sign \-r vcard:bob/alice.vcard
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+Pay attention that \fBalice.vcard\fP is a shortened example of a Virgil Card name.
+.UNINDENT
+.UNINDENT
+.SH EXAMPLE: VIRGIL CLI WITHOUT COMMITTING TO SERVICES
+.sp
+\fBNOTE:\fP
+.INDENT 0.0
+.INDENT 3.5
+You can choose to take care of keeping your keys securely by yourself. This way you don\(aqt save your public key in Virgil Services and have to manage sharing it every time.
+.UNINDENT
+.UNINDENT
+.SS Encrypt Data
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+encrypt
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Alice encrypts \fIplain.txt\fP for Bob.
+.IP \(bu 2
+Alice needs Bob\(aqs public key and his identifier to encrypt some data for him.
+.IP \(bu 2
+\fIpubkey\fP is an argument, which contains sender\(aqs public key and recipient\(aqs identifier.
+.IP \(bu 2
+Recipient\(aqs identifier is a plain text, which is needed for the Public key association.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil encrypt \-i plain.txt \-o plain.txt.enc pubkey:bob/public.key:ForBob
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Decrypt Data
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+decrypt
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Bob decrypts \fIplain.txt.enc\fP\&.
+.IP \(bu 2
+Bob uses his private key and the identifier, which has been provided by Alice.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil decrypt \-i plain.txt.enc \-k bob/private.key \-r id:ForBob
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Sign Data
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+sign
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Alice signs \fIplain.txt\fP before passing it to Bob.
+.IP \(bu 2
+Alice\(aqs private key is used to create a signature.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil sign \-i plain.txt \-o plain.txt.sign \-k alice/private.key
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS Verify Data
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+verify
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+Bob verifies \fIplain.txt.sign\fP\&.
+.IP \(bu 2
+He need\(aqs Alice\(aqs public key to verify the signature.
+.UNINDENT
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil verify \-i plain.txt \-s plain.txt.sign \-r pubkey:alice/public.key
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH SEE ALSO
+.INDENT 0.0
+.IP \(bu 2
+virgil(1)
+.UNINDENT
+.SH AUTHOR
+Virgil Security Inc
+.SH COPYRIGHT
+2016, Virgil Security Inc
+.\" Generated by docutils manpage writer.
+.
