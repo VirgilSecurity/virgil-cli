@@ -40,9 +40,9 @@
 
 namespace cli {
 const char* cli_version() {
-    std::string txt = "@VIRGIL_CLI_VERSION@\n";
-    txt += "virgil-sdk-cpp lib v@VIRGIL_SDK_CPP_LIB_VERSION@"
-           " based on virgil-crypto lib v@VIRGIL_CRYPTO_LIB_VERSION@";
-    return txt.data();
+    auto version = "@VIRGIL_CLI_VERSION@\n\n"
+					"virgil-sdk-cpp lib v@VIRGIL_SDK_CPP_LIB_VERSION@"
+					" based on virgil-crypto lib v@VIRGIL_CRYPTO_LIB_VERSION@";
+    return version;
 }
 } // cli
