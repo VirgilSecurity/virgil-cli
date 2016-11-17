@@ -155,7 +155,7 @@ virgil_log_info ("Found Virgil Crypto, version " ${virgil_crypto_VERSION})
 
 # Grab source directory tree
 file (GLOB_RECURSE INC_SRC_LIST "src/*.cxx.in")
-foreach (SRC_FILE ${SRC_LIST})
+foreach (SRC_FILE ${INC_SRC_LIST})
     string (REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/src/" "" SRC_REL_PATH ${SRC_FILE})
     string (REPLACE ".in" "" SRC_REL_PATH ${SRC_REL_PATH})
     configure_file (
