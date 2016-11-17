@@ -199,3 +199,8 @@ elseif (WIN32 AND NOT CYGWIN)
         install (PROGRAMS "${EXT_PREBUILD_MSVC_DIR}/install/vc_redist.${SYSTEM_ARCH}.exe" DESTINATION "install")
     endif (MSVC)
 endif ()
+
+# Format code
+add_custom_target(format
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/format_code.sh"
+)
