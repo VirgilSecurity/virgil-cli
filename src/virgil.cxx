@@ -35,17 +35,19 @@
  */
 
 #include <cli/Version.h>
+#include <easylogging/easylogging++.h>
 
-#include <iostream>
 #include <string>
 #include <map>
 #include <fstream>
 #include <iterator>
 
+INITIALIZE_EASYLOGGINGPP
+
 int main(int argc, char** argv) {
     using namespace cli;
 
-    std::cout << "Version: " << Version::cliVersion() << std::endl;
+    LOG(INFO) << "Version: " << Version::cliVersion();
 
     return EXIT_SUCCESS;
 }

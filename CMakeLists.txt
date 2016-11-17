@@ -148,10 +148,18 @@ virgil_find_package (nlohman_json)
 virgil_find_package (restless)
 virgil_find_package (mbedtls)
 
+virgil_depends (
+    PACKAGE_NAME "easylogging"
+    CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/easylogging"
+)
+
+virgil_find_package (easylogging)
+
 # Show versions info
 virgil_log_info ("Found Virgil CLI, version " ${VIRGIL_CLI_VERSION})
 virgil_log_info ("Found Virgil SDK, version " ${virgil_sdk_VERSION})
 virgil_log_info ("Found Virgil Crypto, version " ${virgil_crypto_VERSION})
+virgil_log_info ("Found Easy Logging++, version " ${easylogging_VERSION})
 
 # Grab source directory tree
 file (GLOB_RECURSE INC_SRC_LIST "src/*.cxx.in")
