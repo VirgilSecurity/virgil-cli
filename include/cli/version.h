@@ -37,11 +37,14 @@
 #ifndef VIRGIL_COMMON_VERSION_H
 #define VIRGIL_COMMON_VERSION_H
 
-namespace cli {
-/**
- * @brief Returns CLI version.
- */
-const char* cli_version();
-}
+#include <string>
 
+namespace cli {
+
+class Version {
+public:
+    static std::string cliVersion();
+};
+
+}
 #endif /* VIRGIL_COMMON_VERSION_H */
