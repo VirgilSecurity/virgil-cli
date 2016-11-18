@@ -155,11 +155,19 @@ virgil_depends (
 
 virgil_find_package (easylogging)
 
+virgil_depends (
+    PACKAGE_NAME "docopt"
+    CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/docopt"
+)
+
+virgil_find_package (docopt)
+
 # Show versions info
 virgil_log_info ("Found Virgil CLI, version " ${VIRGIL_CLI_VERSION})
 virgil_log_info ("Found Virgil SDK, version " ${virgil_sdk_VERSION})
 virgil_log_info ("Found Virgil Crypto, version " ${virgil_crypto_VERSION})
 virgil_log_info ("Found Easy Logging++, version " ${easylogging_VERSION})
+virgil_log_info ("Found DocOpt, version " ${docopt_VERSION})
 
 # Grab source directory tree
 file (GLOB_RECURSE INC_SRC_LIST "src/*.cxx.in")
@@ -182,7 +190,7 @@ target_include_directories (virgil_cli PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
         "${CURL_INCLUDE_DIRS}"
         )
-target_link_libraries (virgil_cli virgil::security::virgil_sdk ${CURL_LIBRARIES})
+target_link_libraries (virgil_cli virgil::security::virgil_sdk docopt_s ${CURL_LIBRARIES})
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
 # Install shared libraries
