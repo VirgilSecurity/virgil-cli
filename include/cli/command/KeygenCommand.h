@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#ifndef VIRGIL_CLI_KEYGENCOMMAND_H
+#define VIRGIL_CLI_KEYGENCOMMAND_H
 
-#include <cli/api/Version.h>
+#include <cli/command/Command.h>
 
-using cli::api::Version;
+namespace cli { namespace command {
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
-}
+class KeygenCommand : public Command {
+private:
+    virtual const char* doGetName() const override;
+    virtual const char* doGetUsage() const override;
+    virtual argument::ArgumentSource::UsageOptions doGetUsageOptions() const override;
+    virtual void doProcess(std::unique_ptr<argument::ArgumentSource> args) const override;
+};
+
+}}
+
+#endif //VIRGIL_CLI_KEYGENCOMMAND_H

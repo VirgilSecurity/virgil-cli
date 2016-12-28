@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef VIRGIL_CLI_UTILS_H
+#define VIRGIL_CLI_UTILS_H
+
 #include <string>
+#include <stdexcept>
 
-#include <cli/api/Version.h>
+namespace cli { namespace api {
 
-using cli::api::Version;
+template<typename T>
+class get {
+public:
+    static T from(const std::string& from);
+};
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
+}}
+
+namespace std {
+
+    template<typename T>
+    string to_string(const T& value);
+
 }
+
+#endif //VIRGIL_CLI_UTILS_H

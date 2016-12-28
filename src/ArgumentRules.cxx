@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#include <cli/argument/ArgumentRules.h>
 
-#include <cli/api/Version.h>
+using cli::argument::ArgumentRules;
 
-using cli::api::Version;
+ArgumentRules::ArgumentRules() {
+    allowUserInteraction_ = false;
+    allowUserInteractionForOptionalArguments_ = false;
+}
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
+bool ArgumentRules::allowUserInteraction() const {
+    return allowUserInteraction_;
+}
+
+void ArgumentRules::allowUserInteraction(bool allow) {
+    allowUserInteraction_ = allow;
+}
+
+bool ArgumentRules::allowUserInteractionForOptionalArguments() const {
+    return allowUserInteractionForOptionalArguments_;
+}
+
+void ArgumentRules::allowUserInteractionForOptionalArguments(bool allow) {
+    allowUserInteractionForOptionalArguments_ = allow;
 }

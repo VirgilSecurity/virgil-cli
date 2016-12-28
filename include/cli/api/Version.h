@@ -34,12 +34,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef VIRGIL_COMMON_VERSION_H
+#define VIRGIL_COMMON_VERSION_H
+
 #include <string>
 
-#include <cli/api/Version.h>
+namespace cli { namespace api {
 
-using cli::api::Version;
+class Version {
+public:
+    static std::string cliVersion();
+};
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
-}
+}}
+#endif /* VIRGIL_COMMON_VERSION_H */

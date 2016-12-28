@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#include <cli/command/HubCommand.h>
 
-#include <cli/api/Version.h>
+#include <cli/command/KeygenCommand.h>
 
-using cli::api::Version;
+#include <cli/api/api.h>
+#include <cli/error/ArgumentError.h>
+#include <cli/argument/ArgumentIO.h>
+#include <cli/logger/Logger.h>
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
+using namespace cli;
+using namespace cli::command;
+
+const char* HubCommand::doGetName() const {
+    return "virgil";
+}
+
+const char* HubCommand::doGetUsage() const {
+    return usage::VIRGIL;
+}
+
+argument::ArgumentSource::UsageOptions HubCommand::doGetUsageOptions() const {
+    return argument::ArgumentSource::UsageOptions().enableOptionsFirst();
+}
+
+std::unique_ptr<Command> HubCommand::findCommand(const std::string& commandName) const {
+    if (commandName == arg::value::VIRGIL_COMMAND_KEYGEN) {
+        return std::make_unique<KeygenCommand>();
+    }
+    throw error::ArgumentValueError(arg::COMMAND, commandName);
+}
+
+void HubCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) const {
+    findCommand(getArgumentIO()->readCommand(args))->process(std::move(args));
 }

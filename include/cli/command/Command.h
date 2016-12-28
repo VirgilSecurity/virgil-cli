@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#ifndef VIRGIL_CLI_COMMAND_H
+#define VIRGIL_CLI_COMMAND_H
 
-#include <cli/api/Version.h>
+#include <cli/argument/ArgumentSource.h>
+#include <cli/argument/ArgumentIO.h>
 
-using cli::api::Version;
+namespace cli { namespace command {
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
-}
+class Command {
+public:
+    const char *getName() const;
+    const char *getUsage() const;
+    argument::ArgumentSource::UsageOptions getUsageOptions() const;
+    void process(std::unique_ptr<argument::ArgumentSource> args) const;
+    void showUsage(const char* errorMessage = nullptr) const;
+    void showVersion() const;
+protected:
+    std::shared_ptr<argument::ArgumentIO> getArgumentIO() const;
+private:
+    virtual const char* doGetName() const = 0;
+    virtual const char* doGetUsage() const = 0;
+    virtual argument::ArgumentSource::UsageOptions doGetUsageOptions() const = 0;
+    virtual void doProcess(std::unique_ptr<argument::ArgumentSource> args) const = 0;
+};
+
+}}
+
+#endif //VIRGIL_CLI_COMMAND_H

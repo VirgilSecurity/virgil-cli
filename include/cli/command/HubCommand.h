@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#ifndef VIRGIL_CLI_HUBCOMMAND_H
+#define VIRGIL_CLI_HUBCOMMAND_H
 
-#include <cli/api/Version.h>
+#include <cli/command/Command.h>
 
-using cli::api::Version;
+#include <memory>
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
-}
+namespace cli { namespace command {
+
+class HubCommand : public Command {
+private:
+    virtual const char* doGetName() const override;
+    virtual const char* doGetUsage() const override;
+    virtual argument::ArgumentSource::UsageOptions doGetUsageOptions() const override;
+    virtual void doProcess(std::unique_ptr<argument::ArgumentSource> args) const override;
+
+    std::unique_ptr<Command> findCommand(const std::string& commandName) const;
+};
+
+}}
+
+#endif //VIRGIL_CLI_HUBCOMMAND_H

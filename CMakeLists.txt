@@ -39,6 +39,9 @@
 #     - INSTALL_LIB_DIR_NAME  - name of the directory where libraries will be installed.
 #     - INSTALL_MAN_DIR_NAME  - name of the directory where man pages will be installed.
 #     - INSTALL_DOC_DIR_NAME  - name of the directory where documentation will be installed.
+#     - INSTALL_CFG_DIR_PATH  - path to the directory where configurations will be installed.
+#
+#     - CFG_DIR_PATH_LOCAL - TBD.
 #
 # Define variables:
 #     - VIRGIL_CLI_VERSION_MAJOR         - major version number.
@@ -46,13 +49,15 @@
 #     - VIRGIL_CLI_VERSION_PATCH         - patch number.
 #     - VIRGIL_CLI_VERSION_FEATURE       - version feature, i.e. alpha, beta, rc1, etc.
 #     - VIRGIL_CLI_VERSION               - full version.
+#
+#     - CFG_DIR_PATH - path to the directory where configurations is installed.
 
 cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 
 project (virgil_cli VERSION 3.0.0)
 
-# Enable C++11
-set (CMAKE_CXX_STANDARD 11)
+# Enable C++14
+set (CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Configure path to custom modules
@@ -78,6 +83,7 @@ endif (VIRGIL_CLI_VERSION_FEATURE)
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
 set (INSTALL_LIB_DIR_NAME lib CACHE STRING "Installation directory name for libraries")
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
+set (INSTALL_CFG_DIR_PATH "~/.virgil" CACHE PATH "Installation directory path for configuration files")
 
 # Configure application token
 set (VIRGIL_ACCESS_TOKEN ${TOKEN} CACHE STRING
@@ -88,6 +94,14 @@ set (UCLIBC OFF CACHE BOOL "Enable pathches if CLI is build with uClibc++")
 
 ## Link with shared library if defined
 set (BUILD_SHARED_LIBS OFF CACHE BOOL "Force to link with shared libraries")
+
+## Config files
+set (CFG_DIR_PATH_LOCAL OFF CACHE BOOL "TBD")
+if (CFG_DIR_PATH_LOCAL)
+    set (CFG_DIR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/conf")
+else ()
+    set (CFG_DIR_PATH "${INSTALL_CFG_DIR_PATH}")
+endif ()
 
 # Define enviroment parameters
 if (CMAKE_SIZEOF_VOID_P)
@@ -147,6 +161,7 @@ virgil_find_package (virgil_crypto)
 virgil_find_package (nlohman_json)
 virgil_find_package (restless)
 virgil_find_package (mbedtls)
+virgil_find_package (tinyformat)
 
 virgil_depends (
     PACKAGE_NAME "easylogging"
@@ -168,6 +183,7 @@ virgil_log_info ("Found Virgil SDK, version " ${virgil_sdk_VERSION})
 virgil_log_info ("Found Virgil Crypto, version " ${virgil_crypto_VERSION})
 virgil_log_info ("Found Easy Logging++, version " ${easylogging_VERSION})
 virgil_log_info ("Found DocOpt, version " ${docopt_VERSION})
+virgil_log_info ("Found TinyFormat, version " ${tinyformat_VERSION})
 
 # Grab source directory tree
 file (GLOB_RECURSE INC_SRC_LIST "src/*.cxx.in")

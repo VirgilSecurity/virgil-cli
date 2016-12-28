@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,68 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#include <cli/cmd/StandardCommandPrompt.h>
 
-#include <cli/api/Version.h>
+#include <algorithm>
+#include <iostream>
 
-using cli::api::Version;
+#if defined(WIN32)
+#include <Windows.h>
+#else
+#include <termios.h>
+#include <unistd.h>
+#endif
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
+using cli::cmd::StandardCommandPrompt;
+
+static void set_stdin_echo(bool enable) {
+#ifdef WIN32
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD mode;
+    GetConsoleMode(hStdin, &mode);
+    if (!enable) {
+        mode &= ~ENABLE_ECHO_INPUT;
+    } else {
+        mode |= ENABLE_ECHO_INPUT;
+    }
+    SetConsoleMode(hStdin, mode);
+
+#else
+    struct termios tty;
+    tcgetattr(STDIN_FILENO, &tty);
+    if (!enable) {
+        tty.c_lflag &= ~ECHO;
+    } else {
+        tty.c_lflag |= ECHO;
+    }
+
+    (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+#endif
+}
+
+void StandardCommandPrompt::doInit(const std::string& usage) const {
+    (void)usage;
+}
+
+std::string StandardCommandPrompt::doRead() const {
+    std::string result;
+    std::cin >> result;
+    return result;
+}
+
+std::string StandardCommandPrompt::doSecureRead() const {
+    set_stdin_echo(false);
+    std::string result;
+    std::cin >> std::ws;
+    std::cin >> result;
+    set_stdin_echo(true);
+    return result;
+}
+
+void StandardCommandPrompt::doWrite(const std::string& str) const {
+    std::cout << str;
+}
+
+void StandardCommandPrompt::doWriteNewLine(const std::string& str) const {
+    std::cout << str << std::endl;
 }

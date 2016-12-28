@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#ifndef VIRGIL_CLI_EXIT_ERROR_H
+#define VIRGIL_CLI_EXIT_ERROR_H
 
-#include <cli/api/Version.h>
+#include <stdexcept>
 
-using cli::api::Version;
+namespace cli { namespace error {
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
-}
+class ExitSuccess : public std::runtime_error {
+public:
+    ExitSuccess() : std::runtime_error("") {}
+};
+
+class ExitFailure : public std::runtime_error {
+public:
+    ExitFailure() : std::runtime_error("") {}
+};
+
+}}
+
+#endif //VIRGIL_CLI_EXIT_ERROR_H

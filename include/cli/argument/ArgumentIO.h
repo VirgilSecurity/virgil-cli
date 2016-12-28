@@ -1,15 +1,15 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
+ * Redistribution and use in argumentSource and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of source code must retain the above copyright
+ *     (1) Redistributions of argumentSource code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *
  *     (2) Redistributions in binary form must reproduce the above copyright
@@ -34,12 +34,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#ifndef VIRGIL_CLI_ARGUMENT_IO_H
+#define VIRGIL_CLI_ARGUMENT_IO_H
 
-#include <cli/api/Version.h>
+#include <cli/argument/ArgumentSource.h>
 
-using cli::api::Version;
+#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/crypto/VirgilKeyPair.h>
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
-}
+namespace cli { namespace argument {
+
+class ArgumentIO {
+public:
+    using Bytes = virgil::crypto::VirgilByteArray;
+    using KeyAlgorithm = virgil::crypto::VirgilKeyPair::Type;
+public:
+    std::string readCommand(const std::unique_ptr<ArgumentSource>& argumentSource) const;
+    KeyAlgorithm readKeyAlgorithm(const std::unique_ptr<ArgumentSource>& argumentSource) const;
+    Bytes readInput(const std::unique_ptr<ArgumentSource>& argumentSource) const;
+    Bytes readKeyPassword(const std::unique_ptr<ArgumentSource>& argumentSource) const;
+    void writeOutput(const std::unique_ptr<ArgumentSource>& argumentSource, const Bytes& bytes) const;
+};
+
+}}
+
+#endif //VIRGIL_CLI_ARGUMENT_IO_H

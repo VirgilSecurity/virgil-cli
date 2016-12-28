@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,20 +34,59 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/Version.h>
-#include <easylogging/easylogging++.h>
+#include <cli/command/Command.h>
 
-#include <string>
-#include <map>
-#include <fstream>
-#include <iterator>
+#include <cli/error/ArgumentError.h>
+#include <cli/error/ExitError.h>
+#include <cli/api/Version.h>
+#include <cli/logger/Logger.h>
 
-INITIALIZE_EASYLOGGINGPP
+#include <iostream>
 
-int main(int argc, char** argv) {
-    using namespace cli;
+using cli::command::Command;
+using cli::argument::ArgumentSource;
+using cli::argument::ArgumentIO;
 
-    LOG(INFO) << "Version: " << Version::cliVersion();
+const char* Command::getName() const {
+    return doGetName();
+}
 
-    return EXIT_SUCCESS;
+const char* Command::getUsage() const {
+    return doGetUsage();
+}
+
+std::shared_ptr<ArgumentIO> Command::getArgumentIO() const {
+    return std::make_shared<ArgumentIO>();
+}
+
+ArgumentSource::UsageOptions Command::getUsageOptions() const {
+    return doGetUsageOptions();
+}
+
+void Command::process(std::unique_ptr<argument::ArgumentSource> args) const {
+    DLOG(INFO) << "Start process command:" << getName();
+    try {
+        args->init(getUsage(), getUsageOptions());
+        doProcess(std::move(args));
+    } catch (const error::ArgumentShowUsageError&) {
+        showUsage();
+    } catch (const error::ArgumentShowVersionError&) {
+        showVersion();
+    } catch (const error::ArgumentRuntimeError& error) {
+        showUsage(error.what());
+        throw error::ExitFailure();
+    }
+}
+
+void Command::showUsage(const char* errorMessage) const {
+    std::ostream* out = &std::cout;
+    if (errorMessage != nullptr) {
+        out = &std::cerr;
+        *out << tfm::format("%s\n", errorMessage);
+    }
+    *out << tfm::format("%s\n", getUsage());
+}
+
+void Command::showVersion() const {
+    std::cout << api::Version::cliVersion();
 }

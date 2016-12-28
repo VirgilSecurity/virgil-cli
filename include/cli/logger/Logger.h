@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#ifndef VIRGIL_CLI_LOGGER_H
+#define VIRGIL_CLI_LOGGER_H
 
-#include <cli/api/Version.h>
+#include <easylogging/easylogging++.h>
+#include <tinyformat/tinyformat.h>
 
-using cli::api::Version;
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
-}
+static constexpr const char kLoggerId_User[] = "user";
+
+#define ULOG(vlevel, level) if (VLOG_IS_ON(vlevel)) CLOG(level, ELPP_CURR_FILE_LOGGER_ID, kLoggerId_User)
+
+#endif //VIRGIL_CLI_LOGGER_H

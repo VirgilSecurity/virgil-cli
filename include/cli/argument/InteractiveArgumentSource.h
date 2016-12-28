@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#ifndef VIRGIL_CLI_INTERACTIVE_ARGUMENT_SOURCE_H
+#define VIRGIL_CLI_INTERACTIVE_ARGUMENT_SOURCE_H
 
-#include <cli/api/Version.h>
+#include <cli/argument/ArgumentSource.h>
 
-using cli::api::Version;
+#include <cli/cmd/CommandPrompt.h>
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
-}
+namespace cli { namespace argument {
+
+class InteractiveArgumentSource : public ArgumentSource {
+public:
+    InteractiveArgumentSource(std::shared_ptr<cmd::CommandPrompt> cmd);
+public:
+    virtual const char* doGetName() const override;
+    virtual void doInit(const std::string& usage, const UsageOptions& usageOptions) const override;
+    virtual bool doCanRead(const char* argName, ArgumentImportance argumentImportance) const override;
+    virtual std::string doReadString(const char* argName) const override;
+    virtual bool doReadBool(const char* argName) const override;
+    virtual int doReadInt(const char* argName) const override;
+    virtual void doUpdateRules(std::shared_ptr<ArgumentRules> argumentRules) const override;
+private:
+    std::shared_ptr<cmd::CommandPrompt> cmd_;
+};
+
+}}
+
+#endif //VIRGIL_CLI_INTERACTIVE_ARGUMENT_SOURCE_H

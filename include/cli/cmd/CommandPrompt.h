@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,17 +34,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_COMMON_VERSION_H
-#define VIRGIL_COMMON_VERSION_H
+#ifndef VIRGIL_CLI_COMMAND_PROMPT_H
+#define VIRGIL_CLI_COMMAND_PROMPT_H
 
 #include <string>
 
-namespace cli {
+namespace cli { namespace cmd {
 
-class Version {
+class CommandPrompt {
 public:
-    static std::string cliVersion();
+    std::string readString(const char *argName) const;
+    std::string readSecureString(const char *argName) const;
+    bool readBool(const char *argName) const;
+    int readInt(const char *argName) const;
+    void init(const std::string& usage) const;
+private:
+    virtual void doInit(const std::string& usage) const = 0;
+    virtual std::string doRead() const = 0;
+    virtual std::string doSecureRead() const = 0;
+    virtual void doWrite(const std::string& str) const = 0;
+    virtual void doWriteNewLine(const std::string& str) const = 0;
+private:
+    std::string getPromptMessage(const char* argName) const;
+    bool checkResult(const char* argName, const std::string& result) const;
 };
 
-}
-#endif /* VIRGIL_COMMON_VERSION_H */
+}}
+
+#endif //VIRGIL_CLI_COMMAND_PROMPT_H

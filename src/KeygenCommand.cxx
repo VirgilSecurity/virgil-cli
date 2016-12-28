@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016 Virgil Security Inc.
+ * Copyright (C) 2015-2016 Virgil Security Inc.
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  *
@@ -34,12 +34,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string>
+#include <cli/command/KeygenCommand.h>
 
-#include <cli/api/Version.h>
+#include <cli/api/api.h>
+#include <cli/logger/Logger.h>
 
-using cli::api::Version;
+using cli::command::KeygenCommand;
+using cli::argument::ArgumentSource;
 
-std::string Version::cliVersion() {
-    return "@VIRGIL_CLI_VERSION@\n";
+using namespace virgil::crypto;
+
+const char* KeygenCommand::doGetName() const {
+    return arg::value::VIRGIL_COMMAND_KEYGEN;
+}
+
+const char* KeygenCommand::doGetUsage() const {
+    return usage::VIRGIL_KEYGEN;
+}
+
+ArgumentSource::UsageOptions KeygenCommand::doGetUsageOptions() const {
+    return ArgumentSource::UsageOptions().disableOptionsFirst();
+}
+
+void KeygenCommand::doProcess(std::unique_ptr<ArgumentSource> args) const {
+    auto keyAlgorithm = getArgumentIO()->readKeyAlgorithm(args);
+    auto keyPassword = getArgumentIO()->readKeyPassword(args);
+    ULOG(1, INFO) << "Generate key pair.";
+    VirgilKeyPair keyPair = VirgilKeyPair::generate(keyAlgorithm, keyPassword);
+    ULOG(1, INFO) << "Write key pair to the output.";
+    getArgumentIO()->writeOutput(args, keyPair.privateKey());
 }
