@@ -41,11 +41,15 @@
 #include <cli/api/Version.h>
 #include <cli/logger/Logger.h>
 
+#include <virgil/crypto/VirgilCryptoException.h>
+
 #include <iostream>
 
 using cli::command::Command;
 using cli::argument::ArgumentSource;
 using cli::argument::ArgumentIO;
+
+using virgil::crypto::VirgilCryptoException;
 
 const char* Command::getName() const {
     return doGetName();
@@ -74,6 +78,11 @@ void Command::process(std::unique_ptr<argument::ArgumentSource> args) const {
         showVersion();
     } catch (const error::ArgumentRuntimeError& error) {
         showUsage(error.what());
+        throw error::ExitFailure();
+    } catch (const VirgilCryptoException& exception) {
+        LOG(FATAL) << exception.what();
+        ULOG(0, FATAL) << exception.condition().message();
+        showUsage();
         throw error::ExitFailure();
     }
 }

@@ -34,15 +34,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_LOGGER_H
-#define VIRGIL_CLI_LOGGER_H
+#ifndef VIRGIL_CLI_KEY_TO_PUB_H
+#define VIRGIL_CLI_KEY_TO_PUB_H
 
-#include <easylogging/easylogging++.h>
-#include <tinyformat/tinyformat.h>
+#include <cli/command/Command.h>
 
+namespace cli { namespace command {
 
-static constexpr const char kLoggerId_User[] = "user";
+class KeyToPubCommand : public Command {
+private:
+    static const char * name();
+    virtual const char* doGetName() const override;
+    virtual const char* doGetUsage() const override;
+    virtual argument::ArgumentSource::UsageOptions doGetUsageOptions() const override;
+    virtual void doProcess(std::unique_ptr<argument::ArgumentSource> args) const override;
+};
 
-#define ULOG(vlevel, level) CLOG_IF(VLOG_IS_ON(vlevel), level, ELPP_CURR_FILE_LOGGER_ID, kLoggerId_User)
+}}
 
-#endif //VIRGIL_CLI_LOGGER_H
+#endif //VIRGIL_CLI_KEY_TO_PUB_H

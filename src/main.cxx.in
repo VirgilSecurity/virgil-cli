@@ -70,13 +70,13 @@ int main(int argc, char* argv[]) {
         el::Configurations conf(kLoggerDefaultConfFile);
         el::Loggers::reconfigureAllLoggers(conf);
     } else {
-        LOG(1, WARNING) << "Failed to read log default configuration file, so use defaults";
+        LOG(WARNING) << "Failed to read log default configuration file, so use defaults";
     }
     {
         el::Configurations userConf;
         userConf.setToDefault();
         userConf.setGlobally(el::ConfigurationType::Enabled, "true");
-        userConf.setGlobally(el::ConfigurationType::Format, "%level %msg");
+        userConf.setGlobally(el::ConfigurationType::Format, "[** %level **] %msg");
         userConf.setGlobally(el::ConfigurationType::ToFile, "false");
         userConf.setGlobally(el::ConfigurationType::ToStandardOutput, "true");
         el::Loggers::getLogger(kLoggerId_User)->configure(userConf);
@@ -105,10 +105,10 @@ int main(int argc, char* argv[]) {
         return EXIT_SUCCESS;
     } catch (const std::exception& exception) {
         LOG(FATAL) << exception.what();
-        std::cerr << "Unexpected error occurred. Contact support for help." << std::endl;
+        ULOG(0, FATAL) << "Unexpected error occurred. Contact support for help.";
         return EXIT_FAILURE;
     } catch (...) {
-        LOG(FATAL) << "Undefined error.";
+        ULOG(0, FATAL) << "Undefined error occurred. Contact support for help.";
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

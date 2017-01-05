@@ -52,6 +52,9 @@ static constexpr const char* kTypeErrorMessage =
 static constexpr const char* kValueErrorMessage =
         "Argument '%s' has unexpected value: '%s'.";
 
+static constexpr const char* kFileNotFoundMessage =
+        "File '%s' is not found.";
+
 ArgumentNotFoundError::ArgumentNotFoundError(const char* argName) :
         ArgumentRuntimeError(tfm::format(kNotFoundErrorMessage, argName)) {}
 
@@ -75,3 +78,9 @@ ArgumentValueError::ArgumentValueError(const char* argName, const std::string& v
 
 ArgumentValueError::ArgumentValueError(const std::string& argName, const std::string& value) :
         ArgumentRuntimeError(tfm::format(kValueErrorMessage, argName, value)) {}
+
+ArgumentFileNotFound::ArgumentFileNotFound(const char* fileName) :
+        ArgumentRuntimeError(tfm::format(kFileNotFoundMessage, fileName)) {}
+
+ArgumentFileNotFound::ArgumentFileNotFound(const std::string& fileName) :
+        ArgumentRuntimeError(tfm::format(kFileNotFoundMessage, fileName)) {}

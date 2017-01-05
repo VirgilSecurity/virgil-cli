@@ -90,6 +90,12 @@ public:
     ArgumentShowVersionError() : ArgumentRuntimeError("") {}
 };
 
+class ArgumentFileNotFound : public ArgumentRuntimeError {
+public:
+    ArgumentFileNotFound(const char* fileName);
+    ArgumentFileNotFound(const std::string& fileName);
+};
+
 }}
 
 #endif //VIRGIL_CLI_ARGUMENT_ERROR_H

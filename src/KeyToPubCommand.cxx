@@ -34,15 +34,3 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_LOGGER_H
-#define VIRGIL_CLI_LOGGER_H
-
-#include <easylogging/easylogging++.h>
-#include <tinyformat/tinyformat.h>
-
-
-static constexpr const char kLoggerId_User[] = "user";
-
-#define ULOG(vlevel, level) CLOG_IF(VLOG_IS_ON(vlevel), level, ELPP_CURR_FILE_LOGGER_ID, kLoggerId_User)
-
-#endif //VIRGIL_CLI_LOGGER_H

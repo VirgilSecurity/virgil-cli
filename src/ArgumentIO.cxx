@@ -39,6 +39,7 @@
 #include <cli/api/api.h>
 #include <cli/api/utils.h>
 
+#include <cli/error/ArgumentError.h>
 #include <cli/logger/Logger.h>
 
 #include <istream>
@@ -48,6 +49,7 @@
 
 using cli::argument::ArgumentIO;
 using cli::argument::ArgumentSource;
+using cli::error::ArgumentFileNotFound;
 
 static void write_file_bytes(const std::string& fileName, const ArgumentIO::Bytes& bytes) {
     if (!fileName.empty()) {
@@ -63,10 +65,14 @@ static void write_file_bytes(const std::string& fileName, const ArgumentIO::Byte
 static ArgumentIO::Bytes read_file_bytes(const std::string& fileName) {
     ArgumentIO::Bytes bytes;
     if (!fileName.empty()) {
-        ULOG(1, INFO) << tfm::format("Read from file %s.", fileName);
+        ULOG(1, INFO) << tfm::format("Read from the file '%s'.", fileName);
         std::ifstream file(fileName);
-        std::copy(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>(),
-                std::back_inserter(bytes));
+        if (file) {
+            std::copy(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>(),
+                    std::back_inserter(bytes));
+        } else {
+            throw ArgumentFileNotFound(fileName);
+        }
     } else {
         ULOG(1, INFO) << "Read file from the standard input.";
         std::copy(std::istreambuf_iterator<char>(std::cin), std::istreambuf_iterator<char>(),
@@ -89,12 +95,12 @@ ArgumentIO::Bytes ArgumentIO::readInput(const std::unique_ptr<ArgumentSource>& a
 }
 
 ArgumentIO::Bytes ArgumentIO::readKeyPassword(const std::unique_ptr<ArgumentSource>& argumentSource) const {
+    ULOG(1, INFO) << "Read private key password.";
     auto noPassword = argumentSource->readBool(opt::NO_PASSWORD, ArgumentImportance::Optional);
     if (noPassword) {
         return Bytes();
     }
-    auto keyPassword =
-            argumentSource->readString(opt::PRIVATE_KEY_PASSWORD, ArgumentImportance::Required);
+    auto keyPassword = argumentSource->readString(opt::PRIVATE_KEY_PASSWORD, ArgumentImportance::Required);
     return api::get<ArgumentIO::Bytes>::from(keyPassword);
 }
 
