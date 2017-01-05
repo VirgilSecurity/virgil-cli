@@ -42,8 +42,9 @@
 namespace cli { namespace command {
 
 class KeyToPubCommand : public Command {
+public:
+    static const char* getName();
 private:
-    static const char * name();
     virtual const char* doGetName() const override;
     virtual const char* doGetUsage() const override;
     virtual argument::ArgumentSource::UsageOptions doGetUsageOptions() const override;

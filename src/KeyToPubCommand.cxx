@@ -34,3 +34,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <cli/command/KeyToPubCommand.h>
+
+#include <cli/api/api.h>
+#include <cli/logger/Logger.h>
+
+#include <virgil/crypto/VirgilKeyPair.h>
+
+using cli::command::KeyToPubCommand;
+using cli::argument::ArgumentIO;
+
+using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
+using KeyPair = virgil::crypto::VirgilKeyPair;
+
+const char* KeyToPubCommand::getName() {
+    return arg::value::VIRGIL_COMMAND_KEY2PUB;
+}
+
+const char* KeyToPubCommand::doGetName() const {
+    return KeyToPubCommand::getName();
+}
+
+const char* KeyToPubCommand::doGetUsage() const {
+    return usage::VIRGIL_KEY2PUB;
+}
+
+UsageOptions KeyToPubCommand::doGetUsageOptions() const {
+    return UsageOptions().disableOptionsFirst();
+}
+
+void KeyToPubCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) const {
+    ULOG(1, INFO) << "Read private key.";
+    auto privateKey = getArgumentIO()->readInput(args);
+    ArgumentIO::Bytes pwd;
+    if (KeyPair::isPrivateKeyEncrypted(privateKey)) {
+        pwd = getArgumentIO()->readKeyPassword(args);
+    }
+    ULOG(1, INFO) << "Extract public key.";
+    auto publicKey = KeyPair::extractPublicKey(privateKey, pwd);
+    ULOG(1, INFO) << "Write public key.";
+    getArgumentIO()->writeOutput(args, publicKey);
+}

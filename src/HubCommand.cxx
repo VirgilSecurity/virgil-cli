@@ -37,6 +37,7 @@
 #include <cli/command/HubCommand.h>
 
 #include <cli/command/KeygenCommand.h>
+#include <cli/command/KeyToPubCommand.h>
 
 #include <cli/api/api.h>
 #include <cli/error/ArgumentError.h>
@@ -61,6 +62,8 @@ argument::ArgumentSource::UsageOptions HubCommand::doGetUsageOptions() const {
 std::unique_ptr<Command> HubCommand::findCommand(const std::string& commandName) const {
     if (commandName == arg::value::VIRGIL_COMMAND_KEYGEN) {
         return std::make_unique<KeygenCommand>();
+    } else if (commandName == KeyToPubCommand::getName()) {
+        return std::make_unique<KeyToPubCommand>();
     }
     throw error::ArgumentValueError(arg::COMMAND, commandName);
 }
