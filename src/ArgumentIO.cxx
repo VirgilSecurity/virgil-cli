@@ -39,6 +39,7 @@
 #include <cli/api/api.h>
 #include <cli/api/Config.h>
 #include <cli/model/Recipient.h>
+#include <cli/model/SecureKey.h>
 #include <cli/command/Command.h>
 #include <cli/error/ArgumentError.h>
 #include <cli/logger/Logger.h>
@@ -57,6 +58,7 @@ using cli::argument::make_transformer;
 using cli::error::ArgumentFileNotFound;
 using cli::command::Command;
 using cli::model::Recipient;
+using cli::model::SecureKey;
 
 bool ArgumentIO::hasContentInfo(const std::unique_ptr<ArgumentSource>& argumentSource) {
     return !argumentSource->readString(opt::CONTENT_INFO, ArgumentImportance::Optional).empty();
@@ -77,14 +79,20 @@ ArgumentTransformerPtr<Crypto::FileDataSink> ArgumentIO::getOutput(const SourceT
     return make_transformer<Crypto::FileDataSink>(argumentValue);
 }
 
-ArgumentTransformerPtr<Crypto::Text> ArgumentIO::getKeyPassword(const SourceType& argumentSource) const {
+ArgumentTransformerPtr<SecureKey> ArgumentIO::getKeyPassword(const SourceType& argumentSource) const {
     ULOG(1, INFO) << "Read private key password.";
     auto noPassword = argumentSource->readBool(opt::NO_PASSWORD, ArgumentImportance::Optional);
     if (noPassword) {
-        return make_transformer<Crypto::Text>("");
+        return make_transformer<SecureKey>("");
     }
     auto keyPassword = argumentSource->readString(opt::PRIVATE_KEY_PASSWORD, ArgumentImportance::Required);
-    return make_transformer<Crypto::Text>(keyPassword);
+    return make_transformer<SecureKey>(keyPassword);
+}
+
+ArgumentTransformerPtr<SecureKey> ArgumentIO::getKeyPasswordOptional(const SourceType& argumentSource) const {
+    ULOG(1, INFO) << "Read optional private key password.";
+    auto keyPassword = argumentSource->readString(opt::PRIVATE_KEY_PASSWORD, ArgumentImportance::Optional);
+    return make_transformer<SecureKey>(keyPassword);
 }
 
 ArgumentTransformerPtr<Command> ArgumentIO::getCommand(const SourceType& argumentSource) const {
@@ -103,4 +111,20 @@ ArgumentTransformerPtr<virgil::sdk::client::Client> ArgumentIO::getClient(const 
         applicationToken = Config::applicationTokenDefault();
     }
     return make_transformer<virgil::sdk::client::Client>(applicationToken);
+}
+
+ArgumentTransformerPtr<Crypto::FileDataSource> ArgumentIO::getContentInfoInput(const SourceType& argumentSource) const {
+    auto argumentValue = argumentSource->readString(opt::CONTENT_INFO, ArgumentImportance::Required);
+    return make_transformer<Crypto::FileDataSource>(argumentValue);
+}
+
+ArgumentTransformerPtr<Crypto::FileDataSink> ArgumentIO::getContentInfoOutput(const SourceType& argumentSource) const {
+    auto argumentValue = argumentSource->readString(opt::CONTENT_INFO, ArgumentImportance::Required);
+    return make_transformer<Crypto::FileDataSink>(argumentValue);
+}
+
+ArgumentTransformerPtr<Recipient> ArgumentIO::getDecryptRecipient(
+        const SourceType& argumentSource) const {
+    auto argumentValueList = argumentSource->readStringList(arg::KEYPASS, ArgumentImportance::Required);
+    return make_transformer<Recipient>(argumentValueList);
 }

@@ -46,5 +46,12 @@ PasswordRecipient::PasswordRecipient(std::unique_ptr<PasswordLoader> passwordLoa
 void PasswordRecipient::doAddSelfTo(Crypto::CipherBase& cipher,
         const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const {
     (void)serviceClient;
-    cipher.addPasswordRecipient(passwordLoader_->loadBytes());
+    cipher.addPasswordRecipient(passwordLoader_->loadPassword().key());
+}
+
+void PasswordRecipient::doDecrypt(Crypto::StreamCipher& cipher,
+        Crypto::DataSource& source, Crypto::DataSink& sink, const SecureKey& keyPassword,
+        const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const {
+    (void)serviceClient;
+    cipher.decryptWithPassword(source, sink, passwordLoader_->loadPassword().key());
 }

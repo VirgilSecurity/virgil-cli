@@ -49,6 +49,10 @@ public:
 private:
     virtual void doAddSelfTo(Crypto::CipherBase& cipher,
             const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const override;
+
+    virtual void doDecrypt(Crypto::StreamCipher& cipher,
+            Crypto::DataSource& source, Crypto::DataSink& sink, const SecureKey& keyPassword,
+            const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const override;
 private:
     std::unique_ptr<loader::KeyLoader> keyLoader_;
 };

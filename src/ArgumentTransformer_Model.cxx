@@ -38,12 +38,16 @@
 
 #include <cli/api/api.h>
 #include <cli/model/Recipient.h>
+#include <cli/model/SecureKey.h>
+#include <cli/model/DecryptCredentials.h>
 #include <cli/model/Token.h>
 #include <cli/error/ArgumentError.h>
 
 using cli::argument::ArgumentTransformer;
 using cli::model::Recipient;
+using cli::model::DecryptCredentials;
 using cli::model::Token;
+using cli::model::SecureKey;
 using cli::error::ArgumentValueError;
 using cli::Crypto;
 
@@ -55,4 +59,8 @@ std::vector<std::unique_ptr<Recipient>> ArgumentTransformer<Recipient>::transfor
         result.push_back(Recipient::create(recipientToken));
     }
     return result;
+}
+
+std::unique_ptr<SecureKey> ArgumentTransformer<SecureKey>::transform() const {
+    return std::make_unique<SecureKey>(Crypto::ByteUtils::stringToBytes(argumentValue_));
 }

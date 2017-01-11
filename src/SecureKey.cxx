@@ -34,18 +34,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/loader/PasswordLoader.h>
+#include <cli/model/SecureKey.h>
 
-#include <cli/crypto/Crypto.h>
-
-using cli::Crypto;
-using cli::loader::PasswordLoader;
 using cli::model::SecureKey;
+using cli::Crypto;
 
-PasswordLoader::PasswordLoader(std::string&& source) : source_(source) {
+SecureKey::SecureKey(Crypto::Bytes key)
+        : key_(std::move(key)) {
 }
 
+SecureKey::SecureKey(Crypto::Bytes identifier, Crypto::Bytes key)
+        : identifier_(std::move(identifier)), key_(std::move(key)) {
+}
 
-SecureKey PasswordLoader::loadPassword() const {
-    return SecureKey(Crypto::ByteUtils::stringToBytes(source_));
+const Crypto::Bytes& SecureKey::identifier() const {
+    return identifier_;
+}
+
+const Crypto::Bytes& SecureKey::key() const {
+    return key_;
+}
+
+SecureKey::~SecureKey() noexcept {
+    Crypto::ByteUtils::zeroize(identifier_);
+    Crypto::ByteUtils::zeroize(key_);
 }

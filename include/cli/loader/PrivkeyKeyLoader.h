@@ -34,23 +34,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_PUBLIC_KEY_H
-#define VIRGIL_CLI_PUBLIC_KEY_H
+#ifndef VIRGIL_CLI_PRIVKEY_KEY_LOADER_H
+#define VIRGIL_CLI_PRIVKEY_KEY_LOADER_H
 
-#include <cli/crypto/Crypto.h>
+#include <cli/loader/KeyLoader.h>
 
-namespace cli { namespace model {
+namespace cli { namespace loader {
 
-class PublicKey {
+class PrivkeyKeyLoader : public KeyLoader {
 public:
-    PublicKey(Crypto::Bytes identifier, Crypto::Bytes key);
-    Crypto::Bytes identifier() const;
-    Crypto::Bytes key() const;
+    using KeyLoader::KeyLoader;
 private:
-    Crypto::Bytes identifier_;
-    Crypto::Bytes key_;
+    virtual std::vector<model::SecureKey> doLoadKeys(
+            const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const override;
 };
 
 }}
 
-#endif //VIRGIL_CLI_PUBLIC_KEY_H
+#endif //VIRGIL_CLI_PRIVKEY_KEY_LOADER_H

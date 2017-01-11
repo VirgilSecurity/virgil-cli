@@ -34,18 +34,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/loader/PasswordLoader.h>
+#ifndef VIRGIL_CLI_SECURE_KEY_H
+#define VIRGIL_CLI_SECURE_KEY_H
 
 #include <cli/crypto/Crypto.h>
 
-using cli::Crypto;
-using cli::loader::PasswordLoader;
-using cli::model::SecureKey;
+#include <memory>
 
-PasswordLoader::PasswordLoader(std::string&& source) : source_(source) {
-}
+namespace cli { namespace model {
 
+class SecureKey {
+public:
+    explicit SecureKey(Crypto::Bytes key);
+    SecureKey(Crypto::Bytes identifier, Crypto::Bytes key);
+    const Crypto::Bytes& identifier() const;
+    const Crypto::Bytes& key() const;
+    SecureKey(SecureKey&&) = default;
+    SecureKey& operator=(SecureKey&&) = default;
+    ~SecureKey() noexcept;
+private:
+    Crypto::Bytes identifier_;
+    Crypto::Bytes key_;
+};
 
-SecureKey PasswordLoader::loadPassword() const {
-    return SecureKey(Crypto::ByteUtils::stringToBytes(source_));
-}
+}}
+
+#endif //VIRGIL_CLI_SECURE_KEY_H

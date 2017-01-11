@@ -44,7 +44,7 @@
 
 using cli::Crypto;
 using cli::loader::PubkeyKeyLoader;
-using cli::model::PublicKey;
+using cli::model::SecureKey;
 
 using virgil::sdk::client::interfaces::ClientInterface;
 using virgil::sdk::client::models::Card;
@@ -58,8 +58,10 @@ static  Crypto::Bytes computePublicKeyIdentifier(const Crypto::Bytes& publicKey,
     return ServiceCrypto().computeHash(Crypto::KeyPair::publicKeyToDER(publicKey), Crypto::HashAlgorithm::SHA256);
 }
 
-std::vector<PublicKey> PubkeyKeyLoader::doLoadKeys(const ClientInterface& serviceClient) const {
+std::vector<SecureKey> PubkeyKeyLoader::doLoadKeys(const ClientInterface& serviceClient) const {
     auto publicKey = Crypto::FileDataSource(source()).readAll();
     auto publicKeyIdentifier = computePublicKeyIdentifier(publicKey, alias());
-    return { PublicKey(publicKeyIdentifier, publicKey) };
+    std::vector<SecureKey> result;
+    result.emplace_back(std::move(publicKeyIdentifier), std::move(publicKey));
+    return result;
 }

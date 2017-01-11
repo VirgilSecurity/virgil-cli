@@ -34,19 +34,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/model/PublicKey.h>
+#ifndef VIRGIL_CLI_DECRYPT_COMMAND_H
+#define VIRGIL_CLI_DECRYPT_COMMAND_H
 
-using cli::model::PublicKey;
-using cli::Crypto;
+#include <cli/command/Command.h>
 
-PublicKey::PublicKey(Crypto::Bytes identifier, Crypto::Bytes key)
-        : identifier_(std::move(identifier)), key_(std::move(key)) {
-}
+namespace cli { namespace command {
 
-Crypto::Bytes PublicKey::identifier() const {
-    return identifier_;
-}
+class DecryptCommand : public Command {
+public:
+    static const char* getName();
+private:
+    virtual const char* doGetName() const override;
+    virtual const char* doGetUsage() const override;
+    virtual argument::ArgumentSource::UsageOptions doGetUsageOptions() const override;
+    virtual void doProcess(std::unique_ptr<argument::ArgumentSource> args) const override;
+};
 
-Crypto::Bytes PublicKey::key() const {
-    return key_;
-}
+}}
+
+#endif //VIRGIL_CLI_DECRYPT_COMMAND_H

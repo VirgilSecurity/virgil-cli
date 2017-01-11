@@ -41,7 +41,7 @@
 
 #include <cli/crypto/Crypto.h>
 
-#include <cli/model/PublicKey.h>
+#include <cli/model/SecureKey.h>
 
 #include <virgil/sdk/client/interfaces/ClientInterface.h>
 
@@ -50,12 +50,12 @@ namespace cli { namespace loader {
 class KeyLoader {
 public:
     explicit KeyLoader(const std::string& source, const std::string& alias = "");
-    std::vector<model::PublicKey> loadKeys(
+    std::vector<model::SecureKey> loadKeys(
             const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const;
     std::string source() const;
     std::string alias() const;
 private:
-    virtual std::vector<model::PublicKey> doLoadKeys(
+    virtual std::vector<model::SecureKey> doLoadKeys(
             const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const = 0;
 private:
     std::string source_;

@@ -39,6 +39,7 @@
 #include <cli/api/api.h>
 #include <cli/crypto/Crypto.h>
 #include <cli/logger/Logger.h>
+#include <cli/model/SecureKey.h>
 
 #include <virgil/crypto/VirgilKeyPair.h>
 
@@ -69,7 +70,7 @@ void KeyToPubCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) 
     auto privateKey = getArgumentIO()->getInput(args)->transform()->readAll();
     Crypto::Bytes pwd;
     if (Crypto::KeyPair::isPrivateKeyEncrypted(privateKey)) {
-        pwd = getArgumentIO()->getKeyPassword(args)->toBytes();
+        pwd = getArgumentIO()->getKeyPassword(args)->transform()->key();
     }
     ULOG(1, INFO) << "Extract public key.";
     auto publicKey = Crypto::KeyPair::extractPublicKey(privateKey, pwd);

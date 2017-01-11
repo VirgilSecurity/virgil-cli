@@ -40,6 +40,7 @@
 #include <cli/crypto/Crypto.h>
 
 #include <cli/model/Token.h>
+#include <cli/model/SecureKey.h>
 
 #include <virgil/sdk/client/Client.h>
 
@@ -49,15 +50,21 @@ class Recipient {
 public:
     static std::unique_ptr<Recipient> create(const Token& token);
 
-    void
-    addSelfTo(Crypto::CipherBase& cipher,
+    void addSelfTo(Crypto::CipherBase& cipher,
             const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const;
+
+    void decrypt(Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink,
+            const SecureKey& keyPassword, const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const;
 
 protected:
     Recipient() = default;
 
 private:
     virtual void doAddSelfTo(Crypto::CipherBase& cipher,
+            const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const = 0;
+
+    virtual void doDecrypt(Crypto::StreamCipher& cipher,
+            Crypto::DataSource& source, Crypto::DataSink& sink, const SecureKey& keyPassword,
             const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const = 0;
 };
 

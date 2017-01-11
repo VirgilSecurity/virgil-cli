@@ -34,18 +34,57 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/loader/PasswordLoader.h>
+#include <cli/command/DecryptCommand.h>
 
+#include <cli/api/api.h>
 #include <cli/crypto/Crypto.h>
+#include <cli/logger/Logger.h>
+#include <cli/model/Recipient.h>
 
 using cli::Crypto;
-using cli::loader::PasswordLoader;
+using cli::command::DecryptCommand;
+using cli::argument::ArgumentIO;
+using cli::model::Recipient;
 using cli::model::SecureKey;
 
-PasswordLoader::PasswordLoader(std::string&& source) : source_(source) {
+using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
+
+const char* DecryptCommand::getName() {
+    return arg::value::VIRGIL_COMMAND_DECRYPT;
+}
+
+const char* DecryptCommand::doGetName() const {
+    return DecryptCommand::getName();
+}
+
+const char* DecryptCommand::doGetUsage() const {
+    return usage::VIRGIL_DECRYPT;
+}
+
+UsageOptions DecryptCommand::doGetUsageOptions() const {
+    return UsageOptions().disableOptionsFirst();
 }
 
 
-SecureKey PasswordLoader::loadPassword() const {
-    return SecureKey(Crypto::ByteUtils::stringToBytes(source_));
+void DecryptCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) const {
+    ULOG(2, INFO) << "Read parameters.";
+    auto input = getArgumentIO()->getInput(args)->transform();
+    auto output = getArgumentIO()->getOutput(args)->transform();
+    bool hasContentInfo = getArgumentIO()->hasContentInfo(args);
+    auto serviceClient = getArgumentIO()->getClient(args)->transform();
+    auto recipientList = getArgumentIO()->getDecryptRecipient(args)->transform();
+    const auto& recipient = recipientList.front();
+    auto keyPassword = getArgumentIO()->getKeyPasswordOptional(args)->transform();
+
+    Crypto::StreamCipher cipher;
+    if (hasContentInfo) {
+        ULOG(2, INFO) << "Add content info to the cipher.";
+        auto contentInfo = getArgumentIO()->getContentInfoInput(args)->transform()->readAll();
+        cipher.setContentInfo(contentInfo);
+    }
+
+    ULOG(2, INFO) << "Start decryption.";
+    recipient->decrypt(cipher, *input, *output, *keyPassword, *serviceClient);
+
+    ULOG(2, INFO) << "End decryption.";
 }

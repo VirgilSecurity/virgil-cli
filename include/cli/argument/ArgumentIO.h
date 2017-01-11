@@ -63,13 +63,22 @@ public:
 
     ArgumentTransformerPtr<Crypto::FileDataSink> getOutput(const SourceType& argumentSource) const;
 
-    ArgumentTransformerPtr<Crypto::Text> getKeyPassword(const SourceType& argumentSource) const;
+    ArgumentTransformerPtr<model::SecureKey> getKeyPassword(const SourceType& argumentSource) const;
+
+    ArgumentTransformerPtr<model::SecureKey> getKeyPasswordOptional(const SourceType& argumentSource) const;
 
     ArgumentTransformerPtr<command::Command> getCommand(const SourceType& argumentSource) const;
 
     ArgumentTransformerPtr<model::Recipient> getRecipient(const SourceType& argumentSource) const;
 
     ArgumentTransformerPtr<virgil::sdk::client::Client> getClient(const SourceType& argumentSource) const;
+
+    ArgumentTransformerPtr<Crypto::FileDataSource> getContentInfoInput(const SourceType& argumentSource) const;
+
+    ArgumentTransformerPtr<Crypto::FileDataSink> getContentInfoOutput(const SourceType& argumentSource) const;
+
+    ArgumentTransformerPtr<model::Recipient> getDecryptRecipient(const SourceType& argumentSource) const;
+
 };
 
 }}

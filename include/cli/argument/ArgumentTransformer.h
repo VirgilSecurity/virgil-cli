@@ -51,6 +51,7 @@ class Command;
 }
 namespace model {
 class Recipient;
+class SecureKey;
 }
 }
 
@@ -128,6 +129,14 @@ class ArgumentTransformer<model::Recipient> : public ListArgumentTransformer {
 public:
     using ListArgumentTransformer::ListArgumentTransformer;
     std::vector<std::unique_ptr<model::Recipient>> transform() const;
+};
+
+// Specialization for model::SecureKey
+template<>
+class ArgumentTransformer<model::SecureKey> : public OneArgumentTransformer {
+public:
+    using OneArgumentTransformer::OneArgumentTransformer;
+    std::unique_ptr<model::SecureKey> transform() const;
 };
 
 // Specialization for virgil::sdk::client::Client

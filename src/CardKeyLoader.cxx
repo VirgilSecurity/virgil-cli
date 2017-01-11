@@ -44,15 +44,15 @@
 
 using cli::Crypto;
 using cli::loader::CardKeyLoader;
-using cli::model::PublicKey;
+using cli::model::SecureKey;
 
 using virgil::sdk::client::interfaces::ClientInterface;
 using virgil::sdk::client::models::Card;
 
 using ServiceCrypto = virgil::sdk::crypto::Crypto;
 
-std::vector<PublicKey> CardKeyLoader::doLoadKeys(const ClientInterface& serviceClient) const {
-    std::vector<PublicKey> result;
+std::vector<SecureKey> CardKeyLoader::doLoadKeys(const ClientInterface& serviceClient) const {
+    std::vector<SecureKey> result;
     auto future = serviceClient.getCard(source());
     auto card = std::make_unique<Card>(future.get());
     result.emplace_back(Crypto::ByteUtils::stringToBytes(card->identifier()), card->publicKeyData());

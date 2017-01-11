@@ -34,18 +34,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/loader/PasswordLoader.h>
+#include <cli/loader/PrivkeyKeyLoader.h>
 
 #include <cli/crypto/Crypto.h>
+#include <cli/logger/Logger.h>
+
+#include <virgil/sdk/client/Client.h>
+#include <virgil/sdk/crypto/Crypto.h>
 
 using cli::Crypto;
-using cli::loader::PasswordLoader;
+using cli::loader::PrivkeyKeyLoader;
 using cli::model::SecureKey;
 
-PasswordLoader::PasswordLoader(std::string&& source) : source_(source) {
-}
+using virgil::sdk::client::interfaces::ClientInterface;
+using virgil::sdk::client::models::Card;
+
+using ServiceCrypto = virgil::sdk::crypto::Crypto;
 
 
-SecureKey PasswordLoader::loadPassword() const {
-    return SecureKey(Crypto::ByteUtils::stringToBytes(source_));
+std::vector<SecureKey> PrivkeyKeyLoader::doLoadKeys(const ClientInterface& serviceClient) const {
+    (void)serviceClient;
+    auto privateKey = Crypto::FileDataSource(source()).readAll();
+    std::vector<SecureKey> result;
+    result.emplace_back(Crypto::ByteUtils::stringToBytes(alias()), std::move(privateKey));
+    return result;
 }

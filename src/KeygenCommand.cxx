@@ -38,6 +38,7 @@
 
 #include <cli/api/api.h>
 #include <cli/logger/Logger.h>
+#include <cli/model/SecureKey.h>
 
 using cli::command::KeygenCommand;
 using cli::argument::ArgumentSource;
@@ -58,7 +59,7 @@ ArgumentSource::UsageOptions KeygenCommand::doGetUsageOptions() const {
 
 void KeygenCommand::doProcess(std::unique_ptr<ArgumentSource> args) const {
     auto keyAlgorithm = getArgumentIO()->getKeyAlgorithm(args)->transform();
-    auto keyPassword = getArgumentIO()->getKeyPassword(args)->toBytes();
+    auto keyPassword = getArgumentIO()->getKeyPassword(args)->transform()->key();
     ULOG(1, INFO) << "Generate key pair.";
     VirgilKeyPair keyPair = VirgilKeyPair::generate(keyAlgorithm, keyPassword);
     ULOG(1, INFO) << "Write key pair to the output.";

@@ -43,6 +43,7 @@
 #include <cli/loader/EmailKeyLoader.h>
 #include <cli/loader/CardKeyLoader.h>
 #include <cli/loader/PubkeyKeyLoader.h>
+#include <cli/loader/PrivkeyKeyLoader.h>
 #include <cli/model/KeyRecipient.h>
 #include <cli/model/PasswordRecipient.h>
 
@@ -53,6 +54,7 @@ using cli::model::Recipient;
 using cli::loader::PasswordLoader;
 using cli::loader::EmailKeyLoader;
 using cli::loader::PubkeyKeyLoader;
+using cli::loader::PrivkeyKeyLoader;
 using cli::loader::CardKeyLoader;
 
 
@@ -77,6 +79,8 @@ std::unique_ptr<Recipient> Recipient::create(const Token& token) {
         return std::make_unique<KeyRecipient>(std::make_unique<EmailKeyLoader>(token.value()));
     } else if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_PUBKEY) {
         return std::make_unique<KeyRecipient>(std::make_unique<PubkeyKeyLoader>(token.value(), token.alias()));
+    } else if (recipientType == arg::value::VIRGIL_DECRYPT_KEYPASS_PRIVKEY) {
+        return std::make_unique<KeyRecipient>(std::make_unique<PrivkeyKeyLoader>(token.value(), token.alias()));
     } else if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VCARD) {
         return std::make_unique<KeyRecipient>(std::make_unique<CardKeyLoader>(token.value(), token.alias()));
     } else {
@@ -87,4 +91,11 @@ std::unique_ptr<Recipient> Recipient::create(const Token& token) {
 void Recipient::addSelfTo(
         Crypto::CipherBase& cipher, const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const {
     doAddSelfTo(cipher, serviceClient);
+}
+
+
+void Recipient::decrypt(Crypto::StreamCipher& cipher,
+        Crypto::DataSource& source, Crypto::DataSink& sink, const SecureKey& keyPassword,
+        const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const {
+    doDecrypt(cipher, source, sink, keyPassword, serviceClient);
 }

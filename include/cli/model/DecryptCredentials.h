@@ -34,18 +34,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/loader/PasswordLoader.h>
+#ifndef VIRGIL_CLI_DECRYPT_CREDENTIALS_H
+#define VIRGIL_CLI_DECRYPT_CREDENTIALS_H
 
-#include <cli/crypto/Crypto.h>
+namespace cli { namespace model {
 
-using cli::Crypto;
-using cli::loader::PasswordLoader;
-using cli::model::SecureKey;
+class DecryptCredentials {
+public:
+};
 
-PasswordLoader::PasswordLoader(std::string&& source) : source_(source) {
-}
+}}
 
-
-SecureKey PasswordLoader::loadPassword() const {
-    return SecureKey(Crypto::ByteUtils::stringToBytes(source_));
-}
+#endif //VIRGIL_CLI_DECRYPT_CREDENTIALS_H

@@ -40,18 +40,15 @@
 #include <string>
 
 #include <cli/crypto/Crypto.h>
+#include <cli/model/SecureKey.h>
 
 namespace cli { namespace loader {
 
 class PasswordLoader {
 public:
-    explicit PasswordLoader(const std::string& source);
+    explicit PasswordLoader(std::string&& source);
 
-    std::string source() const;
-
-    Crypto::Text loadText() const;
-
-    Crypto::Bytes loadBytes() const;
+    model::SecureKey loadPassword() const;
 
 private:
     std::string source_;

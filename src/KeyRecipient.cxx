@@ -36,15 +36,42 @@
 
 #include <cli/model/KeyRecipient.h>
 
+#include <cli/crypto/Crypto.h>
+
+#include <virgil/sdk/crypto/Crypto.h>
+
+using cli::Crypto;
 using cli::model::KeyRecipient;
 using cli::loader::KeyLoader;
-using cli::model::PublicKey;
+using cli::model::SecureKey;
+
+using ServiceCrypto = virgil::sdk::crypto::Crypto;
+
+static Crypto::Bytes computeRecipientIdentifier(
+        const Crypto::Bytes& privateKey, const Crypto::Bytes& privateKeyPassword, const Crypto::Bytes& alias) {
+    if (!alias.empty()) {
+        return alias;
+    }
+    auto publicKey = Crypto::KeyPair::extractPublicKey(privateKey, privateKeyPassword);
+    return ServiceCrypto().computeHash(Crypto::KeyPair::publicKeyToDER(publicKey), Crypto::HashAlgorithm::SHA256);
+}
+
 
 KeyRecipient::KeyRecipient(std::unique_ptr<KeyLoader> keyLoader) : keyLoader_(std::move(keyLoader)) {
 }
 
-void KeyRecipient::doAddSelfTo(Crypto::CipherBase& cipher, const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const {
+void KeyRecipient::doAddSelfTo(Crypto::CipherBase& cipher,
+        const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const {
     for (const auto& publicKey : keyLoader_->loadKeys(serviceClient)) {
         cipher.addKeyRecipient(publicKey.identifier(), publicKey.key());
     }
+}
+
+void KeyRecipient::doDecrypt(Crypto::StreamCipher& cipher,
+        Crypto::DataSource& source, Crypto::DataSink& sink, const SecureKey& keyPassword,
+        const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const {
+    auto secureKeyList = keyLoader_->loadKeys(serviceClient);
+    const auto& secureKey = secureKeyList.front();
+    auto recipientIdentifier = computeRecipientIdentifier(secureKey.key(), keyPassword.key(), secureKey.identifier());
+    cipher.decryptWithKey(source, sink, recipientIdentifier, secureKey.key(), keyPassword.key());
 }

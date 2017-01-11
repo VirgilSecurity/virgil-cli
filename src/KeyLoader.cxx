@@ -51,6 +51,7 @@ std::string KeyLoader::alias() const {
     return alias_;
 }
 
-std::vector<cli::model::PublicKey> KeyLoader::loadKeys(const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const {
+std::vector<cli::model::SecureKey> KeyLoader::loadKeys(
+        const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const {
     return doLoadKeys(serviceClient);
 }

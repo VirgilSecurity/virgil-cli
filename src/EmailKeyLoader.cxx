@@ -46,7 +46,7 @@
 
 using cli::Crypto;
 using cli::loader::EmailKeyLoader;
-using cli::model::PublicKey;
+using cli::model::SecureKey;
 using cli::error::ArgumentRecipientNotFound;
 
 using virgil::sdk::client::interfaces::ClientInterface;
@@ -55,7 +55,7 @@ using virgil::sdk::client::models::CardScope;
 using virgil::sdk::client::models::Card;
 using ServiceCrypto = virgil::sdk::crypto::Crypto;
 
-std::vector<PublicKey> EmailKeyLoader::doLoadKeys(const ClientInterface& serviceClient) const {
+std::vector<SecureKey> EmailKeyLoader::doLoadKeys(const ClientInterface& serviceClient) const {
     auto criteria = SearchCardsCriteria::createCriteria(
             CardScope::application, arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_EMAIL, { source() });
     auto future = serviceClient.searchCards(criteria);
@@ -63,7 +63,7 @@ std::vector<PublicKey> EmailKeyLoader::doLoadKeys(const ClientInterface& service
     if (cards.empty()) {
         throw ArgumentRecipientNotFound(arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_EMAIL, source());
     }
-    std::vector<PublicKey> result;
+    std::vector<SecureKey> result;
     for (const auto& card : cards) {
         result.emplace_back(Crypto::ByteUtils::stringToBytes(card.identifier()), card.publicKeyData());
     }

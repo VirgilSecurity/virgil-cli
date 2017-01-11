@@ -45,7 +45,7 @@ class EmailKeyLoader : public KeyLoader {
 public:
     using KeyLoader::KeyLoader;
 private:
-    virtual std::vector<model::PublicKey> doLoadKeys(const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const override;
+    virtual std::vector<model::SecureKey> doLoadKeys(const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const override;
 };
 
 }}

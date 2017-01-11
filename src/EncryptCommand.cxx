@@ -79,8 +79,11 @@ void EncryptCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) c
         recipient->addSelfTo(cipher, *serviceClient);
     }
 
-    ULOG(2, INFO) << "Start encryption.";
+    ULOG(2, INFO) << "Encrypt data.";
     cipher.encrypt(*input, *output, embedContentInfo);
 
-    ULOG(2, INFO) << "End encryption.";
+    if (doWriteContentInfo) {
+        ULOG(2, INFO) << "Write content info.";
+        getArgumentIO()->getContentInfoOutput(args)->transform()->write(cipher.getContentInfo());
+    }
 }

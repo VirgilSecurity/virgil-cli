@@ -41,6 +41,7 @@
 #include <cli/command/KeygenCommand.h>
 #include <cli/command/KeyToPubCommand.h>
 #include <cli/command/EncryptCommand.h>
+#include <cli/command/DecryptCommand.h>
 
 #include <cli/error/ArgumentError.h>
 
@@ -55,6 +56,8 @@ std::unique_ptr<Command> ArgumentTransformer<Command>::transform() const {
         return std::make_unique<KeyToPubCommand>();
     } else if (commandName == arg::value::VIRGIL_COMMAND_ENCRYPT) {
         return std::make_unique<EncryptCommand>();
+    } else if (commandName == arg::value::VIRGIL_COMMAND_DECRYPT) {
+        return std::make_unique<DecryptCommand>();
     }
     throw error::ArgumentValueError(arg::COMMAND, commandName);
 }
