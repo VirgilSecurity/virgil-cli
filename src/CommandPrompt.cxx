@@ -68,6 +68,25 @@ std::string CommandPrompt::readSecureString(const char* argName) const {
     return result;
 }
 
+std::vector<std::string> CommandPrompt::readStringList(const char* argName) const {
+    auto message = getPromptMessage(argName);
+    doWriteNewLine(message);
+    std::vector<std::string> result;
+    do {
+        doWrite(kPromtString);
+        std::string value;
+        bool isValueValid;
+        do {
+            value = doRead();
+            isValueValid = checkResult(argName, value);
+            if (checkResult(argName, value)) {
+                result.push_back(std::move(value));
+            }
+        } while (isValueValid);
+    } while (!checkResult(argName, result));
+    return result;
+}
+
 bool CommandPrompt::readBool(const char *argName) const {
     auto message = getPromptMessage(argName);
     doWriteNewLine(message);
@@ -95,5 +114,9 @@ std::string CommandPrompt::getPromptMessage(const char* argName) const {
 }
 
 bool CommandPrompt::checkResult(const char* argName, const std::string& result) const {
+    return !result.empty();
+}
+
+bool CommandPrompt::checkResult(const char* argName, const std::vector<std::string>& result) const {
     return !result.empty();
 }

@@ -42,6 +42,7 @@
 #     - INSTALL_CFG_DIR_PATH  - path to the directory where configurations will be installed.
 #
 #     - CFG_DIR_PATH_LOCAL - TBD.
+#     - CLI_APPLICATION_TOKEN - unique value that provides an authenticated secure access to the Virgil services.
 #
 # Define variables:
 #     - VIRGIL_CLI_VERSION_MAJOR         - major version number.
@@ -101,6 +102,14 @@ if (CFG_DIR_PATH_LOCAL)
     set (CFG_DIR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/conf")
 else ()
     set (CFG_DIR_PATH "${INSTALL_CFG_DIR_PATH}")
+endif ()
+
+## Virgil service
+if (CLI_APPLICATION_TOKEN)
+    set (CLI_APPLICATION_TOKEN "${CLI_APPLICATION_TOKEN}" CACHE STRING
+         "Unique value that provides an authenticated secure access to the Virgil services" FORCE)
+else ()
+    virgil_log_error ("CLI_APPLICATION_TOKEN is not defined.")
 endif ()
 
 # Define enviroment parameters

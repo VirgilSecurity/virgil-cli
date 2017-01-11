@@ -34,34 +34,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_COMMAND_PROMPT_H
-#define VIRGIL_CLI_COMMAND_PROMPT_H
+#ifndef VIRGIL_CLI_CRYPTO_H
+#define VIRGIL_CLI_CRYPTO_H
 
+#include <virgil/crypto/VirgilByteArray.h>
+#include <virgil/crypto/VirgilByteArrayUtils.h>
+#include <virgil/crypto/VirgilKeyPair.h>
+#include <virgil/crypto/VirgilDataSink.h>
+#include <virgil/crypto/VirgilDataSource.h>
+#include <virgil/crypto/VirgilCipherBase.h>
+#include <virgil/crypto/VirgilStreamCipher.h>
+#include <virgil/crypto/VirgilChunkCipher.h>
+#include <virgil/crypto/foundation/VirgilHash.h>
+
+#include <cli/crypto/FileDataSource.h>
+#include <cli/crypto/FileDataSink.h>
+
+#include <memory>
 #include <string>
-#include <vector>
 
-namespace cli { namespace cmd {
+namespace cli {
 
-class CommandPrompt {
+class Crypto {
 public:
-    void init(const std::string& usage) const;
-    std::string readString(const char *argName) const;
-    std::string readSecureString(const char *argName) const;
-    std::vector<std::string> readStringList(const char* argName) const;
-    bool readBool(const char *argName) const;
-    int readInt(const char *argName) const;
-private:
-    virtual void doInit(const std::string& usage) const = 0;
-    virtual std::string doRead() const = 0;
-    virtual std::string doSecureRead() const = 0;
-    virtual void doWrite(const std::string& str) const = 0;
-    virtual void doWriteNewLine(const std::string& str) const = 0;
-private:
-    std::string getPromptMessage(const char* argName) const;
-    bool checkResult(const char* argName, const std::string& result) const;
-    bool checkResult(const char* argName, const std::vector<std::string>& result) const;
+    // Basic types
+    using Text = std::string;
+    using Bytes = virgil::crypto::VirgilByteArray;
+    using ByteUtils = virgil::crypto::VirgilByteArrayUtils;
+    using KeyPair = virgil::crypto::VirgilKeyPair;
+    using KeyAlgorithm = virgil::crypto::VirgilKeyPair::Type;
+    using DataSource = virgil::crypto::VirgilDataSource;
+    using DataSink = virgil::crypto::VirgilDataSink;
+    using CipherBase = virgil::crypto::VirgilCipherBase;
+    using StreamCipher = virgil::crypto::VirgilStreamCipher;
+    using ChunkCipher = virgil::crypto::VirgilChunkCipher;
+    using HashAlgorithm = virgil::crypto::foundation::VirgilHash::Algorithm;
+    using FileDataSource = cli::crypto::FileDataSource;
+    using FileDataSink = cli::crypto::FileDataSink;
+    // Smart pointers
+    using DataSourceUnique = std::unique_ptr<DataSource>;
+    using DataSinkUnique = std::unique_ptr<DataSink>;
+    using CipherBaseUnique = std::unique_ptr<CipherBase>;
+    using StreamCipherUnique = std::unique_ptr<StreamCipher>;
+    using ChunkCipherUnique = std::unique_ptr<ChunkCipher>;
 };
 
-}}
+}
 
-#endif //VIRGIL_CLI_COMMAND_PROMPT_H
+#endif //VIRGIL_CLI_CRYPTO_H

@@ -5,11 +5,11 @@
  *
  * All rights reserved.
  *
- * Redistribution and use in argumentSource and binary forms, with or without
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of argumentSource code must retain the above copyright
+ *     (1) Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *
  *     (2) Redistributions in binary form must reproduce the above copyright
@@ -34,44 +34,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_IO_H
-#define VIRGIL_CLI_ARGUMENT_IO_H
+#ifndef VIRGIL_CLI_FILE_DATA_SOURCE_H
+#define VIRGIL_CLI_FILE_DATA_SOURCE_H
 
-#include <cli/crypto/Crypto.h>
+#include <virgil/crypto/VirgilDataSource.h>
 
-#include <cli/argument/ArgumentSource.h>
-#include <cli/argument/ArgumentTransformer.h>
-
-#include <virgil/sdk/client/Client.h>
-
+#include <istream>
 #include <memory>
-#include <string>
 
-namespace cli { namespace argument {
+namespace cli { namespace crypto {
 
-class ArgumentIO {
+class FileDataSource : public virgil::crypto::VirgilDataSource {
 public:
-    using SourceType = std::unique_ptr<ArgumentSource>;
+    static constexpr const size_t kChunkSize_Default = 1024 * 1024; // 1MB
 public:
-    // Check
-    bool hasContentInfo(const SourceType& argumentSource);
-
-    // Readers
-    ArgumentTransformerPtr<Crypto::KeyAlgorithm> getKeyAlgorithm(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSource> getInput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSink> getOutput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::Text> getKeyPassword(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<command::Command> getCommand(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<model::Recipient> getRecipient(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<virgil::sdk::client::Client> getClient(const SourceType& argumentSource) const;
+    /**
+     * @param chunkSize - size of the data that will be returned by @link read() @endlink method.
+     * @brief Create source from the standard input
+     */
+    FileDataSource(size_t chunkSize = kChunkSize_Default);
+    /**
+     * @brief Create source from the given file.
+     * @param fileName - path to the source file to be read.
+     * @param chunkSize - size of the data that will be returned by @link read() @endlink method.
+     * @throw ArgumentFileNotFound, if IO errors occurred.
+     */
+    FileDataSource(const std::string& fileName, size_t chunkSize = kChunkSize_Default);
+public:
+    virtual bool hasData() override;
+    virtual virgil::crypto::VirgilByteArray read() override;
+    virtual virgil::crypto::VirgilByteArray readAll();
+private:
+    using istream_deleter = std::function<void(std::istream*)>;
+    using istream_ptr = std::unique_ptr<std::istream, istream_deleter>;
+    istream_ptr in_;
+    size_t chunkSize_;
 };
 
 }}
 
-#endif //VIRGIL_CLI_ARGUMENT_IO_H
+#endif //VIRGIL_CLI_FILE_DATA_SOURCE_H

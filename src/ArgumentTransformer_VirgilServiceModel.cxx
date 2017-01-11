@@ -5,11 +5,11 @@
  *
  * All rights reserved.
  *
- * Redistribution and use in argumentSource and binary forms, with or without
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of argumentSource code must retain the above copyright
+ *     (1) Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *
  *     (2) Redistributions in binary form must reproduce the above copyright
@@ -34,44 +34,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_IO_H
-#define VIRGIL_CLI_ARGUMENT_IO_H
-
-#include <cli/crypto/Crypto.h>
-
-#include <cli/argument/ArgumentSource.h>
 #include <cli/argument/ArgumentTransformer.h>
 
 #include <virgil/sdk/client/Client.h>
+#include <virgil/sdk/client/ServiceConfig.h>
+#include <virgil/sdk/client/CardValidator.h>
+#include <virgil/sdk/crypto/Crypto.h>
 
 #include <memory>
-#include <string>
 
-namespace cli { namespace argument {
+using cli::argument::ArgumentTransformer;
+using virgil::sdk::client::Client;
+using virgil::sdk::client::ServiceConfig;
+using virgil::sdk::client::CardValidator;
+using ServiceCrypto = virgil::sdk::crypto::Crypto;
 
-class ArgumentIO {
-public:
-    using SourceType = std::unique_ptr<ArgumentSource>;
-public:
-    // Check
-    bool hasContentInfo(const SourceType& argumentSource);
+std::unique_ptr<Client> ArgumentTransformer<Client>::transform() const {
+    const auto& applicationToken = argumentValue_;
+    auto crypto = std::make_shared<ServiceCrypto>();
 
-    // Readers
-    ArgumentTransformerPtr<Crypto::KeyAlgorithm> getKeyAlgorithm(const SourceType& argumentSource) const;
+    auto validator = std::make_unique<CardValidator>(crypto);
+    // TODO: Add verifier to the validator
 
-    ArgumentTransformerPtr<Crypto::FileDataSource> getInput(const SourceType& argumentSource) const;
+    auto serviceConfig = ServiceConfig::createConfig(applicationToken);
+    serviceConfig.cardValidator(std::move(validator));
 
-    ArgumentTransformerPtr<Crypto::FileDataSink> getOutput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::Text> getKeyPassword(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<command::Command> getCommand(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<model::Recipient> getRecipient(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<virgil::sdk::client::Client> getClient(const SourceType& argumentSource) const;
-};
-
-}}
-
-#endif //VIRGIL_CLI_ARGUMENT_IO_H
+    return std::make_unique<Client>(std::move(serviceConfig));
+}

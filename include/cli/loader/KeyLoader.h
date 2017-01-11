@@ -5,11 +5,11 @@
  *
  * All rights reserved.
  *
- * Redistribution and use in argumentSource and binary forms, with or without
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of argumentSource code must retain the above copyright
+ *     (1) Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *
  *     (2) Redistributions in binary form must reproduce the above copyright
@@ -34,44 +34,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_IO_H
-#define VIRGIL_CLI_ARGUMENT_IO_H
+#ifndef VIRGIL_CLI_KEY_LOADER_H
+#define VIRGIL_CLI_KEY_LOADER_H
+
+#include <string>
 
 #include <cli/crypto/Crypto.h>
 
-#include <cli/argument/ArgumentSource.h>
-#include <cli/argument/ArgumentTransformer.h>
+#include <cli/model/PublicKey.h>
 
-#include <virgil/sdk/client/Client.h>
+#include <virgil/sdk/client/interfaces/ClientInterface.h>
 
-#include <memory>
-#include <string>
+namespace cli { namespace loader {
 
-namespace cli { namespace argument {
-
-class ArgumentIO {
+class KeyLoader {
 public:
-    using SourceType = std::unique_ptr<ArgumentSource>;
-public:
-    // Check
-    bool hasContentInfo(const SourceType& argumentSource);
-
-    // Readers
-    ArgumentTransformerPtr<Crypto::KeyAlgorithm> getKeyAlgorithm(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSource> getInput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSink> getOutput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::Text> getKeyPassword(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<command::Command> getCommand(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<model::Recipient> getRecipient(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<virgil::sdk::client::Client> getClient(const SourceType& argumentSource) const;
+    explicit KeyLoader(const std::string& source, const std::string& alias = "");
+    std::vector<model::PublicKey> loadKeys(
+            const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const;
+    std::string source() const;
+    std::string alias() const;
+private:
+    virtual std::vector<model::PublicKey> doLoadKeys(
+            const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const = 0;
+private:
+    std::string source_;
+    std::string alias_;
 };
 
 }}
 
-#endif //VIRGIL_CLI_ARGUMENT_IO_H
+#endif //VIRGIL_CLI_KEY_LOADER_H

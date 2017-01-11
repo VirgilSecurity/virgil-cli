@@ -140,3 +140,14 @@ int CommandArgumentSource::doReadInt(const char* argName) const {
         throw error::ArgumentTypeError(argName, "number");
     }
 }
+
+std::vector<std::string> CommandArgumentSource::doReadStringList(const char* argName) const {
+    auto value = impl_->docoptArgs[argName];
+    if (value.isStringList()) {
+        return value.asStringList();
+    } else if (!value) {
+        return std::vector<std::string>();
+    } else {
+        throw error::ArgumentTypeError(argName, "string list");
+    }
+}

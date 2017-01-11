@@ -93,3 +93,7 @@ bool InteractiveArgumentSource::doReadBool(const char* argName) const {
 int InteractiveArgumentSource::doReadInt(const char* argName) const {
     return cmd_->readInt(argName);
 }
+
+std::vector<std::string> InteractiveArgumentSource::doReadStringList(const char* argName) const {
+    return cmd_->readStringList(argName);
+}

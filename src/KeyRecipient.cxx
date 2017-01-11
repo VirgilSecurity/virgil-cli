@@ -5,11 +5,11 @@
  *
  * All rights reserved.
  *
- * Redistribution and use in argumentSource and binary forms, with or without
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of argumentSource code must retain the above copyright
+ *     (1) Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *
  *     (2) Redistributions in binary form must reproduce the above copyright
@@ -34,44 +34,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_IO_H
-#define VIRGIL_CLI_ARGUMENT_IO_H
+#include <cli/model/KeyRecipient.h>
 
-#include <cli/crypto/Crypto.h>
+using cli::model::KeyRecipient;
+using cli::loader::KeyLoader;
+using cli::model::PublicKey;
 
-#include <cli/argument/ArgumentSource.h>
-#include <cli/argument/ArgumentTransformer.h>
+KeyRecipient::KeyRecipient(std::unique_ptr<KeyLoader> keyLoader) : keyLoader_(std::move(keyLoader)) {
+}
 
-#include <virgil/sdk/client/Client.h>
-
-#include <memory>
-#include <string>
-
-namespace cli { namespace argument {
-
-class ArgumentIO {
-public:
-    using SourceType = std::unique_ptr<ArgumentSource>;
-public:
-    // Check
-    bool hasContentInfo(const SourceType& argumentSource);
-
-    // Readers
-    ArgumentTransformerPtr<Crypto::KeyAlgorithm> getKeyAlgorithm(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSource> getInput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSink> getOutput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::Text> getKeyPassword(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<command::Command> getCommand(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<model::Recipient> getRecipient(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<virgil::sdk::client::Client> getClient(const SourceType& argumentSource) const;
-};
-
-}}
-
-#endif //VIRGIL_CLI_ARGUMENT_IO_H
+void KeyRecipient::doAddSelfTo(Crypto::CipherBase& cipher, const virgil::sdk::client::interfaces::ClientInterface& serviceClient) const {
+    for (const auto& publicKey : keyLoader_->loadKeys(serviceClient)) {
+        cipher.addKeyRecipient(publicKey.identifier(), publicKey.key());
+    }
+}

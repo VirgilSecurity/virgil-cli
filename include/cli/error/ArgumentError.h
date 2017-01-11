@@ -96,6 +96,23 @@ public:
     ArgumentFileNotFound(const std::string& fileName);
 };
 
+class ArgumentInvalidToken : public ArgumentRuntimeError {
+public:
+    ArgumentInvalidToken(const char* token);
+    ArgumentInvalidToken(const std::string& token);
+};
+
+class ArgumentInvalidRecipient : public ArgumentRuntimeError {
+public:
+    ArgumentInvalidRecipient(const char* recipientKey, const char* validValues[]);
+    ArgumentInvalidRecipient(const std::string& recipientKey, const char* validValues[]);
+};
+
+class ArgumentRecipientNotFound : public ArgumentRuntimeError {
+public:
+    ArgumentRecipientNotFound(const std::string& sourceType, const std::string& sourceValue);
+};
+
 }}
 
 #endif //VIRGIL_CLI_ARGUMENT_ERROR_H

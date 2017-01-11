@@ -59,11 +59,13 @@ COMMON OPTIONS:
     -v, --verbose  
         Activates maximum verbosity
     --v=<verbose-level>  
-        Activates verbosity with given level (valid range: 0-9) [default: 0]
+        Activates verbosity with given level (valid range: 1-9)
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 
@@ -134,11 +136,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -165,11 +169,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -192,11 +198,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -233,11 +241,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -268,11 +278,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -281,7 +293,7 @@ static constexpr char VIRGIL_ENCRYPT[] = R"(
 virgil-encrypt - encrypts any data for the specified recipient(s)
 
 USAGE:
-    virgil encrypt [options] [-i <file>] [-o <file>] [--c <file>] <recipient-id>...
+    virgil encrypt [options] [-i <file>] [-o <file>] [-c <file>] [--] <recipient-id>...
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -292,7 +304,7 @@ OPTIONS:
         Content info <Content info> - meta information about the encrypted data. If omitted, becomes a part of the encrypted data.
     <recipient-id>
         Contains information about one recipient. Format: [password|email|vcard|pubkey]:<value>
-            * if password, then <value> - a password for decrypting;
+            * if password, then <value> - a password for encrypting;
             * if email, then <value> - the email of the recipient;
             * if vcard, then <value> - the recipient's Virgil Card id or the Virgil Card itself (the file stored locally);
             * if pubkey, then <value> - Public Key of the recipient. An alias may also be added. Example: pubkey:bob/public.key:ForBob
@@ -303,11 +315,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -341,11 +355,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -366,11 +382,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -395,11 +413,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -442,11 +462,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -473,11 +495,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -508,11 +532,13 @@ OPTIONS:
     -v, --verbose  
         Activates maximum verbosity.
     --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 0-9) [default: 0].
+        Activates verbosity upto given verbose level (valid range: 1-9).
     -q, --quiet  
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
+    --application-token=<application-token>  
+        Redefine application token.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -523,6 +549,7 @@ OPTIONS:
 namespace cli { namespace opt {
 
 static constexpr char ALGORITHM[] = "--algorithm";
+static constexpr char APPLICATION_TOKEN[] = "--application-token";
 static constexpr char CONTENT_INFO[] = "--content-info";
 static constexpr char DATA[] = "--data";
 static constexpr char HELP[] = "--help";
@@ -709,7 +736,7 @@ static const char* VIRGIL_VERIFY_RECIPIENT_ID_VALUES[] = {
     nullptr
 };
 
-static constexpr auto VIRGIL_VERBOSE_LEVEL_MIN = 0;
+static constexpr auto VIRGIL_VERBOSE_LEVEL_MIN = 1;
 static constexpr auto VIRGIL_VERBOSE_LEVEL_MAX = 9;
 
 

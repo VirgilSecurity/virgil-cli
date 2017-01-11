@@ -37,8 +37,9 @@
 #include <cli/argument/ArgumentIO.h>
 
 #include <cli/api/api.h>
-#include <cli/api/utils.h>
-
+#include <cli/api/Config.h>
+#include <cli/model/Recipient.h>
+#include <cli/command/Command.h>
 #include <cli/error/ArgumentError.h>
 #include <cli/logger/Logger.h>
 
@@ -47,63 +48,59 @@
 #include <fstream>
 #include <iostream>
 
+using cli::Crypto;
 using cli::argument::ArgumentIO;
 using cli::argument::ArgumentSource;
+using cli::argument::ArgumentTransformer;
+using cli::argument::ArgumentTransformerPtr;
+using cli::argument::make_transformer;
 using cli::error::ArgumentFileNotFound;
+using cli::command::Command;
+using cli::model::Recipient;
 
-static void write_file_bytes(const std::string& fileName, const ArgumentIO::Bytes& bytes) {
-    if (!fileName.empty()) {
-        ULOG(1, INFO) << tfm::format("Write output to the file '%s'.", fileName);
-        std::ofstream file(fileName);
-        std::copy(std::begin(bytes), std::end(bytes), std::ostreambuf_iterator<char>(file));
-    } else {
-        ULOG(1, INFO) << "Write output to the standard output.";
-        std::copy(std::begin(bytes), std::end(bytes), std::ostreambuf_iterator<char>(std::cout));
-    }
+bool ArgumentIO::hasContentInfo(const std::unique_ptr<ArgumentSource>& argumentSource) {
+    return !argumentSource->readString(opt::CONTENT_INFO, ArgumentImportance::Optional).empty();
 }
 
-static ArgumentIO::Bytes read_file_bytes(const std::string& fileName) {
-    ArgumentIO::Bytes bytes;
-    if (!fileName.empty()) {
-        ULOG(1, INFO) << tfm::format("Read from the file '%s'.", fileName);
-        std::ifstream file(fileName);
-        if (file) {
-            std::copy(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>(),
-                    std::back_inserter(bytes));
-        } else {
-            throw ArgumentFileNotFound(fileName);
-        }
-    } else {
-        ULOG(1, INFO) << "Read file from the standard input.";
-        std::copy(std::istreambuf_iterator<char>(std::cin), std::istreambuf_iterator<char>(),
-                std::back_inserter(bytes));
-    }
-    return bytes;
+ArgumentTransformerPtr<Crypto::KeyAlgorithm> ArgumentIO::getKeyAlgorithm(const SourceType& argumentSource) const {
+    auto argumentValue = argumentSource->readString(opt::ALGORITHM, ArgumentImportance::Optional);
+    return make_transformer<Crypto::KeyAlgorithm>(argumentValue);
 }
 
-std::string ArgumentIO::readCommand(const std::unique_ptr<ArgumentSource>& argumentSource) const {
-    return argumentSource->readString(arg::COMMAND, ArgumentImportance::Required);
+ArgumentTransformerPtr<Crypto::FileDataSource> ArgumentIO::getInput(const SourceType& argumentSource) const {
+    auto argumentValue = argumentSource->readString(opt::IN, ArgumentImportance::Optional);
+    return make_transformer<Crypto::FileDataSource>(argumentValue);
 }
 
-ArgumentIO::KeyAlgorithm ArgumentIO::readKeyAlgorithm(const std::unique_ptr<ArgumentSource>& argumentSource) const {
-    return api::get<ArgumentIO::KeyAlgorithm>::from(
-            argumentSource->readString(opt::ALGORITHM, ArgumentImportance::Optional));
+ArgumentTransformerPtr<Crypto::FileDataSink> ArgumentIO::getOutput(const SourceType& argumentSource) const {
+    auto argumentValue = argumentSource->readString(opt::OUT, ArgumentImportance::Optional);
+    return make_transformer<Crypto::FileDataSink>(argumentValue);
 }
 
-ArgumentIO::Bytes ArgumentIO::readInput(const std::unique_ptr<ArgumentSource>& argumentSource) const {
-    return read_file_bytes(argumentSource->readString(opt::IN, ArgumentImportance::Optional));
-}
-
-ArgumentIO::Bytes ArgumentIO::readKeyPassword(const std::unique_ptr<ArgumentSource>& argumentSource) const {
+ArgumentTransformerPtr<Crypto::Text> ArgumentIO::getKeyPassword(const SourceType& argumentSource) const {
     ULOG(1, INFO) << "Read private key password.";
     auto noPassword = argumentSource->readBool(opt::NO_PASSWORD, ArgumentImportance::Optional);
     if (noPassword) {
-        return Bytes();
+        return make_transformer<Crypto::Text>("");
     }
     auto keyPassword = argumentSource->readString(opt::PRIVATE_KEY_PASSWORD, ArgumentImportance::Required);
-    return api::get<ArgumentIO::Bytes>::from(keyPassword);
+    return make_transformer<Crypto::Text>(keyPassword);
 }
 
-void ArgumentIO::writeOutput(const std::unique_ptr<ArgumentSource>& argumentSource, const Bytes& bytes) const {
-    write_file_bytes(argumentSource->readString(opt::OUT, ArgumentImportance::Optional), bytes);
+ArgumentTransformerPtr<Command> ArgumentIO::getCommand(const SourceType& argumentSource) const {
+    auto argumentValue = argumentSource->readString(arg::COMMAND, ArgumentImportance::Optional);
+    return make_transformer<Command>(argumentValue);
+}
+
+ArgumentTransformerPtr<Recipient> ArgumentIO::getRecipient(const SourceType& argumentSource) const {
+    auto argumentValueList = argumentSource->readStringList(arg::RECIPIENT_ID, ArgumentImportance::Required);
+    return make_transformer<Recipient>(argumentValueList);
+}
+
+ArgumentTransformerPtr<virgil::sdk::client::Client> ArgumentIO::getClient(const SourceType& argumentSource) const {
+    auto applicationToken = argumentSource->readString(opt::APPLICATION_TOKEN, ArgumentImportance::Optional);
+    if (applicationToken.empty()) {
+        applicationToken = Config::applicationTokenDefault();
+    }
+    return make_transformer<virgil::sdk::client::Client>(applicationToken);
 }

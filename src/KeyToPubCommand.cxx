@@ -37,15 +37,16 @@
 #include <cli/command/KeyToPubCommand.h>
 
 #include <cli/api/api.h>
+#include <cli/crypto/Crypto.h>
 #include <cli/logger/Logger.h>
 
 #include <virgil/crypto/VirgilKeyPair.h>
 
 using cli::command::KeyToPubCommand;
 using cli::argument::ArgumentIO;
+using cli::Crypto;
 
 using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
-using KeyPair = virgil::crypto::VirgilKeyPair;
 
 const char* KeyToPubCommand::getName() {
     return arg::value::VIRGIL_COMMAND_KEY2PUB;
@@ -65,13 +66,13 @@ UsageOptions KeyToPubCommand::doGetUsageOptions() const {
 
 void KeyToPubCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) const {
     ULOG(1, INFO) << "Read private key.";
-    auto privateKey = getArgumentIO()->readInput(args);
-    ArgumentIO::Bytes pwd;
-    if (KeyPair::isPrivateKeyEncrypted(privateKey)) {
-        pwd = getArgumentIO()->readKeyPassword(args);
+    auto privateKey = getArgumentIO()->getInput(args)->transform()->readAll();
+    Crypto::Bytes pwd;
+    if (Crypto::KeyPair::isPrivateKeyEncrypted(privateKey)) {
+        pwd = getArgumentIO()->getKeyPassword(args)->toBytes();
     }
     ULOG(1, INFO) << "Extract public key.";
-    auto publicKey = KeyPair::extractPublicKey(privateKey, pwd);
+    auto publicKey = Crypto::KeyPair::extractPublicKey(privateKey, pwd);
     ULOG(1, INFO) << "Write public key.";
-    getArgumentIO()->writeOutput(args, publicKey);
+    getArgumentIO()->getOutput(args)->transform()->write(publicKey);
 }

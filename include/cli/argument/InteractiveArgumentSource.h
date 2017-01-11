@@ -54,6 +54,7 @@ public:
     virtual bool doReadBool(const char* argName) const override;
     virtual int doReadInt(const char* argName) const override;
     virtual void doUpdateRules(std::shared_ptr<ArgumentRules> argumentRules) const override;
+    virtual std::vector<std::string> doReadStringList(const char* argName) const override;
 private:
     std::shared_ptr<cmd::CommandPrompt> cmd_;
 };

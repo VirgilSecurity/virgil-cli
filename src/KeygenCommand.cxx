@@ -57,10 +57,10 @@ ArgumentSource::UsageOptions KeygenCommand::doGetUsageOptions() const {
 }
 
 void KeygenCommand::doProcess(std::unique_ptr<ArgumentSource> args) const {
-    auto keyAlgorithm = getArgumentIO()->readKeyAlgorithm(args);
-    auto keyPassword = getArgumentIO()->readKeyPassword(args);
+    auto keyAlgorithm = getArgumentIO()->getKeyAlgorithm(args)->transform();
+    auto keyPassword = getArgumentIO()->getKeyPassword(args)->toBytes();
     ULOG(1, INFO) << "Generate key pair.";
     VirgilKeyPair keyPair = VirgilKeyPair::generate(keyAlgorithm, keyPassword);
     ULOG(1, INFO) << "Write key pair to the output.";
-    getArgumentIO()->writeOutput(args, keyPair.privateKey());
+    getArgumentIO()->getOutput(args)->transform()->write(keyPair.privateKey());
 }

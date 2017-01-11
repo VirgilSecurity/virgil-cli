@@ -42,6 +42,7 @@
 #include <cli/logger/Logger.h>
 
 #include <virgil/crypto/VirgilCryptoException.h>
+#include <virgil/sdk/VirgilSdkException.h>
 
 #include <iostream>
 
@@ -50,6 +51,7 @@ using cli::argument::ArgumentSource;
 using cli::argument::ArgumentIO;
 
 using virgil::crypto::VirgilCryptoException;
+using virgil::sdk::VirgilSdkException;
 
 const char* Command::getName() const {
     return doGetName();
@@ -77,12 +79,24 @@ void Command::process(std::unique_ptr<argument::ArgumentSource> args) const {
     } catch (const error::ArgumentShowVersionError&) {
         showVersion();
     } catch (const error::ArgumentRuntimeError& error) {
-        showUsage(error.what());
+        ULOG(0, FATAL) << error.what();
+        if (VLOG_IS_ON(1)) {
+            showUsage();
+        }
         throw error::ExitFailure();
     } catch (const VirgilCryptoException& exception) {
         LOG(FATAL) << exception.what();
         ULOG(0, FATAL) << exception.condition().message();
-        showUsage();
+        if (VLOG_IS_ON(1)) {
+            showUsage();
+        }
+        throw error::ExitFailure();
+    } catch (const VirgilSdkException& exception) {
+        LOG(FATAL) << exception.what();
+        ULOG(0, FATAL) << exception.condition().message() << "See log file for details.";
+        if (VLOG_IS_ON(1)) {
+            showUsage();
+        }
         throw error::ExitFailure();
     }
 }

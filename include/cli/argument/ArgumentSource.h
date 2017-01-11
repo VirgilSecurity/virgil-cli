@@ -43,6 +43,7 @@
 #include <virgil/crypto/VirgilKeyPair.h>
 
 #include <memory>
+#include <vector>
 
 namespace cli { namespace argument {
 
@@ -77,6 +78,8 @@ public:
 
     int readInt(const char* argName, ArgumentImportance argImportance) const;
 
+    std::vector<std::string> readStringList(const char* argName, ArgumentImportance argImportance) const;
+
     ArgumentSource* setNextSource(std::unique_ptr<ArgumentSource> source);
 
     const char *getName() const;
@@ -99,6 +102,8 @@ private:
     virtual bool doReadBool(const char* argName) const = 0;
 
     virtual int doReadInt(const char* argName) const = 0;
+
+    virtual std::vector<std::string> doReadStringList(const char* argName) const = 0;
 
 private:
     template<typename T>

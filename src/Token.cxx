@@ -34,34 +34,66 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_COMMAND_PROMPT_H
-#define VIRGIL_CLI_COMMAND_PROMPT_H
+#include <cli/model/Token.h>
 
-#include <string>
+#include <cli/error/ArgumentError.h>
+#include <cli/logger/Logger.h>
+
+#include <sstream>
 #include <vector>
 
-namespace cli { namespace cmd {
+using cli::model::Token;
+using cli::error::ArgumentInvalidToken;
 
-class CommandPrompt {
-public:
-    void init(const std::string& usage) const;
-    std::string readString(const char *argName) const;
-    std::string readSecureString(const char *argName) const;
-    std::vector<std::string> readStringList(const char* argName) const;
-    bool readBool(const char *argName) const;
-    int readInt(const char *argName) const;
-private:
-    virtual void doInit(const std::string& usage) const = 0;
-    virtual std::string doRead() const = 0;
-    virtual std::string doSecureRead() const = 0;
-    virtual void doWrite(const std::string& str) const = 0;
-    virtual void doWriteNewLine(const std::string& str) const = 0;
-private:
-    std::string getPromptMessage(const char* argName) const;
-    bool checkResult(const char* argName, const std::string& result) const;
-    bool checkResult(const char* argName, const std::vector<std::string>& result) const;
-};
+static std::vector<std::string> split(const std::string& str, char delim) {
+    std::stringstream ss;
+    ss.str(str);
+    std::string item;
+    std::vector<std::string> result;
+    while (std::getline(ss, item, delim)) {
+        result.push_back(item);
+    }
+    return result;
+}
 
-}}
+Token::Token(const std::string& tokenString) {
+    DLOG(INFO) << tfm::format("Create token from the string '%s'.", tokenString);
+    auto tokens = split(tokenString, ':');
+    switch (tokens.size()) {
+        case 3:
+            alias_ = tokens[2];
+            // no break
+        case 2:
+            value_ = tokens[1];
+            // no break
+        case 1:
+            key_ = tokens[0];
+            // no break
+        default:
+            // do nothing, validation will be later
+            break;
+    }
 
-#endif //VIRGIL_CLI_COMMAND_PROMPT_H
+    DLOG(INFO) << "Start token validation.";
+    if (key_.empty()) {
+        DLOG(ERROR) << "Token validation failed: token's key is not defined.";
+        throw ArgumentInvalidToken(tokenString);
+    }
+
+    if (value_.empty()) {
+        DLOG(ERROR) << "Token validation failed: token's value is not defined.";
+        throw ArgumentInvalidToken(tokenString);
+    }
+}
+
+std::string Token::key() const {
+    return key_;
+}
+
+std::string Token::value() const {
+    return value_;
+}
+
+std::string Token::alias() const {
+    return alias_;
+}

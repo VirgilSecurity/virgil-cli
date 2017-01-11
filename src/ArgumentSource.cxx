@@ -100,17 +100,23 @@ private:
     const ArgumentSource* thisSource_;
 };
 
-template <>
+template<>
 std::string ArgumentSource::ArgumentReadHelper<std::string>::doRead(const ArgumentSource* source, const char* argName) {
     return source->doReadString(argName);
 }
 
-template <>
+template<>
+std::vector<std::string> ArgumentSource::ArgumentReadHelper<std::vector<std::string>>::doRead(
+        const ArgumentSource* source, const char* argName) {
+    return source->doReadStringList(argName);
+}
+
+template<>
 bool ArgumentSource::ArgumentReadHelper<bool>::doRead(const ArgumentSource* source, const char* argName) {
     return source->doReadBool(argName);
 }
 
-template <>
+template<>
 int ArgumentSource::ArgumentReadHelper<int>::doRead(const ArgumentSource* source, const char* argName) {
     return source->doReadInt(argName);
 }
@@ -138,7 +144,7 @@ std::shared_ptr<const ArgumentRules> ArgumentSource::argumentRules() const {
 
 void ArgumentSource::init(const std::string& usage, const ArgumentSource::UsageOptions& usageOptions) {
     DLOG(INFO) << "Initialize argument sources.";
-    std::vector<ArgumentSource *> sources;
+    std::vector<ArgumentSource*> sources;
     for (auto source = this; source != nullptr; source = source->nextSource_.get()) {
         source->doInit(usage, usageOptions);
         sources.push_back(source);
@@ -151,6 +157,10 @@ void ArgumentSource::init(const std::string& usage, const ArgumentSource::UsageO
 
 std::string ArgumentSource::readString(const char* argName, ArgumentImportance argImportance) const {
     return ArgumentReadHelper<std::string>(this).read(argName, argImportance);
+}
+
+std::vector<std::string> ArgumentSource::readStringList(const char* argName, ArgumentImportance argImportance) const {
+    return ArgumentReadHelper<std::vector<std::string>>(this).read(argName, argImportance);
 }
 
 bool ArgumentSource::readBool(const char* argName, ArgumentImportance argImportance) const {

@@ -5,11 +5,11 @@
  *
  * All rights reserved.
  *
- * Redistribution and use in argumentSource and binary forms, with or without
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of argumentSource code must retain the above copyright
+ *     (1) Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *
  *     (2) Redistributions in binary form must reproduce the above copyright
@@ -34,44 +34,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_IO_H
-#define VIRGIL_CLI_ARGUMENT_IO_H
+#include <cli/loader/CardKeyLoader.h>
 
 #include <cli/crypto/Crypto.h>
-
-#include <cli/argument/ArgumentSource.h>
-#include <cli/argument/ArgumentTransformer.h>
+#include <cli/logger/Logger.h>
 
 #include <virgil/sdk/client/Client.h>
+#include <virgil/sdk/crypto/Crypto.h>
 
-#include <memory>
-#include <string>
+using cli::Crypto;
+using cli::loader::CardKeyLoader;
+using cli::model::PublicKey;
 
-namespace cli { namespace argument {
+using virgil::sdk::client::interfaces::ClientInterface;
+using virgil::sdk::client::models::Card;
 
-class ArgumentIO {
-public:
-    using SourceType = std::unique_ptr<ArgumentSource>;
-public:
-    // Check
-    bool hasContentInfo(const SourceType& argumentSource);
+using ServiceCrypto = virgil::sdk::crypto::Crypto;
 
-    // Readers
-    ArgumentTransformerPtr<Crypto::KeyAlgorithm> getKeyAlgorithm(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSource> getInput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSink> getOutput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::Text> getKeyPassword(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<command::Command> getCommand(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<model::Recipient> getRecipient(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<virgil::sdk::client::Client> getClient(const SourceType& argumentSource) const;
-};
-
-}}
-
-#endif //VIRGIL_CLI_ARGUMENT_IO_H
+std::vector<PublicKey> CardKeyLoader::doLoadKeys(const ClientInterface& serviceClient) const {
+    std::vector<PublicKey> result;
+    auto future = serviceClient.getCard(source());
+    auto card = std::make_unique<Card>(future.get());
+    result.emplace_back(Crypto::ByteUtils::stringToBytes(card->identifier()), card->publicKeyData());
+    return result;
+}

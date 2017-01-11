@@ -5,11 +5,11 @@
  *
  * All rights reserved.
  *
- * Redistribution and use in argumentSource and binary forms, with or without
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of argumentSource code must retain the above copyright
+ *     (1) Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *
  *     (2) Redistributions in binary form must reproduce the above copyright
@@ -34,44 +34,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_IO_H
-#define VIRGIL_CLI_ARGUMENT_IO_H
+#include <cli/crypto/FileDataSink.h>
 
 #include <cli/crypto/Crypto.h>
+#include <cli/error/ArgumentError.h>
 
-#include <cli/argument/ArgumentSource.h>
-#include <cli/argument/ArgumentTransformer.h>
+#include <iostream>
+#include <fstream>
 
-#include <virgil/sdk/client/Client.h>
+using cli::crypto::FileDataSink;
 
-#include <memory>
-#include <string>
+FileDataSink::FileDataSink() : out_(ostream_ptr(&std::cout, [](std::ostream*) {})) {
+}
 
-namespace cli { namespace argument {
+FileDataSink::FileDataSink(const std::string& fileName)
+        : out_(ostream_ptr(new std::ofstream(fileName), std::default_delete<std::ostream>())) {
+    if (!*out_) {
+        throw error::ArgumentFileNotFound(fileName);
+    }
+}
 
-class ArgumentIO {
-public:
-    using SourceType = std::unique_ptr<ArgumentSource>;
-public:
-    // Check
-    bool hasContentInfo(const SourceType& argumentSource);
+bool FileDataSink::isGood() {
+    return out_->good();
+}
 
-    // Readers
-    ArgumentTransformerPtr<Crypto::KeyAlgorithm> getKeyAlgorithm(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSource> getInput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSink> getOutput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::Text> getKeyPassword(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<command::Command> getCommand(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<model::Recipient> getRecipient(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<virgil::sdk::client::Client> getClient(const SourceType& argumentSource) const;
-};
-
-}}
-
-#endif //VIRGIL_CLI_ARGUMENT_IO_H
+void FileDataSink::write(const virgil::crypto::VirgilByteArray& data) {
+    out_->write(reinterpret_cast<const std::ostream::char_type*>(data.data()), data.size());
+}

@@ -36,11 +36,8 @@
 
 #include <cli/command/HubCommand.h>
 
-#include <cli/command/KeygenCommand.h>
-#include <cli/command/KeyToPubCommand.h>
 
 #include <cli/api/api.h>
-#include <cli/error/ArgumentError.h>
 #include <cli/argument/ArgumentIO.h>
 #include <cli/logger/Logger.h>
 
@@ -59,15 +56,6 @@ argument::ArgumentSource::UsageOptions HubCommand::doGetUsageOptions() const {
     return argument::ArgumentSource::UsageOptions().enableOptionsFirst();
 }
 
-std::unique_ptr<Command> HubCommand::findCommand(const std::string& commandName) const {
-    if (commandName == arg::value::VIRGIL_COMMAND_KEYGEN) {
-        return std::make_unique<KeygenCommand>();
-    } else if (commandName == KeyToPubCommand::getName()) {
-        return std::make_unique<KeyToPubCommand>();
-    }
-    throw error::ArgumentValueError(arg::COMMAND, commandName);
-}
-
 void HubCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) const {
-    findCommand(getArgumentIO()->readCommand(args))->process(std::move(args));
+    getArgumentIO()->getCommand(args)->transform()->process(std::move(args));
 }

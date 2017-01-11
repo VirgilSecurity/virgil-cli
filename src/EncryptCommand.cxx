@@ -34,34 +34,53 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_COMMAND_PROMPT_H
-#define VIRGIL_CLI_COMMAND_PROMPT_H
+#include <cli/command/EncryptCommand.h>
 
-#include <string>
-#include <vector>
+#include <cli/api/api.h>
+#include <cli/crypto/Crypto.h>
+#include <cli/logger/Logger.h>
+#include <cli/model/Recipient.h>
 
-namespace cli { namespace cmd {
+using cli::command::EncryptCommand;
+using cli::argument::ArgumentIO;
+using cli::Crypto;
 
-class CommandPrompt {
-public:
-    void init(const std::string& usage) const;
-    std::string readString(const char *argName) const;
-    std::string readSecureString(const char *argName) const;
-    std::vector<std::string> readStringList(const char* argName) const;
-    bool readBool(const char *argName) const;
-    int readInt(const char *argName) const;
-private:
-    virtual void doInit(const std::string& usage) const = 0;
-    virtual std::string doRead() const = 0;
-    virtual std::string doSecureRead() const = 0;
-    virtual void doWrite(const std::string& str) const = 0;
-    virtual void doWriteNewLine(const std::string& str) const = 0;
-private:
-    std::string getPromptMessage(const char* argName) const;
-    bool checkResult(const char* argName, const std::string& result) const;
-    bool checkResult(const char* argName, const std::vector<std::string>& result) const;
-};
+using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
 
-}}
+const char* EncryptCommand::getName() {
+    return arg::value::VIRGIL_COMMAND_ENCRYPT;
+}
 
-#endif //VIRGIL_CLI_COMMAND_PROMPT_H
+const char* EncryptCommand::doGetName() const {
+    return EncryptCommand::getName();
+}
+
+const char* EncryptCommand::doGetUsage() const {
+    return usage::VIRGIL_ENCRYPT;
+}
+
+UsageOptions EncryptCommand::doGetUsageOptions() const {
+    return UsageOptions().disableOptionsFirst();
+}
+
+
+void EncryptCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) const {
+    ULOG(2, INFO) << "Read parameters.";
+    auto input = getArgumentIO()->getInput(args)->transform();
+    auto output = getArgumentIO()->getOutput(args)->transform();
+    bool doWriteContentInfo = getArgumentIO()->hasContentInfo(args);
+    bool embedContentInfo = !doWriteContentInfo;
+    auto serviceClient = getArgumentIO()->getClient(args)->transform();
+
+    ULOG(2, INFO) << "Add recipients to the cipher.";
+    Crypto::StreamCipher cipher;
+    auto recipients = getArgumentIO()->getRecipient(args)->transform();
+    for (const auto& recipient : recipients) {
+        recipient->addSelfTo(cipher, *serviceClient);
+    }
+
+    ULOG(2, INFO) << "Start encryption.";
+    cipher.encrypt(*input, *output, embedContentInfo);
+
+    ULOG(2, INFO) << "End encryption.";
+}

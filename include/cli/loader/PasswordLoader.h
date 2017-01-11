@@ -34,27 +34,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_UTILS_H
-#define VIRGIL_CLI_UTILS_H
+#ifndef VIRGIL_CLI_PASSWORD_LOADER_H
+#define VIRGIL_CLI_PASSWORD_LOADER_H
 
 #include <string>
-#include <stdexcept>
 
-namespace cli { namespace api {
+#include <cli/crypto/Crypto.h>
 
-template<typename T>
-class get {
+namespace cli { namespace loader {
+
+class PasswordLoader {
 public:
-    static T from(const std::string& from);
+    explicit PasswordLoader(const std::string& source);
+
+    std::string source() const;
+
+    Crypto::Text loadText() const;
+
+    Crypto::Bytes loadBytes() const;
+
+private:
+    std::string source_;
 };
 
 }}
 
-namespace std {
-
-    template<typename T>
-    string to_string(const T& value);
-
-}
-
-#endif //VIRGIL_CLI_UTILS_H
+#endif //VIRGIL_CLI_PASSWORD_LOADER_H

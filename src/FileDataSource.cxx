@@ -5,11 +5,11 @@
  *
  * All rights reserved.
  *
- * Redistribution and use in argumentSource and binary forms, with or without
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of argumentSource code must retain the above copyright
+ *     (1) Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *
  *     (2) Redistributions in binary form must reproduce the above copyright
@@ -34,44 +34,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_IO_H
-#define VIRGIL_CLI_ARGUMENT_IO_H
+#include <cli/crypto/FileDataSource.h>
 
 #include <cli/crypto/Crypto.h>
+#include <cli/error/ArgumentError.h>
 
-#include <cli/argument/ArgumentSource.h>
-#include <cli/argument/ArgumentTransformer.h>
+#include <iostream>
+#include <fstream>
 
-#include <virgil/sdk/client/Client.h>
+using cli::crypto::FileDataSource;
 
-#include <memory>
-#include <string>
+FileDataSource::FileDataSource(size_t chunkSize) : in_(&std::cin, [](std::istream*){}), chunkSize_(chunkSize) {
+}
 
-namespace cli { namespace argument {
+FileDataSource::FileDataSource(const std::string& fileName, size_t chunkSize)
+        : in_(new std::ifstream(fileName), std::default_delete<std::istream>()), chunkSize_(chunkSize) {
+    if (!*in_) {
+        throw error::ArgumentFileNotFound(fileName);
+    }
+}
 
-class ArgumentIO {
-public:
-    using SourceType = std::unique_ptr<ArgumentSource>;
-public:
-    // Check
-    bool hasContentInfo(const SourceType& argumentSource);
+bool FileDataSource::hasData() {
+    return in_->good();
+}
 
-    // Readers
-    ArgumentTransformerPtr<Crypto::KeyAlgorithm> getKeyAlgorithm(const SourceType& argumentSource) const;
+virgil::crypto::VirgilByteArray FileDataSource::read() {
+    Crypto::Bytes result(chunkSize_);
+    in_->read(reinterpret_cast<std::istream::char_type*>(result.data()), result.size());
+    if (!*in_) {
+        // Only part of chunk was read, so result MUST be trimmed.
+        result.resize(static_cast<size_t>(in_->gcount()));
+    }
+    return result;
+}
 
-    ArgumentTransformerPtr<Crypto::FileDataSource> getInput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::FileDataSink> getOutput(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<Crypto::Text> getKeyPassword(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<command::Command> getCommand(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<model::Recipient> getRecipient(const SourceType& argumentSource) const;
-
-    ArgumentTransformerPtr<virgil::sdk::client::Client> getClient(const SourceType& argumentSource) const;
-};
-
-}}
-
-#endif //VIRGIL_CLI_ARGUMENT_IO_H
+virgil::crypto::VirgilByteArray FileDataSource::readAll() {
+    Crypto::Bytes result;
+    std::copy(std::istreambuf_iterator<char>(*in_), std::istreambuf_iterator<char>(), std::back_inserter(result));
+    return result;
+}

@@ -55,6 +55,27 @@ static constexpr const char* kValueErrorMessage =
 static constexpr const char* kFileNotFoundMessage =
         "File '%s' is not found.";
 
+static constexpr const char* kInvalidTokenMessage =
+        "Invalid token format '%s', expected '<key>:<value>'.";
+
+static constexpr const char* kInvalidRecipientMessage =
+        "Invalid recipient key '%s', expected on of '%s'.";
+
+static constexpr const char* kRecipientNotFoundMessage =
+        "Recipient not found '%s:%s'.";
+
+static std::string format_api_list(const char *list[]) {
+    std::string result = "{";
+    for (auto item = list; *item != nullptr; ++item) {
+        if (item != list) {
+            result += ", ";
+        }
+        result += *item;
+    }
+    result += "}";
+    return result;
+}
+
 ArgumentNotFoundError::ArgumentNotFoundError(const char* argName) :
         ArgumentRuntimeError(tfm::format(kNotFoundErrorMessage, argName)) {}
 
@@ -84,3 +105,18 @@ ArgumentFileNotFound::ArgumentFileNotFound(const char* fileName) :
 
 ArgumentFileNotFound::ArgumentFileNotFound(const std::string& fileName) :
         ArgumentRuntimeError(tfm::format(kFileNotFoundMessage, fileName)) {}
+
+ArgumentInvalidToken::ArgumentInvalidToken(const char* token) :
+        ArgumentRuntimeError(tfm::format(kInvalidTokenMessage, token)) {}
+
+ArgumentInvalidToken::ArgumentInvalidToken(const std::string& token) :
+        ArgumentRuntimeError(tfm::format(kInvalidTokenMessage, token)) {}
+
+ArgumentInvalidRecipient::ArgumentInvalidRecipient(const char* recipientKey, const char* validValues[]) :
+        ArgumentRuntimeError(tfm::format(kInvalidRecipientMessage, recipientKey, format_api_list(validValues))) {}
+
+ArgumentInvalidRecipient::ArgumentInvalidRecipient(const std::string& recipientKey, const char* validValues[]) :
+        ArgumentRuntimeError(tfm::format(kInvalidRecipientMessage, recipientKey, format_api_list(validValues))) {}
+
+ArgumentRecipientNotFound::ArgumentRecipientNotFound(const std::string& sourceType, const std::string& sourceValue) :
+        ArgumentRuntimeError(tfm::format(kRecipientNotFoundMessage, sourceType, sourceValue)) {}
