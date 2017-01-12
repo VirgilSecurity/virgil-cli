@@ -69,7 +69,7 @@ ArgumentSource::UsageOptions Command::getUsageOptions() const {
     return doGetUsageOptions();
 }
 
-void Command::process(std::unique_ptr<argument::ArgumentSource> args) const {
+void Command::process(std::shared_ptr<ArgumentSource> args) const {
     DLOG(INFO) << "Start process command:" << getName();
     try {
         args->init(getUsage(), getUsageOptions());

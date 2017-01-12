@@ -41,6 +41,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
+#include <iterator>
 
 using cli::crypto::FileDataSource;
 

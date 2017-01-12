@@ -47,10 +47,12 @@
 #include <cli/model/KeyRecipient.h>
 #include <cli/model/PasswordRecipient.h>
 
+using cli::Crypto;
 using cli::model::PasswordRecipient;
 using cli::model::KeyRecipient;
 using cli::model::Token;
 using cli::model::Recipient;
+using cli::model::SecureKey;
 using cli::loader::PasswordLoader;
 using cli::loader::EmailKeyLoader;
 using cli::loader::PubkeyKeyLoader;

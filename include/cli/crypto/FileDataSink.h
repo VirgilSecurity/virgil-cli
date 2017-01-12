@@ -39,6 +39,7 @@
 
 #include <virgil/crypto/VirgilDataSink.h>
 
+#include <functional>
 #include <ostream>
 #include <memory>
 

@@ -57,7 +57,7 @@ ArgumentSource::UsageOptions KeygenCommand::doGetUsageOptions() const {
     return ArgumentSource::UsageOptions().disableOptionsFirst();
 }
 
-void KeygenCommand::doProcess(std::unique_ptr<ArgumentSource> args) const {
+void KeygenCommand::doProcess(std::shared_ptr<ArgumentSource> args) const {
     auto keyAlgorithm = getArgumentIO()->getKeyAlgorithm(args)->transform();
     auto keyPassword = getArgumentIO()->getKeyPassword(args)->transform()->key();
     ULOG(1, INFO) << "Generate key pair.";

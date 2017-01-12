@@ -87,16 +87,16 @@ int main(int argc, char* argv[]) {
 
     try {
         auto commandPrompt = std::make_shared<StandardCommandPrompt>();
-        auto commandArgumentSource = std::make_unique<CommandArgumentSource>(argv + 1, argv + argc);
-        auto interactiveArgumentSource = std::make_unique<InteractiveArgumentSource>(commandPrompt);
-        commandArgumentSource->setNextSource(std::move(interactiveArgumentSource));
+        auto commandArgumentSource = std::make_shared<CommandArgumentSource>(argv + 1, argv + argc);
+        auto interactiveArgumentSource = std::make_shared<InteractiveArgumentSource>(commandPrompt);
+        commandArgumentSource->setNextSource(interactiveArgumentSource);
 
         auto argumentRules = std::make_shared<ArgumentRules>();
         commandArgumentSource->setupRules(argumentRules);
 
         // Process root(hub) command
         auto hubCommand = std::make_unique<HubCommand>();
-        hubCommand->process(std::move(commandArgumentSource));
+        hubCommand->process(commandArgumentSource);
     } catch (const ExitFailure&) {
         // Was handled in-place, was rethrown for exit
         return EXIT_FAILURE;

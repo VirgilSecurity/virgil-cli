@@ -39,24 +39,21 @@
 #include <cli/api/api.h>
 #include <cli/api/Version.h>
 #include <cli/error/ArgumentError.h>
-
-#include <virgil/crypto/VirgilByteArray.h>
-#include <virgil/crypto/VirgilByteArrayUtils.h>
-#include <virgil/crypto/VirgilKeyPair.h>
 #include <cli/logger/Logger.h>
+#include <cli/crypto/Crypto.h>
 
 #include <docopt/docopt.h>
 
 using cli::argument::ArgumentSource;
 using cli::argument::InteractiveArgumentSource;
+using cli::argument::ArgumentRules;
+using cli::argument::ArgumentImportance;
+using cli::cmd::CommandPrompt;
 
 using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
 
-using BytesUtils = virgil::crypto::VirgilByteArrayUtils;
 
-
-InteractiveArgumentSource::InteractiveArgumentSource(std::shared_ptr<cmd::CommandPrompt> cmd)
-        : cmd_(cmd) {
+InteractiveArgumentSource::InteractiveArgumentSource(std::shared_ptr<CommandPrompt> cmd) : cmd_(cmd) {
 }
 
 const char* InteractiveArgumentSource::doGetName() const {

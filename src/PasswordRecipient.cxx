@@ -36,7 +36,9 @@
 
 #include <cli/model/PasswordRecipient.h>
 
+using cli::Crypto;
 using cli::model::PasswordRecipient;
+using cli::model::SecureKey;
 using cli::loader::PasswordLoader;
 
 PasswordRecipient::PasswordRecipient(std::unique_ptr<PasswordLoader> passwordLoader)

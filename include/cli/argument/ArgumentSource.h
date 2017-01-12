@@ -34,8 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENTIO_H
-#define VIRGIL_CLI_ARGUMENTIO_H
+#ifndef VIRGIL_CLI_ARGUMENT_SOURCE_H
+#define VIRGIL_CLI_ARGUMENT_SOURCE_H
 
 #include <cli/argument/ArgumentRules.h>
 
@@ -51,6 +51,10 @@ enum class ArgumentImportance {
     Optional,
     Required
 };
+
+}}
+
+namespace cli { namespace argument {
 
 class ArgumentSource {
 public:
@@ -80,13 +84,20 @@ public:
 
     std::vector<std::string> readStringList(const char* argName, ArgumentImportance argImportance) const;
 
-    ArgumentSource* setNextSource(std::unique_ptr<ArgumentSource> source);
+    ArgumentSource* setNextSource(std::shared_ptr<ArgumentSource> source);
 
     const char *getName() const;
 
     void setupRules(std::shared_ptr<ArgumentRules> argumentRules);
 
     std::shared_ptr<const ArgumentRules> argumentRules() const;
+
+    ArgumentSource();
+    virtual ~ArgumentSource() noexcept;
+
+    ArgumentSource(ArgumentSource&&);
+
+    ArgumentSource& operator=(ArgumentSource&&);
 
 private:
     virtual const char* doGetName() const = 0;
@@ -110,7 +121,7 @@ private:
     class ArgumentReadHelper;
 
 private:
-    std::unique_ptr<ArgumentSource> nextSource_;
+    std::shared_ptr<ArgumentSource> nextSource_;
     std::shared_ptr<ArgumentRules> argumentRules_;
 };
 
@@ -120,4 +131,4 @@ namespace std {
     string to_string(cli::argument::ArgumentImportance argumentImportance);
 }
 
-#endif //VIRGIL_CLI_ARGUMENTIO_H
+#endif //VIRGIL_CLI_ARGUMENT_SOURCE_H

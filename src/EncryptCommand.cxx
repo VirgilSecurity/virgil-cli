@@ -41,9 +41,10 @@
 #include <cli/logger/Logger.h>
 #include <cli/model/Recipient.h>
 
+using cli::Crypto;
 using cli::command::EncryptCommand;
 using cli::argument::ArgumentIO;
-using cli::Crypto;
+using cli::argument::ArgumentSource;
 
 using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
 
@@ -64,7 +65,7 @@ UsageOptions EncryptCommand::doGetUsageOptions() const {
 }
 
 
-void EncryptCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) const {
+void EncryptCommand::doProcess(std::shared_ptr<ArgumentSource> args) const {
     ULOG(2, INFO) << "Read parameters.";
     auto input = getArgumentIO()->getInput(args)->transform();
     auto output = getArgumentIO()->getOutput(args)->transform();

@@ -56,6 +56,6 @@ argument::ArgumentSource::UsageOptions HubCommand::doGetUsageOptions() const {
     return argument::ArgumentSource::UsageOptions().enableOptionsFirst();
 }
 
-void HubCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) const {
-    getArgumentIO()->getCommand(args)->transform()->process(std::move(args));
+void HubCommand::doProcess(std::shared_ptr<argument::ArgumentSource> args) const {
+    getArgumentIO()->getCommand(args)->transform()->process(args);
 }

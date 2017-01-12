@@ -37,8 +37,8 @@
 #ifndef VIRGIL_CLI_LOGGER_H
 #define VIRGIL_CLI_LOGGER_H
 
-#include <easylogging/easylogging++.h>
 #include <tinyformat/tinyformat.h>
+#include <easylogging/easylogging++.h>
 
 
 static constexpr const char kLoggerId_User[] = "user";

@@ -60,7 +60,10 @@ using cli::command::Command;
 using cli::model::Recipient;
 using cli::model::SecureKey;
 
-bool ArgumentIO::hasContentInfo(const std::unique_ptr<ArgumentSource>& argumentSource) {
+#undef IN
+#undef OUT
+
+bool ArgumentIO::hasContentInfo(const std::shared_ptr<ArgumentSource>& argumentSource) {
     return !argumentSource->readString(opt::CONTENT_INFO, ArgumentImportance::Optional).empty();
 }
 
@@ -96,7 +99,7 @@ ArgumentTransformerPtr<SecureKey> ArgumentIO::getKeyPasswordOptional(const Sourc
 }
 
 ArgumentTransformerPtr<Command> ArgumentIO::getCommand(const SourceType& argumentSource) const {
-    auto argumentValue = argumentSource->readString(arg::COMMAND, ArgumentImportance::Optional);
+    auto argumentValue = argumentSource->readString(arg::COMMAND, ArgumentImportance::Required);
     return make_transformer<Command>(argumentValue);
 }
 

@@ -129,9 +129,9 @@ string (TOLOWER "${CMAKE_SYSTEM_NAME}" SYSTEM_NAME)
 # Check compiler version
 if (MSVC)
     # MSVC14
-    if (NOT MSVC_VERSION EQUAL 1900)
-        virgil_log_error ("Unsupported MSVC version found. Allowed versions: Visual Studio 2015 (MSVC14)")
-    endif (NOT MSVC_VERSION EQUAL 1900)
+    if (MSVC_VERSION LESS 1900)
+        virgil_log_error ("Unsupported MSVC version found. Allowed versions greater then Visual Studio 2015 (MSVC14)")
+    endif (MSVC_VERSION LESS 1900)
 endif (MSVC)
 
 # Configure path to local libraries
@@ -139,6 +139,9 @@ if (MSVC)
     set (EXT_PREBUILD_MSVC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/prebuild/msvc")
     set (CMAKE_PREFIX_PATH "${EXT_PREBUILD_MSVC_DIR}/${SYSTEM_ARCH}/libcurl" ${CMAKE_PREFIX_PATH})
     set (CURL_LIBRARY_DLL "${EXT_PREBUILD_MSVC_DIR}/${SYSTEM_ARCH}/libcurl/lib/libcurl.dll")
+    file (COPY "${CURL_LIBRARY_DLL}"
+        DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+    )
 endif (MSVC)
 
 if (UNIX)

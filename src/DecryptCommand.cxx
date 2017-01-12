@@ -44,8 +44,10 @@
 using cli::Crypto;
 using cli::command::DecryptCommand;
 using cli::argument::ArgumentIO;
+using cli::argument::ArgumentSource;
 using cli::model::Recipient;
 using cli::model::SecureKey;
+
 
 using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
 
@@ -65,8 +67,7 @@ UsageOptions DecryptCommand::doGetUsageOptions() const {
     return UsageOptions().disableOptionsFirst();
 }
 
-
-void DecryptCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) const {
+void DecryptCommand::doProcess(std::shared_ptr<ArgumentSource> args) const {
     ULOG(2, INFO) << "Read parameters.";
     auto input = getArgumentIO()->getInput(args)->transform();
     auto output = getArgumentIO()->getOutput(args)->transform();

@@ -45,6 +45,7 @@
 
 using cli::command::KeyToPubCommand;
 using cli::argument::ArgumentIO;
+using cli::argument::ArgumentSource;
 using cli::Crypto;
 
 using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
@@ -65,7 +66,7 @@ UsageOptions KeyToPubCommand::doGetUsageOptions() const {
     return UsageOptions().disableOptionsFirst();
 }
 
-void KeyToPubCommand::doProcess(std::unique_ptr<argument::ArgumentSource> args) const {
+void KeyToPubCommand::doProcess(std::shared_ptr<ArgumentSource> args) const {
     ULOG(1, INFO) << "Read private key.";
     auto privateKey = getArgumentIO()->getInput(args)->transform()->readAll();
     Crypto::Bytes pwd;

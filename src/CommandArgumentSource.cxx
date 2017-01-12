@@ -45,10 +45,17 @@
 
 using cli::argument::ArgumentSource;
 using cli::argument::CommandArgumentSource;
+using cli::argument::ArgumentRules;
+using cli::argument::ArgumentImportance;
 
-CommandArgumentSource::CommandArgumentSource(CommandArgumentSource&&) = default;
+CommandArgumentSource::CommandArgumentSource(CommandArgumentSource&&) {
+        DLOG(INFO) << "Move constructor command argument source.";
+}
 
-CommandArgumentSource& CommandArgumentSource::operator=(CommandArgumentSource&&) = default;
+CommandArgumentSource& CommandArgumentSource::operator=(CommandArgumentSource&&) {
+        DLOG(INFO) << "Move assignment command argument source.";
+        return *this;
+}
 
 CommandArgumentSource::~CommandArgumentSource() noexcept = default;
 
@@ -83,7 +90,11 @@ const char* CommandArgumentSource::doGetName() const {
 }
 
 bool CommandArgumentSource::doCanRead(const char* argName, ArgumentImportance argumentImportance) const {
+    DLOG(INFO) << tfm::format(
+            "Search argument: '%s' (%s), in the command line options.", argName, std::to_string(argumentImportance));
     auto value = impl_->docoptArgs.find(argName);
+    DLOG(INFO) << tfm::format(
+            "Search status: %s.", value != std::cend(impl_->docoptArgs) ? "success" : "failed");
     return value != std::cend(impl_->docoptArgs) && static_cast<bool>(value->second);
 }
 

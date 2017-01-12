@@ -51,7 +51,7 @@ namespace cli { namespace argument {
 
 class ArgumentIO {
 public:
-    using SourceType = std::unique_ptr<ArgumentSource>;
+    using SourceType = std::shared_ptr<ArgumentSource>;
 public:
     // Check
     bool hasContentInfo(const SourceType& argumentSource);

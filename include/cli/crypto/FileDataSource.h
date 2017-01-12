@@ -39,8 +39,10 @@
 
 #include <virgil/crypto/VirgilDataSource.h>
 
+#include <functional>
 #include <istream>
 #include <memory>
+
 
 namespace cli { namespace crypto {
 

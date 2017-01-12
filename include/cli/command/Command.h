@@ -47,7 +47,7 @@ public:
     const char *getName() const;
     const char *getUsage() const;
     argument::ArgumentSource::UsageOptions getUsageOptions() const;
-    void process(std::unique_ptr<argument::ArgumentSource> args) const;
+    void process(std::shared_ptr<argument::ArgumentSource> args) const;
     void showUsage(const char* errorMessage = nullptr) const;
     void showVersion() const;
 protected:
@@ -56,7 +56,7 @@ private:
     virtual const char* doGetName() const = 0;
     virtual const char* doGetUsage() const = 0;
     virtual argument::ArgumentSource::UsageOptions doGetUsageOptions() const = 0;
-    virtual void doProcess(std::unique_ptr<argument::ArgumentSource> args) const = 0;
+    virtual void doProcess(std::shared_ptr<argument::ArgumentSource> args) const = 0;
 };
 
 }}
