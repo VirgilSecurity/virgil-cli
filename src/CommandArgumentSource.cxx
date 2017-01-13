@@ -36,6 +36,7 @@
 
 #include <cli/argument/CommandArgumentSource.h>
 
+#include <cli/memory.h>
 #include <cli/api/api.h>
 #include <cli/api/Version.h>
 #include <cli/error/ArgumentError.h>
@@ -94,8 +95,8 @@ bool CommandArgumentSource::doCanRead(const char* argName, ArgumentImportance ar
             "Search argument: '%s' (%s), in the command line options.", argName, std::to_string(argumentImportance));
     auto value = impl_->docoptArgs.find(argName);
     DLOG(INFO) << tfm::format(
-            "Search status: %s.", value != std::cend(impl_->docoptArgs) ? "success" : "failed");
-    return value != std::cend(impl_->docoptArgs) && static_cast<bool>(value->second);
+            "Search status: %s.", value != impl_->docoptArgs.cend() ? "success" : "failed");
+    return value != impl_->docoptArgs.cend() && static_cast<bool>(value->second);
 }
 
 void CommandArgumentSource::doInit(const std::string& usage, const UsageOptions& usageOptions) const {

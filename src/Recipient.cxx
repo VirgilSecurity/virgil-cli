@@ -36,6 +36,7 @@
 
 #include <cli/model/Recipient.h>
 
+#include <cli/memory.h>
 #include <cli/api/api.h>
 #include <cli/error/ArgumentError.h>
 #include <cli/logger/Logger.h>

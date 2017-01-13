@@ -162,7 +162,7 @@ void ArgumentSource::init(const std::string& usage, const ArgumentSource::UsageO
         sources.push_back(source);
     }
     DLOG(INFO) << "Update rules for argument sources.";
-    for (auto source = std::rbegin(sources); source != std::rend(sources); ++source) {
+    for (auto source = sources.rbegin(); source != sources.rend(); ++source) {
         DLOG(INFO) << tfm::format("Update rules for argument source: %s.", (*source)->getName());
         (*source)->doUpdateRules(argumentRules_);
     }

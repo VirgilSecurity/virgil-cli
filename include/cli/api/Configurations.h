@@ -34,11 +34,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef VIRGIL_CLI_CONFIG_H
+#define VIRGIL_CLI_CONFIG_H
 
-#include <cli/api/Config.h>
+namespace cli {
 
-using cli::Config;
+class Configurations {
+public:
+    static const char* applicationTokenDefault();
+    static void setupDefaults();
+};
 
-const char* Config::applicationTokenDefault() {
-    return "@CLI_APPLICATION_TOKEN@";
 }
+
+#endif //VIRGIL_CLI_CONFIG_H

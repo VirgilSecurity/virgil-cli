@@ -37,7 +37,7 @@
 #include <cli/argument/ArgumentIO.h>
 
 #include <cli/api/api.h>
-#include <cli/api/Config.h>
+#include <cli/api/Configurations.h>
 #include <cli/model/Recipient.h>
 #include <cli/model/SecureKey.h>
 #include <cli/command/Command.h>
@@ -111,7 +111,7 @@ ArgumentTransformerPtr<Recipient> ArgumentIO::getRecipient(const SourceType& arg
 ArgumentTransformerPtr<virgil::sdk::client::Client> ArgumentIO::getClient(const SourceType& argumentSource) const {
     auto applicationToken = argumentSource->readString(opt::APPLICATION_TOKEN, ArgumentImportance::Optional);
     if (applicationToken.empty()) {
-        applicationToken = Config::applicationTokenDefault();
+        applicationToken = Configurations::applicationTokenDefault();
     }
     return make_transformer<virgil::sdk::client::Client>(applicationToken);
 }

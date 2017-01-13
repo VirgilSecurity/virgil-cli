@@ -34,30 +34,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/memory.h>
-#include <cli/argument/ArgumentTransformer.h>
+#ifndef VIRGIL_CLI_MEMORY_H
+#define VIRGIL_CLI_MEMORY_H
 
-#include <virgil/sdk/client/Client.h>
-#include <virgil/sdk/client/ServiceConfig.h>
-#include <virgil/sdk/client/CardValidator.h>
-#include <virgil/sdk/crypto/Crypto.h>
+#include <memory>
 
+// Define custom implementation of std::make_unique() function
+#if !defined(__cpp_lib_make_unique)
+#if !defined(_MSC_VER) || _MSC_VER < 1800
 
-using cli::argument::ArgumentTransformer;
-using virgil::sdk::client::Client;
-using virgil::sdk::client::ServiceConfig;
-using virgil::sdk::client::CardValidator;
-using ServiceCrypto = virgil::sdk::crypto::Crypto;
-
-std::unique_ptr<Client> ArgumentTransformer<Client>::transform() const {
-    const auto& applicationToken = argumentValue_;
-    auto crypto = std::make_shared<ServiceCrypto>();
-
-    auto validator = std::make_unique<CardValidator>(crypto);
-    // TODO: Add verifier to the validator
-
-    auto serviceConfig = ServiceConfig::createConfig(applicationToken);
-    serviceConfig.cardValidator(std::move(validator));
-
-    return std::make_unique<Client>(std::move(serviceConfig));
+namespace std {
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&& ... args) {
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
+}
+
+#endif // !defined(_MSC_VER) || _MSC_VER < 1800
+#endif // __cpp_lib_make_unique
+
+#endif //VIRGIL_CLI_MEMORY_H

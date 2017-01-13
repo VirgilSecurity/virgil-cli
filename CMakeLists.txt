@@ -57,8 +57,8 @@ cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 
 project (virgil_cli VERSION 3.0.0)
 
-# Enable C++14
-set (CMAKE_CXX_STANDARD 14)
+# Enable C++11
+set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Configure path to custom modules
@@ -84,7 +84,7 @@ endif (VIRGIL_CLI_VERSION_FEATURE)
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
 set (INSTALL_LIB_DIR_NAME lib CACHE STRING "Installation directory name for libraries")
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
-set (INSTALL_CFG_DIR_PATH "~/.virgil" CACHE PATH "Installation directory path for configuration files")
+set (INSTALL_CFG_DIR_PATH "share/virgil" CACHE PATH "Installation directory path for configuration files")
 
 # Configure application token
 set (VIRGIL_ACCESS_TOKEN ${TOKEN} CACHE STRING
@@ -92,6 +92,9 @@ set (VIRGIL_ACCESS_TOKEN ${TOKEN} CACHE STRING
 
 ## Crosscompiling
 set (UCLIBC OFF CACHE BOOL "Enable pathches if CLI is build with uClibc++")
+
+## Compiler specific configuration
+set (USE_BOOST_REGEX OFF CACHE BOOL "Use Boost::regex instead of std::regex")
 
 ## Link with shared library if defined
 set (BUILD_SHARED_LIBS OFF CACHE BOOL "Force to link with shared libraries")
@@ -159,7 +162,13 @@ endif ()
 
 # Add system external dependencies
 find_package (CURL REQUIRED)
-
+find_package(Threads REQUIRED)
+if (USE_BOOST_REGEX)
+    find_package(Boost 1.53 REQUIRED COMPONENTS regex)
+    if (NOT Boost_FOUND)
+        virgil_log_error("USE_BOOST_REGEX defined but boost is not found.")
+    endif()
+endif ()
 # Add in-house external dependencies
 include (virgil_depends)
 
@@ -218,7 +227,13 @@ target_include_directories (virgil_cli PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
         "${CURL_INCLUDE_DIRS}"
         )
-target_link_libraries (virgil_cli virgil::security::virgil_sdk docopt_s ${CURL_LIBRARIES})
+target_link_libraries (virgil_cli
+                       virgil::security::virgil_sdk
+                       docopt_s
+                       ${CURL_LIBRARIES}
+                       ${Boost_LIBRARIES}
+                       Threads::Threads
+                       )
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
 
 # Install shared libraries
@@ -236,7 +251,8 @@ install (TARGETS virgil_cli
 )
 
 if (UNIX)
-    # install (DIRECTORY "doc/man/" DESTINATION ${INSTALL_MAN_DIR_NAME})
+#     install (DIRECTORY "doc/man/" DESTINATION "${INSTALL_MAN_DIR_NAME}")
+     install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/conf/" DESTINATION "${INSTALL_CFG_DIR_PATH}")
 elseif (WIN32 AND NOT CYGWIN)
     install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
     if (MSVC)
@@ -248,3 +264,58 @@ endif ()
 add_custom_target(format
     COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/utils/format_code.sh"
 )
+
+# Pack
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY
+     "The Virgil Security CLI program is a command line tool for using Virgil Security stack functionality. "
+     "It can be used to encrypt, decrypt, sign and verify data. "
+     "Functionality also includes interaction with Virgil Public Keys Service and Virgil Private Keys Service."
+     )
+
+set (CPACK_PACKAGE_NAME "virgil-${VIRGIL_CLI_VERSION}-${SYSTEM_ARCH}")
+set (CPACK_PACKAGE_VENDOR "Virgil Security Inc")
+set (CPACK_PACKAGE_VERSION_MAJOR "${VIRGIL_CLI_VERSION_MAJOR}")
+set (CPACK_PACKAGE_VERSION_MINOR "${VIRGIL_CLI_VERSION_MINOR}")
+set (CPACK_PACKAGE_VERSION_PATCH "${VIRGIL_CLI_VERSION_PATCH}")
+set (CPACK_PACKAGE_VERSION "${VIRGIL_CLI_VERSION}")
+
+set (CPACK_PACKAGE_FILE_NAME
+     "virgil-${VIRGIL_CLI_VERSION}-${SYSTEM_ARCH}")
+
+set(CPACK_MONOLITHIC_INSTALL TRUE)
+
+set (CPACK_PACKAGE_INSTALL_DIRECTORY "Virgil Security CLI")
+set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY
+     "virgil-${VIRGIL_CLI_VERSION}-${SYSTEM_NAME}-${SYSTEM_ARCH}")
+
+set (CPACK_PACKAGE_EXECUTABLES "virgil" "virgil-${SYSTEM_ARCH}")
+set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+
+if (MSVC)
+    set(CPACK_GENERATOR "NSIS")
+
+    set (CPACK_NSIS_MODIFY_PATH "ON")
+    set (CPACK_NSIS_DISPLAY_NAME "Virgil Security CLI")
+    set (CPACK_NSIS_CONTACT "support@virgilsecurity.com")
+
+    set (CPACK_NSIS_EXTRA_INSTALL_COMMANDS
+         "ExecWait '\\\"$INSTDIR\\\\install\\\\vc_redist.${SYSTEM_ARCH}.exe\\\" /install /quiet'"
+
+         "Push \\\$R0"
+         "ExpandEnvStrings \\\$R0 '%COMSPEC%'"
+         "CreateShortCut \\\"$SMPROGRAMS\\\\Virgil Security CLI\\\\virgil-${SYSTEM_ARCH}.lnk\\\" \\\"$R0\\\"  \\\"/k set PATH=$INSTDIR\\\\bin\\\""
+         "CreateShortCut \\\"$DESKTOP\\\\virgil-${SYSTEM_ARCH}.lnk\\\" \\\"$R0\\\"  \\\"/k set PATH=$INSTDIR\\\\bin\\\""
+         )
+
+    string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}")
+
+    set (CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
+         "Delete \\\"$SMPROGRAMS\\\\Virgil Security CLI\\\\virgil.lnk\\\""
+         "Delete \\\"$DESKTOP\\\\virgil-${SYSTEM_ARCH}.lnk\\\""
+         )
+
+    string (REGEX REPLACE ";" "\n" CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}")
+
+endif (MSVC)
+
+include (CPack)

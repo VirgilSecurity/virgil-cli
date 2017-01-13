@@ -37,6 +37,7 @@
 #ifndef VIRGIL_CLI_VALUE_READER_H
 #define VIRGIL_CLI_VALUE_READER_H
 
+#include <cli/memory.h>
 #include <cli/crypto/Crypto.h>
 
 #include <virgil/sdk/client/Client.h>

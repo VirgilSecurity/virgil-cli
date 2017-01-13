@@ -34,6 +34,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <cli/api/Configurations.h>
+
 #include <cli/cmd/StandardCommandPrompt.h>
 #include <cli/argument/ArgumentRules.h>
 #include <cli/argument/ArgumentSource.h>
@@ -58,9 +60,13 @@ using cli::command::HubCommand;
 using cli::error::ExitFailure;
 using cli::error::ExitSuccess;
 
-static constexpr char kLoggerDefaultConfFile[] = "@CFG_DIR_PATH@/logger-default.conf";
+static constexpr char kLoggerDefaultConfFile[] = "../@CFG_DIR_PATH@/logger-default.conf";
 
 int main(int argc, char* argv[]) {
+    // Setup configuration files
+    cli::Configurations configurations;
+    configurations.setupDefaults();
+
     // Configure Logger
     el::Loggers::addFlag(el::LoggingFlag::AutoSpacing);
     el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);

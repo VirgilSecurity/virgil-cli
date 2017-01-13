@@ -44,7 +44,7 @@ include (ExternalProject)
 file (WRITE "@VIRGIL_DEPENDS_ARGS_FILE@"
     "set (WITH_TESTS OFF CACHE INTERNAL \"\")\n"
     "set (WITH_EXAMPLE OFF CACHE INTERNAL \"\")\n"
-    "set (USE_BOOST_REGEX OFF CACHE INTERNAL \"\")\n"
+    "set (USE_BOOST_REGEX @USE_BOOST_REGEX@ CACHE INTERNAL \"\")\n"
 )
 
 ExternalProject_Add (${PROJECT_NAME}

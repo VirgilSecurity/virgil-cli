@@ -36,6 +36,7 @@
 
 #include <cli/loader/CardKeyLoader.h>
 
+#include <cli/memory.h>
 #include <cli/crypto/Crypto.h>
 #include <cli/logger/Logger.h>
 
