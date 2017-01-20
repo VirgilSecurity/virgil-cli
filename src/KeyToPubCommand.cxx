@@ -38,43 +38,40 @@
 
 #include <cli/api/api.h>
 #include <cli/crypto/Crypto.h>
-#include <cli/logger/Logger.h>
-#include <cli/model/SecureKey.h>
 
-#include <virgil/crypto/VirgilKeyPair.h>
+#include <cli/io/Logger.h>
+#include <cli/memory.h>
 
+using cli::Crypto;
 using cli::command::KeyToPubCommand;
 using cli::argument::ArgumentIO;
+using cli::argument::ArgumentImportance;
 using cli::argument::ArgumentSource;
-using cli::Crypto;
-
-using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
-
-const char* KeyToPubCommand::getName() {
-    return arg::value::VIRGIL_COMMAND_KEY2PUB;
-}
+using cli::argument::ArgumentParseOptions;
 
 const char* KeyToPubCommand::doGetName() const {
-    return KeyToPubCommand::getName();
+    return arg::value::VIRGIL_COMMAND_KEY2PUB;
 }
 
 const char* KeyToPubCommand::doGetUsage() const {
     return usage::VIRGIL_KEY2PUB;
 }
 
-UsageOptions KeyToPubCommand::doGetUsageOptions() const {
-    return UsageOptions().disableOptionsFirst();
+ArgumentParseOptions KeyToPubCommand::doGetArgumentParseOptions() const {
+    return ArgumentParseOptions().disableOptionsFirst();
 }
 
-void KeyToPubCommand::doProcess(std::shared_ptr<ArgumentSource> args) const {
-    ULOG(1, INFO) << "Read private key.";
-    auto privateKey = getArgumentIO()->getInput(args)->transform()->readAll();
-    Crypto::Bytes pwd;
-    if (Crypto::KeyPair::isPrivateKeyEncrypted(privateKey)) {
-        pwd = getArgumentIO()->getKeyPassword(args)->transform()->key();
+void KeyToPubCommand::doProcess() const {
+    ULOG1(INFO)  << "Read private key.";
+    auto privateKeySource = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
+    auto privateKey = std::make_unique<model::PrivateKey>(privateKeySource->readAll(), Crypto::Bytes());
+
+    auto privateKeyPassword = std::make_unique<model::Password>();
+    if (privateKey->isEncrypted()) {
+        privateKeyPassword = getArgumentIO()->getKeyPassword(ArgumentImportance::Required);
     }
-    ULOG(1, INFO) << "Extract public key.";
-    auto publicKey = Crypto::KeyPair::extractPublicKey(privateKey, pwd);
-    ULOG(1, INFO) << "Write public key.";
-    getArgumentIO()->getOutput(args)->transform()->write(publicKey);
+    ULOG1(INFO)  << "Extract public key.";
+    auto publicKey = Crypto::KeyPair::extractPublicKey(privateKey->key(), privateKeyPassword->password());
+    ULOG1(INFO)  << "Write public key.";
+    getArgumentIO()->getOutputSink(ArgumentImportance::Optional)->write(publicKey);
 }

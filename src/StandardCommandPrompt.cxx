@@ -73,7 +73,7 @@ static void set_stdin_echo(bool enable) {
 #endif
 }
 
-void StandardCommandPrompt::doInit(const std::string& usage) const {
+void StandardCommandPrompt::doInit(const std::string& usage) {
     (void)usage;
 }
 

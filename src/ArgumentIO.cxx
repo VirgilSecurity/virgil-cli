@@ -38,96 +38,239 @@
 
 #include <cli/api/api.h>
 #include <cli/api/Configurations.h>
-#include <cli/model/Recipient.h>
-#include <cli/model/SecureKey.h>
 #include <cli/command/Command.h>
 #include <cli/error/ArgumentError.h>
-#include <cli/logger/Logger.h>
+#include <cli/io/Logger.h>
+
+#include <cli/model/Token.h>
+#include <cli/model/EncryptionRecipient.h>
+#include <cli/model/DecryptionRecipient.h>
+#include <cli/model/PasswordEncryptionRecipient.h>
+#include <cli/model/PasswordDecryptionRecipient.h>
+#include <cli/model/KeyEncryptionRecipient.h>
+#include <cli/model/KeyDecryptionRecipient.h>
+
+#include <cli/command/KeygenCommand.h>
+#include <cli/command/KeyToPubCommand.h>
+#include <cli/command/EncryptCommand.h>
+#include <cli/command/DecryptCommand.h>
+
+#include <cli/memory.h>
 
 #include <istream>
 #include <ostream>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+#include <iterator>
 
-using cli::Crypto;
-using cli::argument::ArgumentIO;
-using cli::argument::ArgumentSource;
-using cli::argument::ArgumentTransformer;
-using cli::argument::ArgumentTransformerPtr;
-using cli::argument::make_transformer;
-using cli::error::ArgumentFileNotFound;
-using cli::command::Command;
-using cli::model::Recipient;
-using cli::model::SecureKey;
+using namespace cli;
+using namespace cli::argument;
+using namespace cli::command;
+using namespace cli::model;
 
 #undef IN
 #undef OUT
 
-bool ArgumentIO::hasContentInfo(const std::shared_ptr<ArgumentSource>& argumentSource) {
-    return !argumentSource->readString(opt::CONTENT_INFO, ArgumentImportance::Optional).empty();
+inline std::string as_optional_string(const Argument& arg) {
+    return arg.isString() ? arg.asString() : "";
 }
 
-ArgumentTransformerPtr<Crypto::KeyAlgorithm> ArgumentIO::getKeyAlgorithm(const SourceType& argumentSource) const {
-    auto argumentValue = argumentSource->readString(opt::ALGORITHM, ArgumentImportance::Optional);
-    return make_transformer<Crypto::KeyAlgorithm>(argumentValue);
+ArgumentIO::ArgumentIO(
+        std::unique_ptr<ArgumentSource> argumentSource, std::unique_ptr<ArgumentValueSource> argumentValueSource)
+        : argumentSource_(std::move(argumentSource)), argumentValueSource_(std::move(argumentValueSource)) {
+    DCHECK(argumentSource_);
+    DCHECK(argumentValueSource_);
+    argumentValueSource_->setArgumentIO(this);
 }
 
-ArgumentTransformerPtr<Crypto::FileDataSource> ArgumentIO::getInput(const SourceType& argumentSource) const {
-    auto argumentValue = argumentSource->readString(opt::IN, ArgumentImportance::Optional);
-    return make_transformer<Crypto::FileDataSource>(argumentValue);
+ArgumentIO::ArgumentIO(ArgumentIO&& other)
+        : argumentSource_(std::move(other.argumentSource_)),
+        argumentValueSource_(std::move(other.argumentValueSource_)) {
+    argumentValueSource_->setArgumentIO(this);
 }
 
-ArgumentTransformerPtr<Crypto::FileDataSink> ArgumentIO::getOutput(const SourceType& argumentSource) const {
-    auto argumentValue = argumentSource->readString(opt::OUT, ArgumentImportance::Optional);
-    return make_transformer<Crypto::FileDataSink>(argumentValue);
+ArgumentIO& ArgumentIO::operator=(ArgumentIO&& other) {
+    argumentSource_ = std::move(other.argumentSource_);
+    argumentValueSource_ = std::move(other.argumentValueSource_);
+    argumentValueSource_->setArgumentIO(this);
+    return *this;
 }
 
-ArgumentTransformerPtr<SecureKey> ArgumentIO::getKeyPassword(const SourceType& argumentSource) const {
-    ULOG(1, INFO) << "Read private key password.";
-    auto noPassword = argumentSource->readBool(opt::NO_PASSWORD, ArgumentImportance::Optional);
-    if (noPassword) {
-        return make_transformer<SecureKey>("");
+ArgumentIO::~ArgumentIO() noexcept {
+    argumentValueSource_->setArgumentIO(nullptr);
+}
+
+void ArgumentIO::configureUsage(const char* usage, const ArgumentParseOptions& parseOptions) {
+    argumentSource_->init(usage, parseOptions);
+}
+
+bool ArgumentIO::hasContentInfo() const {
+    auto argumentValue = argumentSource_->read(opt::CONTENT_INFO, ArgumentImportance::Optional);
+    return !as_optional_string(argumentValue).empty();
+}
+
+bool ArgumentIO::hasNoPassword() const {
+    return argumentSource_->read(opt::NO_PASSWORD, ArgumentImportance::Optional).asBool();
+}
+
+std::unique_ptr<FileDataSource>
+ArgumentIO::getInputSource(ArgumentImportance argumentImportance) const {
+    ULOG1(INFO)  << tfm::format("Read input.");
+    auto argumentValue = argumentSource_->read(opt::IN, argumentImportance);
+    return getSource(as_optional_string(argumentValue));
+}
+
+std::unique_ptr<FileDataSink>
+ArgumentIO::getOutputSink(ArgumentImportance argumentImportance) const {
+    ULOG1(INFO)  << tfm::format("Write output.");
+    auto argumentValue = argumentSource_->read(opt::OUT, argumentImportance);
+    return getSink(as_optional_string(argumentValue));
+}
+
+
+std::unique_ptr<FileDataSource>
+ArgumentIO::getContentInfoSource(ArgumentImportance argumentImportance) const {
+    ULOG1(INFO)  << tfm::format("Write content info.");
+    auto argumentValue = argumentSource_->read(opt::CONTENT_INFO, argumentImportance);
+    return getSource(as_optional_string(argumentValue));
+}
+
+std::unique_ptr<FileDataSink>
+ArgumentIO::getContentInfoSink(ArgumentImportance argumentImportance) const {
+    ULOG1(INFO)  << tfm::format("Write content info.");
+    auto argumentValue = argumentSource_->read(opt::CONTENT_INFO, argumentImportance);
+    return getSink(as_optional_string(argumentValue));
+}
+
+std::vector<std::unique_ptr<EncryptionRecipient>>
+ArgumentIO::getEncryptionRecipients(ArgumentImportance argumentImportance) const {
+    ULOG1(INFO)  << tfm::format("Read recipients for encryption.");
+    auto argument = argumentSource_->read(arg::RECIPIENT_ID, argumentImportance);
+    std::vector<std::unique_ptr<EncryptionRecipient>> result;
+    for (const auto& tokenString : argument.asStringList()) {
+        auto recipients = createEncryptionRecipients(tokenString);
+        result.insert(result.end(),
+                std::make_move_iterator(recipients.begin()), std::make_move_iterator(recipients.end()));
     }
-    auto keyPassword = argumentSource->readString(opt::PRIVATE_KEY_PASSWORD, ArgumentImportance::Required);
-    return make_transformer<SecureKey>(keyPassword);
+    return result;
 }
 
-ArgumentTransformerPtr<SecureKey> ArgumentIO::getKeyPasswordOptional(const SourceType& argumentSource) const {
-    ULOG(1, INFO) << "Read optional private key password.";
-    auto keyPassword = argumentSource->readString(opt::PRIVATE_KEY_PASSWORD, ArgumentImportance::Optional);
-    return make_transformer<SecureKey>(keyPassword);
-}
-
-ArgumentTransformerPtr<Command> ArgumentIO::getCommand(const SourceType& argumentSource) const {
-    auto argumentValue = argumentSource->readString(arg::COMMAND, ArgumentImportance::Required);
-    return make_transformer<Command>(argumentValue);
-}
-
-ArgumentTransformerPtr<Recipient> ArgumentIO::getRecipient(const SourceType& argumentSource) const {
-    auto argumentValueList = argumentSource->readStringList(arg::RECIPIENT_ID, ArgumentImportance::Required);
-    return make_transformer<Recipient>(argumentValueList);
-}
-
-ArgumentTransformerPtr<virgil::sdk::client::Client> ArgumentIO::getClient(const SourceType& argumentSource) const {
-    auto applicationToken = argumentSource->readString(opt::APPLICATION_TOKEN, ArgumentImportance::Optional);
-    if (applicationToken.empty()) {
-        applicationToken = Configurations::applicationTokenDefault();
+std::vector<std::unique_ptr<DecryptionRecipient>>
+ArgumentIO::getDecryptionRecipients(ArgumentImportance argumentImportance) const {
+    ULOG1(INFO)  << tfm::format("Read recipients for decryption.");
+    auto argument = argumentSource_->read(arg::KEYPASS, argumentImportance);
+    std::vector<std::unique_ptr<DecryptionRecipient>> result;
+    for (const auto& tokenString : argument.asStringList()) {
+        auto recipients = createDecryptionRecipients(tokenString);
+        result.insert(result.end(),
+                std::make_move_iterator(recipients.begin()), std::make_move_iterator(recipients.end()));
     }
-    return make_transformer<virgil::sdk::client::Client>(applicationToken);
+    return result;
 }
 
-ArgumentTransformerPtr<Crypto::FileDataSource> ArgumentIO::getContentInfoInput(const SourceType& argumentSource) const {
-    auto argumentValue = argumentSource->readString(opt::CONTENT_INFO, ArgumentImportance::Required);
-    return make_transformer<Crypto::FileDataSource>(argumentValue);
+std::unique_ptr<KeyAlgorithm> ArgumentIO::getKeyAlgorithm(ArgumentImportance argumentImportance) const {
+    auto argumentValue = argumentSource_->read(opt::ALGORITHM, argumentImportance);
+    return argumentValueSource_->readKeyAlgorithm(as_optional_string(argumentValue));
 }
 
-ArgumentTransformerPtr<Crypto::FileDataSink> ArgumentIO::getContentInfoOutput(const SourceType& argumentSource) const {
-    auto argumentValue = argumentSource->readString(opt::CONTENT_INFO, ArgumentImportance::Required);
-    return make_transformer<Crypto::FileDataSink>(argumentValue);
+std::unique_ptr<Password> ArgumentIO::getKeyPassword(ArgumentImportance argumentImportance) const {
+    auto argumentValue = argumentSource_->read(opt::PRIVATE_KEY_PASSWORD, argumentImportance);
+    return argumentValueSource_->readPassword(as_optional_string(argumentValue));
 }
 
-ArgumentTransformerPtr<Recipient> ArgumentIO::getDecryptRecipient(
-        const SourceType& argumentSource) const {
-    auto argumentValueList = argumentSource->readStringList(arg::KEYPASS, ArgumentImportance::Required);
-    return make_transformer<Recipient>(argumentValueList);
+std::unique_ptr<ServiceConfig> ArgumentIO::getServiceConfig(ArgumentImportance argumentImportance) const {
+    auto argumentValue = argumentSource_->read(opt::APPLICATION_TOKEN, argumentImportance);
+    return argumentValueSource_->readServiceConfig(as_optional_string(argumentValue));
+}
+
+std::unique_ptr<Crypto::Text> ArgumentIO::getCommand(ArgumentImportance argumentImportance) const {
+    return std::make_unique<Crypto::Text>(argumentSource_->read(arg::COMMAND, argumentImportance).asString());
+}
+
+std::unique_ptr<FileDataSource> ArgumentIO::getSource(const std::string& from) const {
+    if (from.empty()) {
+        ULOG1(INFO)  << tfm::format("Read input from: standard input.");
+        return std::make_unique<FileDataSource>();
+    } else {
+        ULOG1(INFO)  << tfm::format("Read input from file: '%s'.", from);
+        return std::make_unique<FileDataSource>(from);
+    }
+}
+
+std::unique_ptr<FileDataSink> ArgumentIO::getSink(const std::string& from) const {
+    if (from.empty()) {
+        ULOG1(INFO)  << tfm::format("Write to the standard output.");
+        return std::make_unique<FileDataSink>();
+    } else {
+        ULOG1(INFO)  << tfm::format("Write to the file: '%s'.", from);
+        return std::make_unique<FileDataSink>(from);
+    }
+}
+
+std::vector<std::unique_ptr<EncryptionRecipient>>
+ArgumentIO::createEncryptionRecipients(const std::string& tokenString) const {
+    Token token(tokenString);
+    ULOG1(INFO) << tfm::format("Read recipients from the token: '%s'.", std::to_string(token));
+
+    auto recipientType = token.key();
+    std::vector<std::unique_ptr<EncryptionRecipient>> result;
+    if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_PASSWORD) {
+        result.push_back(std::make_unique<PasswordEncryptionRecipient>(
+                argumentValueSource_->readPassword(token.value())
+        ));
+    } else if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_PUBKEY) {
+        result.push_back(std::make_unique<KeyEncryptionRecipient>(
+                argumentValueSource_->readPublicKey(token)
+        ));
+    } else if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VCARD ||
+            recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_EMAIL) {
+        auto cards = argumentValueSource_->readCards(token);
+        for (const auto& card : *cards) {
+            result.push_back(std::make_unique<KeyEncryptionRecipient>(
+                    PublicKey(card.publicKeyData(), Crypto::ByteUtils::stringToBytes(card.identifier()))
+            ));
+        }
+    } else {
+        throw error::ArgumentInvalidRecipient(recipientType, arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VALUES);
+    }
+    return result;
+}
+
+std::vector<std::unique_ptr<DecryptionRecipient>>
+ArgumentIO::createDecryptionRecipients(const std::string& tokenString) const {
+    Token token(tokenString);
+    ULOG1(INFO) << tfm::format("Read recipients from the token: '%s'.", std::to_string(token));
+    auto recipientType = token.key();
+    std::vector<std::unique_ptr<DecryptionRecipient>> result;
+    if (recipientType == arg::value::VIRGIL_DECRYPT_KEYPASS_PASSWORD) {
+        result.push_back(std::make_unique<PasswordDecryptionRecipient>(
+                argumentValueSource_->readPassword(token.value())
+        ));
+    } else if (recipientType == arg::value::VIRGIL_DECRYPT_KEYPASS_PRIVKEY) {
+        auto privateKey = argumentValueSource_->readPrivateKey(token);
+        std::unique_ptr<Password> privateKeyPassword;
+        if (privateKey->isEncrypted()) {
+            bool askPasswordAgain = argumentSource_->read(opt::INTERACTIVE, ArgumentImportance::Optional).asBool();
+            auto passwordCorrect = false;
+            std::string passwordOption = opt::PRIVATE_KEY_PASSWORD;
+            do {
+                ULOG1(INFO) << tfm::format("Read password for the private key: '%s'.", std::to_string(token));
+                auto argumentValue = argumentSource_->read(passwordOption.c_str(), ArgumentImportance::Required);
+                privateKeyPassword =argumentValueSource_->readPassword(as_optional_string(argumentValue));
+                passwordCorrect = privateKey->checkPassword(*privateKeyPassword);
+                passwordOption = token.value();
+            } while (!passwordCorrect && askPasswordAgain);
+            if (!passwordCorrect) {
+                throw error::ArgumentRuntimeError(
+                        tfm::format("Wrong password for the private key '%s'.", std::to_string(token)));
+            }
+        }
+        result.push_back(std::make_unique<KeyDecryptionRecipient>(
+                std::move(privateKey), std::move(privateKeyPassword)
+        ));
+    } else {
+        throw error::ArgumentInvalidRecipient(recipientType, arg::value::VIRGIL_DECRYPT_KEYPASS_VALUES);
+    }
+    return result;
 }

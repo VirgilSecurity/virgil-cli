@@ -37,7 +37,10 @@
 #ifndef VIRGIL_CLI_ARGUMENT_SOURCE_H
 #define VIRGIL_CLI_ARGUMENT_SOURCE_H
 
+#include <cli/argument/Argument.h>
 #include <cli/argument/ArgumentRules.h>
+#include <cli/argument/ArgumentImportance.h>
+#include <cli/argument/ArgumentParseOptions.h>
 
 #include <virgil/crypto/VirgilByteArray.h>
 #include <virgil/crypto/VirgilKeyPair.h>
@@ -47,88 +50,38 @@
 
 namespace cli { namespace argument {
 
-enum class ArgumentImportance {
-    Optional,
-    Required
-};
-
-}}
-
-namespace cli { namespace argument {
-
 class ArgumentSource {
 public:
-    using KeyAlgorithm = virgil::crypto::VirgilKeyPair::Type;
-    using Bytes = virgil::crypto::VirgilByteArray;
-
-    class UsageOptions {
-    public:
-        UsageOptions& enableOptionsFirst();
-        UsageOptions& disableOptionsFirst();
-        bool isOptionsFirst() const;
-
-        UsageOptions clone() const;
-
-    private:
-        bool optionsFirst_ = false;
-    };
-
-public:
-    void init(const std::string& usage, const UsageOptions& usageOptions);
-
-    std::string readString(const char* argName, ArgumentImportance argImportance) const;
-
-    bool readBool(const char* argName, ArgumentImportance argImportance) const;
-
-    int readInt(const char* argName, ArgumentImportance argImportance) const;
-
-    std::vector<std::string> readStringList(const char* argName, ArgumentImportance argImportance) const;
-
-    ArgumentSource* setNextSource(std::shared_ptr<ArgumentSource> source);
+    void init(const std::string& usage, const ArgumentParseOptions& parseOptions);
 
     const char *getName() const;
 
+    Argument read(const char* argName, ArgumentImportance argImportance) const;
+
+    ArgumentSource* appendSource(std::unique_ptr<ArgumentSource> source);
+
     void setupRules(std::shared_ptr<ArgumentRules> argumentRules);
 
-    std::shared_ptr<const ArgumentRules> argumentRules() const;
+    std::shared_ptr<ArgumentRules> getArgumentRules();
 
-    ArgumentSource();
-    virtual ~ArgumentSource() noexcept;
-
-    ArgumentSource(ArgumentSource&&);
-
-    ArgumentSource& operator=(ArgumentSource&&);
+    std::shared_ptr<const ArgumentRules> getArgumentRules() const;
 
 private:
     virtual const char* doGetName() const = 0;
 
-    virtual void doInit(const std::string& usage, const UsageOptions& usageOptions) const = 0;
+    virtual void doInit(const std::string& usage, const ArgumentParseOptions& usageOptions) = 0;
 
-    virtual void doUpdateRules(std::shared_ptr<ArgumentRules> argumentRules) const = 0;
+    virtual void doUpdateRules() = 0;
 
     virtual bool doCanRead(const char* argName, ArgumentImportance argumentImportance) const = 0;
 
-    virtual std::string doReadString(const char* argName) const = 0;
-
-    virtual bool doReadBool(const char* argName) const = 0;
-
-    virtual int doReadInt(const char* argName) const = 0;
-
-    virtual std::vector<std::string> doReadStringList(const char* argName) const = 0;
+    virtual Argument doRead(const char* argName) const = 0;
 
 private:
-    template<typename T>
-    class ArgumentReadHelper;
-
-private:
-    std::shared_ptr<ArgumentSource> nextSource_;
+    std::unique_ptr<ArgumentSource> nextSource_;
     std::shared_ptr<ArgumentRules> argumentRules_;
 };
 
 }}
-
-namespace std {
-    string to_string(cli::argument::ArgumentImportance argumentImportance);
-}
 
 #endif //VIRGIL_CLI_ARGUMENT_SOURCE_H

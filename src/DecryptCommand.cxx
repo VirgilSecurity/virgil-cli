@@ -38,54 +38,53 @@
 
 #include <cli/api/api.h>
 #include <cli/crypto/Crypto.h>
-#include <cli/logger/Logger.h>
-#include <cli/model/Recipient.h>
+#include <cli/io/Logger.h>
+#include <cli/error/ArgumentError.h>
 
 using cli::Crypto;
 using cli::command::DecryptCommand;
 using cli::argument::ArgumentIO;
+using cli::argument::ArgumentImportance;
 using cli::argument::ArgumentSource;
-using cli::model::Recipient;
-using cli::model::SecureKey;
-
-
-using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
-
-const char* DecryptCommand::getName() {
-    return arg::value::VIRGIL_COMMAND_DECRYPT;
-}
+using cli::argument::ArgumentParseOptions;
 
 const char* DecryptCommand::doGetName() const {
-    return DecryptCommand::getName();
+    return arg::value::VIRGIL_COMMAND_DECRYPT;
 }
 
 const char* DecryptCommand::doGetUsage() const {
     return usage::VIRGIL_DECRYPT;
 }
 
-UsageOptions DecryptCommand::doGetUsageOptions() const {
-    return UsageOptions().disableOptionsFirst();
+ArgumentParseOptions DecryptCommand::doGetArgumentParseOptions() const {
+    return ArgumentParseOptions().disableOptionsFirst();
 }
 
-void DecryptCommand::doProcess(std::shared_ptr<ArgumentSource> args) const {
-    ULOG(2, INFO) << "Read parameters.";
-    auto input = getArgumentIO()->getInput(args)->transform();
-    auto output = getArgumentIO()->getOutput(args)->transform();
-    bool hasContentInfo = getArgumentIO()->hasContentInfo(args);
-    auto serviceClient = getArgumentIO()->getClient(args)->transform();
-    auto recipientList = getArgumentIO()->getDecryptRecipient(args)->transform();
-    const auto& recipient = recipientList.front();
-    auto keyPassword = getArgumentIO()->getKeyPasswordOptional(args)->transform();
+void DecryptCommand::doProcess() const {
+    ULOG2(INFO)  << "Read parameters.";
+    auto input = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
+    auto output = getArgumentIO()->getOutputSink(ArgumentImportance::Optional);
+    bool hasContentInfo = getArgumentIO()->hasContentInfo();
+
+    auto recipients = getArgumentIO()->getDecryptionRecipients(ArgumentImportance::Required);
 
     Crypto::StreamCipher cipher;
     if (hasContentInfo) {
-        ULOG(2, INFO) << "Add content info to the cipher.";
-        auto contentInfo = getArgumentIO()->getContentInfoInput(args)->transform()->readAll();
+        ULOG2(INFO)  << "Set cipher's content info.";
+        auto contentInfo = getArgumentIO()->getContentInfoSource(ArgumentImportance::Required)->readAll();
         cipher.setContentInfo(contentInfo);
     }
 
-    ULOG(2, INFO) << "Start decryption.";
-    recipient->decrypt(cipher, *input, *output, *keyPassword, *serviceClient);
-
-    ULOG(2, INFO) << "End decryption.";
+    ULOG2(INFO)  << "Start decryption.";
+    bool decrypted = false;
+    for (const auto& recipient : recipients) {
+        decrypted = recipient->decrypt(cipher, *input, *output);
+        if (decrypted){
+            break;
+        }
+    }
+    if (!decrypted) {
+        throw error::ArgumentRecipientDecryptionError();
+    }
+    ULOG2(INFO)  << "End decryption.";
 }

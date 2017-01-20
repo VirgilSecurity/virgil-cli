@@ -64,6 +64,12 @@ static constexpr const char* kInvalidRecipientMessage =
 static constexpr const char* kRecipientNotFoundMessage =
         "Recipient not found '%s:%s'.";
 
+static constexpr const char* kRecipientDecryptionErrorMessage =
+        "Data can not be decrypted with given password or private key.";
+
+static constexpr const char* kValueSourceErrorMessage =
+        "Argument value '%s' can not be recognized.";
+
 static std::string format_api_list(const char *list[]) {
     std::string result = "{";
     for (auto item = list; *item != nullptr; ++item) {
@@ -120,3 +126,9 @@ ArgumentInvalidRecipient::ArgumentInvalidRecipient(const std::string& recipientK
 
 ArgumentRecipientNotFound::ArgumentRecipientNotFound(const std::string& sourceType, const std::string& sourceValue) :
         ArgumentRuntimeError(tfm::format(kRecipientNotFoundMessage, sourceType, sourceValue)) {}
+
+ArgumentRecipientDecryptionError::ArgumentRecipientDecryptionError() :
+        ArgumentRuntimeError(tfm::format(kRecipientDecryptionErrorMessage)) {}
+
+ArgumentValueSourceError::ArgumentValueSourceError(const std::string& value) :
+        ArgumentRuntimeError(tfm::format(kValueSourceErrorMessage, value)) {}

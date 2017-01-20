@@ -37,12 +37,18 @@
 #ifndef VIRGIL_CLI_CONFIG_H
 #define VIRGIL_CLI_CONFIG_H
 
+#include <string>
+
 namespace cli {
 
 class Configurations {
 public:
-    static const char* applicationTokenDefault();
-    static void setupDefaults();
+    static std::string getApplicationToken();
+    static void init();
+    static void apply(int argc, const char* argv[]);
+private:
+    static void initConfigFile();
+    static void applyConfigFile(int argc, const char* argv[]);
 };
 
 }

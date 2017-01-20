@@ -37,11 +37,14 @@
 #include <cli/command/KeygenCommand.h>
 
 #include <cli/api/api.h>
-#include <cli/logger/Logger.h>
-#include <cli/model/SecureKey.h>
+#include <cli/io/Logger.h>
+#include <cli/argument/ArgumentParseOptions.h>
 
+using namespace cli;
 using cli::command::KeygenCommand;
 using cli::argument::ArgumentSource;
+using cli::argument::ArgumentParseOptions;
+using cli::argument::ArgumentImportance;
 
 using namespace virgil::crypto;
 
@@ -53,15 +56,19 @@ const char* KeygenCommand::doGetUsage() const {
     return usage::VIRGIL_KEYGEN;
 }
 
-ArgumentSource::UsageOptions KeygenCommand::doGetUsageOptions() const {
-    return ArgumentSource::UsageOptions().disableOptionsFirst();
+ArgumentParseOptions KeygenCommand::doGetArgumentParseOptions() const {
+    return ArgumentParseOptions().disableOptionsFirst();
 }
 
-void KeygenCommand::doProcess(std::shared_ptr<ArgumentSource> args) const {
-    auto keyAlgorithm = getArgumentIO()->getKeyAlgorithm(args)->transform();
-    auto keyPassword = getArgumentIO()->getKeyPassword(args)->transform()->key();
-    ULOG(1, INFO) << "Generate key pair.";
-    VirgilKeyPair keyPair = VirgilKeyPair::generate(keyAlgorithm, keyPassword);
-    ULOG(1, INFO) << "Write key pair to the output.";
-    getArgumentIO()->getOutput(args)->transform()->write(keyPair.privateKey());
+void KeygenCommand::doProcess() const {
+    auto keyAlgorithm = getArgumentIO()->getKeyAlgorithm(ArgumentImportance::Required);
+    auto keyPasswordImportance = getArgumentIO()->hasNoPassword() ?
+                                 ArgumentImportance::Optional : ArgumentImportance::Required;
+
+    auto keyPassword = getArgumentIO()->getKeyPassword(keyPasswordImportance);
+
+    ULOG1(INFO)  << "Generate key pair.";
+    VirgilKeyPair keyPair = VirgilKeyPair::generate(keyAlgorithm->algorithm(), keyPassword->password());
+    ULOG1(INFO)  << "Write key pair to the output.";
+    getArgumentIO()->getOutputSink(ArgumentImportance::Optional)->write(keyPair.privateKey());
 }

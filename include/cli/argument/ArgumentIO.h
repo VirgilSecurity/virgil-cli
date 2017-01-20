@@ -39,10 +39,16 @@
 
 #include <cli/crypto/Crypto.h>
 
+#include <cli/argument/Argument.h>
+#include <cli/argument/ArgumentImportance.h>
 #include <cli/argument/ArgumentSource.h>
-#include <cli/argument/ArgumentTransformer.h>
+#include <cli/argument/ArgumentValueSource.h>
 
-#include <virgil/sdk/client/Client.h>
+#include <cli/model/Password.h>
+#include <cli/model/KeyAlgorithm.h>
+#include <cli/model/EncryptionRecipient.h>
+#include <cli/model/DecryptionRecipient.h>
+#include <cli/model/ServiceConfig.h>
 
 #include <memory>
 #include <string>
@@ -51,34 +57,59 @@ namespace cli { namespace argument {
 
 class ArgumentIO {
 public:
-    using SourceType = std::shared_ptr<ArgumentSource>;
-public:
+    ArgumentIO(
+            std::unique_ptr<ArgumentSource> argumentSource, std::unique_ptr<ArgumentValueSource> argumentValueSource);
+
+    ~ArgumentIO() noexcept;
+
+    void configureUsage(const char* usage, const ArgumentParseOptions& parseOptions);
+
     // Check
-    bool hasContentInfo(const SourceType& argumentSource);
+    bool hasContentInfo() const;
 
-    // Readers
-    ArgumentTransformerPtr<Crypto::KeyAlgorithm> getKeyAlgorithm(const SourceType& argumentSource) const;
+    bool hasNoPassword() const;
 
-    ArgumentTransformerPtr<Crypto::FileDataSource> getInput(const SourceType& argumentSource) const;
+    // Get
+    std::vector<std::unique_ptr<model::EncryptionRecipient>>
+    getEncryptionRecipients(ArgumentImportance argumentImportance) const;
 
-    ArgumentTransformerPtr<Crypto::FileDataSink> getOutput(const SourceType& argumentSource) const;
+    std::vector<std::unique_ptr<model::DecryptionRecipient>>
+    getDecryptionRecipients(ArgumentImportance argumentImportance) const;
 
-    ArgumentTransformerPtr<model::SecureKey> getKeyPassword(const SourceType& argumentSource) const;
+    std::unique_ptr<model::FileDataSource> getInputSource(ArgumentImportance argumentImportance) const;
 
-    ArgumentTransformerPtr<model::SecureKey> getKeyPasswordOptional(const SourceType& argumentSource) const;
+    std::unique_ptr<model::FileDataSink> getOutputSink(ArgumentImportance argumentImportance) const;
 
-    ArgumentTransformerPtr<command::Command> getCommand(const SourceType& argumentSource) const;
+    std::unique_ptr<model::FileDataSource> getContentInfoSource(ArgumentImportance argumentImportance) const;
 
-    ArgumentTransformerPtr<model::Recipient> getRecipient(const SourceType& argumentSource) const;
+    std::unique_ptr<model::FileDataSink> getContentInfoSink(ArgumentImportance argumentImportance) const;
 
-    ArgumentTransformerPtr<virgil::sdk::client::Client> getClient(const SourceType& argumentSource) const;
+    std::unique_ptr<model::KeyAlgorithm> getKeyAlgorithm(ArgumentImportance argumentImportance) const;
 
-    ArgumentTransformerPtr<Crypto::FileDataSource> getContentInfoInput(const SourceType& argumentSource) const;
+    std::unique_ptr<model::Password> getKeyPassword(ArgumentImportance argumentImportance) const;
 
-    ArgumentTransformerPtr<Crypto::FileDataSink> getContentInfoOutput(const SourceType& argumentSource) const;
+    std::unique_ptr<model::ServiceConfig> getServiceConfig(ArgumentImportance argumentImportance) const;
 
-    ArgumentTransformerPtr<model::Recipient> getDecryptRecipient(const SourceType& argumentSource) const;
+    std::unique_ptr<Crypto::Text> getCommand(ArgumentImportance argumentImportance) const;
 
+    // Move construction / move assignment
+    ArgumentIO(ArgumentIO&& other);
+    ArgumentIO& operator=(ArgumentIO&& other);
+
+private:
+    std::vector<std::unique_ptr<model::EncryptionRecipient>>
+    createEncryptionRecipients(const std::string& tokenString) const;
+
+    std::vector<std::unique_ptr<model::DecryptionRecipient>>
+    createDecryptionRecipients(const std::string& tokenString) const;
+
+    std::unique_ptr<model::FileDataSource> getSource(const std::string& from) const;
+
+    std::unique_ptr<model::FileDataSink> getSink(const std::string& from) const;
+
+private:
+    std::unique_ptr<ArgumentSource> argumentSource_;
+    std::unique_ptr<ArgumentValueSource> argumentValueSource_;
 };
 
 }}

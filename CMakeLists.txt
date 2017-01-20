@@ -41,7 +41,6 @@
 #     - INSTALL_DOC_DIR_NAME  - name of the directory where documentation will be installed.
 #     - INSTALL_CFG_DIR_PATH  - path to the directory where configurations will be installed.
 #
-#     - CFG_DIR_PATH_LOCAL - TBD.
 #     - CLI_APPLICATION_TOKEN - unique value that provides an authenticated secure access to the Virgil services.
 #
 # Define variables:
@@ -84,7 +83,8 @@ endif (VIRGIL_CLI_VERSION_FEATURE)
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
 set (INSTALL_LIB_DIR_NAME lib CACHE STRING "Installation directory name for libraries")
 set (INSTALL_MAN_DIR_NAME "share/man" CACHE STRING "Installation directory name for man pages")
-set (INSTALL_CFG_DIR_PATH "share/virgil" CACHE PATH "Installation directory path for configuration files")
+set (INSTALL_CFG_DIR_NAME ".virgil/conf" CACHE PATH "Installation directory path for system configuration files")
+set (INSTALL_LOG_DIR_NAME ".virgil/log" CACHE PATH "Installation directory path for log fles")
 
 # Configure application token
 set (VIRGIL_ACCESS_TOKEN ${TOKEN} CACHE STRING
@@ -98,14 +98,6 @@ set (USE_BOOST_REGEX OFF CACHE BOOL "Use Boost::regex instead of std::regex")
 
 ## Link with shared library if defined
 set (BUILD_SHARED_LIBS OFF CACHE BOOL "Force to link with shared libraries")
-
-## Config files
-set (CFG_DIR_PATH_LOCAL OFF CACHE BOOL "TBD")
-if (CFG_DIR_PATH_LOCAL)
-    set (CFG_DIR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/conf")
-else ()
-    set (CFG_DIR_PATH "${INSTALL_CFG_DIR_PATH}")
-endif ()
 
 ## Virgil service
 if (CLI_APPLICATION_TOKEN)
@@ -128,6 +120,30 @@ if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     set (SYSTEM_ARCH x64)
 endif ()
 string (TOLOWER "${CMAKE_SYSTEM_NAME}" SYSTEM_NAME)
+
+if (WIN32 AND NOT CYGWIN)
+    set (OS_WIN32 1)
+else ()
+    set (OS_WIN32 0)
+endif ()
+
+if (UNIX)
+    set (OS_UNIX 1)
+else ()
+    set (OS_UNIX 0)
+endif ()
+
+if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    set (OS_DARWIN 1)
+else ()
+    set (OS_DARWIN 0)
+endif ()
+
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set (OS_LINUX 1)
+else ()
+    set (OS_LINUX 0)
+endif ()
 
 # Check compiler version
 if (MSVC)
@@ -176,7 +192,6 @@ virgil_depends (
     PACKAGE_NAME "virgil_sdk"
     CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/virgil_sdk"
 )
-
 virgil_find_package (virgil_sdk)
 virgil_find_package (virgil_crypto)
 virgil_find_package (nlohman_json)
@@ -188,15 +203,19 @@ virgil_depends (
     PACKAGE_NAME "easylogging"
     CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/easylogging"
 )
-
 virgil_find_package (easylogging)
 
 virgil_depends (
     PACKAGE_NAME "docopt"
     CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/docopt"
 )
-
 virgil_find_package (docopt)
+
+virgil_depends (
+    PACKAGE_NAME "yaml-cpp"
+    CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/ext/yaml-cpp"
+)
+virgil_find_package (yaml-cpp)
 
 # Show versions info
 virgil_log_info ("Found Virgil CLI, version " ${VIRGIL_CLI_VERSION})
@@ -205,6 +224,10 @@ virgil_log_info ("Found Virgil Crypto, version " ${virgil_crypto_VERSION})
 virgil_log_info ("Found Easy Logging++, version " ${easylogging_VERSION})
 virgil_log_info ("Found DocOpt, version " ${docopt_VERSION})
 virgil_log_info ("Found TinyFormat, version " ${tinyformat_VERSION})
+virgil_log_info ("Found YAML, version " ${yaml_cpp_VERSION})
+
+# Define variables that is used in the source files
+file (READ "${CMAKE_CURRENT_SOURCE_DIR}/conf/default-config.yaml" CLI_DEFAULT_CONFIG_CONTENT)
 
 # Grab source directory tree
 file (GLOB_RECURSE INC_SRC_LIST "src/*.cxx.in")
@@ -230,6 +253,7 @@ target_include_directories (virgil_cli PRIVATE
 target_link_libraries (virgil_cli
                        virgil::security::virgil_sdk
                        docopt_s
+                       yaml-cpp
                        ${CURL_LIBRARIES}
                        ${Boost_LIBRARIES}
                        Threads::Threads
@@ -252,7 +276,6 @@ install (TARGETS virgil_cli
 
 if (UNIX)
 #     install (DIRECTORY "doc/man/" DESTINATION "${INSTALL_MAN_DIR_NAME}")
-     install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/conf/" DESTINATION "${INSTALL_CFG_DIR_PATH}")
 elseif (WIN32 AND NOT CYGWIN)
     install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
     if (MSVC)

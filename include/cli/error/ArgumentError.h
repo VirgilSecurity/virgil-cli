@@ -113,6 +113,16 @@ public:
     ArgumentRecipientNotFound(const std::string& sourceType, const std::string& sourceValue);
 };
 
+class ArgumentRecipientDecryptionError : public ArgumentRuntimeError {
+public:
+    ArgumentRecipientDecryptionError();
+};
+
+class ArgumentValueSourceError : public ArgumentRuntimeError {
+public:
+    ArgumentValueSourceError(const std::string& value);
+};
+
 }}
 
 #endif //VIRGIL_CLI_ARGUMENT_ERROR_H

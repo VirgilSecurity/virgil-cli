@@ -39,10 +39,18 @@
 
 #include <cli/api/api.h>
 #include <cli/argument/ArgumentIO.h>
-#include <cli/logger/Logger.h>
+#include <cli/argument/ArgumentImportance.h>
+#include <cli/io/Logger.h>
+#include <cli/error/ArgumentError.h>
+
+#include <cli/command/KeygenCommand.h>
+#include <cli/command/KeyToPubCommand.h>
+#include <cli/command/EncryptCommand.h>
+#include <cli/command/DecryptCommand.h>
 
 using namespace cli;
 using namespace cli::command;
+using namespace cli::argument;
 
 const char* HubCommand::doGetName() const {
     return "virgil";
@@ -52,10 +60,21 @@ const char* HubCommand::doGetUsage() const {
     return usage::VIRGIL;
 }
 
-argument::ArgumentSource::UsageOptions HubCommand::doGetUsageOptions() const {
-    return argument::ArgumentSource::UsageOptions().enableOptionsFirst();
+argument::ArgumentParseOptions HubCommand::doGetArgumentParseOptions() const {
+    return argument::ArgumentParseOptions().enableOptionsFirst();
 }
 
-void HubCommand::doProcess(std::shared_ptr<argument::ArgumentSource> args) const {
-    getArgumentIO()->getCommand(args)->transform()->process(args);
+void HubCommand::doProcess() const {
+    auto commandName = getArgumentIO()->getCommand(ArgumentImportance::Required);
+    if (*commandName == arg::value::VIRGIL_COMMAND_KEYGEN) {
+        KeygenCommand(getArgumentIO()).process();
+    } else if (*commandName == arg::value::VIRGIL_COMMAND_KEY2PUB) {
+        KeyToPubCommand(getArgumentIO()).process();
+    } else if (*commandName == arg::value::VIRGIL_COMMAND_ENCRYPT) {
+        EncryptCommand(getArgumentIO()).process();
+    } else if (*commandName == arg::value::VIRGIL_COMMAND_DECRYPT) {
+        DecryptCommand(getArgumentIO()).process();
+    } else {
+        throw error::ArgumentValueError(arg::COMMAND, *commandName);
+    }
 }

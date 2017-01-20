@@ -38,53 +38,48 @@
 
 #include <cli/api/api.h>
 #include <cli/crypto/Crypto.h>
-#include <cli/logger/Logger.h>
-#include <cli/model/Recipient.h>
+#include <cli/io/Logger.h>
 
 using cli::Crypto;
 using cli::command::EncryptCommand;
+using cli::argument::ArgumentImportance;
 using cli::argument::ArgumentIO;
 using cli::argument::ArgumentSource;
-
-using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
-
-const char* EncryptCommand::getName() {
-    return arg::value::VIRGIL_COMMAND_ENCRYPT;
-}
+using cli::argument::ArgumentParseOptions;
 
 const char* EncryptCommand::doGetName() const {
-    return EncryptCommand::getName();
+    return arg::value::VIRGIL_COMMAND_ENCRYPT;
 }
 
 const char* EncryptCommand::doGetUsage() const {
     return usage::VIRGIL_ENCRYPT;
 }
 
-UsageOptions EncryptCommand::doGetUsageOptions() const {
-    return UsageOptions().disableOptionsFirst();
+ArgumentParseOptions EncryptCommand::doGetArgumentParseOptions() const {
+    return ArgumentParseOptions().disableOptionsFirst();
 }
 
 
-void EncryptCommand::doProcess(std::shared_ptr<ArgumentSource> args) const {
-    ULOG(2, INFO) << "Read parameters.";
-    auto input = getArgumentIO()->getInput(args)->transform();
-    auto output = getArgumentIO()->getOutput(args)->transform();
-    bool doWriteContentInfo = getArgumentIO()->hasContentInfo(args);
-    bool embedContentInfo = !doWriteContentInfo;
-    auto serviceClient = getArgumentIO()->getClient(args)->transform();
+void EncryptCommand::doProcess() const {
+    ULOG2(INFO) << "Read parameters.";
+    auto input = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
+    auto output = getArgumentIO()->getOutputSink(ArgumentImportance::Optional);
 
-    ULOG(2, INFO) << "Add recipients to the cipher.";
+    bool doWriteContentInfo = getArgumentIO()->hasContentInfo();
+    bool embedContentInfo = !doWriteContentInfo;
+
+    ULOG2(INFO) << "Add recipients to the cipher.";
     Crypto::StreamCipher cipher;
-    auto recipients = getArgumentIO()->getRecipient(args)->transform();
+    auto recipients = getArgumentIO()->getEncryptionRecipients(ArgumentImportance::Required);
     for (const auto& recipient : recipients) {
-        recipient->addSelfTo(cipher, *serviceClient);
+        recipient->addSelfTo(cipher);
     }
 
-    ULOG(2, INFO) << "Encrypt data.";
+    ULOG2(INFO) << "Encrypt data.";
     cipher.encrypt(*input, *output, embedContentInfo);
 
     if (doWriteContentInfo) {
-        ULOG(2, INFO) << "Write content info.";
-        getArgumentIO()->getContentInfoOutput(args)->transform()->write(cipher.getContentInfo());
+        ULOG2(INFO) << "Write content info.";
+        getArgumentIO()->getContentInfoSink(ArgumentImportance::Required)->write(cipher.getContentInfo());
     }
 }

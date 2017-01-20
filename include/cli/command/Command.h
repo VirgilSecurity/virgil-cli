@@ -37,26 +37,29 @@
 #ifndef VIRGIL_CLI_COMMAND_H
 #define VIRGIL_CLI_COMMAND_H
 
-#include <cli/argument/ArgumentSource.h>
 #include <cli/argument/ArgumentIO.h>
+
+#include <memory>
 
 namespace cli { namespace command {
 
 class Command {
 public:
+    explicit Command(std::shared_ptr<argument::ArgumentIO> argumentIO);
     const char *getName() const;
     const char *getUsage() const;
-    argument::ArgumentSource::UsageOptions getUsageOptions() const;
-    void process(std::shared_ptr<argument::ArgumentSource> args) const;
+    argument::ArgumentParseOptions getArgumentParseOptions() const;
+    void process();
     void showUsage(const char* errorMessage = nullptr) const;
     void showVersion() const;
-protected:
     std::shared_ptr<argument::ArgumentIO> getArgumentIO() const;
 private:
     virtual const char* doGetName() const = 0;
     virtual const char* doGetUsage() const = 0;
-    virtual argument::ArgumentSource::UsageOptions doGetUsageOptions() const = 0;
-    virtual void doProcess(std::shared_ptr<argument::ArgumentSource> args) const = 0;
+    virtual argument::ArgumentParseOptions doGetArgumentParseOptions() const = 0;
+    virtual void doProcess() const = 0;
+private:
+    std::shared_ptr<argument::ArgumentIO> argumentIO_;
 };
 
 }}

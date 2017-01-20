@@ -44,14 +44,14 @@ namespace cli { namespace cmd {
 
 class CommandPrompt {
 public:
-    void init(const std::string& usage) const;
+    void init(const std::string& usage);
     std::string readString(const char *argName) const;
     std::string readSecureString(const char *argName) const;
     std::vector<std::string> readStringList(const char* argName) const;
     bool readBool(const char *argName) const;
     int readInt(const char *argName) const;
 private:
-    virtual void doInit(const std::string& usage) const = 0;
+    virtual void doInit(const std::string& usage) = 0;
     virtual std::string doRead() const = 0;
     virtual std::string doSecureRead() const = 0;
     virtual void doWrite(const std::string& str) const = 0;

@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/crypto/FileDataSink.h>
+#include <cli/model/FileDataSink.h>
 
 #include <cli/crypto/Crypto.h>
 #include <cli/error/ArgumentError.h>
@@ -42,7 +42,7 @@
 #include <iostream>
 #include <fstream>
 
-using cli::crypto::FileDataSink;
+using cli::model::FileDataSink;
 
 FileDataSink::FileDataSink() : out_(ostream_ptr(&std::cout, [](std::ostream*) {})) {
 }

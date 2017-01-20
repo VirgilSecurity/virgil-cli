@@ -37,181 +37,80 @@
 #include <cli/argument/ArgumentSource.h>
 
 #include <cli/error/ArgumentError.h>
-#include <cli/logger/Logger.h>
+#include <cli/io/Logger.h>
 
 #undef IN
 #undef OUT
 
+using cli::argument::Argument;
 using cli::argument::ArgumentSource;
 using cli::argument::ArgumentRules;
 using cli::argument::ArgumentImportance;
-using UsageOptions = cli::argument::ArgumentSource::UsageOptions;
 
-UsageOptions& UsageOptions::enableOptionsFirst() {
-    optionsFirst_ = true;
-    return *this;
-}
-
-UsageOptions& UsageOptions::disableOptionsFirst() {
-    optionsFirst_ = false;
-    return *this;
-}
-
-bool UsageOptions::isOptionsFirst() const {
-    return optionsFirst_;
-}
-
-UsageOptions UsageOptions::clone() const {
-    return *this;
-}
 
 const char* ArgumentSource::getName() const {
     return doGetName();
 }
 
-
-namespace cli { namespace argument {
-
-template<typename T>
-class ArgumentSource::ArgumentReadHelper {
-public:
-    ArgumentReadHelper(const ArgumentSource* thisSource) : thisSource_(thisSource) {
-        DLOG(TRACE);
-        DLOG(INFO) << tfm::format("ArgumentReadHelper::ArgumentReadHelper(%s)", thisSource);
-        DCHECK(thisSource_ != nullptr);
-    }
-
-    T read(const char* argName, ArgumentImportance argImportance) const {
-        DLOG(INFO) << tfm::format("Search source for argument: '%s' (%s)", argName, std::to_string(argImportance));
-        for (auto source = thisSource_; source != nullptr; source = source->nextSource_.get()) {
-            DLOG(INFO) << "Ask source:" << source->getName();
-            if (source->doCanRead(argName, argImportance)) {
-                DLOG(INFO) << "Read from the source:" << source->getName();
-                DLOG(INFO) << tfm::format("Read argument: '%s' (%s)", argName, std::to_string(argImportance));
-                return doRead(source, argName);
-            }
-        }
-        switch (argImportance) {
-            case ArgumentImportance::Required:
-                LOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argName);
-                throw error::ArgumentNotFoundError(argName);
-            case ArgumentImportance::Optional:
-                LOG(WARNING) << tfm::format("Optional argument '%s' is not defined. Return empty value.", argName);
-                return T();
-        }
-    }
-
-private:
-    static T doRead(const ArgumentSource* source, const char* argName);
-
-private:
-    const ArgumentSource* thisSource_;
-};
-
-template<>
-std::string ArgumentSource::ArgumentReadHelper<std::string>::doRead(const ArgumentSource* source, const char* argName) {
-    return source->doReadString(argName);
-}
-
-template<>
-std::vector<std::string> ArgumentSource::ArgumentReadHelper<std::vector<std::string>>::doRead(
-        const ArgumentSource* source, const char* argName) {
-    return source->doReadStringList(argName);
-}
-
-template<>
-bool ArgumentSource::ArgumentReadHelper<bool>::doRead(const ArgumentSource* source, const char* argName) {
-    return source->doReadBool(argName);
-}
-
-template<>
-int ArgumentSource::ArgumentReadHelper<int>::doRead(const ArgumentSource* source, const char* argName) {
-    return source->doReadInt(argName);
-}
-
-}}
-
-ArgumentSource* ArgumentSource::setNextSource(std::shared_ptr<ArgumentSource> source) {
-    DLOG(INFO) << tfm::format("Setup next argument source %s, for argument source: %s.", source->getName(), getName());
+ArgumentSource* ArgumentSource::appendSource(std::unique_ptr<ArgumentSource> source) {
     if (nextSource_) {
-        return nextSource_->setNextSource(source);
+        return nextSource_->appendSource(std::move(source));
     } else {
-        nextSource_ = source;
+        LOG(INFO) << tfm::format("Append argument source: %s->%s.", getName(), source->getName());
+        nextSource_ = std::move(source);
         return this;
     }
 }
 
 void ArgumentSource::setupRules(std::shared_ptr<ArgumentRules> argumentRules) {
-    DLOG(INFO) << tfm::format("Setup rules for argument sources.");
+    LOG(INFO) << tfm::format("Setup rules for argument sources.");
     for (auto source = this; source != nullptr; source = source->nextSource_.get()) {
-        DLOG(INFO) << tfm::format("Setup rules for argument source: %s.", source->getName());
+        LOG(INFO) << tfm::format("Setup rules for argument source: %s.", source->getName());
         source->argumentRules_ = argumentRules;
     }
 }
 
-std::shared_ptr<const ArgumentRules> ArgumentSource::argumentRules() const {
+std::shared_ptr<ArgumentRules> ArgumentSource::getArgumentRules() {
+    DCHECK(argumentRules_ != nullptr);
     return argumentRules_;
 }
 
-void ArgumentSource::init(const std::string& usage, const ArgumentSource::UsageOptions& usageOptions) {
-    DLOG(INFO) << "Initialize argument sources.";
+std::shared_ptr<const ArgumentRules> ArgumentSource::getArgumentRules() const {
+    DCHECK(argumentRules_ != nullptr);
+    return argumentRules_;
+}
+
+void ArgumentSource::init(const std::string& usage, const ArgumentParseOptions& parseOptions) {
+    LOG(INFO) << "Initialize argument sources.";
     std::vector<ArgumentSource*> sources;
     for (auto source = this; source != nullptr; source = source->nextSource_.get()) {
-        DLOG(INFO) << tfm::format("Initialize argument source: %s.", source->getName());
-        source->doInit(usage, usageOptions);
+        LOG(INFO) << tfm::format("Initialize argument source: %s.", source->getName());
+        source->doInit(usage, parseOptions);
         sources.push_back(source);
     }
-    DLOG(INFO) << "Update rules for argument sources.";
+    LOG(INFO) << "Update rules for argument sources.";
     for (auto source = sources.rbegin(); source != sources.rend(); ++source) {
-        DLOG(INFO) << tfm::format("Update rules for argument source: %s.", (*source)->getName());
-        (*source)->doUpdateRules(argumentRules_);
+        LOG(INFO) << tfm::format("Update rules for argument source: %s.", (*source)->getName());
+        (*source)->doUpdateRules();
     }
 }
 
-std::string ArgumentSource::readString(const char* argName, ArgumentImportance argImportance) const {
-    DLOG(INFO) << tfm::format("Read argument '%s' : %s (%s)", argName, "string", std::to_string(argImportance));
-    DLOG(INFO) << tfm::format("ArgumentSource::this = %s", this);
-    DLOG(INFO) << tfm::format("Argument Rules: %s", this->argumentRules_.get());
-    return ArgumentReadHelper<std::string>(this).read(argName, argImportance);
-}
-
-std::vector<std::string> ArgumentSource::readStringList(const char* argName, ArgumentImportance argImportance) const {
-    DLOG(INFO) << tfm::format("Read argument '%s' : %s (%s)", argName, "string_list", std::to_string(argImportance));
-    return ArgumentReadHelper<std::vector<std::string>>(this).read(argName, argImportance);
-}
-
-bool ArgumentSource::readBool(const char* argName, ArgumentImportance argImportance) const {
-    DLOG(INFO) << tfm::format("Read argument '%s' : %s (%s)", argName, "boolean", std::to_string(argImportance));
-    return ArgumentReadHelper<bool>(this).read(argName, argImportance);
-}
-
-int ArgumentSource::readInt(const char* argName, ArgumentImportance argImportance) const {
-    DLOG(INFO) << tfm::format("Read argument '%s' : %s (%s)", argName, "integer", std::to_string(argImportance));
-    return ArgumentReadHelper<int>(this).read(argName, argImportance);
-}
-
-std::string std::to_string(ArgumentImportance argumentImportance) {
-    switch (argumentImportance) {
-        case ArgumentImportance::Optional:
-            return "optional";
+Argument ArgumentSource::read(const char* argName, ArgumentImportance argImportance) const {
+    LOG(INFO) << tfm::format("Search source for argument: '%s' (%s)", argName, std::to_string(argImportance));
+    for (auto source = this; source != nullptr; source = source->nextSource_.get()) {
+        LOG(INFO) << "Ask source:" << source->getName();
+        if (source->doCanRead(argName, argImportance)) {
+            LOG(INFO) << tfm::format("Read argument: '%s' (%s), from the source: %s.",
+                        argName, std::to_string(argImportance), source->getName());
+            return source->doRead(argName);
+        }
+    }
+    switch (argImportance) {
         case ArgumentImportance::Required:
-            return "required";
+            LOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argName);
+            throw error::ArgumentNotFoundError(argName);
+        case ArgumentImportance::Optional:
+            LOG(WARNING) << tfm::format("Optional argument '%s' is not defined. Return empty value.", argName);
+            return Argument();
     }
-}
-
-ArgumentSource::ArgumentSource(ArgumentSource&&) {
-    DLOG(INFO) << "Move constructor argument source base.";
-}
-
-ArgumentSource& ArgumentSource::operator=(ArgumentSource&&) {
-    DLOG(INFO) << "Move assignment argument source base.";
-    return *this;
-}
-
-ArgumentSource::ArgumentSource() {
-    DLOG(INFO) << "Create argument source base.";
-}
-
-ArgumentSource::~ArgumentSource() noexcept {
-    DLOG(INFO) << "Destroy argument source base.";
 }

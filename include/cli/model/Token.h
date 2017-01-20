@@ -55,4 +55,10 @@ private:
 
 }}
 
+namespace std {
+
+string to_string(const cli::model::Token& token);
+
+}
+
 #endif //VIRGIL_CLI_TOKEN_H

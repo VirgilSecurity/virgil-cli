@@ -44,11 +44,13 @@
 namespace cli { namespace command {
 
 class HubCommand : public Command {
+public:
+    using Command::Command;
 private:
     virtual const char* doGetName() const override;
     virtual const char* doGetUsage() const override;
-    virtual argument::ArgumentSource::UsageOptions doGetUsageOptions() const override;
-    virtual void doProcess(std::shared_ptr<argument::ArgumentSource> args) const override;
+    virtual argument::ArgumentParseOptions doGetArgumentParseOptions() const override;
+    virtual void doProcess() const override;
 
     std::unique_ptr<Command> findCommand(const std::string& commandName) const;
 };

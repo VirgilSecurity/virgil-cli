@@ -46,9 +46,10 @@
 #include <virgil/crypto/VirgilStreamCipher.h>
 #include <virgil/crypto/VirgilChunkCipher.h>
 #include <virgil/crypto/foundation/VirgilHash.h>
+#include <virgil/crypto/foundation/VirgilBase64.h>
 
-#include <cli/crypto/FileDataSource.h>
-#include <cli/crypto/FileDataSink.h>
+#include <cli/model/FileDataSource.h>
+#include <cli/model/FileDataSink.h>
 
 #include <memory>
 #include <string>
@@ -68,9 +69,9 @@ public:
     using CipherBase = virgil::crypto::VirgilCipherBase;
     using StreamCipher = virgil::crypto::VirgilStreamCipher;
     using ChunkCipher = virgil::crypto::VirgilChunkCipher;
+    using Hash = virgil::crypto::foundation::VirgilHash;
     using HashAlgorithm = virgil::crypto::foundation::VirgilHash::Algorithm;
-    using FileDataSource = cli::crypto::FileDataSource;
-    using FileDataSink = cli::crypto::FileDataSink;
+    using Base64 = virgil::crypto::foundation::VirgilBase64;
     // Smart pointers
     using DataSourceUnique = std::unique_ptr<DataSource>;
     using DataSinkUnique = std::unique_ptr<DataSink>;

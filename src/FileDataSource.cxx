@@ -34,7 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/crypto/FileDataSource.h>
+#include <cli/model/FileDataSource.h>
 
 #include <cli/crypto/Crypto.h>
 #include <cli/error/ArgumentError.h>
@@ -44,7 +44,8 @@
 #include <algorithm>
 #include <iterator>
 
-using cli::crypto::FileDataSource;
+using cli::Crypto;
+using cli::model::FileDataSource;
 
 FileDataSource::FileDataSource(size_t chunkSize) : in_(&std::cin, [](std::istream*){}), chunkSize_(chunkSize) {
 }
@@ -60,7 +61,7 @@ bool FileDataSource::hasData() {
     return in_->good();
 }
 
-virgil::crypto::VirgilByteArray FileDataSource::read() {
+Crypto::Bytes FileDataSource::read() {
     Crypto::Bytes result(chunkSize_);
     in_->read(reinterpret_cast<std::istream::char_type*>(result.data()), result.size());
     if (!*in_) {
@@ -70,8 +71,20 @@ virgil::crypto::VirgilByteArray FileDataSource::read() {
     return result;
 }
 
-virgil::crypto::VirgilByteArray FileDataSource::readAll() {
+Crypto::Bytes FileDataSource::readAll() {
     Crypto::Bytes result;
+    std::copy(std::istreambuf_iterator<char>(*in_), std::istreambuf_iterator<char>(), std::back_inserter(result));
+    return result;
+}
+
+Crypto::Text FileDataSource::readLine() {
+    Crypto::Text result;
+    std::getline(*in_, result);
+    return result;
+}
+
+Crypto::Text FileDataSource::readText() {
+    Crypto::Text result;
     std::copy(std::istreambuf_iterator<char>(*in_), std::istreambuf_iterator<char>(), std::back_inserter(result));
     return result;
 }

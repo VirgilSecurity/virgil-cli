@@ -42,7 +42,7 @@ using cli::cmd::CommandPrompt;
 
 static constexpr const char kPromtString[] = ">>> ";
 
-void CommandPrompt::init(const std::string& usage) const {
+void CommandPrompt::init(const std::string& usage) {
     doInit(usage);
 }
 

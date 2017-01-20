@@ -39,19 +39,25 @@
 #include <cli/error/ArgumentError.h>
 #include <cli/error/ExitError.h>
 #include <cli/api/Version.h>
-#include <cli/logger/Logger.h>
+#include <cli/io/Logger.h>
+#include <cli/argument/ArgumentParseOptions.h>
 
 #include <virgil/crypto/VirgilCryptoException.h>
 #include <virgil/sdk/VirgilSdkException.h>
 
 #include <iostream>
 
-using cli::command::Command;
-using cli::argument::ArgumentSource;
 using cli::argument::ArgumentIO;
+using cli::argument::ArgumentSource;
+using cli::command::Command;
+using cli::argument::ArgumentParseOptions;
 
 using virgil::crypto::VirgilCryptoException;
 using virgil::sdk::VirgilSdkException;
+
+Command::Command(std::shared_ptr<argument::ArgumentIO> argumentIO) : argumentIO_(argumentIO) {
+    DCHECK(argumentIO_);
+}
 
 const char* Command::getName() const {
     return doGetName();
@@ -62,52 +68,42 @@ const char* Command::getUsage() const {
 }
 
 std::shared_ptr<ArgumentIO> Command::getArgumentIO() const {
-    return std::make_shared<ArgumentIO>();
+    return argumentIO_;
 }
 
-ArgumentSource::UsageOptions Command::getUsageOptions() const {
-    return doGetUsageOptions();
+ArgumentParseOptions Command::getArgumentParseOptions() const {
+    return doGetArgumentParseOptions();
 }
 
-void Command::process(std::shared_ptr<ArgumentSource> args) const {
-    DLOG(INFO) << "Start process command:" << getName();
+void Command::process() {
+    LOG(INFO) << "Start process command:" << getName();
     try {
-        args->init(getUsage(), getUsageOptions());
-        doProcess(std::move(args));
+        getArgumentIO()->configureUsage(getUsage(), getArgumentParseOptions());
+        doProcess();
     } catch (const error::ArgumentShowUsageError&) {
         showUsage();
     } catch (const error::ArgumentShowVersionError&) {
         showVersion();
     } catch (const error::ArgumentRuntimeError& error) {
-        ULOG(0, FATAL) << error.what();
-        if (VLOG_IS_ON(1)) {
-            showUsage();
-        }
-        throw error::ExitFailure();
+        showUsage(error.what());
     } catch (const VirgilCryptoException& exception) {
         LOG(FATAL) << exception.what();
-        ULOG(0, FATAL) << exception.condition().message();
-        if (VLOG_IS_ON(1)) {
-            showUsage();
-        }
-        throw error::ExitFailure();
+        showUsage(exception.condition().message().c_str());
     } catch (const VirgilSdkException& exception) {
         LOG(FATAL) << exception.what();
-        ULOG(0, FATAL) << exception.condition().message() << "See log file for details.";
-        if (VLOG_IS_ON(1)) {
-            showUsage();
-        }
-        throw error::ExitFailure();
+        showUsage(exception.condition().message().c_str());
     }
 }
 
 void Command::showUsage(const char* errorMessage) const {
-    std::ostream* out = &std::cout;
     if (errorMessage != nullptr) {
-        out = &std::cerr;
-        *out << tfm::format("%s\n", errorMessage);
+        ULOG(FATAL) << errorMessage;
+        if (VLOG_IS_ON(1)) {
+            std::cout << getUsage();
+        }
+        throw error::ExitFailure();
     }
-    *out << tfm::format("%s\n", getUsage());
+    std::cout << getUsage();
 }
 
 void Command::showVersion() const {

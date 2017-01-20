@@ -36,14 +36,17 @@
 
 #include <cli/model/Token.h>
 
+#include <cli/api/api.h>
 #include <cli/error/ArgumentError.h>
-#include <cli/logger/Logger.h>
+#include <cli/io/Logger.h>
 
 #include <sstream>
 #include <vector>
 
 using cli::model::Token;
 using cli::error::ArgumentInvalidToken;
+
+static constexpr const char kTokenDelim = ':';
 
 static std::vector<std::string> split(const std::string& str, char delim) {
     std::stringstream ss;
@@ -57,8 +60,8 @@ static std::vector<std::string> split(const std::string& str, char delim) {
 }
 
 Token::Token(const std::string& tokenString) {
-    DLOG(INFO) << tfm::format("Create token from the string '%s'.", tokenString);
-    auto tokens = split(tokenString, ':');
+    LOG(INFO) << tfm::format("Create token from the string '%s'.", tokenString);
+    auto tokens = split(tokenString, kTokenDelim);
     switch (tokens.size()) {
         case 3:
             alias_ = tokens[2];
@@ -74,14 +77,14 @@ Token::Token(const std::string& tokenString) {
             break;
     }
 
-    DLOG(INFO) << "Start token validation.";
+    LOG(INFO) << "Start token validation.";
     if (key_.empty()) {
-        DLOG(ERROR) << "Token validation failed: token's key is not defined.";
+        LOG(ERROR) << "Token validation failed: token's key is not defined.";
         throw ArgumentInvalidToken(tokenString);
     }
 
     if (value_.empty()) {
-        DLOG(ERROR) << "Token validation failed: token's value is not defined.";
+        LOG(ERROR) << "Token validation failed: token's value is not defined.";
         throw ArgumentInvalidToken(tokenString);
     }
 }
@@ -96,4 +99,23 @@ std::string Token::value() const {
 
 std::string Token::alias() const {
     return alias_;
+}
+
+std::string std::to_string(const Token& token) {
+    std::ostringstream ss;
+    ss << token.key() << kTokenDelim;
+    if (token.key() == cli::arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_PASSWORD ||
+            token.key() == cli::arg::value::VIRGIL_DECRYPT_KEYPASS_PRIVKEY) {
+#if defined(NDEBUG) || defined(_NDEBUG)
+        ss << "<hidden>";
+#else
+        ss << token.value();
+#endif
+    } else {
+        ss << token.value();
+    }
+    if (!token.alias().empty()) {
+        ss << kTokenDelim << token.alias();
+    }
+    return ss.str();
 }

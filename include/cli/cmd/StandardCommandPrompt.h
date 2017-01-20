@@ -43,7 +43,7 @@ namespace cli { namespace cmd {
 
 class StandardCommandPrompt : public CommandPrompt {
 private:
-    virtual void doInit(const std::string& usage) const override;
+    virtual void doInit(const std::string& usage) override;
     virtual std::string doRead() const override;
     virtual std::string doSecureRead() const override;
     virtual void doWrite(const std::string& str) const override;
