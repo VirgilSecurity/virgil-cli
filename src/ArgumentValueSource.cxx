@@ -36,12 +36,10 @@
 
 #include <cli/argument/ArgumentValueSource.h>
 
-#include <cli/argument/ArgumentIO.h>
 #include <cli/error/ArgumentError.h>
 #include <cli/io/Logger.h>
 
 using cli::argument::ArgumentValueSource;
-using cli::argument::ArgumentIO;
 using cli::error::ArgumentValueSourceError;
 using cli::model::PublicKey;
 using cli::model::PrivateKey;
@@ -60,7 +58,6 @@ static constexpr const char kValueName_PublicKey[] = "public key";
 static constexpr const char kValueName_PrivateKey[] = "private key";
 static constexpr const char kValueName_Password[] = "password";
 static constexpr const char kValueName_VirgilCards[] = "Virgil Cards";
-static constexpr const char kValueName_ServiceConfig[] = "service configuration";
 
 namespace std {
     inline string to_string(const string& str) {
@@ -84,12 +81,12 @@ const char* ArgumentValueSource::getName() const {
     return doGetName();
 }
 
-void ArgumentValueSource::setArgumentIO(const ArgumentIO* argumentIO) {
-    argumentIO_ = argumentIO;
-}
-
-const ArgumentIO* ArgumentValueSource::getArgumentIO() const {
-    return argumentIO_;
+void ArgumentValueSource::init(const ArgumentSource& argumentSource) {
+    LOG(INFO) << "Initialize argument value sources.";
+    for (auto source = this; source != nullptr; source = source->nextSource_.get()) {
+        LOG(INFO) << tfm::format("Initialize argument value source: %s.", source->getName());
+        source->doInit(argumentSource);
+    }
 }
 
 ArgumentValueSource* ArgumentValueSource::appendSource(std::shared_ptr<ArgumentValueSource> source) {
@@ -125,11 +122,6 @@ std::unique_ptr<Password> ArgumentValueSource::readPassword(const std::string& v
 std::unique_ptr<std::vector<Card>> ArgumentValueSource::readCards(const Token& token) const {
     LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFromSource, kValueName_VirgilCards, getName());
     return inner::not_null(doReadCards(token), token);
-}
-
-std::unique_ptr<ServiceConfig> ArgumentValueSource::readServiceConfig(const std::string& value) const {
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFromSource, kValueName_ServiceConfig, getName());
-    return inner::not_null(doReadServiceConfig(value), value);
 }
 
 std::unique_ptr<KeyAlgorithm> ArgumentValueSource::doReadKeyAlgorithm(const std::string& value) const {
@@ -175,14 +167,5 @@ ArgumentValueSource::doReadCards(const Token& token) const {
         return nextSource_->readCards(token);
     }
     LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, kValueName_VirgilCards);
-    return nullptr;
-}
-
-std::unique_ptr<ServiceConfig> ArgumentValueSource::doReadServiceConfig(const std::string& value) const {
-    if (nextSource_) {
-        LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFailed, kValueName_ServiceConfig, getName());
-        return nextSource_->readServiceConfig(value);
-    }
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, kValueName_ServiceConfig);
     return nullptr;
 }

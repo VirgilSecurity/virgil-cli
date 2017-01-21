@@ -37,6 +37,8 @@
 #ifndef VIRGIL_CLI_ARGUMENT_VALUE_SOURCE_H
 #define VIRGIL_CLI_ARGUMENT_VALUE_SOURCE_H
 
+#include <cli/argument/ArgumentSource.h>
+
 #include <cli/model/Card.h>
 #include <cli/model/PublicKey.h>
 #include <cli/model/PrivateKey.h>
@@ -51,11 +53,11 @@
 
 namespace cli { namespace argument {
 
-class ArgumentIO;
-
 class ArgumentValueSource {
 public:
     const char* getName() const;
+
+    void init(const ArgumentSource& argumentSource);
 
     ArgumentValueSource* appendSource(std::shared_ptr<ArgumentValueSource> source);
 
@@ -69,13 +71,9 @@ public:
 
     std::unique_ptr<std::vector<model::Card>> readCards(const model::Token& token) const;
 
-    std::unique_ptr<model::ServiceConfig> readServiceConfig(const std::string& value) const;
+protected:
+    virtual void doInit(const ArgumentSource& argumentSource) = 0;
 
-protected:
-    friend class ArgumentIO;
-    void setArgumentIO(const ArgumentIO* argumentIO);
-    const ArgumentIO* getArgumentIO() const;
-protected:
     virtual const char* doGetName() const = 0;
 
     virtual std::unique_ptr<model::KeyAlgorithm> doReadKeyAlgorithm(const std::string& value) const;
@@ -88,10 +86,7 @@ protected:
 
     virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const model::Token& token) const;
 
-    virtual std::unique_ptr<model::ServiceConfig> doReadServiceConfig(const std::string& value) const;
-
 private:
-    const ArgumentIO* argumentIO_;
     std::shared_ptr<ArgumentValueSource> nextSource_;
 };
 

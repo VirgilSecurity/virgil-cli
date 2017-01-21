@@ -60,8 +60,6 @@ public:
     ArgumentIO(
             std::unique_ptr<ArgumentSource> argumentSource, std::unique_ptr<ArgumentValueSource> argumentValueSource);
 
-    ~ArgumentIO() noexcept;
-
     void configureUsage(const char* usage, const ArgumentParseOptions& parseOptions);
 
     // Check
@@ -88,13 +86,7 @@ public:
 
     std::unique_ptr<model::Password> getKeyPassword(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<model::ServiceConfig> getServiceConfig(ArgumentImportance argumentImportance) const;
-
     std::unique_ptr<Crypto::Text> getCommand(ArgumentImportance argumentImportance) const;
-
-    // Move construction / move assignment
-    ArgumentIO(ArgumentIO&& other);
-    ArgumentIO& operator=(ArgumentIO&& other);
 
 private:
     std::vector<std::unique_ptr<model::EncryptionRecipient>>

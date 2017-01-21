@@ -36,22 +36,24 @@
 
 #include <cli/argument/ArgumentValueVirgilSource.h>
 
-#include <cli/argument/ArgumentIO.h>
 #include <cli/argument/ArgumentImportance.h>
-
 #include <cli/memory.h>
 #include <cli/io/Logger.h>
+#include <cli/api/api.h>
+#include <cli/api/Configurations.h>
 
 #include <virgil/sdk/VirgilSdkException.h>
 #include <virgil/sdk/client/Client.h>
+#include <virgil/sdk/client/interfaces/ClientInterface.h>
 #include <virgil/sdk/client/models/ClientCommon.h>
 #include <virgil/sdk/client/models/SearchCardsCriteria.h>
 
 #include <algorithm>
 #include <iterator>
 
+using cli::Configurations;
+using cli::argument::ArgumentSource;
 using cli::argument::ArgumentValueVirgilSource;
-using cli::argument::ArgumentIO;
 using cli::argument::ArgumentImportance;
 using cli::model::KeyAlgorithm;
 using cli::model::PublicKey;
@@ -62,20 +64,46 @@ using cli::model::Token;
 
 using virgil::sdk::VirgilSdkException;
 using virgil::sdk::client::Client;
+using virgil::sdk::client::interfaces::ClientInterface;
 using virgil::sdk::client::models::SearchCardsCriteria;
 using virgil::sdk::client::models::CardScope;
+
+ArgumentValueVirgilSource::ArgumentValueVirgilSource(ArgumentValueVirgilSource&&) = default;
+ArgumentValueVirgilSource& ArgumentValueVirgilSource::operator=(ArgumentValueVirgilSource&&) = default;
+ArgumentValueVirgilSource::~ArgumentValueVirgilSource() noexcept = default;
+
+namespace cli { namespace argument {
+
+struct ArgumentValueVirgilSource::Impl {
+    std::unique_ptr<ClientInterface> client;
+};
+
+}}
+
+ArgumentValueVirgilSource::ArgumentValueVirgilSource()
+        : impl_(std::make_unique<ArgumentValueVirgilSource::Impl>()){
+}
 
 const char* ArgumentValueVirgilSource::doGetName() const {
     return "ArgumentValueVirgilSource";
 }
 
-std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const Token& token) const {
-    Client client(std::move(*getArgumentIO()->getServiceConfig(ArgumentImportance::Required)));
+void ArgumentValueVirgilSource::doInit(const ArgumentSource& argumentSource) {
+    auto accessToken = argumentSource.read(opt::APPLICATION_TOKEN, ArgumentImportance::Optional);
+    if (accessToken.isString()) {
+        impl_->client = std::make_unique<Client>(accessToken.asString());
+    } else {
+        impl_->client = std::make_unique<Client>(Configurations::getApplicationToken());
+    }
+}
 
-    auto globalCardsFuture = client.searchCards(
+std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const Token& token) const {
+    CHECK(impl_->client != nullptr);
+
+    auto globalCardsFuture = impl_->client->searchCards(
             SearchCardsCriteria::createCriteria(CardScope::global, token.key(), { token.value() }));
 
-    auto applicationCardsFuture = client.searchCards(
+    auto applicationCardsFuture = impl_->client->searchCards(
             SearchCardsCriteria::createCriteria(CardScope::application, token.key(), { token.value() }));
 
     try {

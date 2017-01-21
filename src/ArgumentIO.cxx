@@ -81,28 +81,11 @@ ArgumentIO::ArgumentIO(
         : argumentSource_(std::move(argumentSource)), argumentValueSource_(std::move(argumentValueSource)) {
     DCHECK(argumentSource_);
     DCHECK(argumentValueSource_);
-    argumentValueSource_->setArgumentIO(this);
-}
-
-ArgumentIO::ArgumentIO(ArgumentIO&& other)
-        : argumentSource_(std::move(other.argumentSource_)),
-        argumentValueSource_(std::move(other.argumentValueSource_)) {
-    argumentValueSource_->setArgumentIO(this);
-}
-
-ArgumentIO& ArgumentIO::operator=(ArgumentIO&& other) {
-    argumentSource_ = std::move(other.argumentSource_);
-    argumentValueSource_ = std::move(other.argumentValueSource_);
-    argumentValueSource_->setArgumentIO(this);
-    return *this;
-}
-
-ArgumentIO::~ArgumentIO() noexcept {
-    argumentValueSource_->setArgumentIO(nullptr);
 }
 
 void ArgumentIO::configureUsage(const char* usage, const ArgumentParseOptions& parseOptions) {
     argumentSource_->init(usage, parseOptions);
+    argumentValueSource_->init(*argumentSource_);
 }
 
 bool ArgumentIO::hasContentInfo() const {
@@ -179,11 +162,6 @@ std::unique_ptr<Password> ArgumentIO::getKeyPassword(ArgumentImportance argument
     return argumentValueSource_->readPassword(as_optional_string(argumentValue));
 }
 
-std::unique_ptr<ServiceConfig> ArgumentIO::getServiceConfig(ArgumentImportance argumentImportance) const {
-    auto argumentValue = argumentSource_->read(opt::APPLICATION_TOKEN, argumentImportance);
-    return argumentValueSource_->readServiceConfig(as_optional_string(argumentValue));
-}
-
 std::unique_ptr<Crypto::Text> ArgumentIO::getCommand(ArgumentImportance argumentImportance) const {
     return std::make_unique<Crypto::Text>(argumentSource_->read(arg::COMMAND, argumentImportance).asString());
 }
@@ -211,7 +189,7 @@ std::unique_ptr<FileDataSink> ArgumentIO::getSink(const std::string& from) const
 std::vector<std::unique_ptr<EncryptionRecipient>>
 ArgumentIO::createEncryptionRecipients(const std::string& tokenString) const {
     Token token(tokenString);
-    ULOG1(INFO) << tfm::format("Read recipients from the token: '%s'.", std::to_string(token));
+    ULOG1(INFO) << tfm::format("Read recipient(s) from the token: '%s'.", std::to_string(token));
 
     auto recipientType = token.key();
     std::vector<std::unique_ptr<EncryptionRecipient>> result;
@@ -240,7 +218,7 @@ ArgumentIO::createEncryptionRecipients(const std::string& tokenString) const {
 std::vector<std::unique_ptr<DecryptionRecipient>>
 ArgumentIO::createDecryptionRecipients(const std::string& tokenString) const {
     Token token(tokenString);
-    ULOG1(INFO) << tfm::format("Read recipients from the token: '%s'.", std::to_string(token));
+    ULOG1(INFO) << tfm::format("Read recipient(s) from the token: '%s'.", std::to_string(token));
     auto recipientType = token.key();
     std::vector<std::unique_ptr<DecryptionRecipient>> result;
     if (recipientType == arg::value::VIRGIL_DECRYPT_KEYPASS_PASSWORD) {

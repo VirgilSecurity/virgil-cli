@@ -65,6 +65,10 @@ const char* ArgumentValueFileSource::doGetName() const {
     return "ArgumentValueFileSource";
 }
 
+void ArgumentValueFileSource::doInit(const ArgumentSource& argumentSource) {
+    (void) argumentSource;
+}
+
 std::unique_ptr<Password> ArgumentValueFileSource::doReadPassword(const std::string& value) const {
     if (!el::base::utils::File::pathExists(value.c_str(), true)) {
         return ArgumentValueSource::doReadPassword(value);
@@ -100,22 +104,4 @@ std::unique_ptr<std::vector<Card>> ArgumentValueFileSource::doReadCards(const To
     auto result = std::make_unique<std::vector<Card>>();
     result->push_back(Card::importFromString(source.readText()));
     return result;
-}
-
-std::unique_ptr<ServiceConfig> ArgumentValueFileSource::doReadServiceConfig(const std::string& value) const {
-    if (!el::base::utils::File::pathExists(value.c_str(), true)) {
-        return ArgumentValueSource::doReadServiceConfig(value);
-    }
-    FileDataSource source(value);
-
-    auto applicationToken = source.readLine();
-    auto crypto = std::make_shared<ServiceCrypto>();
-
-    auto validator = std::make_unique<ServiceCardValidator>(crypto);
-    // TODO: Add verifier to the validator
-
-    auto serviceConfig = std::make_unique<ServiceConfig>(ServiceConfig::createConfig(applicationToken));
-    serviceConfig->cardValidator(std::move(validator));
-
-    return serviceConfig;
 }

@@ -45,6 +45,8 @@ class ArgumentValueParserSource : public ArgumentValueSource {
 protected:
     virtual const char* doGetName() const override;
 
+    virtual void doInit(const ArgumentSource& argumentSource) override;
+
     virtual std::unique_ptr<model::KeyAlgorithm> doReadKeyAlgorithm(const std::string& value) const override;
 
     virtual std::unique_ptr<model::Password> doReadPassword(const std::string& value) const override;

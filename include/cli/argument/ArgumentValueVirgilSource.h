@@ -39,16 +39,23 @@
 
 #include <cli/argument/ArgumentValueSource.h>
 
-#include <virgil/sdk/client/interfaces/ClientInterface.h>
+#include <memory>
 
 namespace cli { namespace argument {
 
 class ArgumentValueVirgilSource : public ArgumentValueSource {
+public:
+    ArgumentValueVirgilSource();
+    ArgumentValueVirgilSource(ArgumentValueVirgilSource&&);
+    ArgumentValueVirgilSource& operator=(ArgumentValueVirgilSource&&);
+    ~ArgumentValueVirgilSource() noexcept;
 protected:
     virtual const char* doGetName() const override;
-
-    virtual std::unique_ptr<std::vector<model::Card>>
-    doReadCards(const model::Token& token) const override;
+    virtual void doInit(const ArgumentSource& argumentSource) override;
+    virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const model::Token& token) const override;
+private:
+    class Impl;
+    std::unique_ptr<Impl> impl_;
 };
 
 }}

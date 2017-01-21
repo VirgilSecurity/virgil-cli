@@ -40,6 +40,7 @@
 #include <cli/crypto/Crypto.h>
 
 using cli::Crypto;
+using cli::argument::ArgumentSource;
 using cli::argument::ArgumentValueParserSource;
 using cli::model::KeyAlgorithm;
 using cli::model::PublicKey;
@@ -49,6 +50,10 @@ using cli::model::Card;
 
 const char* ArgumentValueParserSource::doGetName() const {
     return "ArgumentValueParserSource";
+}
+
+void ArgumentValueParserSource::doInit(const ArgumentSource& argumentSource) {
+    (void)argumentSource;
 }
 
 std::unique_ptr<KeyAlgorithm> ArgumentValueParserSource::doReadKeyAlgorithm(const std::string& value) const {
