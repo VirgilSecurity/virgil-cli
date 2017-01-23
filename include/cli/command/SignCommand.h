@@ -34,30 +34,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_VALUE_FILE_SOURCE_H
-#define VIRGIL_CLI_ARGUMENT_VALUE_FILE_SOURCE_H
+#ifndef VIRGIL_CLI_SIGN_COMMAND_H
+#define VIRGIL_CLI_SIGN_COMMAND_H
 
-#include <cli/argument/ArgumentValueSource.h>
+#include <cli/command/Command.h>
 
-namespace cli { namespace argument {
+namespace cli { namespace command {
 
-class ArgumentValueFileSource : public ArgumentValueSource {
-protected:
+class SignCommand : public Command {
+public:
+    using Command::Command;
+private:
     virtual const char* doGetName() const override;
-
-    virtual void doInit(const ArgumentSource& argumentSource) override;
-
-    virtual std::unique_ptr<model::Password> doReadPassword(const std::string& value) const override;
-
-    virtual std::unique_ptr<model::PublicKey> doReadPublicKey(const model::Token& token) const override;
-
-    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const std::string& value) const override;
-
-    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const model::Token& token) const override;
-
-    virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const model::Token& token) const override;
+    virtual const char* doGetUsage() const override;
+    virtual argument::ArgumentParseOptions doGetArgumentParseOptions() const override;
+    virtual void doProcess() const override;
 };
 
 }}
 
-#endif //VIRGIL_CLI_ARGUMENT_VALUE_FILE_SOURCE_H
+#endif //VIRGIL_CLI_SIGN_COMMAND_H

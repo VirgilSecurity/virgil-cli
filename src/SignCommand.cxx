@@ -34,30 +34,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_VALUE_FILE_SOURCE_H
-#define VIRGIL_CLI_ARGUMENT_VALUE_FILE_SOURCE_H
+#include <cli/command/SignCommand.h>
 
-#include <cli/argument/ArgumentValueSource.h>
+#include <cli/api/api.h>
+#include <cli/crypto/Crypto.h>
 
-namespace cli { namespace argument {
+#include <cli/io/Logger.h>
+#include <cli/memory.h>
 
-class ArgumentValueFileSource : public ArgumentValueSource {
-protected:
-    virtual const char* doGetName() const override;
+using cli::Crypto;
+using cli::command::SignCommand;
+using cli::argument::ArgumentIO;
+using cli::argument::ArgumentImportance;
+using cli::argument::ArgumentSource;
+using cli::argument::ArgumentParseOptions;
 
-    virtual void doInit(const ArgumentSource& argumentSource) override;
+const char* SignCommand::doGetName() const {
+    return arg::value::VIRGIL_COMMAND_SIGN;
+}
 
-    virtual std::unique_ptr<model::Password> doReadPassword(const std::string& value) const override;
+const char* SignCommand::doGetUsage() const {
+    return usage::VIRGIL_SIGN;
+}
 
-    virtual std::unique_ptr<model::PublicKey> doReadPublicKey(const model::Token& token) const override;
+ArgumentParseOptions SignCommand::doGetArgumentParseOptions() const {
+    return ArgumentParseOptions().disableOptionsFirst();
+}
 
-    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const std::string& value) const override;
+void SignCommand::doProcess() const {
 
-    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const model::Token& token) const override;
+    ULOG1(INFO) << "Prepare input.";
+    auto data = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
 
-    virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const model::Token& token) const override;
-};
+    ULOG1(INFO) << "Read private key.";
+    auto privateKey = getArgumentIO()->getPrivateKey(ArgumentImportance::Required);
+    auto privateKeyPassword = std::make_unique<model::Password>();
+    if (privateKey->isEncrypted()) {
+        ULOG1(INFO) << "Read private key password.";
+        privateKeyPassword = getArgumentIO()->getKeyPassword(ArgumentImportance::Required);
+    }
 
-}}
+    ULOG1(INFO) << "Sign input.";
+    Crypto::StreamSigner signer;
+    auto signature = signer.sign(*data, privateKey->key(), privateKeyPassword->password());
 
-#endif //VIRGIL_CLI_ARGUMENT_VALUE_FILE_SOURCE_H
+    ULOG1(INFO) << "Write signature to the output.";
+    getArgumentIO()->getOutputSink(ArgumentImportance::Optional)->write(signature);
+}

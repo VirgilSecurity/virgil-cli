@@ -49,6 +49,7 @@
 #include <cli/model/EncryptionRecipient.h>
 #include <cli/model/DecryptionRecipient.h>
 #include <cli/model/ServiceConfig.h>
+#include <cli/model/PrivateKey.h>
 
 #include <memory>
 #include <string>
@@ -85,6 +86,8 @@ public:
     std::unique_ptr<model::KeyAlgorithm> getKeyAlgorithm(ArgumentImportance argumentImportance) const;
 
     std::unique_ptr<model::Password> getKeyPassword(ArgumentImportance argumentImportance) const;
+
+    std::unique_ptr<model::PrivateKey> getPrivateKey(ArgumentImportance argumentImportance) const;
 
     std::unique_ptr<Crypto::Text> getCommand(ArgumentImportance argumentImportance) const;
 

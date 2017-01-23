@@ -47,6 +47,7 @@
 #include <cli/command/KeyToPubCommand.h>
 #include <cli/command/EncryptCommand.h>
 #include <cli/command/DecryptCommand.h>
+#include <cli/command/SignCommand.h>
 
 using namespace cli;
 using namespace cli::command;
@@ -74,6 +75,8 @@ void HubCommand::doProcess() const {
         EncryptCommand(getArgumentIO()).process();
     } else if (*commandName == arg::value::VIRGIL_COMMAND_DECRYPT) {
         DecryptCommand(getArgumentIO()).process();
+    } else if (*commandName == arg::value::VIRGIL_COMMAND_SIGN) {
+        SignCommand(getArgumentIO()).process();
     } else {
         throw error::ArgumentValueError(arg::COMMAND, *commandName);
     }

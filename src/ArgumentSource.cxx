@@ -123,7 +123,7 @@ Argument ArgumentSource::read(const char* argName, ArgumentImportance argImporta
     }
     switch (argImportance) {
         case ArgumentImportance::Required:
-            ULOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argName);
+            LOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argName);
             throw error::ArgumentNotFoundError(argName);
         case ArgumentImportance::Optional:
             LOG(WARNING) << tfm::format("Optional argument '%s' is not defined. Return empty value.", argName);
@@ -147,7 +147,7 @@ Argument ArgumentSource::read(const std::vector<const char*>& argNames, Argument
     }
     switch (argImportance) {
         case ArgumentImportance::Required:
-            ULOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argNamesString);
+            LOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argNamesString);
             throw error::ArgumentNotFoundError(argNamesString);
         case ArgumentImportance::Optional:
             LOG(WARNING) << tfm::format("Optional argument '%s' is not defined. Return empty value.", argNamesString);

@@ -45,6 +45,7 @@
 #include <virgil/crypto/VirgilCipherBase.h>
 #include <virgil/crypto/VirgilStreamCipher.h>
 #include <virgil/crypto/VirgilChunkCipher.h>
+#include <virgil/crypto/VirgilStreamSigner.h>
 #include <virgil/crypto/foundation/VirgilHash.h>
 #include <virgil/crypto/foundation/VirgilBase64.h>
 
@@ -67,6 +68,7 @@ public:
     using DataSource = virgil::crypto::VirgilDataSource;
     using DataSink = virgil::crypto::VirgilDataSink;
     using CipherBase = virgil::crypto::VirgilCipherBase;
+    using StreamSigner = virgil::crypto::VirgilStreamSigner;
     using StreamCipher = virgil::crypto::VirgilStreamCipher;
     using ChunkCipher = virgil::crypto::VirgilChunkCipher;
     using Hash = virgil::crypto::foundation::VirgilHash;

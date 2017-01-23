@@ -67,6 +67,8 @@ public:
 
     std::unique_ptr<model::PublicKey> readPublicKey(const model::Token& token) const;
 
+    std::unique_ptr<model::PrivateKey> readPrivateKey(const std::string& value) const;
+
     std::unique_ptr<model::PrivateKey> readPrivateKey(const model::Token& token) const;
 
     std::unique_ptr<std::vector<model::Card>> readCards(const model::Token& token) const;
@@ -81,6 +83,8 @@ protected:
     virtual std::unique_ptr<model::Password> doReadPassword(const std::string& value) const;
 
     virtual std::unique_ptr<model::PublicKey> doReadPublicKey(const model::Token& token) const;
+
+    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const std::string& value) const;
 
     virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const model::Token& token) const;
 

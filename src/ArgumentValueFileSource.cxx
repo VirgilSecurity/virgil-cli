@@ -86,6 +86,14 @@ std::unique_ptr<PublicKey> ArgumentValueFileSource::doReadPublicKey(const Token&
     return std::make_unique<PublicKey>(source.readAll(), token.alias());
 }
 
+std::unique_ptr<PrivateKey> ArgumentValueFileSource::doReadPrivateKey(const std::string& value) const {
+    if (!el::base::utils::File::pathExists(value.c_str(), true)) {
+        return ArgumentValueSource::doReadPrivateKey(value);
+    }
+    FileDataSource source(value);
+    return std::make_unique<PrivateKey>(source.readAll(), Crypto::Bytes());
+}
+
 std::unique_ptr<PrivateKey> ArgumentValueFileSource::doReadPrivateKey(const Token& token) const {
     auto filePath = token.value();
     if (!el::base::utils::File::pathExists(filePath.c_str(), true)) {

@@ -109,6 +109,11 @@ std::unique_ptr<PublicKey> ArgumentValueSource::readPublicKey(const Token& token
     return inner::not_null(doReadPublicKey(token), token);
 }
 
+std::unique_ptr<PrivateKey> ArgumentValueSource::readPrivateKey(const std::string& value) const {
+    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFromSource, kValueName_PrivateKey, getName());
+    return inner::not_null(doReadPrivateKey(value), value);
+}
+
 std::unique_ptr<PrivateKey> ArgumentValueSource::readPrivateKey(const Token& token) const {
     LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFromSource, kValueName_PrivateKey, getName());
     return inner::not_null(doReadPrivateKey(token), token);
@@ -146,6 +151,15 @@ std::unique_ptr<PrivateKey> ArgumentValueSource::doReadPrivateKey(const Token& t
     if (nextSource_) {
         LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFailed, kValueName_PrivateKey, getName());
         return nextSource_->readPrivateKey(token);
+    }
+    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, kValueName_PrivateKey);
+    return nullptr;
+}
+
+std::unique_ptr<PrivateKey> ArgumentValueSource::doReadPrivateKey(const std::string& value) const {
+    if (nextSource_) {
+        LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFailed, kValueName_PrivateKey, getName());
+        return nextSource_->readPrivateKey(value);
     }
     LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, kValueName_PrivateKey);
     return nullptr;

@@ -157,6 +157,11 @@ std::unique_ptr<KeyAlgorithm> ArgumentIO::getKeyAlgorithm(ArgumentImportance arg
     return argumentValueSource_->readKeyAlgorithm(as_optional_string(argumentValue));
 }
 
+std::unique_ptr<PrivateKey> ArgumentIO::getPrivateKey(ArgumentImportance argumentImportance) const {
+    auto argumentValue = argumentSource_->read(opt::PRIVATE_KEY, argumentImportance);
+    return argumentValueSource_->readPrivateKey(as_optional_string(argumentValue));
+}
+
 std::unique_ptr<Password> ArgumentIO::getKeyPassword(ArgumentImportance argumentImportance) const {
     auto argumentValue = argumentSource_->read(opt::PRIVATE_KEY_PASSWORD, argumentImportance);
     return argumentValueSource_->readPassword(as_optional_string(argumentValue));
