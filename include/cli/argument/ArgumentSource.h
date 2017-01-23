@@ -58,6 +58,8 @@ public:
 
     Argument read(const char* argName, ArgumentImportance argImportance) const;
 
+    Argument read(const std::vector<const char *>& argNames, ArgumentImportance argImportance) const;
+
     ArgumentSource* appendSource(std::unique_ptr<ArgumentSource> source);
 
     void setupRules(std::shared_ptr<ArgumentRules> argumentRules);

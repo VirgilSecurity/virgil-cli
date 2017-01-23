@@ -48,6 +48,22 @@ using cli::argument::ArgumentRules;
 using cli::argument::ArgumentImportance;
 
 
+namespace cli { namespace argument { namespace internal {
+
+static std::string to_string(const std::vector<const char *> argNames) {
+    std::string result = "{";
+    for (auto item : argNames) {
+        if (item != argNames[0]) {
+            result += ", ";
+        }
+        result += *item;
+    }
+    result += "}";
+    return result;
+}
+
+}}}
+
 const char* ArgumentSource::getName() const {
     return doGetName();
 }
@@ -101,16 +117,40 @@ Argument ArgumentSource::read(const char* argName, ArgumentImportance argImporta
         LOG(INFO) << "Ask source:" << source->getName();
         if (source->doCanRead(argName, argImportance)) {
             LOG(INFO) << tfm::format("Read argument: '%s' (%s), from the source: %s.",
-                        argName, std::to_string(argImportance), source->getName());
+                    argName, std::to_string(argImportance), source->getName());
             return source->doRead(argName);
         }
     }
     switch (argImportance) {
         case ArgumentImportance::Required:
-            LOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argName);
+            ULOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argName);
             throw error::ArgumentNotFoundError(argName);
         case ArgumentImportance::Optional:
             LOG(WARNING) << tfm::format("Optional argument '%s' is not defined. Return empty value.", argName);
+            return Argument();
+    }
+}
+
+Argument ArgumentSource::read(const std::vector<const char*>& argNames, ArgumentImportance argImportance) const {
+    const auto argNamesString = internal::to_string(argNames);
+    LOG(INFO) << tfm::format("Search source for arguments: '%s' (%s)", argNamesString, std::to_string(argImportance));
+    for (auto argName : argNames) {
+        LOG(INFO) << tfm::format("Try find source for argument: '%s'", argName);
+        for (auto source = this; source != nullptr; source = source->nextSource_.get()) {
+            LOG(INFO) << "Ask source:" << source->getName();
+            if (source->doCanRead(argName, ArgumentImportance::Optional)) { // Optional, because of "OR" read
+                LOG(INFO) << tfm::format("Read argument: '%s' (%s), from the source: %s.",
+                        argName, std::to_string(argImportance), source->getName());
+                return source->doRead(argName);
+            }
+        }
+    }
+    switch (argImportance) {
+        case ArgumentImportance::Required:
+            ULOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argNamesString);
+            throw error::ArgumentNotFoundError(argNamesString);
+        case ArgumentImportance::Optional:
+            LOG(WARNING) << tfm::format("Optional argument '%s' is not defined. Return empty value.", argNamesString);
             return Argument();
     }
 }
