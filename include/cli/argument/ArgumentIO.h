@@ -89,6 +89,10 @@ public:
 
     std::unique_ptr<model::PrivateKey> getPrivateKey(ArgumentImportance argumentImportance) const;
 
+    std::unique_ptr<model::PublicKey> getSendersKey(ArgumentImportance argumentImportance) const;
+
+    std::unique_ptr<model::FileDataSource> getSignatureSource(ArgumentImportance argumentImportance) const;
+
     std::unique_ptr<Crypto::Text> getCommand(ArgumentImportance argumentImportance) const;
 
 private:

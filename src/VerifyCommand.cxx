@@ -34,53 +34,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/command/HubCommand.h>
-
-
-#include <cli/api/api.h>
-#include <cli/argument/ArgumentIO.h>
-#include <cli/argument/ArgumentImportance.h>
-#include <cli/io/Logger.h>
-#include <cli/error/ArgumentError.h>
-
-#include <cli/command/KeygenCommand.h>
-#include <cli/command/KeyToPubCommand.h>
-#include <cli/command/EncryptCommand.h>
-#include <cli/command/DecryptCommand.h>
-#include <cli/command/SignCommand.h>
 #include <cli/command/VerifyCommand.h>
 
-using namespace cli;
-using namespace cli::command;
-using namespace cli::argument;
+#include <cli/api/api.h>
+#include <cli/crypto/Crypto.h>
+#include <cli/error/ExitError.h>
 
-const char* HubCommand::doGetName() const {
-    return "virgil";
+#include <cli/io/Logger.h>
+#include <cli/memory.h>
+
+using cli::Crypto;
+using cli::command::VerifyCommand;
+using cli::argument::ArgumentIO;
+using cli::argument::ArgumentImportance;
+using cli::argument::ArgumentSource;
+using cli::argument::ArgumentParseOptions;
+using cli::error::ExitFailure;
+using cli::error::ExitSuccess;
+
+const char* VerifyCommand::doGetName() const {
+    return arg::value::VIRGIL_COMMAND_VERIFY;
 }
 
-const char* HubCommand::doGetUsage() const {
-    return usage::VIRGIL;
+const char* VerifyCommand::doGetUsage() const {
+    return usage::VIRGIL_VERIFY;
 }
 
-argument::ArgumentParseOptions HubCommand::doGetArgumentParseOptions() const {
-    return argument::ArgumentParseOptions().enableOptionsFirst();
+ArgumentParseOptions VerifyCommand::doGetArgumentParseOptions() const {
+    return ArgumentParseOptions().disableOptionsFirst();
 }
 
-void HubCommand::doProcess() const {
-    auto commandName = getArgumentIO()->getCommand(ArgumentImportance::Required);
-    if (*commandName == arg::value::VIRGIL_COMMAND_KEYGEN) {
-        KeygenCommand(getArgumentIO()).process();
-    } else if (*commandName == arg::value::VIRGIL_COMMAND_KEY2PUB) {
-        KeyToPubCommand(getArgumentIO()).process();
-    } else if (*commandName == arg::value::VIRGIL_COMMAND_ENCRYPT) {
-        EncryptCommand(getArgumentIO()).process();
-    } else if (*commandName == arg::value::VIRGIL_COMMAND_DECRYPT) {
-        DecryptCommand(getArgumentIO()).process();
-    } else if (*commandName == arg::value::VIRGIL_COMMAND_SIGN) {
-        SignCommand(getArgumentIO()).process();
-    } else if (*commandName == arg::value::VIRGIL_COMMAND_VERIFY) {
-        VerifyCommand(getArgumentIO()).process();
+void VerifyCommand::doProcess() const {
+
+    auto data = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
+    auto signature = getArgumentIO()->getSignatureSource(ArgumentImportance::Required);
+    auto publicKey = getArgumentIO()->getSendersKey(ArgumentImportance::Required);
+
+    ULOG1(INFO) << "Verify input.";
+    Crypto::StreamSigner signer;
+    bool verified = signer.verify(*data, signature->readAll(), publicKey->key());
+
+    if (verified) {
+        ULOG(INFO) << "Data verification: success.";
+        throw ExitSuccess();
     } else {
-        throw error::ArgumentValueError(arg::COMMAND, *commandName);
+        ULOG(INFO) << "Data verification: failed.";
+        throw ExitFailure();
     }
 }

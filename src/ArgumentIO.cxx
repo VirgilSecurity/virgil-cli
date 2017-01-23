@@ -167,6 +167,18 @@ std::unique_ptr<Password> ArgumentIO::getKeyPassword(ArgumentImportance argument
     return argumentValueSource_->readPassword(as_optional_string(argumentValue));
 }
 
+std::unique_ptr<model::PublicKey> ArgumentIO::getSendersKey(ArgumentImportance argumentImportance) const {
+    ULOG1(INFO) << tfm::format("Read Sender's public key.");
+    auto argumentValue = argumentSource_->read(arg::RECIPIENT_ID, argumentImportance);
+    return argumentValueSource_->readPublicKey(Token(as_optional_string(argumentValue)));
+}
+
+std::unique_ptr<model::FileDataSource> ArgumentIO::getSignatureSource(ArgumentImportance argumentImportance) const {
+    ULOG1(INFO) << tfm::format("Read signature.");
+    auto argumentValue = argumentSource_->read(opt::SIGN, argumentImportance);
+    return getSource(as_optional_string(argumentValue));
+}
+
 std::unique_ptr<Crypto::Text> ArgumentIO::getCommand(ArgumentImportance argumentImportance) const {
     return std::make_unique<Crypto::Text>(argumentSource_->read(arg::COMMAND, argumentImportance).asString());
 }

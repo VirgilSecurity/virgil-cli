@@ -510,20 +510,16 @@ static constexpr char VIRGIL_VERIFY[] = R"(
 virgil-verify - verifies data and signature with a provided user's Public Key or Virgil Card
 
 USAGE:
-    virgil verify [options] [-D <config>...] [-i <file>] [-o <file>] [--return-status] -S <file> <recipient-id>
+    virgil verify [options] [-D <config>...] [-i <file>] -S <file> <recipient-id>
 
 OPTIONS:
     -i <file>, --in=<file>  
         Data to be signed. If omitted, stdin is used.
-    -o <file>, --out=<file>  
-        Digest sign. If omitted, stdout is used.
-    --return-status  
-        Returns status, ignores --out .
     -S <file>, --sign=<file>  
         Digest sign.
     <recipient-id>
-        Contains information about the recipient. Format: [vcard | pubkey]:<value>
-            * if vcard, then <value> - the recipient's Virgil Card id or the Virgil Card itself (the file stored locally);
+        Contains information about the sender. Format: [vcard | pubkey]:<value>
+            * if vcard, then <value> - the sender's Virgil Card id or the Virgil Card itself (the file stored locally);
             * if pubkey, then <value> - Public Key of the recipient.
     -h, --help  
         Displays usage information and exits.
@@ -565,7 +561,6 @@ static constexpr char OUT[] = "--out";
 static constexpr char PRIVATE_KEY[] = "--private-key";
 static constexpr char PRIVATE_KEY_PASSWORD[] = "--private-key-password";
 static constexpr char QUIET[] = "--quiet";
-static constexpr char RETURN_STATUS[] = "--return-status";
 static constexpr char REVOCATION_REASON[] = "--revocation-reason";
 static constexpr char SALT[] = "--salt";
 static constexpr char SCOPE[] = "--scope";
