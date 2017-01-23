@@ -84,6 +84,10 @@ std::string Configurations::getApplicationToken() {
     return "@CLI_APPLICATION_TOKEN@";
 }
 
+std::string Configurations::getDefaultConfigFilePath() {
+    return Path::joinPath(Path::cfgPath(), kConfigurationFile_Name);
+}
+
 void Configurations::apply(int argc, const char* argv[]) {
     applyConfigFile(argc, argv);
 }
@@ -104,7 +108,7 @@ void Configurations::applyConfigFile(int argc, const char* argv[]) {
     el::Loggers::getLogger(kLoggerId_User)->configure(userLoggerConfig);
     el::Helpers::installLogDispatchCallback<cli::io::UserLogDispatchCallback>(kLoggerCallbackId_User);
     // Default loggers
-    auto configFilePath = Path::joinPath(Path::cfgPath(), kConfigurationFile_Name);
+    auto configFilePath = getDefaultConfigFilePath();
     if (el::base::utils::File::pathExists(configFilePath.c_str())) {
         YAML::Node config = YAML::LoadFile(configFilePath);
         auto loggerConfigContent = config["logger"];

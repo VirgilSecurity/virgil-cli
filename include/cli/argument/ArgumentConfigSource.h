@@ -34,24 +34,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_CONFIG_H
-#define VIRGIL_CLI_CONFIG_H
+#ifndef VIRGIL_CLI_ARGUMENT_CONFIG_SOURCE_H
+#define VIRGIL_CLI_ARGUMENT_CONFIG_SOURCE_H
 
-#include <string>
+#include <cli/argument/ArgumentSource.h>
 
-namespace cli {
+namespace cli { namespace argument {
 
-class Configurations {
+class ArgumentConfigSource : public ArgumentSource {
 public:
-    static std::string getApplicationToken();
-    static void init();
-    static void apply(int argc, const char* argv[]);
-    static std::string getDefaultConfigFilePath();
+    ArgumentConfigSource(const std::string& configFilePath);
+public:
+    virtual const char* doGetName() const override;
+    virtual void doInit(const std::string& usage, const ArgumentParseOptions& usageOptions) override;
+    virtual void doUpdateRules() override;
+    virtual bool doCanRead(const char* argName, ArgumentImportance argumentImportance) const override;
+    virtual Argument doRead(const char* argName) const override;
+public:
+    ArgumentConfigSource(ArgumentConfigSource&&);
+    ArgumentConfigSource& operator=(ArgumentConfigSource&&);
+    virtual ~ArgumentConfigSource() noexcept;
 private:
-    static void initConfigFile();
-    static void applyConfigFile(int argc, const char* argv[]);
+    class Impl;
+    std::unique_ptr<Impl> impl_;
 };
 
-}
+}}
 
-#endif //VIRGIL_CLI_CONFIG_H
+#endif //VIRGIL_CLI_ARGUMENT_CONFIG_SOURCE_H

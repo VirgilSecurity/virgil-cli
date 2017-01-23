@@ -43,6 +43,7 @@
 #include <cli/argument/ArgumentSource.h>
 #include <cli/argument/ArgumentCommandLineSource.h>
 #include <cli/argument/ArgumentUserSource.h>
+#include <cli/argument/ArgumentConfigSource.h>
 #include <cli/argument/ArgumentValueSource.h>
 #include <cli/argument/ArgumentValueSource.h>
 #include <cli/argument/ArgumentValueFileSource.h>
@@ -64,6 +65,7 @@ using cli::argument::ArgumentSource;
 using cli::argument::ArgumentValueSource;
 using cli::argument::ArgumentCommandLineSource;
 using cli::argument::ArgumentUserSource;
+using cli::argument::ArgumentConfigSource;
 using cli::argument::ArgumentValueSource;
 using cli::argument::ArgumentValueFileSource;
 using cli::argument::ArgumentValueVirgilSource;
@@ -108,7 +110,12 @@ std::unique_ptr<ArgumentSource> createArgumentSource(int argc, const char* argv[
     auto interactiveArgumentSource = std::make_unique<ArgumentUserSource>(
             std::make_unique<StandardCommandPrompt>());
 
-    commandArgumentSource->appendSource(std::move(interactiveArgumentSource));
+    auto argumentConfigSource = std::make_unique<ArgumentConfigSource>(
+            cli::Configurations::getDefaultConfigFilePath());
+
+    commandArgumentSource->
+            appendSource(std::move(interactiveArgumentSource))->
+            appendSource(std::move(argumentConfigSource));
 
     commandArgumentSource->setupRules(std::make_unique<ArgumentRules>());
 
