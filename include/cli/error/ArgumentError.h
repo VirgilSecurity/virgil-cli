@@ -123,6 +123,12 @@ public:
     ArgumentValueSourceError(const std::string& value);
 };
 
+class ArgumentInvalidKeyValue : public ArgumentRuntimeError {
+public:
+    ArgumentInvalidKeyValue(const char* token);
+    ArgumentInvalidKeyValue(const std::string& token);
+};
+
 }}
 
 #endif //VIRGIL_CLI_ARGUMENT_ERROR_H

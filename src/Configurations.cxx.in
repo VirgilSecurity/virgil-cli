@@ -80,10 +80,6 @@ void Configurations::initConfigFile() {
     }
 }
 
-std::string Configurations::getApplicationToken() {
-    return "@CLI_APPLICATION_TOKEN@";
-}
-
 std::string Configurations::getDefaultConfigFilePath() {
     return Path::joinPath(Path::cfgPath(), kConfigurationFile_Name);
 }

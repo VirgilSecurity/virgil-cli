@@ -34,23 +34,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_CONFIG_H
-#define VIRGIL_CLI_CONFIG_H
+#ifndef VIRGIL_CLI_KEY_VALUE_H
+#define VIRGIL_CLI_KEY_VALUE_H
 
 #include <string>
 
-namespace cli {
+namespace cli { namespace model {
 
-class Configurations {
+class KeyValue {
 public:
-    static void init();
-    static void apply(int argc, const char* argv[]);
-    static std::string getDefaultConfigFilePath();
+    explicit KeyValue(const std::string& keyValueString);
+    std::string key() const;
+    std::string value() const;
 private:
-    static void initConfigFile();
-    static void applyConfigFile(int argc, const char* argv[]);
+    std::string key_;
+    std::string value_;
 };
+
+}}
+
+namespace std {
+
+string to_string(const cli::model::KeyValue& keyValue);
 
 }
 
-#endif //VIRGIL_CLI_CONFIG_H
+#endif //VIRGIL_CLI_KEY_VALUE_H

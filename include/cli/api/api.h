@@ -64,8 +64,8 @@ COMMON OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 
@@ -103,7 +103,7 @@ static constexpr char VIRGIL_CARD_CREATE[] = R"(
 virgil-card-create - creates a Virgil Card entity
 
 USAGE:
-    virgil card-create [options] [-o <file>] -k <file> [-p <arg>] [-s <scope>] [-t <arg>] -d <identity> [--data <key-value>...] [--info <key-value>...]
+    virgil card-create [options] [-D <config>...] [-o <file>] -k <file> [-p <arg>] [-s <scope>] [-t <arg>] -d <identity> [--data <key-value>...] [--info <key-value>...]
 
 OPTIONS:
     -o <file>, --out=<file>  
@@ -141,8 +141,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -151,7 +151,7 @@ static constexpr char VIRGIL_CARD_DELETE[] = R"(
 virgil-card-delete - revokes a Virgil Card directly or by the Virgil Card id
 
 USAGE:
-    virgil card-delete [options] [-i <file>] -k <file> [-p <arg>] [-r <reason>]
+    virgil card-delete [options] [-D <config>...] [-i <file>] -k <file> [-p <arg>] [-r <reason>]
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -174,8 +174,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -184,7 +184,7 @@ static constexpr char VIRGIL_CARD_GET[] = R"(
 virgil-card-get - return the Virgil Card from the Virgil Keys Service by the Virgil Card id.
 
 USAGE:
-    virgil card-get [options] [-i <arg>] [-o <arg>]
+    virgil card-get [options] [-D <config>...] [-i <arg>] [-o <arg>]
 
 OPTIONS:
     -i <arg>, --in=<arg>  
@@ -203,8 +203,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -213,7 +213,7 @@ static constexpr char VIRGIL_CARD_SEARCH[] = R"(
 virgil-card-search - searches for a Virgil Card(s) by its identities (required), identity-type and scope.
 
 USAGE:
-    virgil card-search [options] [-o <arg>] -d <identity>... [-t <arg>] [-s <scope>]
+    virgil card-search [options] [-D <config>...] [-o <arg>] -d <identity>... [-t <arg>] [-s <scope>]
 
 OPTIONS:
     -o <file>, --out=<file>  
@@ -246,8 +246,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -256,7 +256,7 @@ static constexpr char VIRGIL_DECRYPT[] = R"(
 virgil-decrypt - decrypts the encrypted data
 
 USAGE:
-    virgil decrypt [options] [-i <file>] [-o <file>] [-c <file>] [-p <arg>] <keypass>...
+    virgil decrypt [options] [-D <config>...] [-i <file>] [-o <file>] [-c <file>] [-p <arg>] <keypass>...
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -283,8 +283,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -293,7 +293,7 @@ static constexpr char VIRGIL_ENCRYPT[] = R"(
 virgil-encrypt - encrypts any data for the specified recipient(s)
 
 USAGE:
-    virgil encrypt [options] [-i <file>] [-o <file>] [-c <file>] [--] <recipient-id>...
+    virgil encrypt [options] [-D <config>...] [-i <file>] [-o <file>] [-c <file>] [--] <recipient-id>...
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -320,8 +320,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -330,7 +330,7 @@ static constexpr char VIRGIL_EXHASH[] = R"(
 virgil-exhash - derives the obfuscated data from incoming parameters
 
 USAGE:
-    virgil exhash [options] [-i <file>] [-o <file>] -z <file> [-g <alg>] [-x <int>]
+    virgil exhash [options] [-D <config>...] [-i <file>] [-o <file>] -z <file> [-g <alg>] [-x <int>]
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -360,8 +360,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -370,7 +370,7 @@ static constexpr char VIRGIL_GLOSSARY[] = R"(
 virgil-glossary - shows the list of Virgil Services terms
 
 USAGE:
-    virgil glossary [options] [-o <file>]
+    virgil glossary [options] [-D <config>...] [-o <file>]
 
 OPTIONS:
     -o <file>, --out=<file>  
@@ -387,8 +387,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -397,7 +397,7 @@ static constexpr char VIRGIL_KEY2PUB[] = R"(
 virgil-key2pub - extracts the Public Key from the Private Key
 
 USAGE:
-    virgil key2pub [options] [-i <file>] [-o <file>] [-p <arg>]
+    virgil key2pub [options] [-D <config>...] [-i <file>] [-o <file>] [-p <arg>]
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -418,8 +418,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -428,7 +428,7 @@ static constexpr char VIRGIL_KEYGEN[] = R"(
 virgil-keygen - generate private key with given algorithm
 
 USAGE:
-    virgil keygen [options] [-o <file>] [-g <alg>] [-p <arg> | --no-password]
+    virgil keygen [options] [-D <config>...] [-o <file>] [-g <alg>] [-p <arg> | --no-password]
 
 OPTIONS:
     -o <file>, --out=<file>  
@@ -467,8 +467,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -477,7 +477,7 @@ static constexpr char VIRGIL_SIGN[] = R"(
 virgil-sign - signs data with a provided user's Private Key
 
 USAGE:
-    virgil sign [options] [-i <file>] [-o <file>] -k <file> [-p <arg>]
+    virgil sign [options] [-D <config>...] [-i <file>] [-o <file>] -k <file> [-p <arg>]
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -500,8 +500,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -510,7 +510,7 @@ static constexpr char VIRGIL_VERIFY[] = R"(
 virgil-verify - verifies data and signature with a provided user's Public Key or Virgil Card
 
 USAGE:
-    virgil verify [options] [-i <file>] [-o <file>] [--return-status] -S <file> <recipient-id>
+    virgil verify [options] [-D <config>...] [-i <file>] [-o <file>] [--return-status] -S <file> <recipient-id>
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -537,8 +537,8 @@ OPTIONS:
         Quiet mode: suppress normal output.
     -I, --interactive  
         Enables interactive mode.
-    --application-token=<application-token>  
-        Redefine application token.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -549,9 +549,9 @@ OPTIONS:
 namespace cli { namespace opt {
 
 static constexpr char ALGORITHM[] = "--algorithm";
-static constexpr char APPLICATION_TOKEN[] = "--application-token";
 static constexpr char CONTENT_INFO[] = "--content-info";
 static constexpr char DATA[] = "--data";
+static constexpr char D_SHORT[] = "-D";
 static constexpr char HELP[] = "--help";
 static constexpr char IDENTITY[] = "--identity";
 static constexpr char IDENTITY_TYPE[] = "--identity-type";
@@ -657,6 +657,12 @@ static const char* VIRGIL_COMMAND_VALUES[] = {
     VIRGIL_COMMAND_KEYGEN,
     VIRGIL_COMMAND_SIGN,
     VIRGIL_COMMAND_VERIFY,
+    nullptr
+};
+
+static constexpr char VIRGIL_CONFIG_APP_ACCESS_TOKEN[] = "APP_ACCESS_TOKEN";
+static const char* VIRGIL_CONFIG_VALUES[] = {
+    VIRGIL_CONFIG_APP_ACCESS_TOKEN,
     nullptr
 };
 

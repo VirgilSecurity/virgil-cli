@@ -41,6 +41,7 @@
 #include <cli/io/Logger.h>
 #include <cli/api/api.h>
 #include <cli/api/Configurations.h>
+#include <cli/error/ArgumentError.h>
 
 #include <virgil/sdk/VirgilSdkException.h>
 #include <virgil/sdk/client/Client.h>
@@ -61,6 +62,8 @@ using cli::model::PrivateKey;
 using cli::model::Password;
 using cli::model::Card;
 using cli::model::Token;
+using cli::model::Password;
+using cli::error::ArgumentFileNotFound;
 
 using virgil::sdk::VirgilSdkException;
 using virgil::sdk::client::Client;
@@ -75,7 +78,7 @@ ArgumentValueVirgilSource::~ArgumentValueVirgilSource() noexcept = default;
 namespace cli { namespace argument {
 
 struct ArgumentValueVirgilSource::Impl {
-    std::unique_ptr<ClientInterface> client;
+    std::string accessToken;
 };
 
 }}
@@ -89,27 +92,31 @@ const char* ArgumentValueVirgilSource::doGetName() const {
 }
 
 void ArgumentValueVirgilSource::doInit(const ArgumentSource& argumentSource) {
-    auto accessToken = argumentSource.read(opt::APPLICATION_TOKEN, ArgumentImportance::Optional);
-    if (accessToken.isString()) {
-        impl_->client = std::make_unique<Client>(accessToken.asString());
-    } else {
-        impl_->client = std::make_unique<Client>(Configurations::getApplicationToken());
+    auto argument = argumentSource.read(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN, ArgumentImportance::Optional);
+    if (argument.isString()) {
+        impl_->accessToken = argument.asString();
     }
 }
 
 std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const Token& token) const {
-    CHECK(impl_->client != nullptr);
+    if(impl_->accessToken.empty()) {
+        throw ArgumentFileNotFound(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN);
+    }
 
-    auto globalCardsFuture = impl_->client->searchCards(
+    auto client = std::make_unique<Client>(impl_->accessToken);
+
+    auto globalCardsFuture = client->searchCards(
             SearchCardsCriteria::createCriteria(CardScope::global, token.key(), { token.value() }));
 
-    auto applicationCardsFuture = impl_->client->searchCards(
+    auto applicationCardsFuture = client->searchCards(
             SearchCardsCriteria::createCriteria(CardScope::application, token.key(), { token.value() }));
 
     try {
-        ULOG(INFO) << "Loading Virgil Cards...";
+        ULOG1(INFO) << "Loading Virgil Cards...";
         auto&& globalCards = globalCardsFuture.get();
+        ULOG1(INFO) << tfm::format("Found %d Virgil Cards in the global scope.", globalCards.size());
         auto&& applicationCards = applicationCardsFuture.get();
+        ULOG1(INFO) << tfm::format("Found %d Virgil Cards in the application scope.", applicationCards.size());
 
         globalCards.insert(globalCards.end(),
                 std::make_move_iterator(applicationCards.begin()), std::make_move_iterator(applicationCards.end()));

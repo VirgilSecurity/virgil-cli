@@ -39,8 +39,9 @@
 #include <cli/memory.h>
 #include <cli/api/api.h>
 #include <cli/api/Version.h>
-#include <cli/error/ArgumentError.h>
 #include <cli/io/Logger.h>
+#include <cli/model/KeyValue.h>
+#include <cli/error/ArgumentError.h>
 
 #include <docopt/docopt.h>
 
@@ -49,6 +50,8 @@ using cli::argument::ArgumentSource;
 using cli::argument::ArgumentCommandLineSource;
 using cli::argument::ArgumentRules;
 using cli::argument::ArgumentImportance;
+
+using cli::model::KeyValue;
 
 ArgumentCommandLineSource::ArgumentCommandLineSource(ArgumentCommandLineSource&&) = default;
 
@@ -61,7 +64,40 @@ class ArgumentCommandLineSource::Impl {
 public:
     std::vector<std::string> cmdArgs;
     std::map<std::string, docopt::value> docoptArgs;
+    std::map<std::string, std::string> configArgs;
+
+    void updateArgs(std::map<std::string, docopt::value> args) {
+        this->docoptArgs = std::move(args);
+        for (auto const& arg : this->docoptArgs) {
+            DLOG(INFO) << tfm::format("Found argument '%s' with value '%s'.", arg.first, arg.second);
+        }
+        auto configOverloads = this->docoptArgs[opt::D_SHORT];
+        if (configOverloads.isStringList()) {
+            for (auto configKeyValue : configOverloads.asStringList()) {
+                KeyValue keyValue(configKeyValue);
+                this->configArgs[keyValue.key()] = keyValue.value();
+            }
+            this->docoptArgs.erase(opt::D_SHORT);
+        }
+    }
+
+    std::unique_ptr<docopt::value> findValue(const char* argName) {
+        { // First find in arguments
+            auto value = docoptArgs.find(argName);
+            if (value != docoptArgs.cend()) {
+                return std::make_unique<docopt::value>(value->second);
+            }
+        }
+        { // Second find in config overloads
+            auto value = configArgs.find(argName);
+            if (value != configArgs.cend()) {
+                return std::make_unique<docopt::value>(value->second);
+            }
+        }
+        return std::make_unique<docopt::value>();
+    }
 };
+
 }}
 
 static std::vector<std::string> args_to_str_list(const char* argv_start[], const char* argv_end[]) {
@@ -86,14 +122,14 @@ const char* ArgumentCommandLineSource::doGetName() const {
     return "ArgumentCommandLineSource";
 }
 
-bool ArgumentCommandLineSource::doCanRead(const char* argName, ArgumentImportance argumentImportance) const {
-    auto value = impl_->docoptArgs.find(argName);
-    return value != impl_->docoptArgs.cend() && static_cast<bool>(value->second);
+bool ArgumentCommandLineSource::doCanRead(const char* argName, ArgumentImportance) const {
+    auto value = impl_->findValue(argName);
+    return static_cast<bool>(*value);
 }
 
 void ArgumentCommandLineSource::doInit(const std::string& usage, const ArgumentParseOptions& usageOptions) {
     try {
-        impl_->docoptArgs = docopt::docopt_parse(usage, impl_->cmdArgs, true, true, usageOptions.isOptionsFirst());
+        impl_->updateArgs(docopt::docopt_parse(usage, impl_->cmdArgs, true, true, usageOptions.isOptionsFirst()));
     } catch (const docopt::DocoptArgumentError& error) {
         throw error::ArgumentParseError(error.what());
     } catch (const docopt::DocoptExitHelp&) {
@@ -113,5 +149,5 @@ void ArgumentCommandLineSource::doUpdateRules() {
 }
 
 Argument ArgumentCommandLineSource::doRead(const char* argName) const {
-    return impl_->docoptArgs[argName];
+    return *impl_->findValue(argName);
 }

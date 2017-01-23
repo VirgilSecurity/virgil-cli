@@ -56,7 +56,7 @@ static constexpr const char* kFileNotFoundMessage =
         "File '%s' is not found.";
 
 static constexpr const char* kInvalidTokenMessage =
-        "Invalid token format '%s', expected '<key>:<value>'.";
+        "Invalid token format '%s', expected '<key>:<value>[:<alias>]'.";
 
 static constexpr const char* kInvalidRecipientMessage =
         "Invalid recipient key '%s', expected on of '%s'.";
@@ -69,6 +69,9 @@ static constexpr const char* kRecipientDecryptionErrorMessage =
 
 static constexpr const char* kValueSourceErrorMessage =
         "Argument value '%s' can not be recognized.";
+
+static constexpr const char* kInvalidKeyValueMessage =
+        "Invalid key-value format '%s', expected '<key>=<value>'.";
 
 static std::string format_api_list(const char *list[]) {
     std::string result = "{";
@@ -132,3 +135,10 @@ ArgumentRecipientDecryptionError::ArgumentRecipientDecryptionError() :
 
 ArgumentValueSourceError::ArgumentValueSourceError(const std::string& value) :
         ArgumentRuntimeError(tfm::format(kValueSourceErrorMessage, value)) {}
+
+
+ArgumentInvalidKeyValue::ArgumentInvalidKeyValue(const char* token) :
+        ArgumentRuntimeError(tfm::format(kInvalidTokenMessage, token)) {}
+
+ArgumentInvalidKeyValue::ArgumentInvalidKeyValue(const std::string& token) :
+        ArgumentRuntimeError(tfm::format(kInvalidKeyValueMessage, token)) {}

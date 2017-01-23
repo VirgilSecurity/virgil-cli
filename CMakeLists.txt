@@ -41,7 +41,7 @@
 #     - INSTALL_DOC_DIR_NAME  - name of the directory where documentation will be installed.
 #     - INSTALL_CFG_DIR_PATH  - path to the directory where configurations will be installed.
 #
-#     - CLI_APPLICATION_TOKEN - unique value that provides an authenticated secure access to the Virgil services.
+#     - CLI_ACCESS_TOKEN      - unique value that provides an authenticated secure access to the Virgil services.
 #
 # Define variables:
 #     - VIRGIL_CLI_VERSION_MAJOR         - major version number.
@@ -49,8 +49,6 @@
 #     - VIRGIL_CLI_VERSION_PATCH         - patch number.
 #     - VIRGIL_CLI_VERSION_FEATURE       - version feature, i.e. alpha, beta, rc1, etc.
 #     - VIRGIL_CLI_VERSION               - full version.
-#
-#     - CFG_DIR_PATH - path to the directory where configurations is installed.
 
 cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 
@@ -100,11 +98,11 @@ set (USE_BOOST_REGEX OFF CACHE BOOL "Use Boost::regex instead of std::regex")
 set (BUILD_SHARED_LIBS OFF CACHE BOOL "Force to link with shared libraries")
 
 ## Virgil service
-if (CLI_APPLICATION_TOKEN)
-    set (CLI_APPLICATION_TOKEN "${CLI_APPLICATION_TOKEN}" CACHE STRING
+if (CLI_ACCESS_TOKEN)
+    set (CLI_ACCESS_TOKEN "${CLI_ACCESS_TOKEN}" CACHE STRING
          "Unique value that provides an authenticated secure access to the Virgil services" FORCE)
 else ()
-    virgil_log_error ("CLI_APPLICATION_TOKEN is not defined.")
+    virgil_log_error ("CLI_ACCESS_TOKEN is not defined.")
 endif ()
 
 # Define enviroment parameters
@@ -227,7 +225,12 @@ virgil_log_info ("Found TinyFormat, version " ${tinyformat_VERSION})
 virgil_log_info ("Found YAML, version " ${yaml_cpp_VERSION})
 
 # Define variables that is used in the source files
-file (READ "${CMAKE_CURRENT_SOURCE_DIR}/conf/default-config.yaml" CLI_DEFAULT_CONFIG_CONTENT)
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/conf/default-config.yaml"
+    "${CMAKE_CURRENT_BINARY_DIR}/conf/default-config.yaml"
+    @ONLY
+)
+file (READ "${CMAKE_CURRENT_BINARY_DIR}/conf/default-config.yaml" CLI_DEFAULT_CONFIG_CONTENT)
 
 # Grab source directory tree
 file (GLOB_RECURSE INC_SRC_LIST "src/*.cxx.in")
