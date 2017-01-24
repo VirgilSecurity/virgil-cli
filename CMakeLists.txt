@@ -262,6 +262,7 @@ target_link_libraries (virgil_cli
                        Threads::Threads
                        )
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
+target_compile_definitions(virgil_cli PRIVATE ELPP_NO_DEFAULT_LOG_FILE)
 
 # Install shared libraries
 if (BUILD_SHARED_LIBS)
