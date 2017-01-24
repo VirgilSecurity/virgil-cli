@@ -262,7 +262,13 @@ target_link_libraries (virgil_cli
                        Threads::Threads
                        )
 set_target_properties (virgil_cli PROPERTIES OUTPUT_NAME "virgil")
-target_compile_definitions(virgil_cli PRIVATE ELPP_NO_DEFAULT_LOG_FILE)
+target_compile_definitions(virgil_cli
+       PRIVATE ELPP_NO_DEFAULT_LOG_FILE
+       OS_UNIX=${OS_UNIX}
+       OS_WIN32=${OS_WIN32}
+       OS_LINUX=${OS_LINUX}
+       OS_DARWIN=${OS_DARWIN}
+)
 
 # Install shared libraries
 if (BUILD_SHARED_LIBS)

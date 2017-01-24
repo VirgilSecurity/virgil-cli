@@ -42,11 +42,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#define OS_UNIX @OS_UNIX@
-#define OS_WIN32 @OS_WIN32@
-#define OS_LINUX @OS_LINUX@
-#define OS_DARWIN @OS_DARWIN@
-
 #if OS_DARWIN
 #include <sys/param.h>
 #include <mach-o/dyld.h>
