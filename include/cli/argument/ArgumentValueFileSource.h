@@ -42,21 +42,23 @@
 namespace cli { namespace argument {
 
 class ArgumentValueFileSource : public ArgumentValueSource {
-protected:
+private:
     virtual const char* doGetName() const override;
 
     virtual void doInit(const ArgumentSource& argumentSource) override;
 
-    virtual std::unique_ptr<model::Password> doReadPassword(const std::string& value) const override;
+    virtual std::unique_ptr<model::Password> doReadPassword(const ArgumentValue& argumentValue) const override;
 
-    virtual std::unique_ptr<model::PublicKey> doReadPublicKey(const model::Token& token) const override;
+    virtual std::unique_ptr<model::PublicKey> doReadPublicKey(const ArgumentValue& argumentValue) const override;
 
-    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const std::string& value) const override;
+    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const ArgumentValue& argumentValue) const override;
 
-    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const model::Token& token) const override;
-
-    virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const model::Token& token) const override;
-};
+    virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const ArgumentValue& argumentValue) const override;
+private:
+    static bool existsLocally(const ArgumentValue& argumentValue);
+    static Crypto::Text readText(const ArgumentValue& argumentValue);
+    static Crypto::Bytes readBytes(const ArgumentValue& argumentValue);
+ };
 
 }}
 

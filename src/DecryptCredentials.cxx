@@ -34,20 +34,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ENCRYPTION_RECIPIENT_H
-#define VIRGIL_CLI_ENCRYPTION_RECIPIENT_H
+#include <cli/model/DecryptCredentials.h>
 
-#include <cli/crypto/Crypto.h>
+using cli::model::DecryptCredentials;
 
-namespace cli { namespace model {
-
-class EncryptionRecipient {
-public:
-    void addSelfTo(Crypto::CipherBase& cipher) const;
-private:
-    virtual void doAddSelfTo(Crypto::CipherBase& cipher) const = 0;
-};
-
-}}
-
-#endif //VIRGIL_CLI_ENCRYPTION_RECIPIENT_H
+bool DecryptCredentials::decrypt(
+        Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const {
+    return doDecrypt(cipher, source, sink);
+}

@@ -34,29 +34,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_KEY_VALUE_H
-#define VIRGIL_CLI_KEY_VALUE_H
+#ifndef VIRGIL_CLI_MODEL_HELPER_H
+#define VIRGIL_CLI_MODEL_HELPER_H
 
-#include <string>
+namespace cli
 
-namespace cli { namespace model {
-
-class KeyValue {
-public:
-    explicit KeyValue(const std::string& keyValueString);
-    std::string key() const;
-    std::string value() const;
-private:
-    std::string key_;
-    std::string value_;
-};
-
-}}
-
-namespace std {
-
-string to_string(const cli::model::KeyValue& keyValue);
-
-}
-
-#endif //VIRGIL_CLI_KEY_VALUE_H
+#endif //VIRGIL_CLI_MODEL_HELPER_H

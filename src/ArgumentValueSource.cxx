@@ -47,35 +47,39 @@ using cli::model::Password;
 using cli::model::KeyAlgorithm;
 using cli::model::Card;
 using cli::model::ServiceConfig;
-using cli::model::Token;
+using cli::model::EncryptCredentials;
+using cli::model::DecryptCredentials;
 
-static constexpr const char kLogFormatMessage_ReadValueFromSource[] = "Try read %s from the source: %s.";
-static constexpr const char kLogFormatMessage_ReadValueFailed[] = "Failed to read %s from the source: %s, try next.";
-static constexpr const char kLogFormatMessage_ReadValueTotalFail[] = "Failed to read %s from any source.";
+static constexpr const char kLogFormatMessage_ReadValueSuccess[] = "Read '%s' succeed from the source: '%s'.";
+static constexpr const char kLogFormatMessage_ReadValueFailed[] = "Read '%s' failed from the source: '%s'.";
+static constexpr const char kLogFormatMessage_ReadValueTotalFail[] = "Read '%s' failed from any source.";
 
-static constexpr const char kValueName_KeyAlgorithm[] = "key algorithm";
-static constexpr const char kValueName_PublicKey[] = "public key";
-static constexpr const char kValueName_PrivateKey[] = "private key";
-static constexpr const char kValueName_Password[] = "password";
+static constexpr const char kValueName_KeyAlgorithm[] = "Key Algorithm";
+static constexpr const char kValueName_PublicKey[] = "Public Key";
+static constexpr const char kValueName_PrivateKey[] = "Private Key";
+static constexpr const char kValueName_Password[] = "Password";
 static constexpr const char kValueName_VirgilCards[] = "Virgil Cards";
 
-namespace std {
-    inline string to_string(const string& str) {
-        return str;
-    }
-}
+#define FOR_EACH_SOURCE(func, param, valueName) \
+do { \
+    for (auto source = this; source != nullptr; source = source->nextSource_.get()) { \
+        auto value = source->func(param); \
+        if (value) { \
+            LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueSuccess, valueName, source->getName()); \
+            return std::move(*value); \
+        } else { \
+            LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFailed, valueName, source->getName()); \
+        } \
+    } \
+    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, valueName); \
+    throw ArgumentValueSourceError(std::to_string(argumentValue)); \
+} while(false)
 
-namespace inner {
-
-template<typename T, typename V>
-inline std::unique_ptr<T> not_null(std::unique_ptr<T> ptr, const V& value) {
-    if (ptr) {
-        return std::move(ptr);
-    }
-    throw ArgumentValueSourceError(std::to_string(value));
-}
-
-}
+#define CAN_NOT_HANDLE(param) \
+do { \
+    (void)param; \
+    return nullptr; \
+} while(false)
 
 const char* ArgumentValueSource::getName() const {
     return doGetName();
@@ -99,87 +103,42 @@ ArgumentValueSource* ArgumentValueSource::appendSource(std::shared_ptr<ArgumentV
     }
 }
 
-std::unique_ptr<KeyAlgorithm> ArgumentValueSource::readKeyAlgorithm(const std::string& value) const {
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFromSource, kValueName_KeyAlgorithm, getName());
-    return inner::not_null(doReadKeyAlgorithm(value), value);
+KeyAlgorithm ArgumentValueSource::readKeyAlgorithm(const ArgumentValue& argumentValue) const {
+    FOR_EACH_SOURCE(doReadKeyAlgorithm, argumentValue, kValueName_KeyAlgorithm);
 }
 
-std::unique_ptr<PublicKey> ArgumentValueSource::readPublicKey(const Token& token) const {
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFromSource, kValueName_PublicKey, getName());
-    return inner::not_null(doReadPublicKey(token), token);
+Password ArgumentValueSource::readPassword(const ArgumentValue& argumentValue) const {
+    FOR_EACH_SOURCE(doReadPassword, argumentValue, kValueName_Password);
 }
 
-std::unique_ptr<PrivateKey> ArgumentValueSource::readPrivateKey(const std::string& value) const {
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFromSource, kValueName_PrivateKey, getName());
-    return inner::not_null(doReadPrivateKey(value), value);
+PublicKey ArgumentValueSource::readPublicKey(const ArgumentValue& argumentValue) const {
+    FOR_EACH_SOURCE(doReadPublicKey, argumentValue, kValueName_PublicKey);
 }
 
-std::unique_ptr<PrivateKey> ArgumentValueSource::readPrivateKey(const Token& token) const {
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFromSource, kValueName_PrivateKey, getName());
-    return inner::not_null(doReadPrivateKey(token), token);
+PrivateKey ArgumentValueSource::readPrivateKey(const ArgumentValue& argumentValue) const {
+    FOR_EACH_SOURCE(doReadPrivateKey, argumentValue, kValueName_PrivateKey);
 }
 
-std::unique_ptr<Password> ArgumentValueSource::readPassword(const std::string& value) const {
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFromSource, kValueName_Password, getName());
-    return inner::not_null(doReadPassword(value), value);
+std::vector<Card> ArgumentValueSource::readCards(const ArgumentValue& argumentValue) const {
+    FOR_EACH_SOURCE(doReadCards, argumentValue, kValueName_VirgilCards);
 }
 
-std::unique_ptr<std::vector<Card>> ArgumentValueSource::readCards(const Token& token) const {
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFromSource, kValueName_VirgilCards, getName());
-    return inner::not_null(doReadCards(token), token);
+std::unique_ptr<KeyAlgorithm> ArgumentValueSource::doReadKeyAlgorithm(const ArgumentValue& argumentValue) const {
+    CAN_NOT_HANDLE(argumentValue);
 }
 
-std::unique_ptr<KeyAlgorithm> ArgumentValueSource::doReadKeyAlgorithm(const std::string& value) const {
-    if (nextSource_) {
-        LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFailed, kValueName_KeyAlgorithm, getName());
-        return nextSource_->readKeyAlgorithm(value);
-    }
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, kValueName_KeyAlgorithm);
-    return nullptr;
+std::unique_ptr<Password> ArgumentValueSource::doReadPassword(const ArgumentValue& argumentValue) const {
+    CAN_NOT_HANDLE(argumentValue);
 }
 
-std::unique_ptr<PublicKey> ArgumentValueSource::doReadPublicKey(const Token& token) const {
-    if (nextSource_) {
-        LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFailed, kValueName_PublicKey, getName());
-        return nextSource_->readPublicKey(token);
-    }
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, kValueName_PublicKey);
-    return nullptr;
+std::unique_ptr<PublicKey> ArgumentValueSource::doReadPublicKey(const ArgumentValue& argumentValue) const {
+    CAN_NOT_HANDLE(argumentValue);
 }
 
-std::unique_ptr<PrivateKey> ArgumentValueSource::doReadPrivateKey(const Token& token) const {
-    if (nextSource_) {
-        LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFailed, kValueName_PrivateKey, getName());
-        return nextSource_->readPrivateKey(token);
-    }
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, kValueName_PrivateKey);
-    return nullptr;
+std::unique_ptr<PrivateKey> ArgumentValueSource::doReadPrivateKey(const ArgumentValue& argumentValue) const {
+    CAN_NOT_HANDLE(argumentValue);
 }
 
-std::unique_ptr<PrivateKey> ArgumentValueSource::doReadPrivateKey(const std::string& value) const {
-    if (nextSource_) {
-        LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFailed, kValueName_PrivateKey, getName());
-        return nextSource_->readPrivateKey(value);
-    }
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, kValueName_PrivateKey);
-    return nullptr;
-}
-
-std::unique_ptr<Password> ArgumentValueSource::doReadPassword(const std::string& value) const {
-    if (nextSource_) {
-        LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFailed, kValueName_Password, getName());
-        return nextSource_->readPassword(value);
-    }
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, kValueName_Password);
-    return nullptr;
-}
-
-std::unique_ptr<std::vector<Card>>
-ArgumentValueSource::doReadCards(const Token& token) const {
-    if (nextSource_) {
-        LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueFailed, kValueName_VirgilCards, getName());
-        return nextSource_->readCards(token);
-    }
-    LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueTotalFail, kValueName_VirgilCards);
-    return nullptr;
+std::unique_ptr<std::vector<Card>> ArgumentValueSource::doReadCards(const ArgumentValue& argumentValue) const {
+    CAN_NOT_HANDLE(argumentValue);
 }

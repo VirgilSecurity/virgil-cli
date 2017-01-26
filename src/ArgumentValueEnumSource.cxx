@@ -34,25 +34,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/model/KeyDecryptionRecipient.h>
+#include <cli/argument/ArgumentValueEnumSource.h>
 
-using cli::model::KeyDecryptionRecipient;
+#include <cli/memory.h>
+#include <cli/crypto/Crypto.h>
 
-KeyDecryptionRecipient::KeyDecryptionRecipient(PrivateKey privateKey, Password privateKeyPassword)
-        : privateKey_(std::move(privateKey)),
-        privateKeyPassword_(std::move(privateKeyPassword)),
-        publicKey_(privateKey_.extractPublic(privateKeyPassword_)) {
+using cli::Crypto;
+using cli::argument::ArgumentSource;
+using cli::argument::ArgumentValueEnumSource;
+using cli::model::KeyAlgorithm;
+using cli::model::PublicKey;
+using cli::model::PrivateKey;
+using cli::model::Password;
+using cli::model::Card;
+
+const char* ArgumentValueEnumSource::doGetName() const {
+    return "ArgumentValueEnumSource";
 }
 
-KeyDecryptionRecipient::KeyDecryptionRecipient(
-        std::unique_ptr<PrivateKey> privateKey, std::unique_ptr<Password> privateKeyPassword)
-        : privateKey_(std::move(*privateKey)),
-        privateKeyPassword_(std::move(*privateKeyPassword)),
-        publicKey_(privateKey_.extractPublic(privateKeyPassword_)){
+void ArgumentValueEnumSource::doInit(const ArgumentSource& argumentSource) {
+    (void)argumentSource;
 }
 
-bool KeyDecryptionRecipient::doDecrypt(
-        Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const {
-    cipher.decryptWithKey(source, sink, publicKey_.identifier(), privateKey_.key(), privateKeyPassword_.password());
-    return true;
+std::unique_ptr<KeyAlgorithm> ArgumentValueEnumSource::doReadKeyAlgorithm(const ArgumentValue& argumentValue) const {
+    return std::make_unique<KeyAlgorithm>(KeyAlgorithm::from(argumentValue.value()));
 }

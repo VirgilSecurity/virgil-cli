@@ -47,11 +47,19 @@ class PrivateKey : public Key {
 public:
     using Key::Key;
 
-    PublicKey extractPublic(const Password& keyPassword) const;
+    PublicKey extractPublic() const;
+
+    void setPassword(Password keyPassword);
+
+    const Password& password() const;
 
     bool checkPassword(const Password& keyPassword) const;
 
+    bool checkPassword() const;
+
     bool isEncrypted() const;
+private:
+    Password password_;
 };
 
 }}

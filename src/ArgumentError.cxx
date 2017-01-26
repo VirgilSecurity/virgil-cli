@@ -68,7 +68,7 @@ static constexpr const char* kRecipientDecryptionErrorMessage =
         "Data can not be decrypted with given password or private key.";
 
 static constexpr const char* kValueSourceErrorMessage =
-        "Argument value '%s' can not be recognized.";
+        "Argument value '%s' can not be read.";
 
 static constexpr const char* kInvalidKeyValueMessage =
         "Invalid key-value format '%s', expected '<key>=<value>'.";
@@ -135,7 +135,6 @@ ArgumentRecipientDecryptionError::ArgumentRecipientDecryptionError() :
 
 ArgumentValueSourceError::ArgumentValueSourceError(const std::string& value) :
         ArgumentRuntimeError(tfm::format(kValueSourceErrorMessage, value)) {}
-
 
 ArgumentInvalidKeyValue::ArgumentInvalidKeyValue(const char* token) :
         ArgumentRuntimeError(tfm::format(kInvalidTokenMessage, token)) {}

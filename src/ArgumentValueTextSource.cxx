@@ -34,28 +34,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_VALUE_PARSER_SOURCE_H
-#define VIRGIL_CLI_ARGUMENT_VALUE_PARSER_SOURCE_H
+#include <cli/argument/ArgumentValueTextSource.h>
 
-#include <cli/argument/ArgumentValueSource.h>
+#include <cli/memory.h>
 
-namespace cli { namespace argument {
+using cli::Crypto;
+using cli::model::Password;
+using cli::argument::ArgumentValueTextSource;
 
-class ArgumentValueParserSource : public ArgumentValueSource {
-protected:
-    virtual const char* doGetName() const override;
+void ArgumentValueTextSource::doInit(const ArgumentSource& argumentSource) {
+    (void)argumentSource;
+}
 
-    virtual void doInit(const ArgumentSource& argumentSource) override;
+const char* ArgumentValueTextSource::doGetName() const {
+    return "ArgumentValueTextSource";
+}
 
-    virtual std::unique_ptr<model::KeyAlgorithm> doReadKeyAlgorithm(const std::string& value) const override;
-
-    virtual std::unique_ptr<model::Password> doReadPassword(const std::string& value) const override;
-
-    virtual std::unique_ptr<model::PublicKey> doReadPublicKey(const model::Token& token) const override;
-
-    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const model::Token& token) const override;
-};
-
-}}
-
-#endif //VIRGIL_CLI_ARGUMENT_VALUE_PARSER_SOURCE_H
+std::unique_ptr<Password> ArgumentValueTextSource::doReadPassword(const ArgumentValue& argumentValue) const {
+    return std::make_unique<Password>(Crypto::ByteUtils::stringToBytes(argumentValue.value()));
+}

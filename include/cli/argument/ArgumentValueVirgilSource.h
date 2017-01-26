@@ -49,10 +49,10 @@ public:
     ArgumentValueVirgilSource(ArgumentValueVirgilSource&&);
     ArgumentValueVirgilSource& operator=(ArgumentValueVirgilSource&&);
     ~ArgumentValueVirgilSource() noexcept;
-protected:
+private:
     virtual const char* doGetName() const override;
     virtual void doInit(const ArgumentSource& argumentSource) override;
-    virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const model::Token& token) const override;
+    virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const ArgumentValue& argumentValue) const override;
 private:
     class Impl;
     std::unique_ptr<Impl> impl_;

@@ -34,20 +34,24 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_DECRYPTION_RECIPIENT_H
-#define VIRGIL_CLI_DECRYPTION_RECIPIENT_H
+#ifndef VIRGIL_CLI_PASSWORD_DECRYPT_CREDENTIALS_H
+#define VIRGIL_CLI_PASSWORD_DECRYPT_CREDENTIALS_H
 
-#include <cli/crypto/Crypto.h>
+#include <cli/model/DecryptCredentials.h>
+#include <cli/model/Password.h>
 
 namespace cli { namespace model {
 
-class DecryptionRecipient {
+class PasswordDecryptCredentials : public DecryptCredentials {
 public:
-    bool decrypt(Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const;
+    explicit PasswordDecryptCredentials(Password password);
 private:
-    virtual bool doDecrypt(Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const = 0;
+    virtual bool doDecrypt(
+            Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const override;
+private:
+    Password password_;
 };
 
 }}
 
-#endif //VIRGIL_CLI_DECRYPTION_RECIPIENT_H
+#endif //VIRGIL_CLI_PASSWORD_DECRYPT_CREDENTIALS_H

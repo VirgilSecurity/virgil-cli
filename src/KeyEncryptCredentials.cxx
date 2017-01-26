@@ -34,40 +34,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/argument/ArgumentValueParserSource.h>
+#include <cli/model/KeyEncryptCredentials.h>
 
-#include <cli/memory.h>
-#include <cli/crypto/Crypto.h>
-
-using cli::Crypto;
-using cli::argument::ArgumentSource;
-using cli::argument::ArgumentValueParserSource;
-using cli::model::KeyAlgorithm;
+using cli::model::KeyEncryptCredentials;
 using cli::model::PublicKey;
-using cli::model::PrivateKey;
-using cli::model::Password;
 using cli::model::Card;
 
-const char* ArgumentValueParserSource::doGetName() const {
-    return "ArgumentValueParserSource";
+void KeyEncryptCredentials::doAddSelfTo(Crypto::CipherBase& cipher) const {
+    cipher.addKeyRecipient(publicKey_.identifier(), publicKey_.key());
 }
 
-void ArgumentValueParserSource::doInit(const ArgumentSource& argumentSource) {
-    (void)argumentSource;
+KeyEncryptCredentials::KeyEncryptCredentials(PublicKey publicKey)
+        : publicKey_(std::move(publicKey)) {
 }
 
-std::unique_ptr<KeyAlgorithm> ArgumentValueParserSource::doReadKeyAlgorithm(const std::string& value) const {
-    return std::make_unique<KeyAlgorithm>(KeyAlgorithm::from(value));
-}
-
-std::unique_ptr<Password> ArgumentValueParserSource::doReadPassword(const std::string& value) const {
-    return std::make_unique<Password>(Crypto::ByteUtils::stringToBytes(value));
-}
-
-std::unique_ptr<PublicKey> ArgumentValueParserSource::doReadPublicKey(const model::Token& token) const {
-    return std::make_unique<PublicKey>(Crypto::Base64::decode(token.value()), token.alias());
-}
-
-std::unique_ptr<PrivateKey> ArgumentValueParserSource::doReadPrivateKey(const model::Token& token) const {
-    return std::make_unique<PrivateKey>(Crypto::Base64::decode(token.value()), token.alias());
+KeyEncryptCredentials::KeyEncryptCredentials(Card card)
+        : publicKey_(card.publicKeyData(), card.identifier()) {
 }

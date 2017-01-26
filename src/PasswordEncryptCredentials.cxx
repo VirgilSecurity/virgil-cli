@@ -34,25 +34,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_PASSWORD_DECRYPTION_RECIPIENT_H
-#define VIRGIL_CLI_PASSWORD_DECRYPTION_RECIPIENT_H
+#include <cli/model/PasswordEncryptCredentials.h>
 
-#include <cli/model/DecryptionRecipient.h>
-#include <cli/model/Password.h>
+using cli::model::PasswordEncryptCredentials;
 
-namespace cli { namespace model {
+PasswordEncryptCredentials::PasswordEncryptCredentials(Password password)
+        : password_(std::move(password)) {}
 
-class PasswordDecryptionRecipient : public DecryptionRecipient {
-public:
-    explicit PasswordDecryptionRecipient(Password password);
-    explicit PasswordDecryptionRecipient(std::unique_ptr<Password> password);
-private:
-    virtual bool doDecrypt(
-            Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const override;
-private:
-    Password password_;
-};
-
-}}
-
-#endif //VIRGIL_CLI_PASSWORD_DECRYPTION_RECIPIENT_H
+void PasswordEncryptCredentials::doAddSelfTo(Crypto::CipherBase& cipher) const {
+    cipher.addPasswordRecipient(password_.password());
+}

@@ -70,16 +70,16 @@ void EncryptCommand::doProcess() const {
 
     ULOG2(INFO) << "Add recipients to the cipher.";
     Crypto::StreamCipher cipher;
-    auto recipients = getArgumentIO()->getEncryptionRecipients(ArgumentImportance::Required);
-    for (const auto& recipient : recipients) {
-        recipient->addSelfTo(cipher);
+    auto encryptCredentials = getArgumentIO()->getEncryptCredentials(ArgumentImportance::Required);
+    for (const auto& credential : encryptCredentials) {
+        credential->addSelfTo(cipher);
     }
 
     ULOG2(INFO) << "Encrypt data.";
-    cipher.encrypt(*input, *output, embedContentInfo);
+    cipher.encrypt(input, output, embedContentInfo);
 
     if (doWriteContentInfo) {
         ULOG2(INFO) << "Write content info.";
-        getArgumentIO()->getContentInfoSink(ArgumentImportance::Required)->write(cipher.getContentInfo());
+        getArgumentIO()->getContentInfoSink(ArgumentImportance::Required).write(cipher.getContentInfo());
     }
 }

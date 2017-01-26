@@ -36,17 +36,20 @@
 
 #include <cli/argument/ArgumentValueFileSource.h>
 
-#include <cli/api/api.h>
-
 #include <cli/model/FileDataSource.h>
 #include <cli/model/FileDataSink.h>
+#include <cli/model/KeyEncryptCredentials.h>
+#include <cli/model/KeyDecryptCredentials.h>
 
+#include <cli/api/api.h>
 #include <cli/memory.h>
 #include <cli/io/Logger.h>
 
 #include <virgil/sdk/crypto/Crypto.h>
 #include <virgil/sdk/client/CardValidator.h>
 
+using cli::Crypto;
+using cli::argument::ArgumentValue;
 using cli::argument::ArgumentValueFileSource;
 using cli::model::KeyAlgorithm;
 using cli::model::PublicKey;
@@ -56,7 +59,6 @@ using cli::model::Card;
 using cli::model::FileDataSource;
 using cli::model::FileDataSink;
 using cli::model::ServiceConfig;
-using cli::model::Token;
 
 using ServiceCrypto = virgil::sdk::crypto::Crypto;
 using ServiceCardValidator = virgil::sdk::client::CardValidator;
@@ -69,47 +71,44 @@ void ArgumentValueFileSource::doInit(const ArgumentSource& argumentSource) {
     (void) argumentSource;
 }
 
-std::unique_ptr<Password> ArgumentValueFileSource::doReadPassword(const std::string& value) const {
-    if (!el::base::utils::File::pathExists(value.c_str(), true)) {
-        return ArgumentValueSource::doReadPassword(value);
+std::unique_ptr<Password> ArgumentValueFileSource::doReadPassword(const ArgumentValue& argumentValue) const {
+    if (!existsLocally(argumentValue)) {
+        return nullptr;
     }
-    FileDataSource source(value);
-    return std::make_unique<Password>(Crypto::ByteUtils::stringToBytes(source.readLine()));
+    return std::make_unique<Password>(readBytes(argumentValue));
 }
 
-std::unique_ptr<PublicKey> ArgumentValueFileSource::doReadPublicKey(const Token& token) const {
-    auto filePath = token.value();
-    if (!el::base::utils::File::pathExists(filePath.c_str(), true)) {
-        return ArgumentValueSource::doReadPublicKey(token);
+std::unique_ptr<PublicKey> ArgumentValueFileSource::doReadPublicKey(const ArgumentValue& argumentValue) const {
+    if (!existsLocally(argumentValue)) {
+        return nullptr;
     }
-    FileDataSource source(filePath);
-    return std::make_unique<PublicKey>(source.readAll(), token.alias());
+    return std::make_unique<PublicKey>(readBytes(argumentValue), argumentValue.alias());
 }
 
-std::unique_ptr<PrivateKey> ArgumentValueFileSource::doReadPrivateKey(const std::string& value) const {
-    if (!el::base::utils::File::pathExists(value.c_str(), true)) {
-        return ArgumentValueSource::doReadPrivateKey(value);
+std::unique_ptr<PrivateKey> ArgumentValueFileSource::doReadPrivateKey(const ArgumentValue& argumentValue) const {
+    if (!existsLocally(argumentValue)) {
+        return nullptr;
     }
-    FileDataSource source(value);
-    return std::make_unique<PrivateKey>(source.readAll(), Crypto::Bytes());
+    return std::make_unique<PrivateKey>(readBytes(argumentValue), argumentValue.alias());
 }
 
-std::unique_ptr<PrivateKey> ArgumentValueFileSource::doReadPrivateKey(const Token& token) const {
-    auto filePath = token.value();
-    if (!el::base::utils::File::pathExists(filePath.c_str(), true)) {
-        return ArgumentValueSource::doReadPrivateKey(token);
+std::unique_ptr<std::vector<Card>> ArgumentValueFileSource::doReadCards(const ArgumentValue& argumentValue) const {
+    if (!existsLocally(argumentValue)) {
+        return nullptr;
     }
-    FileDataSource source(filePath);
-    return std::make_unique<PrivateKey>(source.readAll(), token.alias());
-}
-
-std::unique_ptr<std::vector<Card>> ArgumentValueFileSource::doReadCards(const Token& token) const {
-    auto filePath = token.value();
-    if (!el::base::utils::File::pathExists(filePath.c_str(), true)) {
-        return ArgumentValueSource::doReadCards(token);
-    }
-    FileDataSource source(filePath);
     auto result = std::make_unique<std::vector<Card>>();
-    result->push_back(Card::importFromString(source.readText()));
+    result->push_back(Card::importFromString(readText(argumentValue)));
     return result;
+}
+
+bool ArgumentValueFileSource::existsLocally(const ArgumentValue& argumentValue) {
+    return el::base::utils::File::pathExists(argumentValue.value().c_str(), true);
+}
+
+Crypto::Text ArgumentValueFileSource::readText(const ArgumentValue& argumentValue) {
+    return FileDataSource(argumentValue.value()).readText();
+}
+
+Crypto::Bytes ArgumentValueFileSource::readBytes(const ArgumentValue& argumentValue) {
+    return FileDataSource(argumentValue.value()).readAll();
 }

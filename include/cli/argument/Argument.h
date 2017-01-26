@@ -37,11 +37,39 @@
 #ifndef VIRGIL_CLI_ARGUMENT_H
 #define VIRGIL_CLI_ARGUMENT_H
 
-#include <docopt/docopt_value.h>
+#include <cli/argument/ArgumentValue.h>
+
+#include <string>
+#include <vector>
+#include <memory>
 
 namespace cli { namespace argument {
 
-using Argument = docopt::value;
+class Argument {
+public:
+    Argument();
+
+    explicit Argument(bool value);
+
+    explicit Argument(size_t value);
+
+    explicit Argument(std::string value);
+
+    explicit Argument(std::vector<std::string> valueList);
+
+    bool isEmpty() const;
+
+    bool isValue() const;
+
+    bool isList() const;
+
+    ArgumentValue asValue() const;
+
+    std::vector<ArgumentValue> asList() const;
+
+private:
+    std::vector<ArgumentValue> values_;
+};
 
 }}
 

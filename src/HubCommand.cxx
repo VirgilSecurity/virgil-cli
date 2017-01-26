@@ -68,19 +68,19 @@ argument::ArgumentParseOptions HubCommand::doGetArgumentParseOptions() const {
 
 void HubCommand::doProcess() const {
     auto commandName = getArgumentIO()->getCommand(ArgumentImportance::Required);
-    if (*commandName == arg::value::VIRGIL_COMMAND_KEYGEN) {
+    if (commandName == arg::value::VIRGIL_COMMAND_KEYGEN) {
         KeygenCommand(getArgumentIO()).process();
-    } else if (*commandName == arg::value::VIRGIL_COMMAND_KEY2PUB) {
+    } else if (commandName == arg::value::VIRGIL_COMMAND_KEY2PUB) {
         KeyToPubCommand(getArgumentIO()).process();
-    } else if (*commandName == arg::value::VIRGIL_COMMAND_ENCRYPT) {
+    } else if (commandName == arg::value::VIRGIL_COMMAND_ENCRYPT) {
         EncryptCommand(getArgumentIO()).process();
-    } else if (*commandName == arg::value::VIRGIL_COMMAND_DECRYPT) {
+    } else if (commandName == arg::value::VIRGIL_COMMAND_DECRYPT) {
         DecryptCommand(getArgumentIO()).process();
-    } else if (*commandName == arg::value::VIRGIL_COMMAND_SIGN) {
+    } else if (commandName == arg::value::VIRGIL_COMMAND_SIGN) {
         SignCommand(getArgumentIO()).process();
-    } else if (*commandName == arg::value::VIRGIL_COMMAND_VERIFY) {
+    } else if (commandName == arg::value::VIRGIL_COMMAND_VERIFY) {
         VerifyCommand(getArgumentIO()).process();
     } else {
-        throw error::ArgumentValueError(arg::COMMAND, *commandName);
+        throw error::ArgumentValueError(arg::COMMAND, commandName);
     }
 }

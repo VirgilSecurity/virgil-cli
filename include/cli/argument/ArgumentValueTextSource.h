@@ -34,18 +34,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/model/PasswordDecryptionRecipient.h>
+#ifndef VIRGIL_CLI_ARGUMENT_VALUE_TEXT_SOURCE_H
+#define VIRGIL_CLI_ARGUMENT_VALUE_TEXT_SOURCE_H
 
-using cli::model::PasswordDecryptionRecipient;
+#include <cli/argument/ArgumentValueSource.h>
 
-PasswordDecryptionRecipient::PasswordDecryptionRecipient(Password password)
-        : password_(std::move(password)) {}
+namespace cli { namespace argument {
 
-PasswordDecryptionRecipient::PasswordDecryptionRecipient(std::unique_ptr<Password> password)
-        : password_(std::move(*password)) {}
+class ArgumentValueTextSource : public ArgumentValueSource {
+private:
+    virtual const char* doGetName() const override;
 
-bool PasswordDecryptionRecipient::doDecrypt(
-        Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const {
-    cipher.decryptWithPassword(source, sink, password_.password());
-    return true;
-}
+    virtual void doInit(const ArgumentSource& argumentSource) override;
+
+    virtual std::unique_ptr<model::Password> doReadPassword(const ArgumentValue& argumentValue) const override;
+};
+
+}}
+
+#endif //VIRGIL_CLI_ARGUMENT_VALUE_TEXT_SOURCE_H

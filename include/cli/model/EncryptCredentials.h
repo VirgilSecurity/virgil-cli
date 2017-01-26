@@ -34,18 +34,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/model/KeyEncryptionRecipient.h>
+#ifndef VIRGIL_CLI_ENCRYPT_CREDENTIALS_H
+#define VIRGIL_CLI_ENCRYPT_CREDENTIALS_H
 
-using cli::model::KeyEncryptionRecipient;
+#include <cli/crypto/Crypto.h>
 
-void KeyEncryptionRecipient::doAddSelfTo(Crypto::CipherBase& cipher) const {
-    cipher.addKeyRecipient(publicKey_.identifier(), publicKey_.key());
-}
+namespace cli { namespace model {
 
-KeyEncryptionRecipient::KeyEncryptionRecipient(PublicKey publicKey)
-        : publicKey_(std::move(publicKey)) {
-}
+class EncryptCredentials {
+public:
+    void addSelfTo(Crypto::CipherBase& cipher) const;
+private:
+    virtual void doAddSelfTo(Crypto::CipherBase& cipher) const = 0;
+};
 
-KeyEncryptionRecipient::KeyEncryptionRecipient(std::unique_ptr<PublicKey> publicKey)
-        : publicKey_(std::move(*publicKey)) {
-}
+}}
+
+#endif //VIRGIL_CLI_ENCRYPT_CREDENTIALS_H

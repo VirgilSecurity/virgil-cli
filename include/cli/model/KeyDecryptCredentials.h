@@ -34,31 +34,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_TOKEN_H
-#define VIRGIL_CLI_TOKEN_H
+#ifndef VIRGIL_CLI_KEY_DECRYPT_CREDENTIALS_H
+#define VIRGIL_CLI_KEY_DECRYPT_CREDENTIALS_H
 
-#include <string>
+#include <cli/model/DecryptCredentials.h>
+#include <cli/model/PrivateKey.h>
+#include <cli/model/Password.h>
 
 namespace cli { namespace model {
 
-class Token {
+class KeyDecryptCredentials : public DecryptCredentials {
 public:
-    explicit Token(const std::string& tokenString);
-    std::string key() const;
-    std::string value() const;
-    std::string alias() const;
+    KeyDecryptCredentials(PrivateKey privateKey);
 private:
-    std::string key_;
-    std::string value_;
-    std::string alias_;
+    virtual bool doDecrypt(
+            Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const override;
+private:
+    PrivateKey privateKey_;
+    PublicKey publicKey_;
 };
 
 }}
 
-namespace std {
-
-string to_string(const cli::model::Token& token);
-
-}
-
-#endif //VIRGIL_CLI_TOKEN_H
+#endif //VIRGIL_CLI_KEY_DECRYPT_CREDENTIALS_H

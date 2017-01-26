@@ -41,14 +41,25 @@ using cli::model::PublicKey;
 using cli::model::PrivateKey;
 using cli::model::Password;
 
-PublicKey PrivateKey::extractPublic(const Password& keyPassword) const {
-    return PublicKey(Crypto::KeyPair::extractPublicKey(key(), keyPassword.password()), identifier());
+PublicKey PrivateKey::extractPublic() const {
+    return PublicKey(Crypto::KeyPair::extractPublicKey(key(), password().password()), identifier());
 }
 
 bool PrivateKey::isEncrypted() const {
     return Crypto::KeyPair::isPrivateKeyEncrypted(key());
 }
 
+void PrivateKey::setPassword(Password keyPassword) {
+    password_ = std::move(keyPassword);
+}
+
+const Password& PrivateKey::password() const {
+    return password_;
+}
+
 bool PrivateKey::checkPassword(const Password& keyPassword) const {
     return Crypto::KeyPair::checkPrivateKeyPassword(key(), keyPassword.password());
+}
+bool PrivateKey::checkPassword() const {
+    return Crypto::KeyPair::checkPrivateKeyPassword(key(), password().password());
 }

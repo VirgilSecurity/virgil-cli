@@ -34,10 +34,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/model/EncryptionRecipient.h>
+#ifndef VIRGIL_CLI_ARGUMENT_DOCOPT_VALUE_H
+#define VIRGIL_CLI_ARGUMENT_DOCOPT_VALUE_H
 
-using cli::model::EncryptionRecipient;
+#include <cli/argument/Argument.h>
 
-void EncryptionRecipient::addSelfTo(Crypto::CipherBase& cipher) const {
-    doAddSelfTo(cipher);
+#include <docopt/docopt_value.h>
+
+namespace cli { namespace argument { namespace internal {
+
+inline Argument argument_from(const docopt::value& value) {
+    if (value.isBool()) {
+        return Argument(value.asBool());
+    } else if (value.isLong()) {
+        return Argument(static_cast<size_t>(value.asLong()));
+    } else if (value.isString()) {
+        return Argument(value.asString());
+    } else if (value.isStringList()) {
+        return Argument(value.asStringList());
+    } else {
+        return  Argument();
+    }
 }
+
+}}}
+
+#endif //VIRGIL_CLI_ARGUMENT_DOCOPT_VALUE_H

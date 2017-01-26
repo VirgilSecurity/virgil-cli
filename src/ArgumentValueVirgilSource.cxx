@@ -61,7 +61,6 @@ using cli::model::PublicKey;
 using cli::model::PrivateKey;
 using cli::model::Password;
 using cli::model::Card;
-using cli::model::Token;
 using cli::model::Password;
 using cli::error::ArgumentFileNotFound;
 
@@ -93,12 +92,12 @@ const char* ArgumentValueVirgilSource::doGetName() const {
 
 void ArgumentValueVirgilSource::doInit(const ArgumentSource& argumentSource) {
     auto argument = argumentSource.read(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN, ArgumentImportance::Optional);
-    if (argument.isString()) {
-        impl_->accessToken = argument.asString();
+    if (argument.isValue() && argument.asValue().isString()) {
+        impl_->accessToken = argument.asValue().value();
     }
 }
 
-std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const Token& token) const {
+std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const ArgumentValue& argumentValue) const {
     if(impl_->accessToken.empty()) {
         throw ArgumentFileNotFound(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN);
     }
@@ -106,10 +105,10 @@ std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const 
     auto client = std::make_unique<Client>(impl_->accessToken);
 
     auto globalCardsFuture = client->searchCards(
-            SearchCardsCriteria::createCriteria(CardScope::global, token.key(), { token.value() }));
+            SearchCardsCriteria::createCriteria(CardScope::global, argumentValue.key(), { argumentValue.value() }));
 
     auto applicationCardsFuture = client->searchCards(
-            SearchCardsCriteria::createCriteria(CardScope::application, token.key(), { token.value() }));
+            SearchCardsCriteria::createCriteria(CardScope::application, argumentValue.key(), { argumentValue.value() }));
 
     try {
         ULOG1(INFO) << "Loading Virgil Cards...";
@@ -123,7 +122,8 @@ std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const 
 
         return std::make_unique<std::vector<Card>>(std::move(globalCards));
     } catch (const VirgilSdkException& exception) {
+        LOG(ERROR) << "Failed to load Virgil Cards." << exception.what();
         ULOG(ERROR) << "Failed to load Virgil Cards." << exception.condition().message();
-        return ArgumentValueSource::doReadCards(token);
+        return nullptr;
     }
 }

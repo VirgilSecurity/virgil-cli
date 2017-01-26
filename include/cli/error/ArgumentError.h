@@ -43,12 +43,12 @@ namespace cli { namespace error {
 
 class ArgumentRuntimeError : public std::runtime_error {
 public:
-    using runtime_error::runtime_error;
+    using std::runtime_error::runtime_error;
 };
 
 class ArgumentLogicError : public std::logic_error {
 public:
-    using logic_error::logic_error;
+    using std::logic_error::logic_error;
 };
 
 class ArgumentNotFoundError : public ArgumentRuntimeError {

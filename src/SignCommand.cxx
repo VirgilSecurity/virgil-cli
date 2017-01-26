@@ -68,16 +68,11 @@ void SignCommand::doProcess() const {
 
     ULOG1(INFO) << "Read private key.";
     auto privateKey = getArgumentIO()->getPrivateKey(ArgumentImportance::Required);
-    auto privateKeyPassword = std::make_unique<model::Password>();
-    if (privateKey->isEncrypted()) {
-        ULOG1(INFO) << "Read private key password.";
-        privateKeyPassword = getArgumentIO()->getKeyPassword(ArgumentImportance::Required);
-    }
 
     ULOG1(INFO) << "Sign input.";
     Crypto::StreamSigner signer;
-    auto signature = signer.sign(*data, privateKey->key(), privateKeyPassword->password());
+    auto signature = signer.sign(data, privateKey.key(), privateKey.password().password());
 
     ULOG1(INFO) << "Write signature to the output.";
-    getArgumentIO()->getOutputSink(ArgumentImportance::Optional)->write(signature);
+    getArgumentIO()->getOutputSink(ArgumentImportance::Optional).write(signature);
 }

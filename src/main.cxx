@@ -45,10 +45,10 @@
 #include <cli/argument/ArgumentUserSource.h>
 #include <cli/argument/ArgumentConfigSource.h>
 #include <cli/argument/ArgumentValueSource.h>
-#include <cli/argument/ArgumentValueSource.h>
 #include <cli/argument/ArgumentValueFileSource.h>
 #include <cli/argument/ArgumentValueVirgilSource.h>
-#include <cli/argument/ArgumentValueParserSource.h>
+#include <cli/argument/ArgumentValueTextSource.h>
+#include <cli/argument/ArgumentValueEnumSource.h>
 #include <cli/command/HubCommand.h>
 
 #include <cli/error/ArgumentError.h>
@@ -69,7 +69,8 @@ using cli::argument::ArgumentConfigSource;
 using cli::argument::ArgumentValueSource;
 using cli::argument::ArgumentValueFileSource;
 using cli::argument::ArgumentValueVirgilSource;
-using cli::argument::ArgumentValueParserSource;
+using cli::argument::ArgumentValueEnumSource;
+using cli::argument::ArgumentValueTextSource;
 using cli::cmd::StandardCommandPrompt;
 using cli::command::Command;
 using cli::command::HubCommand;
@@ -127,7 +128,9 @@ std::unique_ptr<ArgumentValueSource> createArgumentValueSource() {
     argumentValueSource->appendSource(
             std::make_unique<ArgumentValueVirgilSource>()
     )->appendSource(
-            std::make_unique<ArgumentValueParserSource>()
+            std::make_unique<ArgumentValueEnumSource>()
+    )->appendSource(
+            std::make_unique<ArgumentValueTextSource>()
     );
     return std::move(argumentValueSource);
 }

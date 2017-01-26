@@ -34,11 +34,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/model/DecryptionRecipient.h>
+#include <cli/model/KeyDecryptCredentials.h>
 
-using cli::model::DecryptionRecipient;
+using cli::model::KeyDecryptCredentials;
 
-bool DecryptionRecipient::decrypt(
+KeyDecryptCredentials::KeyDecryptCredentials(PrivateKey privateKey)
+        : privateKey_(std::move(privateKey)),
+        publicKey_(privateKey_.extractPublic()) {
+}
+
+bool KeyDecryptCredentials::doDecrypt(
         Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const {
-    return doDecrypt(cipher, source, sink);
+    cipher.decryptWithKey(source, sink, publicKey_.identifier(), privateKey_.key(), privateKey_.password().password());
+    return true;
 }

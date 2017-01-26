@@ -34,73 +34,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/model/KeyValue.h>
+#include <cli/argument/Argument.h>
 
-#include <cli/api/api.h>
-#include <cli/error/ArgumentError.h>
+#include <cli/memory.h>
 #include <cli/io/Logger.h>
 
-#include <sstream>
-#include <vector>
+using cli::argument::Argument;
+using cli::argument::ArgumentValue;
 
-using cli::model::KeyValue;
-using cli::error::ArgumentInvalidKeyValue;
+Argument::Argument() : values_() {}
 
-static constexpr const char kKeyValueDelim = '=';
+Argument::Argument(bool value) : values_({ ArgumentValue(value) }) {}
 
-static std::vector<std::string> split(const std::string& str, char delim) {
-    std::stringstream ss;
-    ss.str(str);
-    std::string item;
-    std::vector<std::string> result;
-    while (std::getline(ss, item, delim)) {
-        result.push_back(item);
-    }
-    return result;
+Argument::Argument(size_t value) : values_({ ArgumentValue(value) }) {}
+
+Argument::Argument(std::string value) : values_({ ArgumentValue(std::move(value)) }) {
 }
 
-KeyValue::KeyValue(const std::string& tokenString) {
-    LOG(INFO) << tfm::format("Create token from the string '%s'.", tokenString);
-    auto tokens = split(tokenString, kKeyValueDelim);
-    switch (tokens.size()) {
-        case 2:
-            value_ = tokens[1];
-            // no break
-        case 1:
-            key_ = tokens[0];
-            // no break
-        default:
-            // do nothing, validation will be later
-            break;
-    }
-
-    LOG(INFO) << "Start token validation.";
-    if (key_.empty()) {
-        LOG(ERROR) << "KeyValue validation failed: key is not defined.";
-        throw ArgumentInvalidKeyValue(tokenString);
-    }
-
-    if (value_.empty()) {
-        LOG(ERROR) << "KeyValue validation failed: value is not defined.";
-        throw ArgumentInvalidKeyValue(tokenString);
+Argument::Argument(std::vector<std::string> valueList) : values_() {
+    for (auto&& value : valueList) {
+        values_.push_back(ArgumentValue(std::move(value)));
     }
 }
 
-std::string KeyValue::key() const {
-    return key_;
+bool Argument::isEmpty() const {
+    return values_.empty();
 }
 
-std::string KeyValue::value() const {
-    return value_;
+bool Argument::isValue() const {
+    return values_.size() == 1;
 }
 
-std::string std::to_string(const KeyValue& token) {
-    std::ostringstream ss;
-    ss << token.key() << kKeyValueDelim;
-#if defined(NDEBUG) || defined(_NDEBUG)
-    ss << "<hidden>";
-#else
-    ss << token.value();
-#endif
-    return ss.str();
+bool Argument::isList() const {
+    return values_.size() > 1;
+}
+
+ArgumentValue Argument::asValue() const {
+    if (isEmpty()) {
+        return ArgumentValue();
+    } else {
+        return values_[0];
+    }
+}
+
+std::vector<ArgumentValue> Argument::asList() const {
+    return values_;
 }

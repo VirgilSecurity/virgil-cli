@@ -34,28 +34,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_KEY_DECRYPTION_RECIPIENT_H
-#define VIRGIL_CLI_KEY_DECRYPTION_RECIPIENT_H
+#include <cli/model/PasswordDecryptCredentials.h>
 
-#include <cli/model/DecryptionRecipient.h>
-#include <cli/model/PrivateKey.h>
-#include <cli/model/Password.h>
+using cli::model::PasswordDecryptCredentials;
 
-namespace cli { namespace model {
+PasswordDecryptCredentials::PasswordDecryptCredentials(Password password)
+        : password_(std::move(password)) {}
 
-class KeyDecryptionRecipient : public DecryptionRecipient {
-public:
-    KeyDecryptionRecipient(PrivateKey privateKey, Password privateKeyPassword);
-    KeyDecryptionRecipient(std::unique_ptr<PrivateKey> privateKey, std::unique_ptr<Password> privateKeyPassword);
-private:
-    virtual bool doDecrypt(
-            Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const override;
-private:
-    PrivateKey privateKey_;
-    Password privateKeyPassword_;
-    PublicKey publicKey_;
-};
-
-}}
-
-#endif //VIRGIL_CLI_KEY_DECRYPTION_RECIPIENT_H
+bool PasswordDecryptCredentials::doDecrypt(
+        Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const {
+    cipher.decryptWithPassword(source, sink, password_.password());
+    return true;
+}

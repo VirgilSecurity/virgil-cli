@@ -68,11 +68,11 @@ void VerifyCommand::doProcess() const {
 
     auto data = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
     auto signature = getArgumentIO()->getSignatureSource(ArgumentImportance::Required);
-    auto publicKey = getArgumentIO()->getSendersKey(ArgumentImportance::Required);
+    auto senderKey = getArgumentIO()->getSenderKey(ArgumentImportance::Required);
 
     ULOG1(INFO) << "Verify input.";
     Crypto::StreamSigner signer;
-    bool verified = signer.verify(*data, signature->readAll(), publicKey->key());
+    bool verified = signer.verify(data, signature.readAll(), senderKey.key());
 
     if (verified) {
         ULOG(INFO) << "Data verification: success.";

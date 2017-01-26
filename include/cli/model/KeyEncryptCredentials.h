@@ -34,16 +34,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/model/PasswordEncryptionRecipient.h>
+#ifndef VIRGIL_CLI_KEY_ENCRYPT_CREDENTIALS_H
+#define VIRGIL_CLI_KEY_ENCRYPT_CREDENTIALS_H
 
-using cli::model::PasswordEncryptionRecipient;
+#include <cli/model/EncryptCredentials.h>
+#include <cli/model/PublicKey.h>
+#include <cli/model/Card.h>
 
-PasswordEncryptionRecipient::PasswordEncryptionRecipient(Password password)
-        : password_(std::move(password)) {}
+namespace cli { namespace model {
 
-PasswordEncryptionRecipient::PasswordEncryptionRecipient(std::unique_ptr<Password> password)
-        : password_(std::move(*password)) {}
+class KeyEncryptCredentials : public EncryptCredentials {
+public:
+    explicit KeyEncryptCredentials(PublicKey publicKey);
+    explicit KeyEncryptCredentials(Card card);
+private:
+    virtual void doAddSelfTo(Crypto::CipherBase& cipher) const override;
+private:
+    PublicKey publicKey_;
+};
 
-void PasswordEncryptionRecipient::doAddSelfTo(Crypto::CipherBase& cipher) const {
-    cipher.addPasswordRecipient(password_.password());
-}
+}}
+
+#endif //VIRGIL_CLI_KEY_ENCRYPT_CREDENTIALS_H

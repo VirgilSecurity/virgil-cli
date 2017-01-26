@@ -34,46 +34,79 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/command/KeyToPubCommand.h>
+#ifndef VIRGIL_CLI_ARGUMENT_VALUE_H
+#define VIRGIL_CLI_ARGUMENT_VALUE_H
 
-#include <cli/api/api.h>
-#include <cli/crypto/Crypto.h>
+#include <string>
 
-#include <cli/io/Logger.h>
-#include <cli/memory.h>
+namespace cli { namespace argument {
 
-using cli::Crypto;
-using cli::command::KeyToPubCommand;
-using cli::argument::ArgumentIO;
-using cli::argument::ArgumentImportance;
-using cli::argument::ArgumentSource;
-using cli::argument::ArgumentParseOptions;
-using cli::model::Password;
-using cli::model::PrivateKey;
+class ArgumentValue {
+public:
+    ArgumentValue();
 
-const char* KeyToPubCommand::doGetName() const {
-    return arg::value::VIRGIL_COMMAND_KEY2PUB;
+    explicit ArgumentValue(bool value);
+
+    explicit ArgumentValue(size_t value);
+
+    explicit ArgumentValue(std::string value);
+
+    std::string origin() const;
+
+    // Primitive
+
+    bool isEmpty() const;
+
+    bool isBool() const;
+
+    bool isNumber() const;
+
+    bool isString() const;
+
+    bool asBool() const;
+
+    bool asOptionalBool() const;
+
+    size_t asNumber() const;
+
+    std::string asString() const;
+
+    // Complex
+
+    bool isKeyValue() const;
+
+    bool isKeyValueAlias() const;
+
+    std::string key() const;
+
+    std::string value() const;
+
+    std::string alias() const;
+private:
+    enum class Kind {
+        Empty = 0,
+        Boolean = 1,
+        Number = 2,
+        String = 4,
+        KeyValue = 8,
+        KeyValueAlias = 16
+    };
+    void throwIfNotKind(Kind kind) const;
+    static const char* kindAsString(Kind kind);
+private:
+    Kind kind_ = Kind::Empty;
+    std::string origin_;
+    std::string key_;
+    std::string value_;
+    std::string alias_;
+};
+
+}}
+
+namespace std {
+
+string to_string(const cli::argument::ArgumentValue& argumentValue);
+
 }
 
-const char* KeyToPubCommand::doGetUsage() const {
-    return usage::VIRGIL_KEY2PUB;
-}
-
-ArgumentParseOptions KeyToPubCommand::doGetArgumentParseOptions() const {
-    return ArgumentParseOptions().disableOptionsFirst();
-}
-
-void KeyToPubCommand::doProcess() const {
-    ULOG1(INFO)  << "Read private key.";
-    auto privateKeySource = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
-    PrivateKey privateKey(privateKeySource.readAll(), Crypto::Bytes());
-
-    Password privateKeyPassword;
-    if (privateKey.isEncrypted()) {
-        privateKeyPassword = getArgumentIO()->getKeyPassword(ArgumentImportance::Required);
-    }
-    ULOG1(INFO)  << "Extract public key.";
-    auto publicKey = Crypto::KeyPair::extractPublicKey(privateKey.key(), privateKeyPassword.password());
-    ULOG1(INFO)  << "Write public key.";
-    getArgumentIO()->getOutputSink(ArgumentImportance::Optional).write(publicKey);
-}
+#endif //VIRGIL_CLI_ARGUMENT_VALUE_H

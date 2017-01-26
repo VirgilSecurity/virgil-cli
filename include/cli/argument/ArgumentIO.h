@@ -46,10 +46,11 @@
 
 #include <cli/model/Password.h>
 #include <cli/model/KeyAlgorithm.h>
-#include <cli/model/EncryptionRecipient.h>
-#include <cli/model/DecryptionRecipient.h>
+#include <cli/model/EncryptCredentials.h>
+#include <cli/model/DecryptCredentials.h>
 #include <cli/model/ServiceConfig.h>
 #include <cli/model/PrivateKey.h>
+#include <cli/model/SignerCredentials.h>
 
 #include <memory>
 #include <string>
@@ -68,43 +69,49 @@ public:
 
     bool hasNoPassword() const;
 
+    bool isInteractive() const;
+
     // Get
-    std::vector<std::unique_ptr<model::EncryptionRecipient>>
-    getEncryptionRecipients(ArgumentImportance argumentImportance) const;
+    std::vector<std::unique_ptr<model::EncryptCredentials>>
+    getEncryptCredentials(ArgumentImportance argumentImportance) const;
 
-    std::vector<std::unique_ptr<model::DecryptionRecipient>>
-    getDecryptionRecipients(ArgumentImportance argumentImportance) const;
+    std::vector<std::unique_ptr<model::DecryptCredentials>>
+    getDecryptCredentials(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<model::FileDataSource> getInputSource(ArgumentImportance argumentImportance) const;
+    model::FileDataSource getInputSource(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<model::FileDataSink> getOutputSink(ArgumentImportance argumentImportance) const;
+    model::FileDataSink getOutputSink(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<model::FileDataSource> getContentInfoSource(ArgumentImportance argumentImportance) const;
+    model::FileDataSource getContentInfoSource(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<model::FileDataSink> getContentInfoSink(ArgumentImportance argumentImportance) const;
+    model::FileDataSink getContentInfoSink(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<model::KeyAlgorithm> getKeyAlgorithm(ArgumentImportance argumentImportance) const;
+    model::KeyAlgorithm getKeyAlgorithm(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<model::Password> getKeyPassword(ArgumentImportance argumentImportance) const;
+    model::Password getKeyPassword(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<model::PrivateKey> getPrivateKey(ArgumentImportance argumentImportance) const;
+    model::PrivateKey getPrivateKey(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<model::PublicKey> getSendersKey(ArgumentImportance argumentImportance) const;
+    model::PublicKey getSenderKey(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<model::FileDataSource> getSignatureSource(ArgumentImportance argumentImportance) const;
+    model::FileDataSource getSignatureSource(ArgumentImportance argumentImportance) const;
 
-    std::unique_ptr<Crypto::Text> getCommand(ArgumentImportance argumentImportance) const;
+    Crypto::Text getCommand(ArgumentImportance argumentImportance) const;
 
 private:
-    std::vector<std::unique_ptr<model::EncryptionRecipient>>
-    createEncryptionRecipients(const std::string& tokenString) const;
+    model::FileDataSource getSource(const ArgumentValue& argumentValue) const;
 
-    std::vector<std::unique_ptr<model::DecryptionRecipient>>
-    createDecryptionRecipients(const std::string& tokenString) const;
+    model::FileDataSink getSink(const ArgumentValue& argumentValue) const;
 
-    std::unique_ptr<model::FileDataSource> getSource(const std::string& from) const;
+    void readPrivateKeyPassword(model::PrivateKey& privateKey, const ArgumentValue& argumentValue) const;
 
-    std::unique_ptr<model::FileDataSink> getSink(const std::string& from) const;
+    std::vector<std::unique_ptr<model::EncryptCredentials>>
+    readEncryptCredentials(const ArgumentValue& argumentValue) const;
+
+    std::vector<std::unique_ptr<model::DecryptCredentials>>
+    readDecryptCredentials(const ArgumentValue& argumentValue) const;
+
+    model::PublicKey readSenderKey(const ArgumentValue& argumentValue) const;
 
 private:
     std::unique_ptr<ArgumentSource> argumentSource_;

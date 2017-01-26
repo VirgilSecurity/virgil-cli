@@ -40,8 +40,9 @@
 #include <cli/api/api.h>
 #include <cli/api/Version.h>
 #include <cli/io/Logger.h>
-#include <cli/model/KeyValue.h>
 #include <cli/error/ArgumentError.h>
+
+#include <cli/argument/internal/Argument_DocoptValue.h>
 
 #include <docopt/docopt.h>
 
@@ -50,8 +51,6 @@ using cli::argument::ArgumentSource;
 using cli::argument::ArgumentCommandLineSource;
 using cli::argument::ArgumentRules;
 using cli::argument::ArgumentImportance;
-
-using cli::model::KeyValue;
 
 ArgumentCommandLineSource::ArgumentCommandLineSource(ArgumentCommandLineSource&&) = default;
 
@@ -71,11 +70,11 @@ public:
         for (auto const& arg : this->docoptArgs) {
             DLOG(INFO) << tfm::format("Found argument '%s' with value '%s'.", arg.first, arg.second);
         }
-        auto configOverloads = this->docoptArgs[opt::D_SHORT];
-        if (configOverloads.isStringList()) {
-            for (auto configKeyValue : configOverloads.asStringList()) {
-                KeyValue keyValue(configKeyValue);
-                this->configArgs[keyValue.key()] = keyValue.value();
+        auto configOverloads = internal::argument_from(this->docoptArgs[opt::D_SHORT]);
+        if (configOverloads.isList()) {
+            for (auto configValue : configOverloads.asList()) {
+                CHECK(configValue.isKeyValue());
+                this->configArgs[configValue.key()] = configValue.value();
             }
             this->docoptArgs.erase(opt::D_SHORT);
         }
@@ -84,7 +83,7 @@ public:
     std::unique_ptr<docopt::value> findValue(const char* argName) {
         { // First find in arguments
             auto value = docoptArgs.find(argName);
-            if (value != docoptArgs.cend()) {
+            if (value != docoptArgs.cend() && static_cast<bool>(value->second)) {
                 return std::make_unique<docopt::value>(value->second);
             }
         }
@@ -140,8 +139,11 @@ void ArgumentCommandLineSource::doInit(const std::string& usage, const ArgumentP
 }
 
 void ArgumentCommandLineSource::doUpdateRules() {
-    getArgumentRules()->allowUserInteraction(read(opt::INTERACTIVE, ArgumentImportance::Optional).asBool());
-    if (read(opt::QUIET, ArgumentImportance::Optional).asBool()) {
+    auto argumentInteractive = read(opt::INTERACTIVE, ArgumentImportance::Optional);
+    auto argumentQuiet = read(opt::QUIET, ArgumentImportance::Optional);
+    //TODO: Add validation
+    getArgumentRules()->allowUserInteraction(argumentInteractive.asValue().asOptionalBool());
+    if (argumentQuiet.asValue().asOptionalBool()) {
         auto userLogger = el::Loggers::getLogger(kLoggerId_User);
         userLogger->configurations()->setGlobally(el::ConfigurationType::Enabled, "false");
         userLogger->reconfigure();
@@ -149,5 +151,5 @@ void ArgumentCommandLineSource::doUpdateRules() {
 }
 
 Argument ArgumentCommandLineSource::doRead(const char* argName) const {
-    return *impl_->findValue(argName);
+    return internal::argument_from(*impl_->findValue(argName));
 }

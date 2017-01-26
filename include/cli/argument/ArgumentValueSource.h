@@ -45,7 +45,8 @@
 #include <cli/model/Password.h>
 #include <cli/model/KeyAlgorithm.h>
 #include <cli/model/ServiceConfig.h>
-#include <cli/model/Token.h>
+#include <cli/model/EncryptCredentials.h>
+#include <cli/model/DecryptCredentials.h>
 
 #include <memory>
 #include <string>
@@ -61,34 +62,30 @@ public:
 
     ArgumentValueSource* appendSource(std::shared_ptr<ArgumentValueSource> source);
 
-    std::unique_ptr<model::KeyAlgorithm> readKeyAlgorithm(const std::string& value) const;
+    model::KeyAlgorithm readKeyAlgorithm(const ArgumentValue& argumentValue) const;
 
-    std::unique_ptr<model::Password> readPassword(const std::string& value) const;
+    model::Password readPassword(const ArgumentValue& argumentValue) const;
 
-    std::unique_ptr<model::PublicKey> readPublicKey(const model::Token& token) const;
+    model::PublicKey readPublicKey(const ArgumentValue& argumentValue) const;
 
-    std::unique_ptr<model::PrivateKey> readPrivateKey(const std::string& value) const;
+    model::PrivateKey readPrivateKey(const ArgumentValue& argumentValue) const;
 
-    std::unique_ptr<model::PrivateKey> readPrivateKey(const model::Token& token) const;
+    std::vector<model::Card> readCards(const ArgumentValue& argumentValue) const;
 
-    std::unique_ptr<std::vector<model::Card>> readCards(const model::Token& token) const;
-
-protected:
+private:
     virtual void doInit(const ArgumentSource& argumentSource) = 0;
 
     virtual const char* doGetName() const = 0;
 
-    virtual std::unique_ptr<model::KeyAlgorithm> doReadKeyAlgorithm(const std::string& value) const;
+    virtual std::unique_ptr<model::KeyAlgorithm> doReadKeyAlgorithm(const ArgumentValue& argumentValue) const;
 
-    virtual std::unique_ptr<model::Password> doReadPassword(const std::string& value) const;
+    virtual std::unique_ptr<model::Password> doReadPassword(const ArgumentValue& argumentValue) const;
 
-    virtual std::unique_ptr<model::PublicKey> doReadPublicKey(const model::Token& token) const;
+    virtual std::unique_ptr<model::PublicKey> doReadPublicKey(const ArgumentValue& argumentValue) const;
 
-    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const std::string& value) const;
+    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const ArgumentValue& argumentValue) const;
 
-    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const model::Token& token) const;
-
-    virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const model::Token& token) const;
+    virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const ArgumentValue& argumentValue) const;
 
 private:
     std::shared_ptr<ArgumentValueSource> nextSource_;

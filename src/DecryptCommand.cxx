@@ -66,19 +66,19 @@ void DecryptCommand::doProcess() const {
     auto output = getArgumentIO()->getOutputSink(ArgumentImportance::Optional);
     bool hasContentInfo = getArgumentIO()->hasContentInfo();
 
-    auto recipients = getArgumentIO()->getDecryptionRecipients(ArgumentImportance::Required);
+    auto recipients = getArgumentIO()->getDecryptCredentials(ArgumentImportance::Required);
 
     Crypto::StreamCipher cipher;
     if (hasContentInfo) {
         ULOG2(INFO)  << "Set cipher's content info.";
-        auto contentInfo = getArgumentIO()->getContentInfoSource(ArgumentImportance::Required)->readAll();
+        auto contentInfo = getArgumentIO()->getContentInfoSource(ArgumentImportance::Required).readAll();
         cipher.setContentInfo(contentInfo);
     }
 
     ULOG2(INFO)  << "Start decryption.";
     bool decrypted = false;
     for (const auto& recipient : recipients) {
-        decrypted = recipient->decrypt(cipher, *input, *output);
+        decrypted = recipient->decrypt(cipher, input, output);
         if (decrypted){
             break;
         }
