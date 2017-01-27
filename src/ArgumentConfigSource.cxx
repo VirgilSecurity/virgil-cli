@@ -39,6 +39,7 @@
 #include <cli/memory.h>
 #include <cli/io/Logger.h>
 #include <cli/error/ArgumentError.h>
+#include <cli/argument/internal/Argument_YamlNode.h>
 
 #include <yaml-cpp/yaml.h>
 
@@ -59,20 +60,6 @@ struct ArgumentConfigSource::Impl {
     std::string configFilePath;
     YAML::Node config;
 };
-
-namespace internal {
-
-Argument to_argument(const char* argName, const YAML::Node value) {
-    if (value.IsScalar()) {
-        return Argument(value.as<std::string>());
-    } else if (value.IsSequence()) {
-        return Argument(value.as<std::vector<std::string>>());
-    } else {
-        throw ArgumentValueError(argName, value.as<std::string>());
-    }
-}
-
-}
 
 }}
 
@@ -103,5 +90,5 @@ bool ArgumentConfigSource::doCanRead(const char* argName, ArgumentImportance arg
 Argument ArgumentConfigSource::doRead(const char* argName) const {
     auto value = impl_->config[argName];
     CHECK(value.IsDefined());
-    return internal::to_argument(argName, value);
+    return internal::argument_from(value);
 }
