@@ -58,8 +58,8 @@ static constexpr const char* kFileNotFoundMessage =
 static constexpr const char* kInvalidTokenMessage =
         "Invalid token format '%s', expected '<key>:<value>[:<alias>]'.";
 
-static constexpr const char* kInvalidRecipientMessage =
-        "Invalid recipient key '%s', expected on of '%s'.";
+static constexpr const char* kInvalidKeyMessage =
+        "Invalid key '%s', expected one of '%s'.";
 
 static constexpr const char* kRecipientNotFoundMessage =
         "Recipient not found '%s:%s'.";
@@ -121,11 +121,11 @@ ArgumentInvalidToken::ArgumentInvalidToken(const char* token) :
 ArgumentInvalidToken::ArgumentInvalidToken(const std::string& token) :
         ArgumentRuntimeError(tfm::format(kInvalidTokenMessage, token)) {}
 
-ArgumentInvalidRecipient::ArgumentInvalidRecipient(const char* recipientKey, const char* validValues[]) :
-        ArgumentRuntimeError(tfm::format(kInvalidRecipientMessage, recipientKey, format_api_list(validValues))) {}
+ArgumentInvalidKey::ArgumentInvalidKey(const char* key, const char* validValues[]) :
+        ArgumentRuntimeError(tfm::format(kInvalidKeyMessage, key, format_api_list(validValues))) {}
 
-ArgumentInvalidRecipient::ArgumentInvalidRecipient(const std::string& recipientKey, const char* validValues[]) :
-        ArgumentRuntimeError(tfm::format(kInvalidRecipientMessage, recipientKey, format_api_list(validValues))) {}
+ArgumentInvalidKey::ArgumentInvalidKey(const std::string& key, const char* validValues[]) :
+        ArgumentRuntimeError(tfm::format(kInvalidKeyMessage, key, format_api_list(validValues))) {}
 
 ArgumentRecipientNotFound::ArgumentRecipientNotFound(const std::string& sourceType, const std::string& sourceValue) :
         ArgumentRuntimeError(tfm::format(kRecipientNotFoundMessage, sourceType, sourceValue)) {}

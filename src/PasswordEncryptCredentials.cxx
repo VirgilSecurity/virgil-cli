@@ -42,5 +42,5 @@ PasswordEncryptCredentials::PasswordEncryptCredentials(Password password)
         : password_(std::move(password)) {}
 
 void PasswordEncryptCredentials::doAddSelfTo(Crypto::CipherBase& cipher) const {
-    cipher.addPasswordRecipient(password_.password());
+    cipher.addPasswordRecipient(password_.bytesValue());
 }

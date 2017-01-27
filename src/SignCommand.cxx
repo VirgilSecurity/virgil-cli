@@ -71,7 +71,7 @@ void SignCommand::doProcess() const {
 
     ULOG1(INFO) << "Sign input.";
     Crypto::StreamSigner signer;
-    auto signature = signer.sign(data, privateKey.key(), privateKey.password().password());
+    auto signature = signer.sign(data, privateKey.key(), privateKey.password().bytesValue());
 
     ULOG1(INFO) << "Write signature to the output.";
     getArgumentIO()->getOutputSink(ArgumentImportance::Optional).write(signature);

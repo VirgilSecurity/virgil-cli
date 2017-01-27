@@ -39,12 +39,12 @@
 using cli::model::KeyDecryptCredentials;
 
 KeyDecryptCredentials::KeyDecryptCredentials(PrivateKey privateKey)
-        : privateKey_(std::move(privateKey)),
-        publicKey_(privateKey_.extractPublic()) {
+        : privateKey_(std::move(privateKey)), publicKey_(privateKey_.extractPublic()) {
 }
 
 bool KeyDecryptCredentials::doDecrypt(
         Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const {
-    cipher.decryptWithKey(source, sink, publicKey_.identifier(), privateKey_.key(), privateKey_.password().password());
+    cipher.decryptWithKey(source, sink, publicKey_.identifier(),
+            privateKey_.key(), privateKey_.password().bytesValue());
     return true;
 }

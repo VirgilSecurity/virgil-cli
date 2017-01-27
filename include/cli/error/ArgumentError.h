@@ -102,10 +102,10 @@ public:
     ArgumentInvalidToken(const std::string& token);
 };
 
-class ArgumentInvalidRecipient : public ArgumentRuntimeError {
+class ArgumentInvalidKey: public ArgumentRuntimeError {
 public:
-    ArgumentInvalidRecipient(const char* recipientKey, const char* validValues[]);
-    ArgumentInvalidRecipient(const std::string& recipientKey, const char* validValues[]);
+    ArgumentInvalidKey(const char* key, const char* validValues[]);
+    ArgumentInvalidKey(const std::string& key, const char* validValues[]);
 };
 
 class ArgumentRecipientNotFound : public ArgumentRuntimeError {

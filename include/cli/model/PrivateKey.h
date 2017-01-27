@@ -39,7 +39,7 @@
 
 #include <cli/model/Key.h>
 #include <cli/model/PublicKey.h>
-#include <cli/model/Password.h>
+#include <cli/model/SecureValue.h>
 
 namespace cli { namespace model {
 
@@ -49,17 +49,17 @@ public:
 
     PublicKey extractPublic() const;
 
-    void setPassword(Password keyPassword);
+    void setPassword(SecureValue keyPassword);
 
-    const Password& password() const;
+    SecureValue password() const;
 
-    bool checkPassword(const Password& keyPassword) const;
+    bool checkPassword(const SecureValue& keyPassword) const;
 
     bool checkPassword() const;
 
     bool isEncrypted() const;
 private:
-    Password password_;
+    SecureValue password_;
 };
 
 }}

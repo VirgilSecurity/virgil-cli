@@ -34,46 +34,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/command/KeyToPubCommand.h>
+#ifndef VIRGIL_CLI_CARD_INFO_H
+#define VIRGIL_CLI_CARD_INFO_H
 
-#include <cli/api/api.h>
-#include <cli/crypto/Crypto.h>
+#include <string> 
 
-#include <cli/io/Logger.h>
-#include <cli/memory.h>
+namespace cli { namespace model {
 
-using cli::Crypto;
-using cli::command::KeyToPubCommand;
-using cli::argument::ArgumentIO;
-using cli::argument::ArgumentImportance;
-using cli::argument::ArgumentSource;
-using cli::argument::ArgumentParseOptions;
-using cli::model::Password;
-using cli::model::PrivateKey;
+class CardInfo {
+public:
+    CardInfo(std::string device, std::string deviceName)
+            : device_(std::move(device)), deviceName_(std::move(deviceName)) {}
 
-const char* KeyToPubCommand::doGetName() const {
-    return arg::value::VIRGIL_COMMAND_KEY2PUB;
-}
+    std::string device() const { return device_; }
+    std::string deviceName() const { return deviceName_; }
+private:
+    std::string device_;
+    std::string deviceName_;
+};
 
-const char* KeyToPubCommand::doGetUsage() const {
-    return usage::VIRGIL_KEY2PUB;
-}
+}}
 
-ArgumentParseOptions KeyToPubCommand::doGetArgumentParseOptions() const {
-    return ArgumentParseOptions().disableOptionsFirst();
-}
-
-void KeyToPubCommand::doProcess() const {
-    ULOG1(INFO)  << "Read private key.";
-    auto privateKeySource = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
-    PrivateKey privateKey(privateKeySource.readAll(), Crypto::Bytes());
-
-    Password privateKeyPassword;
-    if (privateKey.isEncrypted()) {
-        privateKeyPassword = getArgumentIO()->getKeyPassword(ArgumentImportance::Required);
-    }
-    ULOG1(INFO)  << "Extract public key.";
-    auto publicKey = Crypto::KeyPair::extractPublicKey(privateKey.key(), privateKeyPassword.bytesValue());
-    ULOG1(INFO)  << "Write public key.";
-    getArgumentIO()->getOutputSink(ArgumentImportance::Optional).write(publicKey);
-}
+#endif //VIRGIL_CLI_CARD_INFO_H

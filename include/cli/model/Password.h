@@ -37,25 +37,11 @@
 #ifndef VIRGIL_CLI_PASSWORD_H
 #define VIRGIL_CLI_PASSWORD_H
 
-#include <cli/crypto/Crypto.h>
+#include <cli/model/SecureValue.h>
 
 namespace cli { namespace model {
 
-class Password {
-public:
-    explicit Password(Crypto::Bytes password = Crypto::Bytes());
-
-    const Crypto::Bytes& password() const;
-
-    Password(Password&&) = default;
-
-    Password& operator=(Password&&) = default;
-
-    ~Password() noexcept;
-
-private:
-    Crypto::Bytes password_;
-};
+using Password = SecureValue;
 
 }}
 

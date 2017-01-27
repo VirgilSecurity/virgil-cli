@@ -75,7 +75,7 @@ std::unique_ptr<Password> ArgumentValueFileSource::doReadPassword(const Argument
     if (!existsLocally(argumentValue)) {
         return nullptr;
     }
-    return std::make_unique<Password>(readBytes(argumentValue));
+    return std::make_unique<Password>(readLine(argumentValue));
 }
 
 std::unique_ptr<PublicKey> ArgumentValueFileSource::doReadPublicKey(const ArgumentValue& argumentValue) const {
@@ -103,6 +103,10 @@ std::unique_ptr<std::vector<Card>> ArgumentValueFileSource::doReadCards(const Ar
 
 bool ArgumentValueFileSource::existsLocally(const ArgumentValue& argumentValue) {
     return el::base::utils::File::pathExists(argumentValue.value().c_str(), true);
+}
+
+Crypto::Text ArgumentValueFileSource::readLine(const ArgumentValue& argumentValue) {
+    return FileDataSource(argumentValue.value()).readLine();
 }
 
 Crypto::Text ArgumentValueFileSource::readText(const ArgumentValue& argumentValue) {

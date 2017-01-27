@@ -34,9 +34,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_MODEL_HELPER_H
-#define VIRGIL_CLI_MODEL_HELPER_H
+#include <cli/model/SecureValue.h>
 
-namespace cli
+using cli::Crypto;
+using cli::model::SecureValue;
 
-#endif //VIRGIL_CLI_MODEL_HELPER_H
+SecureValue::SecureValue() {}
+
+SecureValue::SecureValue(Crypto::Bytes value)
+        : stringValue_(Crypto::ByteUtils::bytesToString(value)), bytesValue_(std::move(value))  {
+}
+
+SecureValue::SecureValue(Crypto::Text value)
+        : stringValue_(std::move(value)), bytesValue_(Crypto::ByteUtils::stringToBytes(stringValue_))  {
+}
+
+SecureValue::~SecureValue() noexcept {
+    virgil::crypto::bytes_zeroize(bytesValue_);
+    virgil::crypto::string_zeroize(stringValue_);
+}
+
+const Crypto::Text& SecureValue::stringValue() const {
+    return stringValue_;
+}
+
+const Crypto::Bytes& SecureValue::bytesValue() const {
+    return bytesValue_;
+}

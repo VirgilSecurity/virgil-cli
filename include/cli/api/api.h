@@ -103,7 +103,7 @@ static constexpr char VIRGIL_CARD_CREATE[] = R"(
 virgil-card-create - creates a Virgil Card entity
 
 USAGE:
-    virgil card-create [options] [-D <config>...] [-o <file>] -k <file> [-p <arg>] [-s <scope>] [-t <arg>] -d <identity> [--data <key-value>...] [--info <key-value>...]
+    virgil card-create [options] [-D <config>...] [-o <file>] -k <file> [-p <arg>] [-s <scope>] [--data <key-value>...] [--info <key-value>...] <identity>
 
 OPTIONS:
     -o <file>, --out=<file>  
@@ -113,22 +113,22 @@ OPTIONS:
     -p <arg>, --private-key-password=<arg>  
         The Private Key password (if exists).
     -s <scope>, --scope=<scope>  
+        Determines a Virgil Card scope that can be either global or application [default: application].
             * for global Virgil Card the scope must be global;
             * for application Virgil Card the scope must be application;
         If omitted, application is used.
-    -t <arg>, --identity-type=<arg>  
-            * for confirmed Virgil Card the identity-type must be email;
-            * for segregated Virgil Card the identity-type can be any value.
-        If omitted, email is used.
-    -d <identity>, --identity=<identity>  
-            * for confirmed Virgil Card the identity must be a valid email;
-            * for segregated Virgil Card the identity can be any value.
     --data=<key-value>  
-        The data contains application specific parameters. Format: key:<value> (up to 16 positions).
+        The data contains application specific parameters. Format: <key>:<value> (up to 16 positions).
     --info=<key-value>  
-        The info contains the information about the device on which the keypair was created. Format: key:<value> (2 positions must be used).
+        The info contains the information about the device on which the keypair was created.
+        Format: <key>:<value> (2 positions must be used).
             * the first key must be device_name with any value;
             * the second key must be device with any value.
+    <identity>
+        Identity that will be associated with created Virgil Card.
+        Format: <type>:<value>
+            * for confirmed Virgil Card identity type must be email and identity value must be a valid email;
+            * for segregated Virgil Card the identity type and value can be any value.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -575,6 +575,7 @@ namespace cli { namespace arg {
 
 static constexpr char ARGS[] = "<args>";
 static constexpr char COMMAND[] = "<command>";
+static constexpr char IDENTITY[] = "<identity>";
 static constexpr char IDENTITY_TYPE[] = "<identity-type>";
 static constexpr char KEYPASS[] = "<keypass>";
 static constexpr char RECIPIENT_ID[] = "<recipient-id>";
@@ -583,9 +584,9 @@ static constexpr char RECIPIENT_ID[] = "<recipient-id>";
 
 namespace cli { namespace arg { namespace value {
 
-static constexpr char VIRGIL_CARD_CREATE_IDENTITY_TYPE_EMAIL[] = "email";
-static const char* VIRGIL_CARD_CREATE_IDENTITY_TYPE_VALUES[] = {
-    VIRGIL_CARD_CREATE_IDENTITY_TYPE_EMAIL,
+static constexpr char VIRGIL_CARD_CREATE_IDENTITY_EMAIL[] = "email";
+static const char* VIRGIL_CARD_CREATE_IDENTITY_VALUES[] = {
+    VIRGIL_CARD_CREATE_IDENTITY_EMAIL,
     nullptr
 };
 
@@ -656,8 +657,14 @@ static const char* VIRGIL_COMMAND_VALUES[] = {
 };
 
 static constexpr char VIRGIL_CONFIG_APP_ACCESS_TOKEN[] = "APP_ACCESS_TOKEN";
+static constexpr char VIRGIL_CONFIG_APP_KEY_DATA[] = "APP_KEY_DATA";
+static constexpr char VIRGIL_CONFIG_APP_KEY_ID[] = "APP_KEY_ID";
+static constexpr char VIRGIL_CONFIG_APP_KEY_PASSWORD[] = "APP_KEY_PASSWORD";
 static const char* VIRGIL_CONFIG_VALUES[] = {
     VIRGIL_CONFIG_APP_ACCESS_TOKEN,
+    VIRGIL_CONFIG_APP_KEY_DATA,
+    VIRGIL_CONFIG_APP_KEY_ID,
+    VIRGIL_CONFIG_APP_KEY_PASSWORD,
     nullptr
 };
 

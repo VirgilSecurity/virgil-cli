@@ -56,6 +56,7 @@ private:
     virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const ArgumentValue& argumentValue) const override;
 private:
     static bool existsLocally(const ArgumentValue& argumentValue);
+    static Crypto::Text readLine(const ArgumentValue& argumentValue);
     static Crypto::Text readText(const ArgumentValue& argumentValue);
     static Crypto::Bytes readBytes(const ArgumentValue& argumentValue);
  };

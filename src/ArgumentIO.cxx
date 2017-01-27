@@ -198,6 +198,71 @@ Crypto::Text ArgumentIO::getCommand(ArgumentImportance argumentImportance) const
     return Crypto::Text(argument.asValue().value());
 }
 
+CardIdentity ArgumentIO::getCardIdentity(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Card's Identity.";
+    auto argument = argumentSource_->read(arg::IDENTITY, argumentImportance);
+    //TODO: Add validation
+    return CardIdentity(argument.asValue().key(), argument.asValue().value());
+}
+
+Crypto::Text ArgumentIO::getCardScope(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Card's Scope.";
+    auto argument = argumentSource_->read(opt::SCOPE, argumentImportance);
+    //TODO: Add validation
+    return argument.asValue().asString();
+}
+
+CardData ArgumentIO::getCardData(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Card's Data.";
+    auto argument = argumentSource_->read(opt::DATA, argumentImportance);
+    //TODO: Add validation
+    CardData cardData;
+    for (const auto& argumentValue : argument.asList()) {
+        cardData[argumentValue.key()] = argumentValue.value();
+    }
+    return cardData;
+}
+
+CardInfo ArgumentIO::getCardInfo(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Card's Info.";
+    auto argument = argumentSource_->read(opt::INFO, argumentImportance);
+    //TODO: Add validation
+    std::string device;
+    std::string deviceName;
+    for (const auto& argumentValue : argument.asList()) {
+        auto infoKey = argumentValue.key();
+        if (infoKey == arg::value::VIRGIL_CARD_CREATE_INFO_KEY_DEVICE) {
+            device = argumentValue.value();
+        } else if (infoKey == arg::value::VIRGIL_CARD_CREATE_INFO_KEY_DEVICE_NAME) {
+            deviceName = argumentValue.value();
+        } else {
+            throw error::ArgumentInvalidKey(infoKey, arg::value::VIRGIL_CARD_CREATE_INFO_KEY_VALUES);
+        }
+    }
+    return CardInfo(device, deviceName);
+}
+
+SecureValue ArgumentIO::getAppAccessToken(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Application Access Token.";
+    auto argument = argumentSource_->read(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN, argumentImportance);
+    //TODO: Add validation
+    return SecureValue(argument.asValue().asString());
+}
+
+ApplicationCredentials ArgumentIO::getAppCredentials(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Application Credentials (identifier, private key, private key password).";
+    auto argumentAppKeyId = argumentSource_->read(arg::value::VIRGIL_CONFIG_APP_KEY_ID, argumentImportance);
+    auto argumentAppKeyData = argumentSource_->read(arg::value::VIRGIL_CONFIG_APP_KEY_DATA, argumentImportance);
+    auto argumentAppKeyPassword = argumentSource_->read(arg::value::VIRGIL_CONFIG_APP_KEY_PASSWORD, argumentImportance);
+    //TODO: Add validation
+    return ApplicationCredentials(
+            SecureValue(argumentAppKeyId.asValue().origin()),
+            SecureValue(argumentAppKeyData.asValue().origin()),
+            SecureValue(argumentAppKeyPassword.asValue().origin())
+    );
+}
+
+
 FileDataSource ArgumentIO::getSource(const ArgumentValue& argumentValue) const {
     if (argumentValue.isEmpty()) {
         ULOG1(INFO) << tfm::format("Read input from: standard input.");
@@ -260,7 +325,7 @@ ArgumentIO::readEncryptCredentials(const ArgumentValue& argumentValue) const {
             result.push_back(std::make_unique<KeyEncryptCredentials>(std::move(card)));
         }
     } else {
-        throw error::ArgumentInvalidRecipient(recipientType, arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VALUES);
+        throw error::ArgumentInvalidKey(recipientType, arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VALUES);
     }
     return result;
 }
@@ -279,7 +344,7 @@ ArgumentIO::readDecryptCredentials(const ArgumentValue& argumentValue) const {
         readPrivateKeyPassword(privateKey, argumentValue);
         result.push_back(std::make_unique<KeyDecryptCredentials>(std::move(privateKey)));
     } else {
-        throw error::ArgumentInvalidRecipient(recipientType, arg::value::VIRGIL_DECRYPT_KEYPASS_VALUES);
+        throw error::ArgumentInvalidKey(recipientType, arg::value::VIRGIL_DECRYPT_KEYPASS_VALUES);
     }
     return result;
 }
@@ -293,5 +358,5 @@ PublicKey ArgumentIO::readSenderKey(const ArgumentValue& argumentValue) const {
         auto card = cards.front();
         return PublicKey(card.publicKeyData(), card.identifier());
     }
-    throw error::ArgumentInvalidRecipient(argumentValue.key(), arg::value::VIRGIL_VERIFY_RECIPIENT_ID_VALUES);
+    throw error::ArgumentInvalidKey(argumentValue.key(), arg::value::VIRGIL_VERIFY_RECIPIENT_ID_VALUES);
 }

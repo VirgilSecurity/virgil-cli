@@ -51,6 +51,11 @@
 #include <cli/model/ServiceConfig.h>
 #include <cli/model/PrivateKey.h>
 #include <cli/model/SignerCredentials.h>
+#include <cli/model/CardIdentity.h>
+#include <cli/model/CardData.h>
+#include <cli/model/CardInfo.h>
+#include <cli/model/SecureValue.h>
+#include <cli/model/ApplicationCredentials.h>
 
 #include <memory>
 #include <string>
@@ -97,6 +102,18 @@ public:
     model::FileDataSource getSignatureSource(ArgumentImportance argumentImportance) const;
 
     Crypto::Text getCommand(ArgumentImportance argumentImportance) const;
+
+    model::CardIdentity getCardIdentity(ArgumentImportance argumentImportance) const;
+
+    Crypto::Text getCardScope(ArgumentImportance argumentImportance) const;
+
+    model::CardData getCardData(ArgumentImportance argumentImportance) const;
+
+    model::CardInfo getCardInfo(ArgumentImportance argumentImportance) const;
+
+    model::SecureValue getAppAccessToken(ArgumentImportance argumentImportance) const;
+
+    model::ApplicationCredentials getAppCredentials(ArgumentImportance argumentImportance) const;
 
 private:
     model::FileDataSource getSource(const ArgumentValue& argumentValue) const;

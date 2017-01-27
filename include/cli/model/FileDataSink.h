@@ -60,6 +60,7 @@ public:
 public:
     virtual bool isGood() override;
     virtual void write(const virgil::crypto::VirgilByteArray& data) override;
+    virtual void write(const std::string& text);
 private:
     using ostream_deleter = std::function<void(std::ostream*)>;
     using ostream_ptr = std::unique_ptr<std::ostream, ostream_deleter>;

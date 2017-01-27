@@ -61,3 +61,7 @@ bool FileDataSink::isGood() {
 void FileDataSink::write(const virgil::crypto::VirgilByteArray& data) {
     out_->write(reinterpret_cast<const std::ostream::char_type*>(data.data()), data.size());
 }
+
+void FileDataSink::write(const std::string& text) {
+    out_->write(reinterpret_cast<const std::ostream::char_type*>(text.data()), text.size());
+}

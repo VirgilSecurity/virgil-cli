@@ -43,6 +43,6 @@ PasswordDecryptCredentials::PasswordDecryptCredentials(Password password)
 
 bool PasswordDecryptCredentials::doDecrypt(
         Crypto::StreamCipher& cipher, Crypto::DataSource& source, Crypto::DataSink& sink) const {
-    cipher.decryptWithPassword(source, sink, password_.password());
+    cipher.decryptWithPassword(source, sink, password_.bytesValue());
     return true;
 }

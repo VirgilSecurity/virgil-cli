@@ -87,10 +87,10 @@ void Command::process() {
     } catch (const error::ArgumentRuntimeError& error) {
         showUsage(error.what());
     } catch (const VirgilCryptoException& exception) {
-        LOG(FATAL) << exception.what();
+        ULOG1(FATAL) << exception.what();
         showUsage(exception.condition().message().c_str());
     } catch (const VirgilSdkException& exception) {
-        LOG(FATAL) << exception.what();
+        ULOG1(FATAL) << exception.what();
         showUsage(exception.condition().message().c_str());
     }
 }

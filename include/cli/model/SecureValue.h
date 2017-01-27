@@ -34,18 +34,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/model/Password.h>
+#ifndef VIRGIL_CLI_SECURE_VALUE_H
+#define VIRGIL_CLI_SECURE_VALUE_H
 
-using cli::Crypto;
-using cli::model::Password;
+#include <cli/crypto/Crypto.h>
 
-Password::Password(Crypto::Bytes password)
-        : password_(std::move(password)) {}
+namespace cli { namespace model {
 
-Password::~Password() noexcept {
-    Crypto::ByteUtils::zeroize(password_);
-}
+class SecureValue {
+public:
+    SecureValue();
+    explicit SecureValue(Crypto::Text value);
+    explicit SecureValue(Crypto::Bytes value);
+    const Crypto::Text& stringValue() const;
+    const Crypto::Bytes& bytesValue() const;
+    ~SecureValue() noexcept;
+public:
+    SecureValue(const SecureValue&) = default;
+    SecureValue(SecureValue&&) = default;
+    SecureValue& operator=(const SecureValue&) = default;
+    SecureValue& operator=(SecureValue&&) = default;
+private:
+    Crypto::Text stringValue_;
+    Crypto::Bytes bytesValue_;
+};
 
-const Crypto::Bytes& Password::password() const {
-    return password_;
-}
+}}
+
+#endif //VIRGIL_CLI_SECURE_VALUE_H

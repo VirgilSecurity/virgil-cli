@@ -43,8 +43,10 @@
 #include <cli/api/Configurations.h>
 #include <cli/error/ArgumentError.h>
 
+#include <virgil/sdk/crypto/Crypto.h>
 #include <virgil/sdk/VirgilSdkException.h>
 #include <virgil/sdk/client/Client.h>
+#include <virgil/sdk/client/CardValidator.h>
 #include <virgil/sdk/client/interfaces/ClientInterface.h>
 #include <virgil/sdk/client/models/ClientCommon.h>
 #include <virgil/sdk/client/models/SearchCardsCriteria.h>
@@ -66,9 +68,12 @@ using cli::error::ArgumentFileNotFound;
 
 using virgil::sdk::VirgilSdkException;
 using virgil::sdk::client::Client;
+using virgil::sdk::client::CardValidator;
+using virgil::sdk::client::ServiceConfig;
 using virgil::sdk::client::interfaces::ClientInterface;
 using virgil::sdk::client::models::SearchCardsCriteria;
 using virgil::sdk::client::models::CardScope;
+using ServiceCrypto = virgil::sdk::crypto::Crypto;
 
 ArgumentValueVirgilSource::ArgumentValueVirgilSource(ArgumentValueVirgilSource&&) = default;
 ArgumentValueVirgilSource& ArgumentValueVirgilSource::operator=(ArgumentValueVirgilSource&&) = default;
@@ -102,12 +107,14 @@ std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const 
         throw ArgumentFileNotFound(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN);
     }
 
-    auto client = std::make_unique<Client>(impl_->accessToken);
+    auto serviceConfig = ServiceConfig::createConfig(impl_->accessToken);
+    serviceConfig.cardValidator(std::make_unique<CardValidator>(std::make_shared<ServiceCrypto>()));
+    Client client(std::move(serviceConfig));
 
-    auto globalCardsFuture = client->searchCards(
+    auto globalCardsFuture = client.searchCards(
             SearchCardsCriteria::createCriteria(CardScope::global, argumentValue.key(), { argumentValue.value() }));
 
-    auto applicationCardsFuture = client->searchCards(
+    auto applicationCardsFuture = client.searchCards(
             SearchCardsCriteria::createCriteria(CardScope::application, argumentValue.key(), { argumentValue.value() }));
 
     try {
