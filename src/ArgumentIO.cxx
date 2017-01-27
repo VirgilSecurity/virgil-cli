@@ -100,6 +100,13 @@ bool ArgumentIO::isInteractive() const {
     return argument.asValue().asOptionalBool();
 }
 
+SecureValue ArgumentIO::getInput(ArgumentImportance argumentImportance) const {
+    ULOG1(INFO) << tfm::format("Read input.");
+    auto argument = argumentSource_->read(opt::IN, argumentImportance);
+    //TODO: Add validation
+    return argumentValueSource_->readPassword(argument.asValue());
+}
+
 FileDataSource ArgumentIO::getInputSource(ArgumentImportance argumentImportance) const {
     ULOG1(INFO) << tfm::format("Read input.");
     auto argument = argumentSource_->read(opt::IN, argumentImportance);

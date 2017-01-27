@@ -217,7 +217,7 @@ USAGE:
 
 OPTIONS:
     -o <file>, --out=<file>  
-        A folder where Virgil Cards will be saved. If omitted, stdout is used.
+        The Virgil Card. If omitted, stdout is used.
     -d <identity>, --identity=<identity>  
             * for confirmed Virgil Card with an identity type of 'email' the identity must be a valid email;
             * for segregated Virgil Card the identity can be any value.

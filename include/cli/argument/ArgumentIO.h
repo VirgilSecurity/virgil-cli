@@ -83,6 +83,8 @@ public:
     std::vector<std::unique_ptr<model::DecryptCredentials>>
     getDecryptCredentials(ArgumentImportance argumentImportance) const;
 
+    model::SecureValue getInput(ArgumentImportance argumentImportance) const;
+
     model::FileDataSource getInputSource(ArgumentImportance argumentImportance) const;
 
     model::FileDataSink getOutputSink(ArgumentImportance argumentImportance) const;

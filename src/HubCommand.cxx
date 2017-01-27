@@ -50,6 +50,7 @@
 #include <cli/command/SignCommand.h>
 #include <cli/command/VerifyCommand.h>
 #include <cli/command/CardCreateCommand.h>
+#include <cli/command/CardGetCommand.h>
 
 using namespace cli;
 using namespace cli::command;
@@ -83,6 +84,8 @@ void HubCommand::doProcess() const {
         VerifyCommand(getArgumentIO()).process();
     } else if (commandName == arg::value::VIRGIL_COMMAND_CARD_CREATE) {
         CardCreateCommand(getArgumentIO()).process();
+    } else if (commandName == arg::value::VIRGIL_COMMAND_CARD_GET) {
+        CardGetCommand(getArgumentIO()).process();
     } else {
         throw error::ArgumentValueError(arg::COMMAND, commandName);
     }
