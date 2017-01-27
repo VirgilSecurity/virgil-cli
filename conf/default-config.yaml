@@ -1,6 +1,6 @@
 # Virgil Security CLI configuration file
 
-logger: >
+logger: |
   * GLOBAL:
       FORMAT               =  "%datetime{%Y-%d-%M %H:%m:%s,%g}  [%logger] %level %msg"
       ENABLED              =  true
