@@ -44,6 +44,7 @@
 #include <cli/api/api.h>
 #include <cli/memory.h>
 #include <cli/io/Logger.h>
+#include <cli/io/Path.h>
 
 #include <virgil/sdk/crypto/Crypto.h>
 #include <virgil/sdk/client/CardValidator.h>
@@ -59,6 +60,7 @@ using cli::model::Card;
 using cli::model::FileDataSource;
 using cli::model::FileDataSink;
 using cli::model::ServiceConfig;
+using cli::io::Path;
 
 using ServiceCrypto = virgil::sdk::crypto::Crypto;
 using ServiceCardValidator = virgil::sdk::client::CardValidator;
@@ -102,7 +104,7 @@ std::unique_ptr<std::vector<Card>> ArgumentValueFileSource::doReadCards(const Ar
 }
 
 bool ArgumentValueFileSource::existsLocally(const ArgumentValue& argumentValue) {
-    return el::base::utils::File::pathExists(argumentValue.value().c_str(), true);
+    return Path::exists(argumentValue.value(), true);
 }
 
 Crypto::Text ArgumentValueFileSource::readLine(const ArgumentValue& argumentValue) {

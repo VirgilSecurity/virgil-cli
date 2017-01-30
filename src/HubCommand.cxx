@@ -52,6 +52,7 @@
 #include <cli/command/CardCreateCommand.h>
 #include <cli/command/CardGetCommand.h>
 #include <cli/command/CardRevokeCommand.h>
+#include <cli/command/CardSearchCommand.h>
 
 using namespace cli;
 using namespace cli::command;
@@ -89,6 +90,8 @@ void HubCommand::doProcess() const {
         CardGetCommand(getArgumentIO()).process();
     } else if (commandName == arg::value::VIRGIL_COMMAND_CARD_REVOKE) {
         CardRevokeCommand(getArgumentIO()).process();
+    } else if (commandName == arg::value::VIRGIL_COMMAND_CARD_SEARCH) {
+        CardSearchCommand(getArgumentIO()).process();
     } else {
         throw error::ArgumentValueError(arg::COMMAND, commandName);
     }

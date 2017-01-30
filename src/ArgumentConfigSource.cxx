@@ -38,6 +38,7 @@
 
 #include <cli/memory.h>
 #include <cli/io/Logger.h>
+#include <cli/io/Path.h>
 #include <cli/error/ArgumentError.h>
 #include <cli/argument/internal/Argument_YamlNode.h>
 
@@ -48,6 +49,7 @@ using cli::argument::ArgumentConfigSource;
 using cli::argument::ArgumentParseOptions;
 using cli::error::ArgumentFileNotFound;
 using cli::error::ArgumentValueError;
+using cli::io::Path;
 
 ArgumentConfigSource::ArgumentConfigSource(ArgumentConfigSource&&) = default;
 ArgumentConfigSource& ArgumentConfigSource::operator=(ArgumentConfigSource&&) = default;
@@ -65,7 +67,7 @@ struct ArgumentConfigSource::Impl {
 
 ArgumentConfigSource::ArgumentConfigSource(const std::string& configFilePath)
         : impl_(std::make_unique<ArgumentConfigSource::Impl>(configFilePath)) {
-    if (!el::base::utils::File::pathExists(impl_->configFilePath.c_str())) {
+    if (!Path::existsFile(impl_->configFilePath)) {
         throw ArgumentFileNotFound(impl_->configFilePath);
     }
 }

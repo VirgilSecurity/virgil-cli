@@ -41,6 +41,7 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 
 #if OS_DARWIN
 #include <sys/param.h>
@@ -54,6 +55,8 @@
 #endif //OS_WIN32
 #if OS_UNIX
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #endif //OS_UNIX
 
 static constexpr const char kInstallDirName_Bin[] = "@INSTALL_BIN_DIR_NAME@";
@@ -156,4 +159,36 @@ std::string Path::removeSubPath(const std::string& path, const std::string& subP
         return std::string(path.begin(), path.end() - subPath.size());
     }
     return path;
+}
+
+bool Path::exists(const std::string& path, bool considerFile) {
+#if OS_UNIX
+    struct stat info;
+    if (stat(path.c_str(), &info) != 0) {
+        return false;
+    }
+    const bool isDir = (info.st_mode & S_IFDIR) != 0;
+    const bool isFile = (info.st_mode & S_IFREG) != 0;
+    const bool isLink = (info.st_mode & S_IFLNK) != 0;
+    return considerFile ? (isFile || isLink) : isDir;
+#elif OS_WIN32
+    DWORD fileType = GetFileAttributesA(path);
+    if (fileType == INVALID_FILE_ATTRIBUTES) {
+        return false;
+    }
+    const bool isDir = (fileType & FILE_ATTRIBUTE_DIRECTORY) != 0;
+    return considerFile ? true : isDir;
+#endif  // ELPP_OS_UNIX
+}
+
+bool Path::existsFile(const std::string& path) {
+    return exists(path, true);
+}
+
+bool Path::existsDir(const std::string& path) {
+    return exists(path, false);
+}
+
+bool Path::createPath(const std::string& path) {
+    return el::base::utils::File::createPath(path);
 }

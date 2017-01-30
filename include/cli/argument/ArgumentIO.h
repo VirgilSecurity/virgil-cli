@@ -85,6 +85,8 @@ public:
 
     model::SecureValue getInput(ArgumentImportance argumentImportance) const;
 
+    model::SecureValue getOutput(ArgumentImportance argumentImportance) const;
+
     model::FileDataSource getInputSource(ArgumentImportance argumentImportance) const;
 
     model::FileDataSink getOutputSink(ArgumentImportance argumentImportance) const;
@@ -106,6 +108,8 @@ public:
     Crypto::Text getCommand(ArgumentImportance argumentImportance) const;
 
     model::CardIdentity getCardIdentity(ArgumentImportance argumentImportance) const;
+
+    model::CardIdentityGroup getCardIdentityGroup(ArgumentImportance argumentImportance) const;
 
     Crypto::Text getCardScope(ArgumentImportance argumentImportance) const;
 

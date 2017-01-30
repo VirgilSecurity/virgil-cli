@@ -34,32 +34,24 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_PATH_H
-#define VIRGIL_CLI_PATH_H
+#ifndef VIRGIL_CLI_CARD_SEARCH_COMMAND_H
+#define VIRGIL_CLI_CARD_SEARCH_COMMAND_H
 
-#include <string>
 
-namespace cli { namespace io {
+#include <cli/command/Command.h>
 
-class Path {
+namespace cli { namespace command {
+
+class CardSearchCommand : public Command {
 public:
-    static std::string prefixPath();
-    static std::string homePath();
-    static std::string exePath();
-    static std::string binPath();
-    static std::string libPath();
-    static std::string manPath();
-    static std::string cfgPath();
-    static std::string logPath();
-    static std::string joinPath(const std::string& left, const std::string& right);
-    static std::string pathSeparator();
-    static std::string removeSubPath(const std::string& path, const std::string& subPath);
-    static bool exists(const std::string& path, bool considerFile);
-    static bool existsFile(const std::string& path);
-    static bool existsDir(const std::string& path);
-    static bool createPath(const std::string& path);
+    using Command::Command;
+private:
+    virtual const char* doGetName() const override;
+    virtual const char* doGetUsage() const override;
+    virtual argument::ArgumentParseOptions doGetArgumentParseOptions() const override;
+    virtual void doProcess() const override;
 };
 
 }}
 
-#endif //VIRGIL_CLI_PATH_H
+#endif //VIRGIL_CLI_CARD_SEARCH_COMMAND_H

@@ -38,6 +38,8 @@
 #define VIRGIL_CLI_CARD_IDENTITY_H
 
 #include <string>
+#include <vector>
+#include <unordered_map>
 
 namespace cli { namespace model {
 
@@ -51,6 +53,17 @@ public:
 private:
     std::string value_;
     std::string type_;
+};
+
+class CardIdentityGroup {
+public:
+    // identity_type -> set of identity_value
+    using Container = std::unordered_map<std::string, std::vector<std::string>>;
+public:
+    void append(std::string value, std::string type = "") { identities_[type].push_back(std::move(value)); }
+    const Container& identities() const { return identities_; }
+private:
+    Container identities_;
 };
 
 }}

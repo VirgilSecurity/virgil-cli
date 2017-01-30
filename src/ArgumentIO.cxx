@@ -107,6 +107,13 @@ SecureValue ArgumentIO::getInput(ArgumentImportance argumentImportance) const {
     return argumentValueSource_->readPassword(argument.asValue());
 }
 
+SecureValue ArgumentIO::getOutput(ArgumentImportance argumentImportance) const {
+    ULOG1(INFO) << tfm::format("Read output.");
+    auto argument = argumentSource_->read(opt::OUT, argumentImportance);
+    //TODO: Add validation
+    return argumentValueSource_->readPassword(argument.asValue());
+}
+
 FileDataSource ArgumentIO::getInputSource(ArgumentImportance argumentImportance) const {
     ULOG1(INFO) << tfm::format("Read input.");
     auto argument = argumentSource_->read(opt::IN, argumentImportance);
@@ -206,10 +213,26 @@ Crypto::Text ArgumentIO::getCommand(ArgumentImportance argumentImportance) const
 }
 
 CardIdentity ArgumentIO::getCardIdentity(ArgumentImportance argumentImportance) const {
-    ULOG2(INFO) << "Read Card's Identity.";
+    ULOG2(INFO) << "Read Card's Identities.";
     auto argument = argumentSource_->read(arg::IDENTITY, argumentImportance);
     //TODO: Add validation
     return CardIdentity(argument.asValue().value(), argument.asValue().key());
+}
+
+CardIdentityGroup ArgumentIO::getCardIdentityGroup(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Card's Identity.";
+    auto argument = argumentSource_->read(arg::IDENTITY, argumentImportance);
+    CardIdentityGroup identityGroup;
+    //TODO: Add argument validation
+    if (argument.isList()) {
+        for (const auto argumentValue : argument.asList()) {
+            //TODO: Add argument value validation
+            identityGroup.append(argumentValue.value(), argumentValue.key());
+        }
+    } else {
+        identityGroup.append(argument.asValue().value(), argument.asValue().key());
+    }
+    return identityGroup;
 }
 
 Crypto::Text ArgumentIO::getCardScope(ArgumentImportance argumentImportance) const {

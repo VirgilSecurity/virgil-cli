@@ -209,27 +209,22 @@ static constexpr char VIRGIL_CARD_SEARCH[] = R"(
 virgil-card-search - searches for a Virgil Card(s) by its identities (required), identity-type and scope.
 
 USAGE:
-    virgil card-search [options] [-D <config>...] [-o <arg>] -d <identity>... [-t <arg>] [-s <scope>]
+    virgil card-search [options] [-D <config>...] [-o <arg>] [-s <scope>] <identity>...
 
 OPTIONS:
     -o <file>, --out=<file>  
-        The Virgil Card. If omitted, stdout is used.
-    -d <identity>, --identity=<identity>  
-            * for confirmed Virgil Card with an identity type of 'email' the identity must be a valid email;
-            * for segregated Virgil Card the identity can be any value.
-        Multiple identitites can be used for the Virgil Cards search.
-    -t <arg>, --identity-type=<arg>  
-        TBD
-    <identity-type>
-        Specifies the identity-type of a Virgil Cards to be found.
-            * for confirmed Virgil Card the identity-type must be email;
-            * for segregated Virgil Card the identity-type can be any value.
-        If omitted, email is used.
+        A folder where Virgil Cards will be saved. If omitted, stdout is used.
     -s <scope>, --scope=<scope>  
-        Specifies the scope to perform search on.
+        Specifies the scope to perform search on [default: application].
             * for global Virgil Card the scope must be global;
             * for application Virgil Card the scope must be application.
         If omitted, application is used.
+    <identity>
+        Identity to be found.
+        Multiple identitites can be used for the Virgil Cards search.
+        Format: <type>:<value>
+            * for confirmed Virgil Card identity type must be email and identity value must be a valid email;
+            * for segregated Virgil Card the identity type and value can be any value.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -545,8 +540,6 @@ static constexpr char CONTENT_INFO[] = "--content-info";
 static constexpr char DATA[] = "--data";
 static constexpr char D_SHORT[] = "-D";
 static constexpr char HELP[] = "--help";
-static constexpr char IDENTITY[] = "--identity";
-static constexpr char IDENTITY_TYPE[] = "--identity-type";
 static constexpr char IN[] = "--in";
 static constexpr char INFO[] = "--info";
 static constexpr char INTERACTIVE[] = "--interactive";
@@ -572,7 +565,6 @@ namespace cli { namespace arg {
 static constexpr char ARGS[] = "<args>";
 static constexpr char COMMAND[] = "<command>";
 static constexpr char IDENTITY[] = "<identity>";
-static constexpr char IDENTITY_TYPE[] = "<identity-type>";
 static constexpr char KEYPASS[] = "<keypass>";
 static constexpr char RECIPIENT_ID[] = "<recipient-id>";
 

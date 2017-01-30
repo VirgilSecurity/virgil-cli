@@ -60,11 +60,11 @@ void Configurations::init() {
 void Configurations::initConfigFile() {
     auto configDirPath = Path::cfgPath();
     auto configFilePath = Path::joinPath(configDirPath, kConfigurationFile_Name);
-    if (el::base::utils::File::pathExists(configFilePath.c_str())) {
+    if (Path::existsFile(configFilePath)) {
         return;
     }
 
-    if (!el::base::utils::File::createPath(configDirPath.c_str())) {
+    if (!Path::createPath(configDirPath)) {
         throw std::runtime_error(
                 tfm::format("Can not create path '%s'. Possible administrative privileges required.", configDirPath));
     }
@@ -105,7 +105,7 @@ void Configurations::applyConfigFile(int argc, const char* argv[]) {
     el::Helpers::installLogDispatchCallback<cli::io::UserLogDispatchCallback>(kLoggerCallbackId_User);
     // Default loggers
     auto configFilePath = getDefaultConfigFilePath();
-    if (el::base::utils::File::pathExists(configFilePath.c_str())) {
+    if (Path::existsFile(configFilePath)) {
         YAML::Node config = YAML::LoadFile(configFilePath);
         auto loggerConfigContent = config["logger"];
         el::Configurations commonLoggerConfig;

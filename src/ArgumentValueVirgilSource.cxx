@@ -76,7 +76,9 @@ using virgil::sdk::client::models::CardScope;
 using ServiceCrypto = virgil::sdk::crypto::Crypto;
 
 ArgumentValueVirgilSource::ArgumentValueVirgilSource(ArgumentValueVirgilSource&&) = default;
+
 ArgumentValueVirgilSource& ArgumentValueVirgilSource::operator=(ArgumentValueVirgilSource&&) = default;
+
 ArgumentValueVirgilSource::~ArgumentValueVirgilSource() noexcept = default;
 
 namespace cli { namespace argument {
@@ -88,7 +90,7 @@ struct ArgumentValueVirgilSource::Impl {
 }}
 
 ArgumentValueVirgilSource::ArgumentValueVirgilSource()
-        : impl_(std::make_unique<ArgumentValueVirgilSource::Impl>()){
+        : impl_(std::make_unique<ArgumentValueVirgilSource::Impl>()) {
 }
 
 const char* ArgumentValueVirgilSource::doGetName() const {
@@ -103,7 +105,7 @@ void ArgumentValueVirgilSource::doInit(const ArgumentSource& argumentSource) {
 }
 
 std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const ArgumentValue& argumentValue) const {
-    if(impl_->accessToken.empty()) {
+    if (impl_->accessToken.empty()) {
         throw ArgumentFileNotFound(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN);
     }
 
@@ -111,11 +113,11 @@ std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const 
     serviceConfig.cardValidator(std::make_unique<CardValidator>(std::make_shared<ServiceCrypto>()));
     Client client(std::move(serviceConfig));
 
-    auto globalCardsFuture = client.searchCards(
-            SearchCardsCriteria::createCriteria(CardScope::global, argumentValue.key(), { argumentValue.value() }));
+    auto globalCardsFuture = client.searchCards(SearchCardsCriteria::createCriteria(
+            { argumentValue.value() }, CardScope::global, argumentValue.key()));
 
-    auto applicationCardsFuture = client.searchCards(
-            SearchCardsCriteria::createCriteria(CardScope::application, argumentValue.key(), { argumentValue.value() }));
+    auto applicationCardsFuture = client.searchCards(SearchCardsCriteria::createCriteria(
+            { argumentValue.value() }, CardScope::application, argumentValue.key()));
 
     try {
         ULOG1(INFO) << "Loading Virgil Cards...";
