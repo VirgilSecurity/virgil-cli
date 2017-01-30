@@ -115,8 +115,8 @@ std::unique_ptr<ArgumentSource> createArgumentSource(int argc, const char* argv[
             cli::Configurations::getDefaultConfigFilePath());
 
     commandArgumentSource->
-            appendSource(std::move(interactiveArgumentSource))->
-            appendSource(std::move(argumentConfigSource));
+            appendSource(std::move(argumentConfigSource))->
+            appendSource(std::move(interactiveArgumentSource));
 
     commandArgumentSource->setupRules(std::make_unique<ArgumentRules>());
 
