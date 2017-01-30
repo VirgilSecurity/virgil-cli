@@ -97,6 +97,12 @@ COMMANDS:
         Search for the Virgil Card from the Virgil Keys Service by the identity.
     card-revoke
         Revoke the Virgil Card by the Virgil Card id.
+
+CONFIGURATION VALUES:
+        * APP_ACCESS_TOKEN - is a unique string value that provides an authenticated secure access to the Virgil services.
+        * APP_KEY_ID - is a unique string value that identifies your application in our services.
+        * APP_KEY_DATA - is a Private key that is used to perform creation and revocation of Virgil Cards (Public key) in the Virgil services.
+        * APP_KEY_PASSWORD - password to the APP_KEY_DATA.
 )";
 
 static constexpr char VIRGIL_CARD_CREATE[] = R"(
@@ -145,6 +151,11 @@ OPTIONS:
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
     --  
         Ignores the rest of the labeled arguments following this flag.
+
+CONFIGURATION VALUES:
+        * APP_KEY_ID - is a unique string value that identifies your application in our services.
+        * APP_KEY_DATA - is a Private key that is used to perform creation and revocation of Virgil Cards (Public key) in the Virgil services.
+        * APP_KEY_PASSWORD - password to the APP_KEY_DATA.
 )";
 
 static constexpr char VIRGIL_CARD_GET[] = R"(
