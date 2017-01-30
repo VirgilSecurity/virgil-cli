@@ -147,21 +147,17 @@ OPTIONS:
         Ignores the rest of the labeled arguments following this flag.
 )";
 
-static constexpr char VIRGIL_CARD_DELETE[] = R"(
-virgil-card-delete - revokes a Virgil Card directly or by the Virgil Card id
+static constexpr char VIRGIL_CARD_GET[] = R"(
+virgil-card-get - return the Virgil Card from the Virgil Keys Service by the Virgil Card id.
 
 USAGE:
-    virgil card-delete [options] [-D <config>...] [-i <file>] -k <file> [-p <arg>] [-r <reason>]
+    virgil card-get [options] [-D <config>...] [-i <arg>] [-o <file>]
 
 OPTIONS:
-    -i <file>, --in=<file>  
-        The Virgil Card id or the Virgil Card itself for revocation. If omitted, stdin is used.
-    -k <file>, --private-key=<file>  
-        The Private Key.
-    -p <arg>, --private-key-password=<arg>  
-        The Private Key password (if needed).
-    -r <reason>, --revocation-reason=<reason>  
-        The revocation reason must be unspecified or compromised. If omitted, unspecified is used.
+    -i <arg>, --in=<arg>  
+        Virgil Card id. If omitted, stdin is used.
+    -o <file>, --out=<file>  
+        A folder where Virgil Cards will be saved. If omitted, stdout is used.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -180,17 +176,17 @@ OPTIONS:
         Ignores the rest of the labeled arguments following this flag.
 )";
 
-static constexpr char VIRGIL_CARD_GET[] = R"(
-virgil-card-get - return the Virgil Card from the Virgil Keys Service by the Virgil Card id.
+static constexpr char VIRGIL_CARD_REVOKE[] = R"(
+virgil-card-revoke - revokes a Virgil Card directly or by the Virgil Card id
 
 USAGE:
-    virgil card-get [options] [-D <config>...] [-i <arg>] [-o <arg>]
+    virgil card-revoke [options] [-D <config>...] [-i <file>] [-r <reason>]
 
 OPTIONS:
-    -i <arg>, --in=<arg>  
-        Virgil Card id. If omitted, stdin is used.
-    -o <file>, --out=<file>  
-        A folder where Virgil Cards will be saved. If omitted, stdout is used.
+    -i <file>, --in=<file>  
+        The Virgil Card id or the Virgil Card itself for revocation. If omitted, stdin is used.
+    -r <reason>, --revocation-reason=<reason>  
+        The revocation reason must be unspecified or compromised [default: unspecified].
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -606,11 +602,11 @@ static const char* VIRGIL_CARD_CREATE_SCOPE_VALUES[] = {
     nullptr
 };
 
-static constexpr char VIRGIL_CARD_DELETE_REASON_COMPROMISED[] = "compromised";
-static constexpr char VIRGIL_CARD_DELETE_REASON_UNSPECIFIED[] = "unspecified";
-static const char* VIRGIL_CARD_DELETE_REASON_VALUES[] = {
-    VIRGIL_CARD_DELETE_REASON_COMPROMISED,
-    VIRGIL_CARD_DELETE_REASON_UNSPECIFIED,
+static constexpr char VIRGIL_CARD_REVOKE_REASON_COMPROMISED[] = "compromised";
+static constexpr char VIRGIL_CARD_REVOKE_REASON_UNSPECIFIED[] = "unspecified";
+static const char* VIRGIL_CARD_REVOKE_REASON_VALUES[] = {
+    VIRGIL_CARD_REVOKE_REASON_COMPROMISED,
+    VIRGIL_CARD_REVOKE_REASON_UNSPECIFIED,
     nullptr
 };
 

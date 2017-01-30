@@ -34,29 +34,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_CARD_H
-#define VIRGIL_CLI_CARD_H
+#include <cli/model/Card.h>
 
-#include <virgil/sdk/client/models/Card.h>
+#include <virgil/sdk/client/models/ClientCommon.h>
 
-#include <string>
+using cli::model::CardScope;
+using cli::model::CardRevocationReason;
 
-namespace cli { namespace model {
-
-using Card = virgil::sdk::client::models::Card;
-using CardScope = virgil::sdk::client::models::CardScope;
-using CardRevocationReason = virgil::sdk::client::models::CardRevocationReason;
-
-CardScope card_scope_from(const std::string& str);
-CardRevocationReason card_revocation_reason_from(const std::string& str);
-
-}}
-
-namespace std {
-
-string to_string(cli::model::CardScope scope);
-string to_string(cli::model::CardRevocationReason reason);
-
+std::string std::to_string(cli::model::CardScope scope) {
+    return virgil::sdk::client::models::cardScopeToStr(scope);
 }
 
-#endif //VIRGIL_CLI_CARD_H
+std::string std::to_string(cli::model::CardRevocationReason reason) {
+    return virgil::sdk::client::models::cardRevocationReasonToStr(reason);
+}
+
+CardScope cli::model::card_scope_from(const std::string& str) {
+    return virgil::sdk::client::models::strToCardScope(str);
+}
+
+CardRevocationReason cli::model::card_revocation_reason_from(const std::string& str) {
+    return virgil::sdk::client::models::strToCardRevocationReason(str);
+}

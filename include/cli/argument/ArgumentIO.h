@@ -117,6 +117,10 @@ public:
 
     model::ApplicationCredentials getAppCredentials(ArgumentImportance argumentImportance) const;
 
+    model::Card getCardFromInput(ArgumentImportance argumentImportance) const;
+
+    model::CardRevocationReason getCardRevokeReason(ArgumentImportance argumentImportance) const;
+
 private:
     model::FileDataSource getSource(const ArgumentValue& argumentValue) const;
 

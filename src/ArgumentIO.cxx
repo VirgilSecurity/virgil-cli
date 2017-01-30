@@ -209,7 +209,7 @@ CardIdentity ArgumentIO::getCardIdentity(ArgumentImportance argumentImportance) 
     ULOG2(INFO) << "Read Card's Identity.";
     auto argument = argumentSource_->read(arg::IDENTITY, argumentImportance);
     //TODO: Add validation
-    return CardIdentity(argument.asValue().key(), argument.asValue().value());
+    return CardIdentity(argument.asValue().value(), argument.asValue().key());
 }
 
 Crypto::Text ArgumentIO::getCardScope(ArgumentImportance argumentImportance) const {
@@ -267,6 +267,23 @@ ApplicationCredentials ArgumentIO::getAppCredentials(ArgumentImportance argument
             SecureValue(argumentAppKeyData.asValue().origin()),
             SecureValue(argumentAppKeyPassword.asValue().origin())
     );
+}
+
+Card ArgumentIO::getCardFromInput(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Virgil Card from input.";
+    auto argument = argumentSource_->read(opt::IN, argumentImportance);
+    auto values = argumentValueSource_->readCards(argument.asValue());
+    if (values.size() > 0) {
+        return values[0];
+    }
+    throw error::ArgumentRuntimeError("Card was not read.");
+}
+
+CardRevocationReason ArgumentIO::getCardRevokeReason(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Virgil Card revocation reason.";
+    auto argument = argumentSource_->read(opt::REVOCATION_REASON, argumentImportance);
+    //TODO: Add validation
+    return card_revocation_reason_from(argument.asValue().asString());
 }
 
 

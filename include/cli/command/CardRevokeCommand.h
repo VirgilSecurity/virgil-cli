@@ -34,29 +34,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_CARD_H
-#define VIRGIL_CLI_CARD_H
+#ifndef VIRGIL_CLI_CARD_REVOKE_COMMAND_H
+#define VIRGIL_CLI_CARD_REVOKE_COMMAND_H
 
-#include <virgil/sdk/client/models/Card.h>
+#include <cli/command/Command.h>
 
-#include <string>
+namespace cli { namespace command {
 
-namespace cli { namespace model {
-
-using Card = virgil::sdk::client::models::Card;
-using CardScope = virgil::sdk::client::models::CardScope;
-using CardRevocationReason = virgil::sdk::client::models::CardRevocationReason;
-
-CardScope card_scope_from(const std::string& str);
-CardRevocationReason card_revocation_reason_from(const std::string& str);
+class CardRevokeCommand : public Command {
+public:
+    using Command::Command;
+private:
+    virtual const char* doGetName() const override;
+    virtual const char* doGetUsage() const override;
+    virtual argument::ArgumentParseOptions doGetArgumentParseOptions() const override;
+    virtual void doProcess() const override;
+};
 
 }}
 
-namespace std {
-
-string to_string(cli::model::CardScope scope);
-string to_string(cli::model::CardRevocationReason reason);
-
-}
-
-#endif //VIRGIL_CLI_CARD_H
+#endif //VIRGIL_CLI_CARD_REVOKE_COMMAND_H
