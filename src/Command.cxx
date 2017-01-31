@@ -87,11 +87,18 @@ void Command::process() {
     } catch (const error::ArgumentRuntimeError& error) {
         showUsage(error.what());
     } catch (const VirgilCryptoException& exception) {
-        ULOG1(FATAL) << exception.what();
+        ULOG3(FATAL) << exception.what();
         showUsage(exception.condition().message().c_str());
     } catch (const VirgilSdkException& exception) {
-        ULOG1(FATAL) << exception.what();
-        showUsage(exception.condition().message().c_str());
+        std::string message(exception.what());
+        if (message.find("HTTP Code: 404") != std::string::npos) {
+            //TODO: Change this hot-fix when service will support informative message for this case.
+            showUsage((exception.condition().message() + " Requested entity is not found.").c_str());
+            LOG(FATAL) << exception.what();
+        } else {
+            ULOG3(FATAL) << exception.what();
+            showUsage(exception.condition().message().c_str());
+        }
     }
 }
 
