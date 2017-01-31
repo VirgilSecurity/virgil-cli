@@ -161,7 +161,19 @@ std::string ArgumentValue::alias() const {
 }
 
 std::string std::to_string(const ArgumentValue& argumentValue) {
-    return argumentValue.origin();
+    auto value =
+#if defined(_DEBUG) && !defined(NDEBUG)
+            argumentValue.value();
+#else
+            "<hidden>";
+#endif
+    if (argumentValue.isKeyValueAlias()) {
+        return tfm::format("%s:%s:%s", argumentValue.key(), value, argumentValue.alias());
+    } else if (argumentValue.isKeyValue()) {
+        return tfm::format("%s:%s", argumentValue.key(), value);
+    } else {
+        return value;
+    }
 }
 
 void ArgumentValue::throwIfNotKind(ArgumentValue::Kind kind) const {

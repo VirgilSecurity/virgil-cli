@@ -350,7 +350,6 @@ void ArgumentIO::readPrivateKeyPassword(PrivateKey& privateKey, const ArgumentVa
     }
     std::string passwordOption = opt::PRIVATE_KEY_PASSWORD;
     do {
-        ULOG3(INFO) << tfm::format("Read password for the private key: '%s'.", std::to_string(argumentValue));
         auto argument = argumentSource_->read(passwordOption.c_str(), ArgumentImportance::Required);
         auto password = argumentValueSource_->readPassword(argument.asValue());
         if (privateKey.checkPassword(password)) {
