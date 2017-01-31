@@ -57,6 +57,6 @@ void PublicKey::deriveIdentifier() {
         return;
     }
     identifier_ = Crypto::Hash(Crypto::HashAlgorithm::SHA256).hash(Crypto::KeyPair::publicKeyToDER(key_));
-    ULOG2(INFO) << "Identifier for the public key is not defined.";
-    ULOG2(INFO) << tfm::format("Derived public key identifier is: '%s'.", Crypto::ByteUtils::bytesToHex(identifier_));
+    LOG(INFO) << "Identifier for the public key is not defined.";
+    LOG(INFO) << tfm::format("Derived public key identifier is: '%s'.", Crypto::ByteUtils::bytesToHex(identifier_));
 }
