@@ -42,7 +42,7 @@
 #include <cli/argument/ArgumentIO.h>
 #include <cli/argument/ArgumentSource.h>
 #include <cli/argument/ArgumentCommandLineSource.h>
-#include <cli/argument/ArgumentUserSource.h>
+#include <cli/argument/ArgumentUserInputSource.h>
 #include <cli/argument/ArgumentDefaultsSource.h>
 #include <cli/argument/ArgumentConfigSource.h>
 #include <cli/argument/ArgumentValueSource.h>
@@ -67,7 +67,7 @@ using cli::argument::ArgumentValueSource;
 using cli::argument::ArgumentCommandLineSource;
 using cli::argument::ArgumentConfigSource;
 using cli::argument::ArgumentDefaultsSource;
-using cli::argument::ArgumentUserSource;
+using cli::argument::ArgumentUserInputSource;
 using cli::argument::ArgumentValueSource;
 using cli::argument::ArgumentValueFileSource;
 using cli::argument::ArgumentValueVirgilSource;
@@ -112,7 +112,7 @@ std::unique_ptr<ArgumentSource> createArgumentSource(int argc, const char* argv[
     commandArgumentSource->
             appendSource(std::make_unique<ArgumentConfigSource>(cli::Configurations::getDefaultConfigFilePath()))->
             appendSource(std::make_unique<ArgumentDefaultsSource>())->
-            appendSource(std::make_unique<ArgumentUserSource>(std::make_unique<StandardCommandPrompt>()));
+            appendSource(std::make_unique<ArgumentUserInputSource>(std::make_unique<StandardCommandPrompt>()));
 
     commandArgumentSource->setupRules(std::make_unique<ArgumentRules>());
     return std::move(commandArgumentSource);

@@ -34,28 +34,52 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_USER_SOURCE_H
-#define VIRGIL_CLI_ARGUMENT_USER_SOURCE_H
+#include <cli/argument/ArgumentUserInputSource.h>
 
-#include <cli/argument/ArgumentSource.h>
+#include <cli/api/api.h>
+#include <cli/api/Version.h>
+#include <cli/error/ArgumentError.h>
+#include <cli/io/Logger.h>
+#include <cli/crypto/Crypto.h>
 
-#include <cli/cmd/CommandPrompt.h>
+#include <docopt/docopt.h>
 
-namespace cli { namespace argument {
+using cli::argument::Argument;
+using cli::argument::ArgumentSource;
+using cli::argument::ArgumentUserInputSource;
+using cli::argument::ArgumentRules;
+using cli::argument::ArgumentImportance;
+using cli::cmd::CommandPrompt;
 
-class ArgumentUserSource : public ArgumentSource {
-public:
-    ArgumentUserSource(std::shared_ptr<cmd::CommandPrompt> cmd);
-public:
-    virtual const char* doGetName() const override;
-    virtual void doInit(const std::string& usage, const ArgumentParseOptions& usageOptions) override;
-    virtual void doUpdateRules() override;
-    virtual bool doCanRead(const char* argName, ArgumentImportance argumentImportance) const override;
-    virtual Argument doRead(const char* argName) const override;
-private:
-    std::shared_ptr<cmd::CommandPrompt> cmd_;
-};
+using ArgumentParseOptions = cli::argument::ArgumentParseOptions;
 
-}}
 
-#endif //VIRGIL_CLI_ARGUMENT_USER_SOURCE_H
+ArgumentUserInputSource::ArgumentUserInputSource(std::shared_ptr<CommandPrompt> cmd) : cmd_(cmd) {
+}
+
+const char* ArgumentUserInputSource::doGetName() const {
+    return "ArgumentUserInputSource";
+}
+
+void ArgumentUserInputSource::doInit(const std::string& usage, const ArgumentParseOptions& usageOptions) {
+    cmd_->init(usage);
+}
+
+void ArgumentUserInputSource::doUpdateRules() {
+    // Do nothing
+}
+
+bool ArgumentUserInputSource::doCanRead(const char* argName, ArgumentImportance argumentImportance) const {
+    (void)argName;
+    switch (argumentImportance) {
+        case ArgumentImportance::Required:
+            return getArgumentRules()->allowUserInteraction();
+        case ArgumentImportance::Optional:
+            return getArgumentRules()->allowUserInteraction() &&
+                    getArgumentRules()->allowUserInteractionForOptionalArguments();
+    }
+}
+
+Argument ArgumentUserInputSource::doRead(const char* argName) const {
+    return Argument(cmd_->readString(argName));
+}
