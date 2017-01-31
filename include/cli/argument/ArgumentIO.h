@@ -101,6 +101,8 @@ public:
 
     model::PrivateKey getPrivateKey(ArgumentImportance argumentImportance) const;
 
+    model::PrivateKey getPrivateKeyFromInput(ArgumentImportance argumentImportance) const;
+
     model::PublicKey getSenderKey(ArgumentImportance argumentImportance) const;
 
     model::FileDataSource getSignatureSource(ArgumentImportance argumentImportance) const;

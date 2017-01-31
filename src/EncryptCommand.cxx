@@ -61,25 +61,24 @@ ArgumentParseOptions EncryptCommand::doGetArgumentParseOptions() const {
 
 
 void EncryptCommand::doProcess() const {
-    ULOG2(INFO) << "Read parameters.";
+    ULOG1(INFO) << "Read parameters.";
     auto input = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
     auto output = getArgumentIO()->getOutputSink(ArgumentImportance::Optional);
-
+    auto encryptCredentials = getArgumentIO()->getEncryptCredentials(ArgumentImportance::Required);
     bool doWriteContentInfo = getArgumentIO()->hasContentInfo();
     bool embedContentInfo = !doWriteContentInfo;
 
-    ULOG2(INFO) << "Add recipients to the cipher.";
+    ULOG1(INFO) << "Add recipients.";
     Crypto::StreamCipher cipher;
-    auto encryptCredentials = getArgumentIO()->getEncryptCredentials(ArgumentImportance::Required);
     for (const auto& credential : encryptCredentials) {
         credential->addSelfTo(cipher);
     }
 
-    ULOG2(INFO) << "Encrypt data.";
+    ULOG1(INFO) << "Encrypt data and write to the output.";
     cipher.encrypt(input, output, embedContentInfo);
 
     if (doWriteContentInfo) {
-        ULOG2(INFO) << "Write content info.";
+        ULOG1(INFO) << "Write content info.";
         getArgumentIO()->getContentInfoSink(ArgumentImportance::Required).write(cipher.getContentInfo());
     }
 }

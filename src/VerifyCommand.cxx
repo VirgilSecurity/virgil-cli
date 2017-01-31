@@ -66,11 +66,12 @@ ArgumentParseOptions VerifyCommand::doGetArgumentParseOptions() const {
 
 void VerifyCommand::doProcess() const {
 
+    ULOG1(INFO) << "Read arguments.";
     auto data = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
     auto signature = getArgumentIO()->getSignatureSource(ArgumentImportance::Required);
     auto senderKey = getArgumentIO()->getSenderKey(ArgumentImportance::Required);
 
-    ULOG1(INFO) << "Verify input.";
+    ULOG1(INFO) << "Verify input data with given sign.";
     Crypto::StreamSigner signer;
     bool verified = signer.verify(data, signature.readAll(), senderKey.key());
 

@@ -61,14 +61,14 @@ ArgumentParseOptions KeygenCommand::doGetArgumentParseOptions() const {
 }
 
 void KeygenCommand::doProcess() const {
+    ULOG1(INFO) << "Read arguments.";
     auto keyAlgorithm = getArgumentIO()->getKeyAlgorithm(ArgumentImportance::Required);
     auto keyPasswordImportance = getArgumentIO()->hasNoPassword() ?
                                  ArgumentImportance::Optional : ArgumentImportance::Required;
-
     auto keyPassword = getArgumentIO()->getKeyPassword(keyPasswordImportance);
 
-    ULOG1(INFO)  << "Generate key pair.";
+    ULOG1(INFO)  << "Generate private key.";
     VirgilKeyPair keyPair = VirgilKeyPair::generate(keyAlgorithm.algorithm(), keyPassword.bytesValue());
-    ULOG1(INFO)  << "Write key pair to the output.";
+    ULOG1(INFO)  << "Write private key to the output.";
     getArgumentIO()->getOutputSink(ArgumentImportance::Optional).write(keyPair.privateKey());
 }

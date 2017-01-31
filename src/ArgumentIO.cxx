@@ -185,6 +185,14 @@ PrivateKey ArgumentIO::getPrivateKey(ArgumentImportance argumentImportance) cons
     return std::move(privateKey);
 }
 
+PrivateKey ArgumentIO::getPrivateKeyFromInput(ArgumentImportance argumentImportance) const {
+    auto argument = argumentSource_->read(opt::IN, argumentImportance);
+    auto source = getSource(argument.asValue());
+    PrivateKey privateKey(source.readAll(), Crypto::Bytes());
+    readPrivateKeyPassword(privateKey, argument.asValue());
+    return std::move(privateKey);
+}
+
 Password ArgumentIO::getKeyPassword(ArgumentImportance argumentImportance) const {
     auto argument = argumentSource_->read(opt::PRIVATE_KEY_PASSWORD, argumentImportance);
     //TODO: Add validation

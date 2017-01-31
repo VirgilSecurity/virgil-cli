@@ -61,21 +61,20 @@ ArgumentParseOptions DecryptCommand::doGetArgumentParseOptions() const {
 }
 
 void DecryptCommand::doProcess() const {
-    ULOG2(INFO)  << "Read parameters.";
+    ULOG1(INFO)  << "Read parameters.";
     auto input = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
     auto output = getArgumentIO()->getOutputSink(ArgumentImportance::Optional);
     bool hasContentInfo = getArgumentIO()->hasContentInfo();
-
     auto recipients = getArgumentIO()->getDecryptCredentials(ArgumentImportance::Required);
 
     Crypto::StreamCipher cipher;
     if (hasContentInfo) {
-        ULOG2(INFO)  << "Set cipher's content info.";
         auto contentInfo = getArgumentIO()->getContentInfoSource(ArgumentImportance::Required).readAll();
+        ULOG1(INFO)  << "Set content info.";
         cipher.setContentInfo(contentInfo);
     }
 
-    ULOG2(INFO)  << "Start decryption.";
+    ULOG1(INFO)  << "Decrypt and write to the output.";
     bool decrypted = false;
     for (const auto& recipient : recipients) {
         decrypted = recipient->decrypt(cipher, input, output);
@@ -86,5 +85,4 @@ void DecryptCommand::doProcess() const {
     if (!decrypted) {
         throw error::ArgumentRecipientDecryptionError();
     }
-    ULOG2(INFO)  << "End decryption.";
 }

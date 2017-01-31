@@ -62,14 +62,11 @@ ArgumentParseOptions SignCommand::doGetArgumentParseOptions() const {
 }
 
 void SignCommand::doProcess() const {
-
-    ULOG1(INFO) << "Prepare input.";
+    ULOG1(INFO) << "Read arguments.";
     auto data = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
-
-    ULOG1(INFO) << "Read private key.";
     auto privateKey = getArgumentIO()->getPrivateKey(ArgumentImportance::Required);
 
-    ULOG1(INFO) << "Sign input.";
+    ULOG1(INFO) << "Sign input data.";
     Crypto::StreamSigner signer;
     auto signature = signer.sign(data, privateKey.key(), privateKey.password().bytesValue());
 

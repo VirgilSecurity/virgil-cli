@@ -64,16 +64,10 @@ ArgumentParseOptions KeyToPubCommand::doGetArgumentParseOptions() const {
 }
 
 void KeyToPubCommand::doProcess() const {
-    ULOG1(INFO)  << "Read private key.";
-    auto privateKeySource = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
-    PrivateKey privateKey(privateKeySource.readAll(), Crypto::Bytes());
-
-    Password privateKeyPassword;
-    if (privateKey.isEncrypted()) {
-        privateKeyPassword = getArgumentIO()->getKeyPassword(ArgumentImportance::Required);
-    }
+    ULOG1(INFO) << "Read arguments.";
+    auto privateKey = getArgumentIO()->getPrivateKeyFromInput(ArgumentImportance::Optional);
     ULOG1(INFO)  << "Extract public key.";
-    auto publicKey = Crypto::KeyPair::extractPublicKey(privateKey.key(), privateKeyPassword.bytesValue());
-    ULOG1(INFO)  << "Write public key.";
+    auto publicKey = Crypto::KeyPair::extractPublicKey(privateKey.key(), privateKey.password().bytesValue());
+    ULOG1(INFO)  << "Write public key to the output.";
     getArgumentIO()->getOutputSink(ArgumentImportance::Optional).write(publicKey);
 }
