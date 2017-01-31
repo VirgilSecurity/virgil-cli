@@ -96,8 +96,15 @@ writer(level, __FILE__, __LINE__, ELPP_FUNC, dispatchAction, vlevel).construct(e
 #define UCLOG(LEVEL, vlevel, ...) UC##LEVEL(el::base::Writer, el::base::DispatchAction::NormalLog, vlevel, __VA_ARGS__)
 
 #define UVLOG(LEVEL, vlevel) UCLOG(LEVEL, vlevel, ELPP_CURR_FILE_LOGGER_ID, kLoggerId_User)
-#define ULOG(LEVEL) UCLOG(LEVEL, 0, ELPP_CURR_FILE_LOGGER_ID, kLoggerId_User)
-#define ULOG1(LEVEL) UCLOG(LEVEL, 1, ELPP_CURR_FILE_LOGGER_ID, kLoggerId_User)
-#define ULOG2(LEVEL) UCLOG(LEVEL, 2, ELPP_CURR_FILE_LOGGER_ID, kLoggerId_User)
+#define ULOG(LEVEL)  UVLOG(LEVEL, 0)
+#define ULOG1(LEVEL) UVLOG(LEVEL, 1)
+#define ULOG2(LEVEL) UVLOG(LEVEL, 2)
+#define ULOG3(LEVEL) UVLOG(LEVEL, 3)
+#define ULOG4(LEVEL) UVLOG(LEVEL, 4)
+#define ULOG5(LEVEL) UVLOG(LEVEL, 5)
+#define ULOG6(LEVEL) UVLOG(LEVEL, 6)
+#define ULOG7(LEVEL) UVLOG(LEVEL, 7)
+#define ULOG8(LEVEL) UVLOG(LEVEL, 8)
+#define ULOG9(LEVEL) UVLOG(LEVEL, 9)
 
 #endif //VIRGIL_CLI_LOGGER_H
