@@ -112,23 +112,11 @@ void ArgumentSource::init(const std::string& usage, const ArgumentParseOptions& 
 }
 
 Argument ArgumentSource::read(const char* argName, ArgumentImportance argImportance) const {
-    LOG(INFO) << tfm::format("Search source for argument: '%s' (%s)", argName, std::to_string(argImportance));
-    for (auto source = this; source != nullptr; source = source->nextSource_.get()) {
-        LOG(INFO) << "Ask source:" << source->getName();
-        if (source->doCanRead(argName, argImportance)) {
-            LOG(INFO) << tfm::format("Read argument: '%s' (%s), from the source: %s.",
-                    argName, std::to_string(argImportance), source->getName());
-            return source->doRead(argName);
-        }
-    }
-    switch (argImportance) {
-        case ArgumentImportance::Required:
-            LOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argName);
-            throw error::ArgumentNotFoundError(argName);
-        case ArgumentImportance::Optional:
-            LOG(WARNING) << tfm::format("Optional argument '%s' is not defined. Return empty value.", argName);
-            return Argument();
-    }
+    return internalRead(argName, argImportance, false);
+}
+
+Argument ArgumentSource::readSecure(const char* argName, ArgumentImportance argImportance) const {
+    return internalRead(argName, argImportance, true);
 }
 
 Argument ArgumentSource::read(const std::vector<const char*>& argNames, ArgumentImportance argImportance) const {
@@ -153,4 +141,32 @@ Argument ArgumentSource::read(const std::vector<const char*>& argNames, Argument
             LOG(WARNING) << tfm::format("Optional argument '%s' is not defined. Return empty value.", argNamesString);
             return Argument();
     }
+}
+
+Argument ArgumentSource::internalRead(const char* argName, ArgumentImportance argImportance, bool isSecure) const {
+    LOG(INFO) << tfm::format("Search source for argument: '%s' (%s)", argName, std::to_string(argImportance));
+    for (auto source = this; source != nullptr; source = source->nextSource_.get()) {
+        LOG(INFO) << "Ask source:" << source->getName();
+        if (source->doCanRead(argName, argImportance)) {
+            LOG(INFO) << tfm::format("Read argument: '%s' (%s), from the source: %s.",
+                    argName, std::to_string(argImportance), source->getName());
+            if (isSecure) {
+                return source->doReadSecure(argName);
+            } else {
+                return source->doRead(argName);
+            }
+        }
+    }
+    switch (argImportance) {
+        case ArgumentImportance::Required:
+            LOG(ERROR) << tfm::format("Required argument '%s' is not defined.", argName);
+            throw error::ArgumentNotFoundError(argName);
+        case ArgumentImportance::Optional:
+            LOG(WARNING) << tfm::format("Optional argument '%s' is not defined. Return empty value.", argName);
+            return Argument();
+    }
+}
+
+Argument ArgumentSource::doReadSecure(const char* argName) const {
+    return doRead(argName);
 }

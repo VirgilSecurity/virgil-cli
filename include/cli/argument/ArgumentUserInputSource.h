@@ -52,6 +52,7 @@ public:
     virtual void doUpdateRules() override;
     virtual bool doCanRead(const char* argName, ArgumentImportance argumentImportance) const override;
     virtual Argument doRead(const char* argName) const override;
+    virtual Argument doReadSecure(const char* argName) const override;
 private:
     std::shared_ptr<cmd::CommandPrompt> cmd_;
 };

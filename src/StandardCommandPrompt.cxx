@@ -89,6 +89,7 @@ std::string StandardCommandPrompt::doSecureRead() const {
     std::cin >> std::ws;
     std::cin >> result;
     set_stdin_echo(true);
+    std::cout << std::endl;
     return result;
 }
 

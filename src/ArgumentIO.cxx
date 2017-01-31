@@ -199,7 +199,7 @@ PrivateKey ArgumentIO::getPrivateKeyFromInput(ArgumentImportance argumentImporta
 
 Password ArgumentIO::getKeyPassword(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read private key password.";
-    auto argument = argumentSource_->read(opt::PRIVATE_KEY_PASSWORD, argumentImportance);
+    auto argument = argumentSource_->readSecure(opt::PRIVATE_KEY_PASSWORD, argumentImportance);
     //TODO: Add validation
     return argumentValueSource_->readPassword(argument.asValue());
 }
@@ -287,16 +287,17 @@ CardInfo ArgumentIO::getCardInfo(ArgumentImportance argumentImportance) const {
 
 SecureValue ArgumentIO::getAppAccessToken(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Application Access Token.";
-    auto argument = argumentSource_->read(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN, argumentImportance);
+    auto argument = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN, argumentImportance);
     //TODO: Add validation
     return SecureValue(argument.asValue().asString());
 }
 
 ApplicationCredentials ArgumentIO::getAppCredentials(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Application Credentials (identifier, private key, private key password).";
-    auto argumentAppKeyId = argumentSource_->read(arg::value::VIRGIL_CONFIG_APP_KEY_ID, argumentImportance);
-    auto argumentAppKeyData = argumentSource_->read(arg::value::VIRGIL_CONFIG_APP_KEY_DATA, argumentImportance);
-    auto argumentAppKeyPassword = argumentSource_->read(arg::value::VIRGIL_CONFIG_APP_KEY_PASSWORD, argumentImportance);
+    auto argumentAppKeyId = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY_ID, argumentImportance);
+    auto argumentAppKeyData = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY_DATA, argumentImportance);
+    auto argumentAppKeyPassword =
+            argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY_PASSWORD, argumentImportance);
     //TODO: Add validation
     return ApplicationCredentials(
             SecureValue(argumentAppKeyId.asValue().origin()),
@@ -351,7 +352,7 @@ void ArgumentIO::readPrivateKeyPassword(PrivateKey& privateKey, const ArgumentVa
     std::string passwordOption = opt::PRIVATE_KEY_PASSWORD;
     do {
         LOG(INFO) << tfm::format("Read password for the private key: '%s'.", std::to_string(argumentValue));
-        auto argument = argumentSource_->read(passwordOption.c_str(), ArgumentImportance::Required);
+        auto argument = argumentSource_->readSecure(passwordOption.c_str(), ArgumentImportance::Required);
         auto password = argumentValueSource_->readPassword(argument.asValue());
         if (privateKey.checkPassword(password)) {
             privateKey.setPassword(std::move(password));

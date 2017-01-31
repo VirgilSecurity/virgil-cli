@@ -58,6 +58,8 @@ public:
 
     Argument read(const char* argName, ArgumentImportance argImportance) const;
 
+    Argument readSecure(const char* argName, ArgumentImportance argImportance) const;
+
     Argument read(const std::vector<const char *>& argNames, ArgumentImportance argImportance) const;
 
     ArgumentSource* appendSource(std::unique_ptr<ArgumentSource> source);
@@ -78,6 +80,11 @@ private:
     virtual bool doCanRead(const char* argName, ArgumentImportance argumentImportance) const = 0;
 
     virtual Argument doRead(const char* argName) const = 0;
+
+    virtual Argument doReadSecure(const char* argName) const;
+
+private:
+    Argument internalRead(const char* argName, ArgumentImportance argImportance, bool isSecure) const;
 
 private:
     std::unique_ptr<ArgumentSource> nextSource_;

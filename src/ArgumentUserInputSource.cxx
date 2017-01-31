@@ -83,3 +83,7 @@ bool ArgumentUserInputSource::doCanRead(const char* argName, ArgumentImportance 
 Argument ArgumentUserInputSource::doRead(const char* argName) const {
     return Argument(cmd_->readString(argName));
 }
+
+Argument ArgumentUserInputSource::doReadSecure(const char* argName) const {
+    return Argument(cmd_->readSecureString(argName));
+}
