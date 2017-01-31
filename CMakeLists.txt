@@ -102,7 +102,7 @@ if (CLI_ACCESS_TOKEN)
     set (CLI_ACCESS_TOKEN "${CLI_ACCESS_TOKEN}" CACHE STRING
          "Unique value that provides an authenticated secure access to the Virgil services" FORCE)
 else ()
-    virgil_log_error ("CLI_ACCESS_TOKEN is not defined.")
+    virgil_log_info ("CLI_ACCESS_TOKEN is not defined, so user SHOULD define this value in runtime.")
 endif ()
 
 # Define enviroment parameters

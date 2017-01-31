@@ -12,5 +12,3 @@ logger: |
       LOG_FLUSH_THRESHOLD  =  100 ## Flush after every 100 logs
   * VERBOSE:
       FORMAT               =  "%datetime{%Y-%d-%M %H:%m:%s,%g}  [%logger] %level%vlevel  %msg"
-
-APP_ACCESS_TOKEN: "@CLI_ACCESS_TOKEN@"
