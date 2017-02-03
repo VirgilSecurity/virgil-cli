@@ -19,9 +19,7 @@ def createCentos(slaveName){
 		node(slaveName){
 			deleteDir()
 			unstash 'src'
-			cleanDirectoryUnix("build")
 			dir("build"){
-                cleanDirectoryUnix("./install")
 				sh "cmake -DUSE_BOOST_REGEX=ON -DCMAKE_INSTALL_PREFIX=./install .."
 				sh "make -j4 && cpack"
                 def libraryName = readFile('lib_name_full.txt')
@@ -29,10 +27,6 @@ def createCentos(slaveName){
 			}
 		}
 	}
-}
-
-def cleanDirectoryUnix(dirPath) {
-    sh "rm -fr -- ${dirPath}/*"
 }
 
 def archiveArtifacts(pattern) {
