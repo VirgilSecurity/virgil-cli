@@ -22,8 +22,8 @@ def createCentos(slaveName){
 			dir("build"){
 				sh "cmake -DUSE_BOOST_REGEX=ON -DCMAKE_INSTALL_PREFIX=./install .."
 				sh "make -j4 && cpack"
-                def libraryName = readFile('lib_name_full.txt')
-				archiveArtifacts("${libraryName}*")
+                def name = readFile('virgil_cli_name.txt')
+				archiveArtifacts("${name}*")
 			}
 		}
 	}
