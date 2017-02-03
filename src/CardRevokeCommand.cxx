@@ -95,7 +95,7 @@ void CardRevokeCommand::doProcess() const {
             auto appCredentials = getArgumentIO()->getAppCredentials(ArgumentImportance::Required);
             ULOG1(INFO) << "Import application private key.";
             auto appPrivateKey = crypto->importPrivateKey(
-                    appCredentials.appKeyData().bytesValue(), appCredentials.appKeyPassword().stringValue());
+                    appCredentials.appPrivateKey().key(), appCredentials.appPrivateKey().password().stringValue());
             ULOG1(INFO) << "Sign request with application private key (authority sign).";
             signer.authoritySign(revokeCardRequest, appCredentials.appId().stringValue(), appPrivateKey);
         }

@@ -38,21 +38,20 @@
 #define VIRGIL_CLI_APPLICATION_CREDENTIALS_H
 
 #include <cli/model/SecureValue.h>
+#include <cli/model/PrivateKey.h>
 
 namespace cli { namespace model {
 
 class ApplicationCredentials {
 public:
-    ApplicationCredentials(SecureValue appId, SecureValue appKeyData, SecureValue appKeyPassword)
-            : appId_(std::move(appId)), appKeyData_(std::move(appKeyData)), appKeyPassword_(std::move(appKeyPassword)) {
+    ApplicationCredentials(SecureValue appId, PrivateKey appPrivateKey)
+            : appId_(std::move(appId)), appPrivateKey_(std::move(appPrivateKey)) {
     }
-    SecureValue appId() const { return appId_; }
-    SecureValue appKeyData() const { return appKeyData_; }
-    SecureValue appKeyPassword() const { return appKeyPassword_; }
+    const SecureValue& appId() const { return appId_; }
+    const PrivateKey& appPrivateKey() const { return appPrivateKey_; }
 private:
     SecureValue appId_;
-    SecureValue appKeyData_;
-    SecureValue appKeyPassword_;
+    PrivateKey appPrivateKey_;
 };
 
 }}

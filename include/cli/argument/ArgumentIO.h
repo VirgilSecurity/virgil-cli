@@ -132,7 +132,8 @@ private:
 
     model::FileDataSink getSink(const ArgumentValue& argumentValue) const;
 
-    void readPrivateKeyPassword(model::PrivateKey& privateKey, const ArgumentValue& argumentValue) const;
+    void readPrivateKeyPassword(
+            model::PrivateKey& privateKey, const ArgumentValue& argumentValue, const char* passwordArgumentKey) const;
 
     std::vector<std::unique_ptr<model::EncryptCredentials>>
     readEncryptCredentials(const ArgumentValue& argumentValue) const;

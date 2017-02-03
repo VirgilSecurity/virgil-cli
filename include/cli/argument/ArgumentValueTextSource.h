@@ -48,6 +48,8 @@ private:
     virtual void doInit(const ArgumentSource& argumentSource) override;
 
     virtual std::unique_ptr<model::Password> doReadPassword(const ArgumentValue& argumentValue) const override;
+
+    virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const ArgumentValue& argumentValue) const override;
 };
 
 }}

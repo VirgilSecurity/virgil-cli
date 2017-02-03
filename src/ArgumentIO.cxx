@@ -184,7 +184,7 @@ PrivateKey ArgumentIO::getPrivateKey(ArgumentImportance argumentImportance) cons
     auto argument = argumentSource_->read(opt::PRIVATE_KEY, argumentImportance);
     //TODO: Add validation
     auto privateKey = argumentValueSource_->readPrivateKey(argument.asValue());
-    readPrivateKeyPassword(privateKey, argument.asValue());
+    readPrivateKeyPassword(privateKey, argument.asValue(), opt::PRIVATE_KEY_PASSWORD);
     return std::move(privateKey);
 }
 
@@ -193,7 +193,7 @@ PrivateKey ArgumentIO::getPrivateKeyFromInput(ArgumentImportance argumentImporta
     auto argument = argumentSource_->read(opt::IN, argumentImportance);
     auto source = getSource(argument.asValue());
     PrivateKey privateKey(source.readAll(), Crypto::Bytes());
-    readPrivateKeyPassword(privateKey, argument.asValue());
+    readPrivateKeyPassword(privateKey, argument.asValue(), opt::PRIVATE_KEY_PASSWORD);
     return std::move(privateKey);
 }
 
@@ -289,21 +289,18 @@ SecureValue ArgumentIO::getAppAccessToken(ArgumentImportance argumentImportance)
     ULOG2(INFO) << "Read Virgil Application Access Token.";
     auto argument = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN, argumentImportance);
     //TODO: Add validation
-    return SecureValue(argument.asValue().asString());
+    return argumentValueSource_->readPassword(argument.asValue());
 }
 
 ApplicationCredentials ArgumentIO::getAppCredentials(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Application Credentials (identifier, private key, private key password).";
     auto argumentAppKeyId = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY_ID, argumentImportance);
     auto argumentAppKeyData = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY_DATA, argumentImportance);
-    auto argumentAppKeyPassword =
-            argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY_PASSWORD, argumentImportance);
     //TODO: Add validation
-    return ApplicationCredentials(
-            SecureValue(argumentAppKeyId.asValue().origin()),
-            SecureValue(argumentAppKeyData.asValue().origin()),
-            SecureValue(argumentAppKeyPassword.asValue().origin())
-    );
+    auto appId = argumentValueSource_->readPassword(argumentAppKeyId.asValue());
+    auto appKey = argumentValueSource_->readPrivateKey(argumentAppKeyData.asValue());
+    readPrivateKeyPassword(appKey, argumentAppKeyData.asValue(), arg::value::VIRGIL_CONFIG_APP_KEY_PASSWORD);
+    return ApplicationCredentials(std::move(appId), std::move(appKey));
 }
 
 Card ArgumentIO::getCardFromInput(ArgumentImportance argumentImportance) const {
@@ -344,12 +341,13 @@ FileDataSink ArgumentIO::getSink(const ArgumentValue& argumentValue) const {
     }
 }
 
-void ArgumentIO::readPrivateKeyPassword(PrivateKey& privateKey, const ArgumentValue& argumentValue) const {
+void ArgumentIO::readPrivateKeyPassword(
+        PrivateKey& privateKey, const ArgumentValue& argumentValue, const char* passwordArgumentKey) const {
     ULOG2(INFO) << "Read private key password.";
     if (!privateKey.isEncrypted()) {
         return;
     }
-    std::string passwordOption = opt::PRIVATE_KEY_PASSWORD;
+    std::string passwordOption = passwordArgumentKey;
     do {
         LOG(INFO) << tfm::format("Read password for the private key: '%s'.", std::to_string(argumentValue));
         auto argument = argumentSource_->readSecure(passwordOption.c_str(), ArgumentImportance::Required);
@@ -403,7 +401,7 @@ ArgumentIO::readDecryptCredentials(const ArgumentValue& argumentValue) const {
         ));
     } else if (recipientType == arg::value::VIRGIL_DECRYPT_KEYPASS_PRIVKEY) {
         auto privateKey = argumentValueSource_->readPrivateKey(argumentValue);
-        readPrivateKeyPassword(privateKey, argumentValue);
+        readPrivateKeyPassword(privateKey, argumentValue, opt::PRIVATE_KEY_PASSWORD);
         result.push_back(std::make_unique<KeyDecryptCredentials>(std::move(privateKey)));
     } else {
         throw error::ArgumentInvalidKey(recipientType, arg::value::VIRGIL_DECRYPT_KEYPASS_VALUES);

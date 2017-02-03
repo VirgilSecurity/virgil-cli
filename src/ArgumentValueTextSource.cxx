@@ -40,6 +40,7 @@
 
 using cli::Crypto;
 using cli::model::Password;
+using cli::model::PrivateKey;
 using cli::argument::ArgumentValueTextSource;
 
 void ArgumentValueTextSource::doInit(const ArgumentSource& argumentSource) {
@@ -52,4 +53,8 @@ const char* ArgumentValueTextSource::doGetName() const {
 
 std::unique_ptr<Password> ArgumentValueTextSource::doReadPassword(const ArgumentValue& argumentValue) const {
     return std::make_unique<Password>(Crypto::ByteUtils::stringToBytes(argumentValue.value()));
+}
+
+std::unique_ptr<PrivateKey> ArgumentValueTextSource::doReadPrivateKey(const ArgumentValue& argumentValue) const {
+    return std::make_unique<PrivateKey>(Crypto::ByteUtils::stringToBytes(argumentValue.value()), Crypto::Bytes());
 }
