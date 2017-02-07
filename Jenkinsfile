@@ -20,8 +20,9 @@ def createCentos(slaveName) {
 		node(slaveName){
 			deleteDir()
 			unstash 'src'
+			def options = commonBuildOptions()
 			dir("build"){
-				sh "cmake -DCMAKE_BUILD_TYPE=Release -DUSE_BOOST_REGEX=ON .."
+				sh "cmake ${options} -DUSE_BOOST_REGEX=ON .."
 				sh "make -j4 && cpack"
                 def name = readFile('virgil_cli_name.txt')
 				archiveArtifacts("${name}*")
@@ -36,8 +37,9 @@ def createDarwin(slaveName) {
 		node(slaveName){
 			deleteDir()
 			unstash 'src'
+			def options = commonBuildOptions()
 			dir("build"){
-				sh "cmake -DCMAKE_BUILD_TYPE=Release .."
+				sh "cmake ${options} .."
 				sh "make -j4 && cpack"
                 def name = readFile('virgil_cli_name.txt')
 				archiveArtifacts("${name}*")
@@ -48,4 +50,11 @@ def createDarwin(slaveName) {
 
 def archiveArtifacts(pattern) {
     step([$class: 'ArtifactArchiver', artifacts: pattern, fingerprint: true, onlyIfSuccessful: true])
+}
+
+def commonBuildOptions() {
+    if (env.BRANCH_NAME =~ /develop/) {
+        return "-DCMAKE_BUILD_TYPE=Develop"
+    }
+    return "-DCMAKE_BUILD_TYPE=Release"
 }
