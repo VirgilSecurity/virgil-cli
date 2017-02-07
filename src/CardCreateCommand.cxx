@@ -114,6 +114,12 @@ void CardCreateCommand::doProcess() const {
         throw ArgumentLogicError("Undefined card scope. Validation must fail first.");
     }
 
+#if ELPP_DEBUG_LOG
+    for (const auto& signature : createCardRequest.signatures()) {
+        DLOG(INFO) << "Added signature with fingerprint:" << signature.first;
+    }
+#endif
+
     ULOG1(INFO) << "Request card creation.";
     LOG(INFO) << "Card create request:\n"
               << JsonSerializer<SignableRequestInterface>::toJson(createCardRequest);

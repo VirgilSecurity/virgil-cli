@@ -108,6 +108,12 @@ void CardRevokeCommand::doProcess() const {
         }
     }
 
+#if ELPP_DEBUG_LOG
+    for (const auto& signature : createCardRequest.signatures()) {
+        DLOG(INFO) << "Added signature with fingerprint:" << signature.first;
+    }
+#endif
+
     ULOG1(INFO) << "Request card revocation.";
     LOG(INFO) << "Card revoke request:\n"
               << JsonSerializer<SignableRequestInterface>::toJson(revokeCardRequest);
