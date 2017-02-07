@@ -42,6 +42,7 @@
 #include <cli/io/Logger.h>
 #include <cli/error/ArgumentError.h>
 
+#include <cli/argument/validation/ArgumentValidationHub.h>
 #include <cli/argument/internal/Argument_DocoptValue.h>
 
 #include <docopt/docopt.h>
@@ -51,6 +52,7 @@ using cli::argument::ArgumentSource;
 using cli::argument::ArgumentCommandLineSource;
 using cli::argument::ArgumentRules;
 using cli::argument::ArgumentImportance;
+using cli::argument::validation::ArgumentValidationHub;
 
 ArgumentCommandLineSource::ArgumentCommandLineSource(ArgumentCommandLineSource&&) = default;
 
@@ -141,7 +143,8 @@ void ArgumentCommandLineSource::doInit(const std::string& usage, const ArgumentP
 void ArgumentCommandLineSource::doUpdateRules() {
     auto argumentInteractive = read(opt::INTERACTIVE, ArgumentImportance::Optional);
     auto argumentQuiet = read(opt::QUIET, ArgumentImportance::Optional);
-    //TODO: Add validation
+    ArgumentValidationHub::isBool()->validate(argumentInteractive, ArgumentImportance::Optional);
+    ArgumentValidationHub::isBool()->validate(argumentQuiet, ArgumentImportance::Optional);
     getArgumentRules()->allowUserInteraction(argumentInteractive.asValue().asOptionalBool());
     if (argumentQuiet.asValue().asOptionalBool()) {
         auto userLogger = el::Loggers::getLogger(kLoggerId_User);

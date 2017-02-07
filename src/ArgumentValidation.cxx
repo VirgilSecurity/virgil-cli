@@ -34,55 +34,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/command/CardGetCommand.h>
+#include <cli/argument/validation/ArgumentValidation.h>
 
-#include <cli/api/api.h>
-#include <cli/crypto/Crypto.h>
-#include <cli/io/Logger.h>
 #include <cli/error/ArgumentError.h>
+#include <cli/io/Logger.h>
 
-#include <cli/memory.h>
-
-#include <virgil/sdk/crypto/Crypto.h>
-#include <virgil/sdk/client/Client.h>
-#include <virgil/sdk/client/RequestSigner.h>
-#include <virgil/sdk/client/CardValidator.h>
-
-using cli::Crypto;
-using cli::command::CardGetCommand;
-using cli::argument::ArgumentIO;
+using cli::argument::Argument;
+using cli::argument::ArgumentValue;
 using cli::argument::ArgumentImportance;
-using cli::argument::ArgumentParseOptions;
-using cli::error::ArgumentRuntimeError;
+using cli::argument::validation::ArgumentValidation;
+using cli::error::ArgumentValidationError;
 
-using virgil::sdk::client::Client;
-using virgil::sdk::client::ServiceConfig;
-using virgil::sdk::client::CardValidator;
-using ServiceCrypto = virgil::sdk::crypto::Crypto;
-
-const char* CardGetCommand::doGetName() const {
-    return arg::value::VIRGIL_COMMAND_CARD_GET;
+void ArgumentValidation::validate(const Argument& argument, ArgumentImportance argumentImportance) const {
+    auto argumentValue = argument.asValue();
+    if (argumentImportance == ArgumentImportance::Optional && (argument.isEmpty() || argumentValue.isEmpty())) {
+        return;
+    }
+    if (argument.isEmpty()) {
+        ArgumentValidationError("Expected one argument, but got empty.");
+    } else if (!argument.isValue()) {
+        ArgumentValidationError("Expected one argument, but got list.");
+    }
+    validate(argumentValue);
 }
 
-const char* CardGetCommand::doGetUsage() const {
-    return usage::VIRGIL_CARD_GET;
+void ArgumentValidation::validateList(const Argument& argument, ArgumentImportance argumentImportance) const {
+    if (argumentImportance == ArgumentImportance::Optional && argument.isEmpty()) {
+        return;
+    }
+    if (!argument.isEmpty()) {
+        ArgumentValidationError("Expected one or more arguments, but got zero.");
+    }
+    for (const auto argumentValue : argument.asList()) {
+        if (!argumentValue.isEmpty()) {
+            validate(argumentValue);
+        } else {
+            auto errorMessage = "Met empty value in the arguments list.";
+            if (argumentImportance != ArgumentImportance::Optional) {
+                ULOG(WARNING) << errorMessage;
+            } else {
+                throw ArgumentValidationError(errorMessage);
+            }
+        }
+    }
 }
 
-ArgumentParseOptions CardGetCommand::doGetArgumentParseOptions() const {
-    return ArgumentParseOptions().disableOptionsFirst();
-}
-
-void CardGetCommand::doProcess() const {
-    ULOG1(INFO) << "Read arguments.";
-    auto input = getArgumentIO()->getInput(ArgumentImportance::Optional);
-    auto output = getArgumentIO()->getOutputSink(ArgumentImportance::Optional);
-    auto appAccessToken = getArgumentIO()->getAppAccessToken(ArgumentImportance::Required);
-
-    ULOG1(INFO) << "Request card.";
-    auto serviceConfig = ServiceConfig::createConfig(appAccessToken.stringValue());
-    serviceConfig.cardValidator(std::make_unique<CardValidator>(std::make_shared<ServiceCrypto>()));
-    Client client(std::move(serviceConfig));
-    auto card = client.getCard(input.stringValue()).get();
-    ULOG1(INFO) << "Write card to the output.";
-    output.write(card.exportAsString());
+void ArgumentValidation::validate(const ArgumentValue& argumentValue) const {
+    doValidate(argumentValue);
 }

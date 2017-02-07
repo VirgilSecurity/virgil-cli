@@ -57,7 +57,9 @@ public:
     static bool exists(const std::string& path, bool considerFile);
     static bool existsFile(const std::string& path);
     static bool existsDir(const std::string& path);
-    static bool createPath(const std::string& path);
+    static bool createPath(const std::string& path, bool considerFile);
+    static bool createDir(const std::string& path);
+    static bool createFile(const std::string& path);
 };
 
 }}

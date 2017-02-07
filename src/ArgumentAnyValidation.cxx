@@ -34,83 +34,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_VALUE_H
-#define VIRGIL_CLI_ARGUMENT_VALUE_H
+#include <cli/argument/validation/ArgumentAnyValidation.h>
 
-#include <string>
+using cli::argument::ArgumentValue;
+using cli::argument::validation::ArgumentAnyValidation;
 
-namespace cli { namespace argument {
-
-class ArgumentValue {
-public:
-    ArgumentValue();
-
-    explicit ArgumentValue(bool value);
-
-    explicit ArgumentValue(size_t value);
-
-    explicit ArgumentValue(std::string value);
-
-    std::string origin() const;
-
-    std::string typeString() const;
-
-    void parse();
-
-    // Primitive
-
-    bool isEmpty() const;
-
-    bool isBool() const;
-
-    bool isNumber() const;
-
-    bool isString() const;
-
-    bool asBool() const;
-
-    bool asOptionalBool() const;
-
-    size_t asNumber() const;
-
-    std::string asString() const;
-
-    // Complex
-
-    bool isKeyValue() const;
-
-    bool isKeyValueAlias() const;
-
-    std::string key() const;
-
-    std::string value() const;
-
-    std::string alias() const;
-private:
-    enum class Kind {
-        Empty = 0,
-        Boolean = 1,
-        Number = 2,
-        String = 4,
-        KeyValue = 8,
-        KeyValueAlias = 16
-    };
-    void throwIfNotKind(Kind kind) const;
-    static const char* kindAsString(Kind kind);
-private:
-    Kind kind_ = Kind::Empty;
-    std::string origin_;
-    std::string key_;
-    std::string value_;
-    std::string alias_;
-};
-
-}}
-
-namespace std {
-
-string to_string(const cli::argument::ArgumentValue& argumentValue);
-
+void ArgumentAnyValidation::doValidate(const ArgumentValue& argumentValue) const {
+    // Any value is good, just return.
+    (void) argumentValue;
+    return;
 }
-
-#endif //VIRGIL_CLI_ARGUMENT_VALUE_H

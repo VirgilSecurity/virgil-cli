@@ -34,83 +34,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_VALUE_H
-#define VIRGIL_CLI_ARGUMENT_VALUE_H
+#include <cli/argument/validation/ArgumentEnumValidation.h>
 
-#include <string>
+#include <cli/error/ArgumentError.h>
+#include <cli/io/Logger.h>
 
-namespace cli { namespace argument {
+#include <cstring>
 
-class ArgumentValue {
-public:
-    ArgumentValue();
+using cli::argument::ArgumentValue;
+using cli::argument::validation::ArgumentEnumValidation;
+using cli::error::ArgumentLogicError;
+using cli::error::ArgumentValidationError;
 
-    explicit ArgumentValue(bool value);
-
-    explicit ArgumentValue(size_t value);
-
-    explicit ArgumentValue(std::string value);
-
-    std::string origin() const;
-
-    std::string typeString() const;
-
-    void parse();
-
-    // Primitive
-
-    bool isEmpty() const;
-
-    bool isBool() const;
-
-    bool isNumber() const;
-
-    bool isString() const;
-
-    bool asBool() const;
-
-    bool asOptionalBool() const;
-
-    size_t asNumber() const;
-
-    std::string asString() const;
-
-    // Complex
-
-    bool isKeyValue() const;
-
-    bool isKeyValueAlias() const;
-
-    std::string key() const;
-
-    std::string value() const;
-
-    std::string alias() const;
-private:
-    enum class Kind {
-        Empty = 0,
-        Boolean = 1,
-        Number = 2,
-        String = 4,
-        KeyValue = 8,
-        KeyValueAlias = 16
-    };
-    void throwIfNotKind(Kind kind) const;
-    static const char* kindAsString(Kind kind);
-private:
-    Kind kind_ = Kind::Empty;
-    std::string origin_;
-    std::string key_;
-    std::string value_;
-    std::string alias_;
-};
-
-}}
-
-namespace std {
-
-string to_string(const cli::argument::ArgumentValue& argumentValue);
-
+ArgumentEnumValidation::ArgumentEnumValidation(const char** validValues) : validValues_(validValues) {
+    if (validValues_ == nullptr) {
+        throw ArgumentLogicError("ArgumentEnumValidation: valid values are not defined.");
+    }
 }
 
-#endif //VIRGIL_CLI_ARGUMENT_VALUE_H
+void ArgumentEnumValidation::doValidate(const ArgumentValue& argumentValue) const {
+    if (!argumentValue.isString()) {
+        throw ArgumentValidationError(
+                tfm::format("Expected enum string, but found value of the type %s.", argumentValue.typeString()));
+    }
+    check(argumentValue.asString().c_str());
+}
+
+std::string ArgumentEnumValidation::formatValidValues() const {
+    std::string result = "{";
+    for (auto item = validValues_; *item != nullptr; ++item) {
+        if (item != validValues_) {
+            result += ", ";
+        }
+        result += *item;
+    }
+    result += "}";
+    return result;
+}
+
+void ArgumentEnumValidation::check(const char* value) const {
+    for (auto item = validValues_; *item != nullptr; ++item) {
+        if (strcmp(*item, value) == 0) {
+            return;
+        }
+    }
+    throw ArgumentValidationError(
+            tfm::format("Expected on of the values %s, but got '%s'.", formatValidValues(), value));
+}

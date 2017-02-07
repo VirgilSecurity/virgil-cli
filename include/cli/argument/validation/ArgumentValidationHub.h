@@ -34,83 +34,41 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_VALUE_H
-#define VIRGIL_CLI_ARGUMENT_VALUE_H
+#ifndef VIRGIL_CLI_ARGUMENT_VALIDATION_HUB_H
+#define VIRGIL_CLI_ARGUMENT_VALIDATION_HUB_H
 
-#include <string>
+#include <cli/argument/validation/ArgumentAnyValidation.h>
+#include <cli/argument/validation/ArgumentNotEmptyValidation.h>
+#include <cli/argument/validation/ArgumentTextValidation.h>
+#include <cli/argument/validation/ArgumentBoolValidation.h>
+#include <cli/argument/validation/ArgumentEnumValidation.h>
+#include <cli/argument/validation/ArgumentRangeValidation.h>
+#include <cli/argument/validation/ArgumentKeyValueValidation.h>
+#include <cli/argument/validation/ArgumentKeyValueAliasValidation.h>
 
-namespace cli { namespace argument {
+namespace cli { namespace argument { namespace validation {
 
-class ArgumentValue {
+class ArgumentValidationHub {
 public:
-    ArgumentValue();
+    static std::unique_ptr<ArgumentAnyValidation> isAny();
 
-    explicit ArgumentValue(bool value);
+    static std::unique_ptr<ArgumentNotEmptyValidation> isNotEmpty();
 
-    explicit ArgumentValue(size_t value);
+    static std::unique_ptr<ArgumentTextValidation> isText();
 
-    explicit ArgumentValue(std::string value);
+    static std::unique_ptr<ArgumentBoolValidation> isBool();
 
-    std::string origin() const;
+    static std::unique_ptr<ArgumentEnumValidation> isEnum(const char** validValues);
 
-    std::string typeString() const;
+    static std::unique_ptr<ArgumentRangeValidation> isRange(size_t min, size_t max);
 
-    void parse();
+    static std::unique_ptr<ArgumentKeyValueValidation> isKeyValue();
 
-    // Primitive
+    static std::unique_ptr<ArgumentKeyValueAliasValidation> isKeyValueAlias();
 
-    bool isEmpty() const;
-
-    bool isBool() const;
-
-    bool isNumber() const;
-
-    bool isString() const;
-
-    bool asBool() const;
-
-    bool asOptionalBool() const;
-
-    size_t asNumber() const;
-
-    std::string asString() const;
-
-    // Complex
-
-    bool isKeyValue() const;
-
-    bool isKeyValueAlias() const;
-
-    std::string key() const;
-
-    std::string value() const;
-
-    std::string alias() const;
-private:
-    enum class Kind {
-        Empty = 0,
-        Boolean = 1,
-        Number = 2,
-        String = 4,
-        KeyValue = 8,
-        KeyValueAlias = 16
-    };
-    void throwIfNotKind(Kind kind) const;
-    static const char* kindAsString(Kind kind);
-private:
-    Kind kind_ = Kind::Empty;
-    std::string origin_;
-    std::string key_;
-    std::string value_;
-    std::string alias_;
+    ArgumentValidationHub() = delete;
 };
 
-}}
+}}}
 
-namespace std {
-
-string to_string(const cli::argument::ArgumentValue& argumentValue);
-
-}
-
-#endif //VIRGIL_CLI_ARGUMENT_VALUE_H
+#endif //VIRGIL_CLI_ARGUMENT_VALIDATION_HUB_H

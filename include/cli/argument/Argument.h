@@ -57,6 +57,8 @@ public:
 
     explicit Argument(std::vector<std::string> valueList);
 
+    void parse();
+
     bool isEmpty() const;
 
     bool isValue() const;

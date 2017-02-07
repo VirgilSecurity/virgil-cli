@@ -63,18 +63,23 @@ ArgumentValue::ArgumentValue() : kind_(ArgumentValue::Kind::Empty) {
 
 ArgumentValue::ArgumentValue(bool value)
         : kind_(ArgumentValue::Kind::Boolean), origin_(std::to_string(value)) {
-    DLOG(INFO) << tfm::format("Created ArgumentValue of type: '%s' from value: '%s'.", kindAsString(kind_), origin_);
     value_ = origin_;
+    DLOG(INFO) << tfm::format("Created ArgumentValue of type: '%s' from value: '%s'.", kindAsString(kind_), origin_);
 }
 
 ArgumentValue::ArgumentValue(size_t value)
         : kind_(ArgumentValue::Kind::Number), origin_(std::to_string(value)) {
-    DLOG(INFO) << tfm::format("Created ArgumentValue of type: '%s' from value: '%s'.", kindAsString(kind_), origin_);
     value_ = origin_;
+    DLOG(INFO) << tfm::format("Created ArgumentValue of type: '%s' from value: '%s'.", kindAsString(kind_), origin_);
 }
 
 ArgumentValue::ArgumentValue(std::string value)
-        : kind_(ArgumentValue::Kind::Empty), origin_(std::move(value)) {
+        : kind_(ArgumentValue::Kind::String), origin_(std::move(value)) {
+    value_ = origin_;
+    DLOG(INFO) << tfm::format("Created ArgumentValue of type: '%s' from value: '%s'.", kindAsString(kind_), origin_);
+}
+
+void ArgumentValue::parse() {
     auto tokens = split(origin_, kArgumentValueDelimeters);
     switch (tokens.size()) {
         case 3:
@@ -96,7 +101,7 @@ ArgumentValue::ArgumentValue(std::string value)
             // Do nothing
             break;
     }
-    DLOG(INFO) << tfm::format("Created ArgumentValue of type: '%s' from value: '%s'.", kindAsString(kind_), origin_);
+    DLOG(INFO) << tfm::format("Parse ArgumentValue from '%s' to type: '%s'.", origin_, kindAsString(kind_));
 }
 
 bool ArgumentValue::isEmpty() const {
@@ -158,6 +163,10 @@ std::string ArgumentValue::value() const {
 
 std::string ArgumentValue::alias() const {
     return alias_;
+}
+
+std::string ArgumentValue::typeString() const {
+    return kindAsString(kind_);
 }
 
 std::string std::to_string(const ArgumentValue& argumentValue) {

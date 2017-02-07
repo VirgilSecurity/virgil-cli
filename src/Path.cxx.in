@@ -189,6 +189,28 @@ bool Path::existsDir(const std::string& path) {
     return exists(path, false);
 }
 
-bool Path::createPath(const std::string& path) {
+bool Path::createPath(const std::string& path, bool considerFile) {
+    if (considerFile && existsFile(path)) {
+        return true;
+    }
+    if (!considerFile && existsDir(path)) {
+        return true;
+    }
+    if (considerFile && existsDir(path)) {
+        ULOG(ERROR) << tfm::format("Can not create file '%s', because directory exists in the same path.", path);
+        return false;
+    }
+    if (!considerFile && existsFile(path)) {
+        ULOG(ERROR) << tfm::format("Can not create directory '%s', because file exists in the same path.", path);
+        return false;
+    }
     return el::base::utils::File::createPath(path);
+}
+
+bool Path::createDir(const std::string& path) {
+    return createPath(path, false);
+}
+
+bool Path::createFile(const std::string& path) {
+    return createPath(path, true);
 }

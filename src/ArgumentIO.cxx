@@ -54,6 +54,8 @@
 #include <cli/command/EncryptCommand.h>
 #include <cli/command/DecryptCommand.h>
 
+#include <cli/argument/validation/ArgumentValidationHub.h>
+
 #include <cli/memory.h>
 
 #include <istream>
@@ -65,6 +67,7 @@
 
 using namespace cli;
 using namespace cli::argument;
+using namespace cli::argument::validation;
 using namespace cli::command;
 using namespace cli::model;
 
@@ -91,41 +94,42 @@ bool ArgumentIO::hasContentInfo() const {
 bool ArgumentIO::hasNoPassword() const {
     ULOG2(INFO) << "Check if password should be omitted.";
     auto argument = argumentSource_->read(opt::NO_PASSWORD, ArgumentImportance::Optional);
-    //TODO: Add validation
+    ArgumentValidationHub::isBool()->validate(argument, ArgumentImportance::Optional);
     return argument.asValue().asOptionalBool();
 }
 
 bool ArgumentIO::isInteractive() const {
-    ULOG2(INFO) << "Check if interractive mode is on.";
+    ULOG2(INFO) << "Check if interactive mode is on.";
     auto argument = argumentSource_->read(opt::INTERACTIVE, ArgumentImportance::Optional);
+    ArgumentValidationHub::isBool()->validate(argument, ArgumentImportance::Optional);
     return argument.asValue().asOptionalBool();
 }
 
 SecureValue ArgumentIO::getInput(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read input value.";
     auto argument = argumentSource_->read(opt::IN, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     return argumentValueSource_->readPassword(argument.asValue());
 }
 
 SecureValue ArgumentIO::getOutput(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read output value.";
     auto argument = argumentSource_->read(opt::OUT, argumentImportance);
-    //TODO: Add validation
-    return argumentValueSource_->readPassword(argument.asValue());
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
+    return SecureValue(argument.asValue().value());
 }
 
 FileDataSource ArgumentIO::getInputSource(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read input source.";
     auto argument = argumentSource_->read(opt::IN, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     return getSource(argument.asValue());
 }
 
 FileDataSink ArgumentIO::getOutputSink(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read output destination.";
     auto argument = argumentSource_->read(opt::OUT, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     return getSink(argument.asValue());
 }
 
@@ -133,14 +137,14 @@ FileDataSink ArgumentIO::getOutputSink(ArgumentImportance argumentImportance) co
 FileDataSource ArgumentIO::getContentInfoSource(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read content info source.";
     auto argument = argumentSource_->read(opt::CONTENT_INFO, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     return getSource(argument.asValue());
 }
 
 FileDataSink ArgumentIO::getContentInfoSink(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read content info destination.";
     auto argument = argumentSource_->read(opt::CONTENT_INFO, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     return getSink(argument.asValue());
 }
 
@@ -148,7 +152,11 @@ std::vector<std::unique_ptr<EncryptCredentials>>
 ArgumentIO::getEncryptCredentials(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read recipients for encryption.";
     auto argument = argumentSource_->read(arg::RECIPIENT_ID, argumentImportance);
-    //TODO: Add validation
+    argument.parse();
+    auto validation = ArgumentValidationHub::isKeyValue();
+    validation->setKeyValidation(ArgumentValidationHub::isEnum(arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VALUES));
+    validation->setValueValidation(ArgumentValidationHub::isNotEmpty());
+    validation->validateList(argument, argumentImportance);
     std::vector<std::unique_ptr<EncryptCredentials>> result;
     for (const auto& argumentValue : argument.asList()) {
         auto credentials = readEncryptCredentials(argumentValue);
@@ -162,7 +170,11 @@ std::vector<std::unique_ptr<DecryptCredentials>>
 ArgumentIO::getDecryptCredentials(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read decryption credentials.";
     auto argument = argumentSource_->read(arg::KEYPASS, argumentImportance);
-    //TODO: Add validation
+    argument.parse();
+    auto validation = ArgumentValidationHub::isKeyValue();
+    validation->setKeyValidation(ArgumentValidationHub::isEnum(arg::value::VIRGIL_DECRYPT_KEYPASS_VALUES));
+    validation->setValueValidation(ArgumentValidationHub::isNotEmpty());
+    validation->validateList(argument, argumentImportance);
     std::vector<std::unique_ptr<DecryptCredentials>> result;
     for (const auto& argumentValue : argument.asList()) {
         auto decryptCredentials = readDecryptCredentials(argumentValue);
@@ -175,14 +187,14 @@ ArgumentIO::getDecryptCredentials(ArgumentImportance argumentImportance) const {
 KeyAlgorithm ArgumentIO::getKeyAlgorithm(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read private key algorithm.";
     auto argument = argumentSource_->read(opt::ALGORITHM, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isEnum(arg::value::VIRGIL_KEYGEN_ALG_VALUES)->validate(argument, argumentImportance);
     return argumentValueSource_->readKeyAlgorithm(argument.asValue());
 }
 
 PrivateKey ArgumentIO::getPrivateKey(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read private key.";
     auto argument = argumentSource_->read(opt::PRIVATE_KEY, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     auto privateKey = argumentValueSource_->readPrivateKey(argument.asValue());
     readPrivateKeyPassword(privateKey, argument.asValue(), opt::PRIVATE_KEY_PASSWORD);
     return std::move(privateKey);
@@ -191,6 +203,7 @@ PrivateKey ArgumentIO::getPrivateKey(ArgumentImportance argumentImportance) cons
 PrivateKey ArgumentIO::getPrivateKeyFromInput(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read private key.";
     auto argument = argumentSource_->read(opt::IN, argumentImportance);
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     auto source = getSource(argument.asValue());
     PrivateKey privateKey(source.readAll(), Crypto::Bytes());
     readPrivateKeyPassword(privateKey, argument.asValue(), opt::PRIVATE_KEY_PASSWORD);
@@ -200,50 +213,54 @@ PrivateKey ArgumentIO::getPrivateKeyFromInput(ArgumentImportance argumentImporta
 Password ArgumentIO::getKeyPassword(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read private key password.";
     auto argument = argumentSource_->readSecure(opt::PRIVATE_KEY_PASSWORD, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     return argumentValueSource_->readPassword(argument.asValue());
 }
 
 PublicKey ArgumentIO::getSenderKey(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Sender's public key.";
     auto argument = argumentSource_->read(arg::RECIPIENT_ID, argumentImportance);
-    //TODO: Add validation
+    argument.parse();
+    auto validation = ArgumentValidationHub::isKeyValue();
+    validation->setKeyValidation(ArgumentValidationHub::isEnum(arg::value::VIRGIL_VERIFY_RECIPIENT_ID_VALUES));
+    validation->setValueValidation(ArgumentValidationHub::isNotEmpty());
+    validation->validate(argument, argumentImportance);
     return readSenderKey(argument.asValue());
 }
 
 FileDataSource ArgumentIO::getSignatureSource(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read signature source.";
     auto argument = argumentSource_->read(opt::SIGN, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     return getSource(argument.asValue());
 }
 
 Crypto::Text ArgumentIO::getCommand(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read command.";
     auto argument = argumentSource_->read(arg::COMMAND, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isEnum(arg::value::VIRGIL_COMMAND_VALUES)->validate(argument, argumentImportance);
     return Crypto::Text(argument.asValue().value());
 }
 
 CardIdentity ArgumentIO::getCardIdentity(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Card identity.";
     auto argument = argumentSource_->read(arg::IDENTITY, argumentImportance);
-    //TODO: Add validation
+    argument.parse();
+    auto validation = ArgumentValidationHub::isKeyValue();
+    validation->setKeyValidation(ArgumentValidationHub::isAny());
+    validation->setValueValidation(ArgumentValidationHub::isNotEmpty());
+    validation->validate(argument, argumentImportance);
     return CardIdentity(argument.asValue().value(), argument.asValue().key());
 }
 
 CardIdentityGroup ArgumentIO::getCardIdentityGroup(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Card identities.";
     auto argument = argumentSource_->read(arg::IDENTITY, argumentImportance);
+    argument.parse();
+    ArgumentValidationHub::isNotEmpty()->validateList(argument, argumentImportance);
     CardIdentityGroup identityGroup;
-    //TODO: Add argument validation
-    if (argument.isList()) {
-        for (const auto argumentValue : argument.asList()) {
-            //TODO: Add argument value validation
-            identityGroup.append(argumentValue.value(), argumentValue.key());
-        }
-    } else {
-        identityGroup.append(argument.asValue().value(), argument.asValue().key());
+    for (const auto argumentValue : argument.asList()) {
+        identityGroup.append(argumentValue.value(), argumentValue.key());
     }
     return identityGroup;
 }
@@ -251,14 +268,18 @@ CardIdentityGroup ArgumentIO::getCardIdentityGroup(ArgumentImportance argumentIm
 Crypto::Text ArgumentIO::getCardScope(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Card scope.";
     auto argument = argumentSource_->read(opt::SCOPE, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isEnum(arg::value::VIRGIL_CARD_CREATE_SCOPE_VALUES)->validate(argument, argumentImportance);
     return argument.asValue().asString();
 }
 
 CardData ArgumentIO::getCardData(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Card data.";
     auto argument = argumentSource_->read(opt::DATA, argumentImportance);
-    //TODO: Add validation
+    argument.parse();
+    auto validation = ArgumentValidationHub::isKeyValue();
+    validation->setKeyValidation(ArgumentValidationHub::isNotEmpty());
+    validation->setValueValidation(ArgumentValidationHub::isNotEmpty());
+    validation->validateList(argument, argumentImportance);
     CardData cardData;
     for (const auto& argumentValue : argument.asList()) {
         cardData[argumentValue.key()] = argumentValue.value();
@@ -269,7 +290,11 @@ CardData ArgumentIO::getCardData(ArgumentImportance argumentImportance) const {
 CardInfo ArgumentIO::getCardInfo(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Card info.";
     auto argument = argumentSource_->read(opt::INFO, argumentImportance);
-    //TODO: Add validation
+    argument.parse();
+    auto validation = ArgumentValidationHub::isKeyValue();
+    validation->setKeyValidation(ArgumentValidationHub::isEnum(arg::value::VIRGIL_CARD_CREATE_INFO_KEY_VALUES));
+    validation->setValueValidation(ArgumentValidationHub::isNotEmpty());
+    validation->validateList(argument, argumentImportance);
     std::string device;
     std::string deviceName;
     for (const auto& argumentValue : argument.asList()) {
@@ -279,7 +304,7 @@ CardInfo ArgumentIO::getCardInfo(ArgumentImportance argumentImportance) const {
         } else if (infoKey == arg::value::VIRGIL_CARD_CREATE_INFO_KEY_DEVICE_NAME) {
             deviceName = argumentValue.value();
         } else {
-            throw error::ArgumentInvalidKey(infoKey, arg::value::VIRGIL_CARD_CREATE_INFO_KEY_VALUES);
+            throw error::ArgumentLogicError("Undefined key of the Virgil Card Info. Validation must fail first.");
         }
     }
     return CardInfo(device, deviceName);
@@ -288,7 +313,7 @@ CardInfo ArgumentIO::getCardInfo(ArgumentImportance argumentImportance) const {
 SecureValue ArgumentIO::getAppAccessToken(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Application Access Token.";
     auto argument = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     return argumentValueSource_->readPassword(argument.asValue());
 }
 
@@ -296,7 +321,8 @@ ApplicationCredentials ArgumentIO::getAppCredentials(ArgumentImportance argument
     ULOG2(INFO) << "Read Virgil Application Credentials (identifier, private key, private key password).";
     auto argumentAppKeyId = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY_ID, argumentImportance);
     auto argumentAppKeyData = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY_DATA, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isText()->validate(argumentAppKeyId, argumentImportance);
+    ArgumentValidationHub::isText()->validate(argumentAppKeyData, argumentImportance);
     auto appId = argumentValueSource_->readPassword(argumentAppKeyId.asValue());
     auto appKey = argumentValueSource_->readPrivateKey(argumentAppKeyData.asValue());
     readPrivateKeyPassword(appKey, argumentAppKeyData.asValue(), arg::value::VIRGIL_CONFIG_APP_KEY_PASSWORD);
@@ -306,6 +332,7 @@ ApplicationCredentials ArgumentIO::getAppCredentials(ArgumentImportance argument
 Card ArgumentIO::getCardFromInput(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Card from input.";
     auto argument = argumentSource_->read(opt::IN, argumentImportance);
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     auto values = argumentValueSource_->readCards(argument.asValue());
     if (values.size() > 0) {
         return values[0];
@@ -316,7 +343,7 @@ Card ArgumentIO::getCardFromInput(ArgumentImportance argumentImportance) const {
 CardRevocationReason ArgumentIO::getCardRevokeReason(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Card revocation reason.";
     auto argument = argumentSource_->read(opt::REVOCATION_REASON, argumentImportance);
-    //TODO: Add validation
+    ArgumentValidationHub::isEnum(arg::value::VIRGIL_CARD_REVOKE_REASON_VALUES)->validate(argument, argumentImportance);
     return card_revocation_reason_from(argument.asValue().asString());
 }
 
@@ -368,24 +395,22 @@ ArgumentIO::readEncryptCredentials(const ArgumentValue& argumentValue) const {
     auto recipientType = argumentValue.key();
     std::vector<std::unique_ptr<EncryptCredentials>> result;
     if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_PASSWORD) {
-        //TODO: Add validation
         result.push_back(std::make_unique<PasswordEncryptCredentials>(
                 argumentValueSource_->readPassword(argumentValue)
         ));
     } else if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_PUBKEY) {
-        //TODO: Add validation
         result.push_back(std::make_unique<KeyEncryptCredentials>(
                 argumentValueSource_->readPublicKey(argumentValue)
         ));
     } else if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VCARD ||
             recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_EMAIL) {
-        //TODO: Add validation
         auto cards = argumentValueSource_->readCards(argumentValue);
         for (auto&& card : cards) {
             result.push_back(std::make_unique<KeyEncryptCredentials>(std::move(card)));
         }
     } else {
-        throw error::ArgumentInvalidKey(recipientType, arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VALUES);
+        throw error::ArgumentLogicError(
+                tfm::format("Undefined key of the <%s>. Validation must fail first.", arg::RECIPIENT_ID));
     }
     return result;
 }
@@ -404,7 +429,8 @@ ArgumentIO::readDecryptCredentials(const ArgumentValue& argumentValue) const {
         readPrivateKeyPassword(privateKey, argumentValue, opt::PRIVATE_KEY_PASSWORD);
         result.push_back(std::make_unique<KeyDecryptCredentials>(std::move(privateKey)));
     } else {
-        throw error::ArgumentInvalidKey(recipientType, arg::value::VIRGIL_DECRYPT_KEYPASS_VALUES);
+        throw error::ArgumentLogicError(
+                tfm::format("Undefined key of the <%s>. Validation must fail first.", arg::KEYPASS));
     }
     return result;
 }
@@ -419,5 +445,6 @@ PublicKey ArgumentIO::readSenderKey(const ArgumentValue& argumentValue) const {
         auto card = cards.front();
         return PublicKey(card.publicKeyData(), card.identifier());
     }
-    throw error::ArgumentInvalidKey(argumentValue.key(), arg::value::VIRGIL_VERIFY_RECIPIENT_ID_VALUES);
+    throw error::ArgumentLogicError(
+            tfm::format("Undefined key of the <%s>. Validation must fail first.", arg::RECIPIENT_ID));
 }

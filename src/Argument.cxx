@@ -57,6 +57,12 @@ Argument::Argument(std::vector<std::string> valueList) : values_() {
     }
 }
 
+void Argument::parse() {
+    for (auto& argumentValue : values_) {
+        argumentValue.parse();
+    }
+}
+
 bool Argument::isEmpty() const {
     return values_.empty();
 }

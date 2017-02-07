@@ -54,7 +54,6 @@ using cli::argument::ArgumentIO;
 using cli::argument::ArgumentImportance;
 using cli::argument::ArgumentParseOptions;
 using cli::error::ArgumentRuntimeError;
-using cli::error::ArgumentInvalidKey;
 using cli::model::CardScope;
 
 using virgil::sdk::client::Client;

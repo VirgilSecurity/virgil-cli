@@ -54,7 +54,7 @@ using cli::argument::ArgumentIO;
 using cli::argument::ArgumentImportance;
 using cli::argument::ArgumentParseOptions;
 using cli::error::ArgumentRuntimeError;
-using cli::error::ArgumentInvalidKey;
+using cli::error::ArgumentLogicError;
 
 using virgil::sdk::client::Client;
 using virgil::sdk::client::ServiceConfig;
@@ -107,7 +107,7 @@ void CardCreateCommand::doProcess() const {
     } else if (scope == arg::value::VIRGIL_CARD_CREATE_SCOPE_GLOBAL) {
         throw ArgumentRuntimeError("Card creation with GLOBAL scope is not supported yet.");
     } else {
-        throw ArgumentInvalidKey(scope, arg::value::VIRGIL_CARD_CREATE_SCOPE_VALUES);
+        throw ArgumentLogicError("Undefined card scope. Validation must fail first.");
     }
 
     ULOG1(INFO) << "Request card creation.";

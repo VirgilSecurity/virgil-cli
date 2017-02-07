@@ -58,9 +58,6 @@ static constexpr const char* kFileNotFoundMessage =
 static constexpr const char* kInvalidTokenMessage =
         "Invalid token format '%s', expected '<key>:<value>[:<alias>]'.";
 
-static constexpr const char* kInvalidKeyMessage =
-        "Invalid key '%s', expected one of '%s'.";
-
 static constexpr const char* kRecipientNotFoundMessage =
         "Recipient not found '%s:%s'.";
 
@@ -73,17 +70,8 @@ static constexpr const char* kValueSourceErrorMessage =
 static constexpr const char* kInvalidKeyValueMessage =
         "Invalid key-value format '%s', expected '<key>=<value>'.";
 
-static std::string format_api_list(const char *list[]) {
-    std::string result = "{";
-    for (auto item = list; *item != nullptr; ++item) {
-        if (item != list) {
-            result += ", ";
-        }
-        result += *item;
-    }
-    result += "}";
-    return result;
-}
+static constexpr const char* kValidationErrorMessage =
+        "Argument validation failed. %s";
 
 ArgumentNotFoundError::ArgumentNotFoundError(const char* argName) :
         ArgumentRuntimeError(tfm::format(kNotFoundErrorMessage, argName)) {}
@@ -121,12 +109,6 @@ ArgumentInvalidToken::ArgumentInvalidToken(const char* token) :
 ArgumentInvalidToken::ArgumentInvalidToken(const std::string& token) :
         ArgumentRuntimeError(tfm::format(kInvalidTokenMessage, token)) {}
 
-ArgumentInvalidKey::ArgumentInvalidKey(const char* key, const char* validValues[]) :
-        ArgumentRuntimeError(tfm::format(kInvalidKeyMessage, key, format_api_list(validValues))) {}
-
-ArgumentInvalidKey::ArgumentInvalidKey(const std::string& key, const char* validValues[]) :
-        ArgumentRuntimeError(tfm::format(kInvalidKeyMessage, key, format_api_list(validValues))) {}
-
 ArgumentRecipientNotFound::ArgumentRecipientNotFound(const std::string& sourceType, const std::string& sourceValue) :
         ArgumentRuntimeError(tfm::format(kRecipientNotFoundMessage, sourceType, sourceValue)) {}
 
@@ -141,3 +123,9 @@ ArgumentInvalidKeyValue::ArgumentInvalidKeyValue(const char* token) :
 
 ArgumentInvalidKeyValue::ArgumentInvalidKeyValue(const std::string& token) :
         ArgumentRuntimeError(tfm::format(kInvalidKeyValueMessage, token)) {}
+
+ArgumentValidationError::ArgumentValidationError(const char* message) :
+        ArgumentRuntimeError(tfm::format(kValidationErrorMessage, message)) {}
+
+ArgumentValidationError::ArgumentValidationError(const std::string& message) :
+    ArgumentRuntimeError(tfm::format(kValidationErrorMessage, message)) {}

@@ -34,83 +34,33 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_VALUE_H
-#define VIRGIL_CLI_ARGUMENT_VALUE_H
+#include <cli/argument/validation/ArgumentKeyValueAliasValidation.h>
 
-#include <string>
+#include <cli/error/ArgumentError.h>
+#include <cli/io/Logger.h>
 
-namespace cli { namespace argument {
+using cli::argument::ArgumentValue;
+using cli::argument::validation::ArgumentKeyValueAliasValidation;
+using cli::error::ArgumentValidationError;
 
-class ArgumentValue {
-public:
-    ArgumentValue();
-
-    explicit ArgumentValue(bool value);
-
-    explicit ArgumentValue(size_t value);
-
-    explicit ArgumentValue(std::string value);
-
-    std::string origin() const;
-
-    std::string typeString() const;
-
-    void parse();
-
-    // Primitive
-
-    bool isEmpty() const;
-
-    bool isBool() const;
-
-    bool isNumber() const;
-
-    bool isString() const;
-
-    bool asBool() const;
-
-    bool asOptionalBool() const;
-
-    size_t asNumber() const;
-
-    std::string asString() const;
-
-    // Complex
-
-    bool isKeyValue() const;
-
-    bool isKeyValueAlias() const;
-
-    std::string key() const;
-
-    std::string value() const;
-
-    std::string alias() const;
-private:
-    enum class Kind {
-        Empty = 0,
-        Boolean = 1,
-        Number = 2,
-        String = 4,
-        KeyValue = 8,
-        KeyValueAlias = 16
-    };
-    void throwIfNotKind(Kind kind) const;
-    static const char* kindAsString(Kind kind);
-private:
-    Kind kind_ = Kind::Empty;
-    std::string origin_;
-    std::string key_;
-    std::string value_;
-    std::string alias_;
-};
-
-}}
-
-namespace std {
-
-string to_string(const cli::argument::ArgumentValue& argumentValue);
-
+void ArgumentKeyValueAliasValidation::doValidate(const ArgumentValue& argumentValue) const {
+    if (!argumentValue.isKeyValueAlias()) {
+        throw ArgumentValidationError(
+                tfm::format("Expected KeyValueAlias, but found value of the type %s.", argumentValue.typeString()));
+    }
+    validateKey(argumentValue);
+    validateValue(argumentValue);
+    validateAlias(argumentValue);
 }
 
-#endif //VIRGIL_CLI_ARGUMENT_VALUE_H
+void ArgumentKeyValueAliasValidation::setAliasValidation(
+        std::unique_ptr<ArgumentValidation> aliasValidation, std::string key) {
+    aliasValidation_[key] = std::move(aliasValidation);
+}
+
+void ArgumentKeyValueAliasValidation::validateAlias(const ArgumentValue& argumentValue) const {
+    auto foundValidation = aliasValidation_.find(argumentValue.key());
+    if (foundValidation != aliasValidation_.cend()) {
+        foundValidation->second->validate(ArgumentValue(argumentValue.value()));
+    }
+}

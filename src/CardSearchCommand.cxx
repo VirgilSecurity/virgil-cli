@@ -106,7 +106,7 @@ static void purgeCardsToDir(const std::vector<Card>& cards, const std::string& o
 static void purgeCards(const std::vector<Card>& cards, const std::string& outDir) {
     if (outDir.empty()) {
         purgeCardsToStandardOut(cards);
-    } else if (!Path::createPath(outDir.c_str())) {
+    } else if (!Path::createDir(outDir.c_str())) {
         throw ArgumentRuntimeError(tfm::format("Can not create output directory '%s'.", outDir));
     } else {
         purgeCardsToDir(cards, outDir);
