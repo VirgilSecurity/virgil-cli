@@ -64,7 +64,7 @@ void Configurations::initConfigFile() {
         return;
     }
 
-    if (!Path::createPath(configDirPath)) {
+    if (!Path::createFile(configDirPath)) {
         throw std::runtime_error(
                 tfm::format("Can not create path '%s'. Possible administrative privileges required.", configDirPath));
     }
