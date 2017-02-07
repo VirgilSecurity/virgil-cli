@@ -47,6 +47,8 @@
 #include <virgil/sdk/client/Client.h>
 #include <virgil/sdk/client/RequestSigner.h>
 #include <virgil/sdk/client/CardValidator.h>
+#include <virgil/sdk/client/models/interfaces/SignableRequestInterface.h>
+#include <virgil/sdk/client/models/serialization/JsonSerializer.h>
 
 using cli::Crypto;
 using cli::command::CardCreateCommand;
@@ -61,6 +63,8 @@ using virgil::sdk::client::ServiceConfig;
 using virgil::sdk::client::CardValidator;
 using virgil::sdk::client::RequestSigner;
 using virgil::sdk::client::models::requests::CreateCardRequest;
+using virgil::sdk::client::models::interfaces::SignableRequestInterface;
+using virgil::sdk::client::models::serialization::JsonSerializer;
 using ServiceCrypto = virgil::sdk::crypto::Crypto;
 
 const char* CardCreateCommand::doGetName() const {
@@ -111,6 +115,8 @@ void CardCreateCommand::doProcess() const {
     }
 
     ULOG1(INFO) << "Request card creation.";
+    LOG(INFO) << "Card create request:\n"
+              << JsonSerializer<SignableRequestInterface>::toJson(createCardRequest);
     auto serviceConfig = ServiceConfig::createConfig(appAccessToken.stringValue());
     serviceConfig.cardValidator(std::make_unique<CardValidator>(crypto));
     Client client(std::move(serviceConfig));

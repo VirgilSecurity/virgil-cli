@@ -47,6 +47,8 @@
 #include <virgil/sdk/client/Client.h>
 #include <virgil/sdk/client/RequestSigner.h>
 #include <virgil/sdk/client/CardValidator.h>
+#include <virgil/sdk/client/models/interfaces/SignableRequestInterface.h>
+#include <virgil/sdk/client/models/serialization/JsonSerializer.h>
 
 using cli::Crypto;
 using cli::command::CardRevokeCommand;
@@ -61,6 +63,8 @@ using virgil::sdk::client::ServiceConfig;
 using virgil::sdk::client::CardValidator;
 using virgil::sdk::client::RequestSigner;
 using virgil::sdk::client::models::requests::RevokeCardRequest;
+using virgil::sdk::client::models::interfaces::SignableRequestInterface;
+using virgil::sdk::client::models::serialization::JsonSerializer;
 using ServiceCrypto = virgil::sdk::crypto::Crypto;
 
 const char* CardRevokeCommand::doGetName() const {
@@ -105,6 +109,8 @@ void CardRevokeCommand::doProcess() const {
     }
 
     ULOG1(INFO) << "Request card revocation.";
+    LOG(INFO) << "Card revoke request:\n"
+              << JsonSerializer<SignableRequestInterface>::toJson(revokeCardRequest);
     auto serviceConfig = ServiceConfig::createConfig(appAccessToken.stringValue());
     serviceConfig.cardValidator(std::make_unique<CardValidator>(crypto));
     Client client(std::move(serviceConfig));
