@@ -109,7 +109,7 @@ void CardRevokeCommand::doProcess() const {
     }
 
 #if ELPP_DEBUG_LOG
-    for (const auto& signature : createCardRequest.signatures()) {
+    for (const auto& signature : revokeCardRequest.signatures()) {
         DLOG(INFO) << "Added signature with fingerprint:" << signature.first;
     }
 #endif
