@@ -54,7 +54,7 @@ def archiveArtifacts(pattern) {
 
 def commonBuildOptions() {
     if (env.BRANCH_NAME =~ /develop/) {
-        return "-DCMAKE_BUILD_TYPE=Develop"
+        return "-DCMAKE_BUILD_TYPE=Debug"
     }
     return "-DCMAKE_BUILD_TYPE=Release"
 }
