@@ -39,6 +39,18 @@
 using cli::Crypto;
 using cli::model::SecureValue;
 
+static void zeroize(Crypto::Text& text) {
+    for (volatile auto& symbol : text) {
+        symbol = '\0';
+    }
+}
+
+static void zeroize(Crypto::Bytes& bytes) {
+    for (volatile auto& symbol : bytes) {
+        symbol = 0x00;
+    }
+}
+
 SecureValue::SecureValue() {}
 
 SecureValue::SecureValue(Crypto::Bytes value)
@@ -50,8 +62,8 @@ SecureValue::SecureValue(Crypto::Text value)
 }
 
 SecureValue::~SecureValue() noexcept {
-    virgil::crypto::bytes_zeroize(bytesValue_);
-    virgil::crypto::string_zeroize(stringValue_);
+    zeroize(bytesValue_);
+    zeroize(stringValue_);
 }
 
 const Crypto::Text& SecureValue::stringValue() const {
