@@ -72,7 +72,7 @@ bool Argument::isValue() const {
 }
 
 bool Argument::isList() const {
-    return values_.size() > 1;
+    return values_.size() > 0;
 }
 
 ArgumentValue Argument::asValue() const {

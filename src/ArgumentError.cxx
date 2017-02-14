@@ -119,7 +119,7 @@ ArgumentValueSourceError::ArgumentValueSourceError(const std::string& value) :
         ArgumentRuntimeError(tfm::format(kValueSourceErrorMessage, value)) {}
 
 ArgumentInvalidKeyValue::ArgumentInvalidKeyValue(const char* token) :
-        ArgumentRuntimeError(tfm::format(kInvalidTokenMessage, token)) {}
+        ArgumentRuntimeError(tfm::format(kInvalidKeyValueMessage, token)) {}
 
 ArgumentInvalidKeyValue::ArgumentInvalidKeyValue(const std::string& token) :
         ArgumentRuntimeError(tfm::format(kInvalidKeyValueMessage, token)) {}

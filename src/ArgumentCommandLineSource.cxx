@@ -74,8 +74,9 @@ public:
         }
         auto configOverloads = internal::argument_from(this->docoptArgs[opt::D_SHORT]);
         if (configOverloads.isList()) {
-            for (auto configValue : configOverloads.asList()) {
-                CHECK(configValue.isKeyValue());
+            for (auto& configValue : configOverloads.asList()) {
+                configValue.parse();
+                ArgumentValidationHub::isKeyValue()->validate(configValue);
                 this->configArgs[configValue.key()] = configValue.value();
             }
             this->docoptArgs.erase(opt::D_SHORT);
