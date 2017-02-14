@@ -73,14 +73,12 @@ public:
             DLOG(INFO) << tfm::format("Found argument '%s' with value '%s'.", arg.first, arg.second);
         }
         auto configOverloads = internal::argument_from(this->docoptArgs[opt::D_SHORT]);
-        if (configOverloads.isList()) {
-            for (auto& configValue : configOverloads.asList()) {
-                configValue.parse();
-                ArgumentValidationHub::isKeyValue()->validate(configValue);
-                this->configArgs[configValue.key()] = configValue.value();
-            }
-            this->docoptArgs.erase(opt::D_SHORT);
+        for (auto& configValue : configOverloads.asList()) {
+            configValue.parse();
+            ArgumentValidationHub::isKeyValue()->validate(configValue);
+            this->configArgs[configValue.key()] = configValue.value();
         }
+        this->docoptArgs.erase(opt::D_SHORT);
     }
 
     std::unique_ptr<docopt::value> findValue(const char* argName) {
