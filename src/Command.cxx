@@ -96,8 +96,7 @@ void Command::process() {
             showUsage((exception.condition().message() + " Requested entity is not found.").c_str());
             LOG(FATAL) << exception.what();
         } else {
-            ULOG3(FATAL) << exception.what();
-            showUsage(exception.condition().message().c_str());
+            showUsage(exception.what());
         }
     }
 }
