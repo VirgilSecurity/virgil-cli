@@ -58,6 +58,14 @@ using virgil::crypto::VirgilCryptoError;
 using virgil::sdk::VirgilSdkException;
 
 static std::string buildErrorMessage(const VirgilCryptoException& exception) {
+    if (exception.condition().category() == virgil::crypto::crypto_category()) {
+        switch(static_cast<VirgilCryptoError>(exception.condition().value())) {
+            case VirgilCryptoError::NotFoundPasswordRecipient:
+                return "Recipient password mismatch.";
+            default:
+                break;
+        }
+    }
     if (VLOG_IS_ON(1)) {
         return exception.what();
     } else {
