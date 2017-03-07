@@ -153,7 +153,8 @@ void CardSearchCommand::doProcess() const {
         ULOG1(INFO) << tfm::format("Search cards for identities: %s", format_list(identities));
         auto searchCriteria = SearchCardsCriteria::createCriteria(identities, card_scope_from(scope), identityType);
         auto cards = client.searchCards(searchCriteria).get();
-        ULOG1(INFO) << tfm::format("Found %d Virgil Card(s) for identities: %s", cards.size(), format_list(identities));
+        UVLOG(INFO, (cards.empty() ? 0 : 1))
+                << tfm::format("Found %d Virgil Card(s) for identities: %s", cards.size(), format_list(identities));
         purgeCards(cards, output.stringValue());
     }
 }
