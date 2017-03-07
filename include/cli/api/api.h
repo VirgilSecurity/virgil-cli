@@ -270,9 +270,9 @@ OPTIONS:
     -p <arg>, --private-key-password=<arg>  
         Private Key Password.
     <keypass>
-        Contains Private Key or password. Format: [privkey|password]:<value>
-            * if privkey, then <value> - recipient's Private Key;
-            * if password, then <value> - recipient's password.
+        Contains Private Key or password. Format: (privkey|password):<value>[:<alias>]
+            * if privkey, then <value> - recipient's Private Key, and <alias> - Private Key alias;
+            * if password, then <value> - recipient's password, and <alias> ignored.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -438,7 +438,6 @@ OPTIONS:
     -g <alg>, --algorithm=<alg>  
         Generate an Elliptic Curve key or an RSA key with one of the following algorithms [default: ed25519]:
             * bp256r1 - 256-bits Brainpool curve;
-            * bp256r1 - 256-bits Brainpool curve;
             * bp384r1 - 384-bits Brainpool curve;
             * bp512r1 - 512-bits Brainpool curve;
             * secp192r1 - 192-bits NIST curve;
@@ -456,7 +455,7 @@ OPTIONS:
     -p <arg>, --private-key-password=<arg>  
         Password to be used for private key encryption.
     --no-password  
-        If --private-key-password is omitted then key password won't be requested.
+        Keep private key wthout any encryption (not recommended).
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -479,7 +478,7 @@ static constexpr char VIRGIL_SIGN[] = R"(
 virgil-sign - signs data with a provided user's Private Key
 
 USAGE:
-    virgil sign [options] [-D <config>...] [-i <file>] [-o <file>] -k <file> [-p <arg>]
+    virgil sign [options] [-D <config>...] [-i <file>] [-o <file>] -k <file> [-p <arg>] [--hash-algorithm <hash-alg>]
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -490,6 +489,13 @@ OPTIONS:
         Signer's Private Key.
     -p <arg>, --private-key-password=<arg>  
         Private Key password.
+    --hash-algorithm=<hash-alg>  
+        The underlying hash algorithm [default: sha384]:
+            * sha1 - secure Hash Algorithm 1;
+            * sha224 - secure Hash Algorithm 2, that are 224 bits;
+            * sha256 - secure Hash Algorithm 2, that are 256 bits;
+            * sha384 - secure Hash Algorithm 2, that are 384 bits;
+            * sha512 - secure Hash Algorithm 2, that are 512 bits.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -550,6 +556,7 @@ static constexpr char ALGORITHM[] = "--algorithm";
 static constexpr char CONTENT_INFO[] = "--content-info";
 static constexpr char DATA[] = "--data";
 static constexpr char D_SHORT[] = "-D";
+static constexpr char HASH_ALGORITHM[] = "--hash-algorithm";
 static constexpr char HELP[] = "--help";
 static constexpr char IN[] = "--in";
 static constexpr char INFO[] = "--info";
@@ -732,6 +739,20 @@ static const char* VIRGIL_KEYGEN_ALG_VALUES[] = {
     VIRGIL_KEYGEN_ALG_SECP256R1,
     VIRGIL_KEYGEN_ALG_SECP384R1,
     VIRGIL_KEYGEN_ALG_SECP521R1,
+    nullptr
+};
+
+static constexpr char VIRGIL_SIGN_HASH_ALG_SHA1[] = "sha1";
+static constexpr char VIRGIL_SIGN_HASH_ALG_SHA224[] = "sha224";
+static constexpr char VIRGIL_SIGN_HASH_ALG_SHA256[] = "sha256";
+static constexpr char VIRGIL_SIGN_HASH_ALG_SHA384[] = "sha384";
+static constexpr char VIRGIL_SIGN_HASH_ALG_SHA512[] = "sha512";
+static const char* VIRGIL_SIGN_HASH_ALG_VALUES[] = {
+    VIRGIL_SIGN_HASH_ALG_SHA1,
+    VIRGIL_SIGN_HASH_ALG_SHA224,
+    VIRGIL_SIGN_HASH_ALG_SHA256,
+    VIRGIL_SIGN_HASH_ALG_SHA384,
+    VIRGIL_SIGN_HASH_ALG_SHA512,
     nullptr
 };
 
