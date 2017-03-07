@@ -43,10 +43,9 @@ namespace cli { namespace model {
 
 class PublicKey : public Key {
 public:
-    PublicKey(Crypto::Bytes key, Crypto::Bytes identifier);
-    PublicKey(Crypto::Bytes key, const Crypto::Text& identifier);
-private:
-    void deriveIdentifier();
+    PublicKey(const Crypto::Bytes& key);
+    PublicKey(const Crypto::Bytes& key, const Crypto::Bytes& identifier);
+    PublicKey(const Crypto::Bytes& key, const Crypto::Text& identifier);
 };
 
 }}

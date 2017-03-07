@@ -49,12 +49,12 @@ static Crypto::Bytes hex_or_value(const Crypto::Text& value) {
     }
 }
 
-Key::Key(Crypto::Bytes key, const Crypto::Text& identifier)
-        : key_(std::move(key)), identifier_(hex_or_value(identifier)) {
+Key::Key(const Crypto::Bytes& key, const Crypto::Text& identifier)
+        : key_(key), identifier_(hex_or_value(identifier)) {
 }
 
-Key::Key(Crypto::Bytes key, Crypto::Bytes identifier)
-        : key_(std::move(key)), identifier_(std::move(identifier)) {
+Key::Key(const Crypto::Bytes& key, const Crypto::Bytes& identifier)
+        : key_(key), identifier_(identifier) {
 }
 
 Key::~Key() noexcept {

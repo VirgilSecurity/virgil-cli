@@ -45,9 +45,9 @@ namespace cli { namespace model {
 
 class Key {
 public:
-    Key(Crypto::Bytes key, Crypto::Bytes identifier);
+    Key(const Crypto::Bytes& key, const Crypto::Bytes& identifier);
 
-    Key(Crypto::Bytes key, const Crypto::Text& identifier);
+    Key(const Crypto::Bytes& key, const Crypto::Text& identifier);
 
     const Crypto::Bytes& key() const;
 

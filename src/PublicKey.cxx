@@ -42,21 +42,34 @@ using cli::Crypto;
 using cli::model::Key;
 using cli::model::PublicKey;
 
-PublicKey::PublicKey(Crypto::Bytes key, Crypto::Bytes identifier)
-        : Key(std::move(key), std::move(identifier)) {
-    deriveIdentifier();
+static Crypto::Bytes deriveIdentifier(const Crypto::Bytes& key) {
+    return Crypto::Hash(Crypto::HashAlgorithm::SHA256).hash(Crypto::KeyPair::publicKeyToDER(key));
 }
 
-PublicKey::PublicKey(Crypto::Bytes key, const Crypto::Text& identifier)
-        : Key(std::move(key), identifier) {
-    deriveIdentifier();
-}
-
-void PublicKey::deriveIdentifier() {
-    if (!identifier_.empty()) {
-        return;
+static Crypto::Bytes deriveIdentifier(const Crypto::Bytes& key, const Crypto::Bytes& identifier) {
+    if (identifier.empty()) {
+        return deriveIdentifier(key);
     }
-    identifier_ = Crypto::Hash(Crypto::HashAlgorithm::SHA256).hash(Crypto::KeyPair::publicKeyToDER(key_));
-    LOG(INFO) << "Identifier for the public key is not defined.";
-    LOG(INFO) << tfm::format("Derived public key identifier is: '%s'.", Crypto::ByteUtils::bytesToHex(identifier_));
+    return identifier;
+}
+
+static Crypto::Text deriveIdentifier(const Crypto::Bytes& key, const Crypto::Text& identifier) {
+    if (identifier.empty()) {
+        return Crypto::ByteUtils::bytesToHex(deriveIdentifier(key));
+    }
+    return identifier;
+}
+
+PublicKey::PublicKey(const Crypto::Bytes& key)
+        : Key(key, deriveIdentifier(key)) {
+    LOG(INFO) << tfm::format("Identifier for the public key is derived: '%s'.",
+            Crypto::ByteUtils::bytesToHex(identifier_));
+}
+
+PublicKey::PublicKey(const Crypto::Bytes& key, const Crypto::Bytes& identifier)
+        : Key(key, deriveIdentifier(key, identifier)) {
+}
+
+PublicKey::PublicKey(const Crypto::Bytes& key, const Crypto::Text& identifier)
+        : Key(key, deriveIdentifier(key, identifier)) {
 }
