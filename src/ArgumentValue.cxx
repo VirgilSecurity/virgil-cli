@@ -170,18 +170,12 @@ std::string ArgumentValue::typeString() const {
 }
 
 std::string std::to_string(const ArgumentValue& argumentValue) {
-    auto value =
-#if defined(_DEBUG) && !defined(NDEBUG)
-            argumentValue.value();
-#else
-            "<hidden>";
-#endif
     if (argumentValue.isKeyValueAlias()) {
-        return tfm::format("%s:%s:%s", argumentValue.key(), value, argumentValue.alias());
+        return tfm::format("%s:%s:%s", argumentValue.key(), argumentValue.value(), argumentValue.alias());
     } else if (argumentValue.isKeyValue()) {
-        return tfm::format("%s:%s", argumentValue.key(), value);
+        return tfm::format("%s:%s", argumentValue.key(), argumentValue.value());
     } else {
-        return value;
+        return argumentValue.value();
     }
 }
 

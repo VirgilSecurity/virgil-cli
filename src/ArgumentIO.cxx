@@ -375,7 +375,7 @@ void ArgumentIO::readPrivateKeyPassword(
     }
     std::string passwordOption = passwordArgumentKey;
     do {
-        LOG(INFO) << tfm::format("Read password for the private key: '%s'.", std::to_string(argumentValue));
+        DLOG(INFO) << tfm::format("Read password for the private key: '%s'.", std::to_string(argumentValue));
         auto argument = argumentSource_->readSecure(passwordOption.c_str(), ArgumentImportance::Required);
         auto password = argumentValueSource_->readPassword(argument.asValue());
         if (privateKey.checkPassword(password)) {
@@ -390,7 +390,7 @@ void ArgumentIO::readPrivateKeyPassword(
 
 std::vector<std::unique_ptr<EncryptCredentials>>
 ArgumentIO::readEncryptCredentials(const ArgumentValue& argumentValue) const {
-    LOG(INFO) << tfm::format("Read recipient(s) from the value: '%s'.", std::to_string(argumentValue));
+    DLOG(INFO) << tfm::format("Read recipient(s) from the value: '%s'.", std::to_string(argumentValue));
     auto recipientType = argumentValue.key();
     std::vector<std::unique_ptr<EncryptCredentials>> result;
     if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_PASSWORD) {
@@ -423,7 +423,7 @@ ArgumentIO::readEncryptCredentials(const ArgumentValue& argumentValue) const {
 
 std::vector<std::unique_ptr<DecryptCredentials>>
 ArgumentIO::readDecryptCredentials(const ArgumentValue& argumentValue) const {
-    LOG(INFO) << tfm::format("Read recipient(s) from the value: '%s'.", std::to_string(argumentValue));
+    DLOG(INFO) << tfm::format("Read recipient(s) from the value: '%s'.", std::to_string(argumentValue));
     auto recipientType = argumentValue.key();
     std::vector<std::unique_ptr<DecryptCredentials>> result;
     if (recipientType == arg::value::VIRGIL_DECRYPT_KEYPASS_PASSWORD) {
@@ -442,7 +442,7 @@ ArgumentIO::readDecryptCredentials(const ArgumentValue& argumentValue) const {
 }
 
 PublicKey ArgumentIO::readSenderKey(const ArgumentValue& argumentValue) const {
-    LOG(INFO) << tfm::format("Read Sender's key from the value: '%s'.", std::to_string(argumentValue));
+    DLOG(INFO) << tfm::format("Read Sender's key from the value: '%s'.", std::to_string(argumentValue));
     if (argumentValue.key() == arg::value::VIRGIL_VERIFY_RECIPIENT_ID_PUBKEY) {
         return argumentValueSource_->readPublicKey(argumentValue);
     } else if (argumentValue.key() == arg::value::VIRGIL_VERIFY_RECIPIENT_ID_VCARD) {
