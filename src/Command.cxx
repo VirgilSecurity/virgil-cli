@@ -43,6 +43,7 @@
 #include <cli/argument/ArgumentParseOptions.h>
 
 #include <virgil/crypto/VirgilCryptoException.h>
+#include <virgil/crypto/VirgilCryptoError.h>
 #include <virgil/sdk/VirgilSdkException.h>
 
 #include <iostream>
@@ -53,7 +54,26 @@ using cli::command::Command;
 using cli::argument::ArgumentParseOptions;
 
 using virgil::crypto::VirgilCryptoException;
+using virgil::crypto::VirgilCryptoError;
 using virgil::sdk::VirgilSdkException;
+
+static std::string buildErrorMessage(const VirgilCryptoException& exception) {
+    if (VLOG_IS_ON(1)) {
+        return exception.what();
+    } else {
+        return exception.condition().message();
+    }
+}
+
+static std::string buildErrorMessage(const VirgilSdkException& exception) {
+    std::string message(exception.what());
+    if (message.find("HTTP Code: 404") != std::string::npos) {
+        //TODO: Change this hot-fix when service will support informative message for this case.
+        return exception.condition().message() + " Requested entity is not found.";
+    } else {
+        return exception.what();
+    }
+}
 
 Command::Command(std::shared_ptr<argument::ArgumentIO> argumentIO) : argumentIO_(argumentIO) {
     DCHECK(argumentIO_);
@@ -87,22 +107,16 @@ void Command::process() {
     } catch (const error::ArgumentRuntimeError& error) {
         showUsage(error.what());
     } catch (const VirgilCryptoException& exception) {
-        ULOG3(FATAL) << exception.what();
-        showUsage(exception.condition().message().c_str());
+        LOG(FATAL) << exception.what();
+        showUsage(buildErrorMessage(exception).c_str());
     } catch (const VirgilSdkException& exception) {
-        std::string message(exception.what());
-        if (message.find("HTTP Code: 404") != std::string::npos) {
-            //TODO: Change this hot-fix when service will support informative message for this case.
-            showUsage((exception.condition().message() + " Requested entity is not found.").c_str());
-            LOG(FATAL) << exception.what();
-        } else {
-            showUsage(exception.what());
-        }
+        LOG(FATAL) << exception.what();
+        showUsage(buildErrorMessage(exception).c_str());
     }
 }
 
 void Command::showUsage(const char* errorMessage) const {
-    if (errorMessage != nullptr) {
+    if (errorMessage != nullptr && strlen(errorMessage) != 0) {
         ULOG(FATAL) << errorMessage;
         if (VLOG_IS_ON(1)) {
             std::cout << getUsage();
