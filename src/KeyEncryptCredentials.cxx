@@ -49,5 +49,5 @@ KeyEncryptCredentials::KeyEncryptCredentials(PublicKey publicKey)
 }
 
 KeyEncryptCredentials::KeyEncryptCredentials(Card card)
-        : publicKey_(card.publicKeyData(), card.identifier()) {
+        : publicKey_(card.publicKeyData()) {
 }
