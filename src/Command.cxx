@@ -62,6 +62,8 @@ static std::string buildErrorMessage(const VirgilCryptoException& exception) {
         switch(static_cast<VirgilCryptoError>(exception.condition().value())) {
             case VirgilCryptoError::NotFoundPasswordRecipient:
                 return "Recipient password mismatch.";
+            case VirgilCryptoError::NotFoundKeyRecipient:
+                return "Recipient private key mismatch or alias mismatch.";
             default:
                 break;
         }
