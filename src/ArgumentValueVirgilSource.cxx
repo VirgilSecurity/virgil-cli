@@ -142,8 +142,8 @@ std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const 
 
         return std::make_unique<std::vector<Card>>(std::move(globalCards));
     } catch (const VirgilSdkException& exception) {
-        LOG(ERROR) << "Failed to search Virgil Cards." << exception.what();
-        ULOG(ERROR) << "Failed to search Virgil Cards." << exception.condition().message();
+        ULOG(ERROR) << "Failed to search Virgil Cards.";
+        ULOG(ERROR) << exception.what();
         return nullptr;
     }
 }
@@ -154,8 +154,8 @@ std::unique_ptr<Card> ArgumentValueVirgilSource::doReadCard(const ArgumentValue&
         auto client = impl_->buildClient();
         return std::make_unique<Card>(client->getCard(argumentValue.value()).get());
     } catch (const VirgilSdkException& exception) {
-        LOG(ERROR) << "Failed to get Virgil Card by it's identifier." << exception.what();
-        ULOG(ERROR) << "Failed to get Virgil Card by it's identifier." << exception.condition().message();
+        ULOG(ERROR) << "Failed to get Virgil Card by it's identifier.";
+        ULOG(ERROR) << exception.what();
         return nullptr;
     }
 }
