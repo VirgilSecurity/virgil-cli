@@ -271,8 +271,12 @@ OPTIONS:
         Private Key Password.
     <keypass>
         Contains Private Key or password. Format: (privkey|password):<value>[:<alias>]
-            * if privkey, then <value> - recipient's Private Key, and <alias> - Private Key alias;
-            * if password, then <value> - recipient's password, and <alias> ignored.
+            * if privkey then:
+                  + <value> - recipient's Private Key,
+                  + <alias> - Private Key alias;
+            * if password then:
+                  + <value> - recipient's password,
+                  + <alias> - ignored.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -455,7 +459,7 @@ OPTIONS:
     -p <arg>, --private-key-password=<arg>  
         Password to be used for private key encryption.
     --no-password  
-        Keep private key wthout any encryption (not recommended).
+        Keep private key without any encryption (not recommended).
     -h, --help  
         Displays usage information and exits.
     --version  
