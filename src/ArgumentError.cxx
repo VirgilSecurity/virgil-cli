@@ -65,7 +65,7 @@ static constexpr const char* kRecipientDecryptionErrorMessage =
         "Data can not be decrypted with given password or private key.";
 
 static constexpr const char* kValueSourceErrorMessage =
-        "Argument value '%s' can not be read.";
+        "Can not read actual value for the argument: '%s'.";
 
 static constexpr const char* kInvalidKeyValueMessage =
         "Invalid key-value format '%s', expected '<key>=<value>'.";
