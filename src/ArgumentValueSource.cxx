@@ -58,7 +58,7 @@ static constexpr const char kValueName_KeyAlgorithm[] = "Key Algorithm";
 static constexpr const char kValueName_PublicKey[] = "Public Key";
 static constexpr const char kValueName_PrivateKey[] = "Private Key";
 static constexpr const char kValueName_Password[] = "Password";
-static constexpr const char kValueName_VirgilCards[] = "Virgil Cards";
+static constexpr const char kValueName_VirgilCards[] = "Virgil Card(s)";
 
 #define FOR_EACH_SOURCE(func, param, valueName) \
 do { \
@@ -123,6 +123,10 @@ std::vector<Card> ArgumentValueSource::readCards(const ArgumentValue& argumentVa
     FOR_EACH_SOURCE(doReadCards, argumentValue, kValueName_VirgilCards);
 }
 
+Card ArgumentValueSource::readCard(const ArgumentValue& argumentValue) const {
+    FOR_EACH_SOURCE(doReadCard, argumentValue, kValueName_VirgilCards);
+}
+
 std::unique_ptr<KeyAlgorithm> ArgumentValueSource::doReadKeyAlgorithm(const ArgumentValue& argumentValue) const {
     CAN_NOT_HANDLE(argumentValue);
 }
@@ -140,5 +144,9 @@ std::unique_ptr<PrivateKey> ArgumentValueSource::doReadPrivateKey(const Argument
 }
 
 std::unique_ptr<std::vector<Card>> ArgumentValueSource::doReadCards(const ArgumentValue& argumentValue) const {
+    CAN_NOT_HANDLE(argumentValue);
+}
+
+std::unique_ptr<Card> ArgumentValueSource::doReadCard(const ArgumentValue& argumentValue) const {
     CAN_NOT_HANDLE(argumentValue);
 }

@@ -72,6 +72,8 @@ public:
 
     std::vector<model::Card> readCards(const ArgumentValue& argumentValue) const;
 
+    model::Card readCard(const ArgumentValue& argumentValue) const;
+
 private:
     virtual void doInit(const ArgumentSource& argumentSource) = 0;
 
@@ -86,6 +88,8 @@ private:
     virtual std::unique_ptr<model::PrivateKey> doReadPrivateKey(const ArgumentValue& argumentValue) const;
 
     virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const ArgumentValue& argumentValue) const;
+
+    virtual std::unique_ptr<model::Card> doReadCard(const ArgumentValue& argumentValue) const;
 
 private:
     std::shared_ptr<ArgumentValueSource> nextSource_;

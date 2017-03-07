@@ -53,6 +53,7 @@ private:
     virtual const char* doGetName() const override;
     virtual void doInit(const ArgumentSource& argumentSource) override;
     virtual std::unique_ptr<std::vector<model::Card>> doReadCards(const ArgumentValue& argumentValue) const override;
+    virtual std::unique_ptr<model::Card> doReadCard(const ArgumentValue& argumentValue) const override;
 private:
     class Impl;
     std::unique_ptr<Impl> impl_;

@@ -83,8 +83,24 @@ ArgumentValueVirgilSource::~ArgumentValueVirgilSource() noexcept = default;
 
 namespace cli { namespace argument {
 
-struct ArgumentValueVirgilSource::Impl {
-    std::string accessToken;
+class ArgumentValueVirgilSource::Impl {
+public:
+    void setAccessToken(std::string accessToken) {
+        accessToken_ = std::move(accessToken);
+    }
+
+    std::unique_ptr<Client> buildClient() const {
+        if (accessToken_.empty()) {
+            throw ArgumentFileNotFound(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN);
+        }
+
+        auto serviceConfig = ServiceConfig::createConfig(accessToken_);
+        serviceConfig.cardValidator(std::make_unique<CardValidator>(std::make_shared<ServiceCrypto>()));
+        return std::make_unique<Client>(std::move(serviceConfig));
+    }
+
+private:
+    std::string accessToken_;
 };
 
 }}
@@ -100,27 +116,22 @@ const char* ArgumentValueVirgilSource::doGetName() const {
 void ArgumentValueVirgilSource::doInit(const ArgumentSource& argumentSource) {
     auto argument = argumentSource.read(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN, ArgumentImportance::Optional);
     if (argument.isValue() && argument.asValue().isString()) {
-        impl_->accessToken = argument.asValue().value();
+        impl_->setAccessToken(argument.asValue().value());
     }
 }
 
 std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const ArgumentValue& argumentValue) const {
-    if (impl_->accessToken.empty()) {
-        throw ArgumentFileNotFound(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN);
-    }
+    auto client = impl_->buildClient();
 
-    auto serviceConfig = ServiceConfig::createConfig(impl_->accessToken);
-    serviceConfig.cardValidator(std::make_unique<CardValidator>(std::make_shared<ServiceCrypto>()));
-    Client client(std::move(serviceConfig));
-
-    auto globalCardsFuture = client.searchCards(SearchCardsCriteria::createCriteria(
+    auto globalCardsFuture = client->searchCards(SearchCardsCriteria::createCriteria(
             { argumentValue.value() }, CardScope::global, argumentValue.key()));
 
-    auto applicationCardsFuture = client.searchCards(SearchCardsCriteria::createCriteria(
+    auto applicationCardsFuture = client->searchCards(SearchCardsCriteria::createCriteria(
             { argumentValue.value() }, CardScope::application, argumentValue.key()));
 
     try {
-        ULOG1(INFO) << "Loading Virgil Cards...";
+        ULOG1(INFO) << tfm::format("Search Virgil Cards with identity '%s:%s' in the Cards service...",
+                argumentValue.key(), argumentValue.value());
         auto&& globalCards = globalCardsFuture.get();
         ULOG1(INFO) << tfm::format("Found %d Virgil Cards in the global scope.", globalCards.size());
         auto&& applicationCards = applicationCardsFuture.get();
@@ -131,8 +142,20 @@ std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const 
 
         return std::make_unique<std::vector<Card>>(std::move(globalCards));
     } catch (const VirgilSdkException& exception) {
-        LOG(ERROR) << "Failed to load Virgil Cards." << exception.what();
-        ULOG(ERROR) << "Failed to load Virgil Cards." << exception.condition().message();
+        LOG(ERROR) << "Failed to search Virgil Cards." << exception.what();
+        ULOG(ERROR) << "Failed to search Virgil Cards." << exception.condition().message();
+        return nullptr;
+    }
+}
+
+std::unique_ptr<Card> ArgumentValueVirgilSource::doReadCard(const ArgumentValue& argumentValue) const {
+    try {
+        ULOG1(INFO) << tfm::format("Get Virgil Card with id: '%s' from the Cards service.", argumentValue.value());
+        auto client = impl_->buildClient();
+        return std::make_unique<Card>(client->getCard(argumentValue.value()).get());
+    } catch (const VirgilSdkException& exception) {
+        LOG(ERROR) << "Failed to get Virgil Card by it's identifier." << exception.what();
+        ULOG(ERROR) << "Failed to get Virgil Card by it's identifier." << exception.condition().message();
         return nullptr;
     }
 }

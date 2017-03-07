@@ -333,11 +333,7 @@ Card ArgumentIO::getCardFromInput(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Card from input.";
     auto argument = argumentSource_->read(opt::IN, argumentImportance);
     ArgumentValidationHub::isText()->validate(argument, argumentImportance);
-    auto values = argumentValueSource_->readCards(argument.asValue());
-    if (values.size() > 0) {
-        return values[0];
-    }
-    throw error::ArgumentRuntimeError("Card was not read.");
+    return argumentValueSource_->readCard(argument.asValue());
 }
 
 CardRevocationReason ArgumentIO::getCardRevokeReason(ArgumentImportance argumentImportance) const {
@@ -402,12 +398,14 @@ ArgumentIO::readEncryptCredentials(const ArgumentValue& argumentValue) const {
         result.push_back(std::make_unique<KeyEncryptCredentials>(
                 argumentValueSource_->readPublicKey(argumentValue)
         ));
-    } else if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VCARD ||
-            recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_EMAIL) {
+    } else if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_EMAIL) {
         auto cards = argumentValueSource_->readCards(argumentValue);
         for (auto&& card : cards) {
             result.push_back(std::make_unique<KeyEncryptCredentials>(std::move(card)));
         }
+    } else if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VCARD) {
+        auto card = argumentValueSource_->readCard(argumentValue);
+        result.push_back(std::make_unique<KeyEncryptCredentials>(std::move(card)));
     } else {
         throw error::ArgumentLogicError(
                 tfm::format("Undefined key of the <%s>. Validation must fail first.", arg::RECIPIENT_ID));

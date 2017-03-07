@@ -103,6 +103,13 @@ std::unique_ptr<std::vector<Card>> ArgumentValueFileSource::doReadCards(const Ar
     return result;
 }
 
+std::unique_ptr<Card> ArgumentValueFileSource::doReadCard(const ArgumentValue& argumentValue) const {
+    if (!existsLocally(argumentValue)) {
+        return nullptr;
+    }
+    return std::make_unique<Card>(Card::importFromString(readText(argumentValue)));
+}
+
 bool ArgumentValueFileSource::existsLocally(const ArgumentValue& argumentValue) {
     return Path::exists(argumentValue.value(), true);
 }
