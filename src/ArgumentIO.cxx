@@ -163,6 +163,9 @@ ArgumentIO::getEncryptCredentials(ArgumentImportance argumentImportance) const {
         result.insert(result.end(),
                 std::make_move_iterator(credentials.begin()), std::make_move_iterator(credentials.end()));
     }
+    if (result.empty()) {
+        LOG(WARNING) << "Credentials for encryption was not found.";
+    }
     return result;
 }
 
@@ -402,6 +405,11 @@ ArgumentIO::readEncryptCredentials(const ArgumentValue& argumentValue) const {
         auto cards = argumentValueSource_->readCards(argumentValue);
         for (auto&& card : cards) {
             result.push_back(std::make_unique<KeyEncryptCredentials>(std::move(card)));
+        }
+        if (cards.empty()) {
+            ULOG(WARNING) << tfm::format(
+                    "Recipient with identity '%s:%s' is ignored, because it does not have any registered Virgil Card.",
+                    argumentValue.key(), argumentValue.value());
         }
     } else if (recipientType == arg::value::VIRGIL_ENCRYPT_RECIPIENT_ID_VCARD) {
         auto card = argumentValueSource_->readCard(argumentValue);

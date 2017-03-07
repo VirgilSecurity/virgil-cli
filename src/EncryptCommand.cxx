@@ -39,6 +39,7 @@
 #include <cli/api/api.h>
 #include <cli/crypto/Crypto.h>
 #include <cli/io/Logger.h>
+#include <cli/error/ArgumentError.h>
 
 using cli::Crypto;
 using cli::command::EncryptCommand;
@@ -59,7 +60,6 @@ ArgumentParseOptions EncryptCommand::doGetArgumentParseOptions() const {
     return ArgumentParseOptions().disableOptionsFirst();
 }
 
-
 void EncryptCommand::doProcess() const {
     ULOG1(INFO) << "Read parameters.";
     auto input = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
@@ -67,6 +67,10 @@ void EncryptCommand::doProcess() const {
     auto encryptCredentials = getArgumentIO()->getEncryptCredentials(ArgumentImportance::Required);
     bool doWriteContentInfo = getArgumentIO()->hasContentInfo();
     bool embedContentInfo = !doWriteContentInfo;
+
+    if (encryptCredentials.empty()) {
+        throw error::ArgumentRuntimeError("Encryption terminated. Any of the given recipients cannot be used.");
+    }
 
     ULOG1(INFO) << "Add recipients.";
     Crypto::StreamCipher cipher;
