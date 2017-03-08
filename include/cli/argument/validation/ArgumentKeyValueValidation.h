@@ -50,10 +50,11 @@ public:
     void setKeyValidation(std::unique_ptr<ArgumentValidation> keyValidation);
     void setValueValidation(std::unique_ptr<ArgumentValidation> valueValidation, std::string key = "");
 protected:
-    void validateKey(const ArgumentValue& argumentValue) const;
-    void validateValue(const ArgumentValue& argumentValue) const;
+    ArgumentValidationResult validateKey(const ArgumentValue& argumentValue) const;
+    ArgumentValidationResult validateValue(const ArgumentValue& argumentValue) const;
+    ArgumentValidationResult concatValidation(const ArgumentValidationResult) const;
 private:
-    virtual void doValidate(const ArgumentValue& argumentValue) const override;
+    virtual ArgumentValidationResult doValidate(const ArgumentValue& argumentValue) const override;
 private:
     std::unique_ptr<ArgumentValidation> keyValidation_;
     std::unordered_map<std::string, std::unique_ptr<ArgumentValidation>> valueValidation_;

@@ -38,9 +38,10 @@
 
 using cli::argument::ArgumentValue;
 using cli::argument::validation::ArgumentAnyValidation;
+using cli::argument::validation::ArgumentValidationResult;
 
-void ArgumentAnyValidation::doValidate(const ArgumentValue& argumentValue) const {
+ArgumentValidationResult ArgumentAnyValidation::doValidate(const ArgumentValue& argumentValue) const {
     // Any value is good, just return.
     (void) argumentValue;
-    return;
+    return ArgumentValidationResult::success();
 }

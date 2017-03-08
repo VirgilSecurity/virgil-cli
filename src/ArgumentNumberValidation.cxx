@@ -34,18 +34,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_ANY_VALIDATION_H
-#define VIRGIL_CLI_ARGUMENT_ANY_VALIDATION_H
+#include <cli/argument/validation/ArgumentNumberValidation.h>
 
-#include <cli/argument/validation/ArgumentValidation.h>
+#include <cli/error/ArgumentError.h>
+#include <cli/io/Logger.h>
 
-namespace cli { namespace argument { namespace validation {
+using cli::argument::ArgumentValue;
+using cli::argument::validation::ArgumentNumberValidation;
+using cli::argument::validation::ArgumentValidationResult;
+using cli::error::ArgumentValidationError;
 
-class ArgumentAnyValidation : public ArgumentValidation {
-private:
-    virtual ArgumentValidationResult doValidate(const ArgumentValue& argumentValue) const override;
-};
-
-}}}
-
-#endif //VIRGIL_CLI_ARGUMENT_ANY_VALIDATION_H
+ArgumentValidationResult ArgumentNumberValidation::doValidate(const ArgumentValue& argumentValue) const {
+    if (!argumentValue.isNumber()) {
+        return ArgumentValidationResult::failure(
+                tfm::format("Expected Number, but found value of the type %s.", argumentValue.typeString()));
+    }
+    return ArgumentValidationResult::success();
+}

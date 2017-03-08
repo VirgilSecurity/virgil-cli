@@ -34,18 +34,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_ANY_VALIDATION_H
-#define VIRGIL_CLI_ARGUMENT_ANY_VALIDATION_H
+#ifndef VIRGIL_CLI_ARGUMENT_NUMBER_VALIDATION_H
+#define VIRGIL_CLI_ARGUMENT_NUMBER_VALIDATION_H
 
 #include <cli/argument/validation/ArgumentValidation.h>
 
 namespace cli { namespace argument { namespace validation {
 
-class ArgumentAnyValidation : public ArgumentValidation {
+class ArgumentNumberValidation : public ArgumentValidation {
 private:
     virtual ArgumentValidationResult doValidate(const ArgumentValue& argumentValue) const override;
 };
 
 }}}
 
-#endif //VIRGIL_CLI_ARGUMENT_ANY_VALIDATION_H
+#endif //VIRGIL_CLI_ARGUMENT_NUMBER_VALIDATION_H

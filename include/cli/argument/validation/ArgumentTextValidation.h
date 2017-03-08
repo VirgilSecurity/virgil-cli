@@ -43,7 +43,7 @@ namespace cli { namespace argument { namespace validation {
 
 class ArgumentTextValidation : public ArgumentValidation {
 private:
-    virtual void doValidate(const ArgumentValue& argumentValue) const override;
+    virtual ArgumentValidationResult doValidate(const ArgumentValue& argumentValue) const override;
 };
 
 }}}

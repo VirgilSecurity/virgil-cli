@@ -41,6 +41,7 @@
 
 using cli::argument::ArgumentValue;
 using cli::argument::validation::ArgumentRangeValidation;
+using cli::argument::validation::ArgumentValidationResult;
 using cli::error::ArgumentLogicError;
 using cli::error::ArgumentValidationError;
 
@@ -51,16 +52,17 @@ ArgumentRangeValidation::ArgumentRangeValidation(size_t min, size_t max)
     }
 }
 
-void ArgumentRangeValidation::doValidate(const ArgumentValue& argumentValue) const {
+ArgumentValidationResult ArgumentRangeValidation::doValidate(const ArgumentValue& argumentValue) const {
     if (!argumentValue.isNumber()) {
-        throw ArgumentValidationError(
+        return ArgumentValidationResult::failure(
                 tfm::format("Expected number, but found value of the type %s.", argumentValue.typeString()));
     }
     auto number = argumentValue.asNumber();
     if (number < min_) {
-        throw ArgumentValidationError(tfm::format("Invalid range: %d < %d.", number, min_));
+        return ArgumentValidationResult::failure(tfm::format("Invalid range: %d < %d.", number, min_));
     }
     if (number > max_) {
-        throw ArgumentValidationError(tfm::format("Invalid range: %d > %d.", number, max_));
+        return ArgumentValidationResult::failure(tfm::format("Invalid range: %d > %d.", number, max_));
     }
+    return ArgumentValidationResult::success();
 }

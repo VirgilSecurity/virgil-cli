@@ -40,10 +40,12 @@
 
 using cli::argument::ArgumentValue;
 using cli::argument::validation::ArgumentNotEmptyValidation;
+using cli::argument::validation::ArgumentValidationResult;
 using cli::error::ArgumentValidationError;
 
-void ArgumentNotEmptyValidation::doValidate(const ArgumentValue& argumentValue) const {
+ArgumentValidationResult ArgumentNotEmptyValidation::doValidate(const ArgumentValue& argumentValue) const {
     if (argumentValue.isEmpty()) {
-        throw ArgumentValidationError("Expected non empty value");
+        return ArgumentValidationResult::failure("Expected non empty value.");
     }
+    return ArgumentValidationResult::success();
 }

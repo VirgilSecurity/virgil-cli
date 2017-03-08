@@ -43,42 +43,60 @@ using cli::argument::Argument;
 using cli::argument::ArgumentValue;
 using cli::argument::ArgumentImportance;
 using cli::argument::validation::ArgumentValidation;
+using cli::argument::validation::ArgumentValidationResult;
 using cli::error::ArgumentValidationError;
 
 void ArgumentValidation::validate(const Argument& argument, ArgumentImportance argumentImportance) const {
-    auto argumentValue = argument.asValue();
-    if (argumentImportance == ArgumentImportance::Optional && (argument.isEmpty() || argumentValue.isEmpty())) {
-        return;
-    }
-    if (argument.isEmpty()) {
-        ArgumentValidationError("Expected one argument, but got empty.");
-    } else if (!argument.isValue()) {
-        ArgumentValidationError("Expected one argument, but got list.");
-    }
-    validate(argumentValue);
+    tryValidate(argument, argumentImportance).check();
 }
 
 void ArgumentValidation::validateList(const Argument& argument, ArgumentImportance argumentImportance) const {
+    tryValidateList(argument, argumentImportance).check();
+}
+
+void ArgumentValidation::validate(const ArgumentValue& argumentValue) const {
+    tryValidate(argumentValue).check();
+}
+
+ArgumentValidationResult ArgumentValidation::tryValidate(
+        const Argument& argument, ArgumentImportance argumentImportance) const {
+    auto argumentValue = argument.asValue();
+    if (argumentImportance == ArgumentImportance::Optional && (argument.isEmpty() || argumentValue.isEmpty())) {
+        return ArgumentValidationResult::success();
+    }
+    if (argument.isEmpty()) {
+        return ArgumentValidationResult::failure("Expected one argument, but got empty.");
+    } else if (!argument.isValue()) {
+        return ArgumentValidationResult::failure("Expected one argument, but got more then one.");
+    }
+    return tryValidate(argumentValue);
+}
+
+ArgumentValidationResult ArgumentValidation::tryValidateList(
+        const Argument& argument, ArgumentImportance argumentImportance) const {
+
     if (argumentImportance == ArgumentImportance::Optional && argument.isEmpty()) {
-        return;
+        return ArgumentValidationResult::success();
     }
-    if (!argument.isEmpty()) {
-        ArgumentValidationError("Expected one or more arguments, but got zero.");
+    if (argument.isEmpty()) {
+        return ArgumentValidationResult::failure("Expected one or more arguments, but got zero.");
     }
+    ArgumentValidationResult validationResult = ArgumentValidationResult::success();
     for (const auto argumentValue : argument.asList()) {
         if (!argumentValue.isEmpty()) {
-            validate(argumentValue);
+            validationResult += tryValidate(argumentValue);
         } else {
             auto errorMessage = "Met empty value in the arguments list.";
             if (argumentImportance != ArgumentImportance::Optional) {
                 ULOG(WARNING) << errorMessage;
             } else {
-                throw ArgumentValidationError(errorMessage);
+                return ArgumentValidationResult::failure(errorMessage);
             }
         }
     }
+    return validationResult;
 }
 
-void ArgumentValidation::validate(const ArgumentValue& argumentValue) const {
-    doValidate(argumentValue);
+ArgumentValidationResult ArgumentValidation::tryValidate(const ArgumentValue& argumentValue) const {
+    return doValidate(argumentValue);
 }

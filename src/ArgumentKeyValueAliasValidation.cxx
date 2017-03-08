@@ -41,16 +41,16 @@
 
 using cli::argument::ArgumentValue;
 using cli::argument::validation::ArgumentKeyValueAliasValidation;
+using cli::argument::validation::ArgumentValidationResult;
 using cli::error::ArgumentValidationError;
 
-void ArgumentKeyValueAliasValidation::doValidate(const ArgumentValue& argumentValue) const {
+
+ArgumentValidationResult ArgumentKeyValueAliasValidation::doValidate(const ArgumentValue& argumentValue) const {
     if (!argumentValue.isKeyValueAlias()) {
-        throw ArgumentValidationError(
+        return ArgumentValidationResult::failure(
                 tfm::format("Expected KeyValueAlias, but found value of the type %s.", argumentValue.typeString()));
     }
-    validateKey(argumentValue);
-    validateValue(argumentValue);
-    validateAlias(argumentValue);
+    return validateKey(argumentValue) + validateValue(argumentValue) + validateAlias(argumentValue);
 }
 
 void ArgumentKeyValueAliasValidation::setAliasValidation(
@@ -58,9 +58,11 @@ void ArgumentKeyValueAliasValidation::setAliasValidation(
     aliasValidation_[key] = std::move(aliasValidation);
 }
 
-void ArgumentKeyValueAliasValidation::validateAlias(const ArgumentValue& argumentValue) const {
+ArgumentValidationResult ArgumentKeyValueAliasValidation::validateAlias(const ArgumentValue& argumentValue) const {
     auto foundValidation = aliasValidation_.find(argumentValue.key());
     if (foundValidation != aliasValidation_.cend()) {
-        foundValidation->second->validate(ArgumentValue(argumentValue.value()));
+        return foundValidation->second->tryValidate(ArgumentValue(argumentValue.value()))
+                .prepend("Alias validation: ");;
     }
+    return ArgumentValidationResult::success();
 }

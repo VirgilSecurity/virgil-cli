@@ -34,20 +34,64 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/argument/validation/ArgumentBoolValidation.h>
+#include <cli/argument/validation/ArgumentValidationResult.h>
 
 #include <cli/error/ArgumentError.h>
-#include <cli/io/Logger.h>
 
-using cli::argument::ArgumentValue;
-using cli::argument::validation::ArgumentBoolValidation;
 using cli::argument::validation::ArgumentValidationResult;
 using cli::error::ArgumentValidationError;
 
-ArgumentValidationResult ArgumentBoolValidation::doValidate(const ArgumentValue& argumentValue) const {
-    if (!argumentValue.isBool()) {
-        return ArgumentValidationResult::failure(
-                tfm::format("Expected Boolean, but found value of the type %s.", argumentValue.typeString()));
+ArgumentValidationResult ArgumentValidationResult::success() {
+    return ArgumentValidationResult(true, "");
+}
+
+ArgumentValidationResult ArgumentValidationResult::failure(const std::string& message) {
+    return ArgumentValidationResult(false, message);
+}
+
+ArgumentValidationResult::ArgumentValidationResult(bool result, const std::string& message)
+        : result_(result), message_(message) {
+}
+
+ArgumentValidationResult::operator bool() const noexcept {
+    return result_;
+}
+
+std::string ArgumentValidationResult::errorMessage() const {
+    return message_;
+}
+
+ArgumentValidationResult ArgumentValidationResult::append(const std::string& message) const {
+    if (!result_) {
+        return ArgumentValidationResult::failure(message_ + message);
     }
-    return ArgumentValidationResult::success();
+    return *this;
+}
+
+ArgumentValidationResult ArgumentValidationResult::prepend(const std::string& message) const {
+    if (!result_) {
+        return ArgumentValidationResult::failure(message + message_);
+    }
+    return *this;
+}
+
+void ArgumentValidationResult::check() const {
+    if (!result_) {
+        throw ArgumentValidationError(message_);
+    }
+}
+
+ArgumentValidationResult& ArgumentValidationResult::operator+=(const ArgumentValidationResult& other) {
+    *this = *this + other;
+    return *this;
+}
+
+ArgumentValidationResult operator+(const ArgumentValidationResult& lhs, const ArgumentValidationResult& rhs) {
+    if (lhs && rhs) {
+        return ArgumentValidationResult::success();
+    } else if (!lhs && !rhs) {
+        return ArgumentValidationResult::failure(lhs.errorMessage() + " " + rhs.errorMessage());
+    } else {
+        return !lhs ? lhs : rhs;
+    }
 }

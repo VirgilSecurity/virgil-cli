@@ -45,7 +45,7 @@ class ArgumentRangeValidation : public ArgumentValidation {
 public:
     ArgumentRangeValidation(size_t min, size_t max);
 private:
-    virtual void doValidate(const ArgumentValue& argumentValue) const override;
+    virtual ArgumentValidationResult doValidate(const ArgumentValue& argumentValue) const override;
 private:
     size_t min_;
     size_t max_;

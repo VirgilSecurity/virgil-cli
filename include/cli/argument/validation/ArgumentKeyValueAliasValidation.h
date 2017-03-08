@@ -46,9 +46,9 @@ public:
     using ArgumentKeyValueValidation::ArgumentKeyValueValidation;
     void setAliasValidation(std::unique_ptr<ArgumentValidation> aliasValidation, std::string key = "");
 protected:
-    void validateAlias(const ArgumentValue& argumentValue) const;
+    ArgumentValidationResult validateAlias(const ArgumentValue& argumentValue) const;
 private:
-    virtual void doValidate(const ArgumentValue& argumentValue) const override;
+    virtual ArgumentValidationResult doValidate(const ArgumentValue& argumentValue) const override;
 private:
     std::unordered_map<std::string, std::unique_ptr<ArgumentValidation>> aliasValidation_;
 };

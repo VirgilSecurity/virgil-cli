@@ -41,11 +41,13 @@
 
 using cli::argument::ArgumentValue;
 using cli::argument::validation::ArgumentTextValidation;
+using cli::argument::validation::ArgumentValidationResult;
 using cli::error::ArgumentValidationError;
 
-void ArgumentTextValidation::doValidate(const ArgumentValue& argumentValue) const {
+ArgumentValidationResult ArgumentTextValidation::doValidate(const ArgumentValue& argumentValue) const {
     if (!argumentValue.isString()) {
-        throw ArgumentValidationError(
+        return ArgumentValidationResult::failure(
                 tfm::format("Expected String, but found value of the type %s.", argumentValue.typeString()));
     }
+    return ArgumentValidationResult::success();
 }

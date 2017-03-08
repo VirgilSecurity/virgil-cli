@@ -43,6 +43,7 @@
 
 using cli::argument::ArgumentValue;
 using cli::argument::validation::ArgumentEnumValidation;
+using cli::argument::validation::ArgumentValidationResult;
 using cli::error::ArgumentLogicError;
 using cli::error::ArgumentValidationError;
 
@@ -52,12 +53,12 @@ ArgumentEnumValidation::ArgumentEnumValidation(const char** validValues) : valid
     }
 }
 
-void ArgumentEnumValidation::doValidate(const ArgumentValue& argumentValue) const {
+ArgumentValidationResult ArgumentEnumValidation::doValidate(const ArgumentValue& argumentValue) const {
     if (!argumentValue.isString()) {
-        throw ArgumentValidationError(
+        return ArgumentValidationResult::failure(
                 tfm::format("Expected enum string, but found value of the type %s.", argumentValue.typeString()));
     }
-    check(argumentValue.asString().c_str());
+    return check(argumentValue.asString().c_str());
 }
 
 std::string ArgumentEnumValidation::formatValidValues() const {
@@ -72,12 +73,12 @@ std::string ArgumentEnumValidation::formatValidValues() const {
     return result;
 }
 
-void ArgumentEnumValidation::check(const char* value) const {
+ArgumentValidationResult ArgumentEnumValidation::check(const char* value) const {
     for (auto item = validValues_; *item != nullptr; ++item) {
         if (strcmp(*item, value) == 0) {
-            return;
+            return ArgumentValidationResult::success();
         }
     }
-    throw ArgumentValidationError(
-            tfm::format("Expected on of the values %s, but got '%s'.", formatValidValues(), value));
+    return ArgumentValidationResult::failure(
+            tfm::format("Expected one of the values %s, but got '%s'.", formatValidValues(), value));
 }

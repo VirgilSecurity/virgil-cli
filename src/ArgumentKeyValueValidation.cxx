@@ -42,15 +42,15 @@
 using cli::argument::ArgumentValue;
 using cli::argument::ArgumentImportance;
 using cli::argument::validation::ArgumentKeyValueValidation;
+using cli::argument::validation::ArgumentValidationResult;
 using cli::error::ArgumentValidationError;
 
-void ArgumentKeyValueValidation::doValidate(const ArgumentValue& argumentValue) const {
+ArgumentValidationResult ArgumentKeyValueValidation::doValidate(const ArgumentValue& argumentValue) const {
     if (!argumentValue.isKeyValue()) {
-        throw ArgumentValidationError(
+        return ArgumentValidationResult::failure(
                 tfm::format("Expected KeyValue, but found value of the type %s.", argumentValue.typeString()));
     }
-    validateKey(argumentValue);
-    validateValue(argumentValue);
+    return validateKey(argumentValue) + validateValue(argumentValue);
 }
 
 void ArgumentKeyValueValidation::setKeyValidation(std::unique_ptr<ArgumentValidation> keyValidation) {
@@ -62,15 +62,19 @@ void ArgumentKeyValueValidation::setValueValidation(
     valueValidation_[key] = std::move(valueValidation);
 }
 
-void ArgumentKeyValueValidation::validateKey(const ArgumentValue& argumentValue) const {
+ArgumentValidationResult ArgumentKeyValueValidation::validateKey(const ArgumentValue& argumentValue) const {
     if (keyValidation_) {
-        keyValidation_->validate(ArgumentValue(argumentValue.key()));
+        return keyValidation_->tryValidate(ArgumentValue(argumentValue.key()))
+                .prepend("Key validation: ");
     }
+    return ArgumentValidationResult::success();
 }
 
-void ArgumentKeyValueValidation::validateValue(const ArgumentValue& argumentValue) const {
+ArgumentValidationResult ArgumentKeyValueValidation::validateValue(const ArgumentValue& argumentValue) const {
     auto foundValidation = valueValidation_.find(argumentValue.key());
     if (foundValidation != valueValidation_.cend()) {
-        foundValidation->second->validate(ArgumentValue(argumentValue.value()));
+        return foundValidation->second->tryValidate(ArgumentValue(argumentValue.value()))
+                .prepend("Value validation: ");
     }
+    return ArgumentValidationResult::success();
 }

@@ -48,9 +48,9 @@ public:
      */
     explicit ArgumentEnumValidation(const char** validValues);
 private:
-    virtual void doValidate(const ArgumentValue& argumentValue) const override;
+    virtual ArgumentValidationResult doValidate(const ArgumentValue& argumentValue) const override;
 private:
-    void check(const char* value) const;
+    ArgumentValidationResult check(const char* value) const;
     std::string formatValidValues() const;
 private:
     const char** validValues_;

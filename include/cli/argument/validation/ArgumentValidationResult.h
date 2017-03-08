@@ -34,18 +34,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_ARGUMENT_ANY_VALIDATION_H
-#define VIRGIL_CLI_ARGUMENT_ANY_VALIDATION_H
+#ifndef VIRGIL_CLI_ARGUMENT_VALIDATION_RESULT_H
+#define VIRGIL_CLI_ARGUMENT_VALIDATION_RESULT_H
 
-#include <cli/argument/validation/ArgumentValidation.h>
+#include <string>
 
 namespace cli { namespace argument { namespace validation {
 
-class ArgumentAnyValidation : public ArgumentValidation {
+class ArgumentValidationResult {
+public:
+    static ArgumentValidationResult success();
+
+    static ArgumentValidationResult failure(const std::string& message);
+
+    explicit operator bool() const noexcept;
+
+    std::string errorMessage() const;
+
+    ArgumentValidationResult append(const std::string& message) const;
+
+    ArgumentValidationResult prepend(const std::string& message) const;
+
+    void check() const;
+
+    ArgumentValidationResult& operator+=(const ArgumentValidationResult& other);
+
 private:
-    virtual ArgumentValidationResult doValidate(const ArgumentValue& argumentValue) const override;
+    ArgumentValidationResult(bool result, const std::string& message);
+
+private:
+    bool result_;
+    std::string message_;
 };
 
 }}}
 
-#endif //VIRGIL_CLI_ARGUMENT_ANY_VALIDATION_H
+cli::argument::validation::ArgumentValidationResult operator+(
+        const cli::argument::validation::ArgumentValidationResult& lhs,
+        const cli::argument::validation::ArgumentValidationResult& rhs);
+
+#endif //VIRGIL_CLI_ARGUMENT_VALIDATION_RESULT_H

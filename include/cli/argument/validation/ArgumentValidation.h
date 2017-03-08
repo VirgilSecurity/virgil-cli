@@ -40,18 +40,26 @@
 #include <cli/argument/Argument.h>
 #include <cli/argument/ArgumentValue.h>
 #include <cli/argument/ArgumentImportance.h>
+#include <cli/argument/validation/ArgumentValidationResult.h>
 
 namespace cli { namespace argument { namespace validation {
 
 class ArgumentValidation {
 public:
     void validate(const Argument& argument, ArgumentImportance argumentImportance) const;
+
     void validateList(const Argument& argument, ArgumentImportance argumentImportance) const;
+
     void validate(const ArgumentValue& argumentValue) const;
 
-private:
-    virtual void doValidate(const ArgumentValue& argumentValue) const = 0;
+    ArgumentValidationResult tryValidate(const Argument& argument, ArgumentImportance argumentImportance) const;
 
+    ArgumentValidationResult tryValidateList(const Argument& argument, ArgumentImportance argumentImportance) const;
+
+    ArgumentValidationResult tryValidate(const ArgumentValue& argumentValue) const;
+
+private:
+    virtual ArgumentValidationResult doValidate(const ArgumentValue& argumentValue) const = 0;
 };
 
 }}}
