@@ -22,7 +22,7 @@ def createCentos(slaveName) {
 			unstash 'src'
 			def options = commonBuildOptions()
 			dir("build"){
-				sh "cmake ${options} -DUSE_BOOST_REGEX=ON .."
+				sh "cmake ${options} -DUSE_BOOST_REGEX=ON -DBoost_USE_STATIC_LIBS=ON .."
 				sh "make -j4 && cpack"
                 def name = readFile('virgil_cli_name.txt')
 				archiveArtifacts("${name}*")
