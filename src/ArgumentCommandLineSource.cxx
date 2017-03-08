@@ -142,8 +142,8 @@ void ArgumentCommandLineSource::doInit(const std::string& usage, const ArgumentP
 void ArgumentCommandLineSource::doUpdateRules() {
     auto argumentInteractive = read(opt::INTERACTIVE, ArgumentImportance::Optional);
     auto argumentQuiet = read(opt::QUIET, ArgumentImportance::Optional);
-    ArgumentValidationHub::isBool()->validate(argumentInteractive, ArgumentImportance::Optional);
-    ArgumentValidationHub::isBool()->validate(argumentQuiet, ArgumentImportance::Optional);
+    ArgumentValidationHub::isNumber()->validate(argumentInteractive, ArgumentImportance::Optional);
+    ArgumentValidationHub::isNumber()->validate(argumentQuiet, ArgumentImportance::Optional);
     getArgumentRules()->allowUserInteraction(argumentInteractive.asValue().asOptionalBool());
     if (argumentQuiet.asValue().asOptionalBool()) {
         auto userLogger = el::Loggers::getLogger(kLoggerId_User);

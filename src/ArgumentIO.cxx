@@ -94,14 +94,14 @@ bool ArgumentIO::hasContentInfo() const {
 bool ArgumentIO::hasNoPassword() const {
     ULOG2(INFO) << "Check if password should be omitted.";
     auto argument = argumentSource_->read(opt::NO_PASSWORD, ArgumentImportance::Optional);
-    ArgumentValidationHub::isBool()->validate(argument, ArgumentImportance::Optional);
+    ArgumentValidationHub::isNumber()->validate(argument, ArgumentImportance::Optional);
     return argument.asValue().asOptionalBool();
 }
 
 bool ArgumentIO::isInteractive() const {
     ULOG2(INFO) << "Check if interactive mode is on.";
     auto argument = argumentSource_->read(opt::INTERACTIVE, ArgumentImportance::Optional);
-    ArgumentValidationHub::isBool()->validate(argument, ArgumentImportance::Optional);
+    ArgumentValidationHub::isNumber()->validate(argument, ArgumentImportance::Optional);
     return argument.asValue().asOptionalBool();
 }
 

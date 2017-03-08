@@ -125,10 +125,6 @@ bool ArgumentValue::asBool() const {
     return static_cast<bool>(std::stoul(value_));
 }
 
-bool ArgumentValue::asOptionalBool() const {
-    return isBool() ? asBool() : false;
-}
-
 size_t ArgumentValue::asNumber() const {
     throwIfNotKind(ArgumentValue::Kind::Number);
     return static_cast<size_t>(std::stoul(value_));
@@ -137,6 +133,16 @@ size_t ArgumentValue::asNumber() const {
 std::string ArgumentValue::asString() const {
     throwIfNotKind(ArgumentValue::Kind::String);
     return value_;
+}
+
+bool ArgumentValue::asOptionalBool() const {
+    if (isBool()) {
+        return asBool();
+    } else if (isNumber()) {
+        return asNumber() > 0;
+    } else {
+        return false;
+    }
 }
 
 // Complex

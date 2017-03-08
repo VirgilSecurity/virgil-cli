@@ -109,7 +109,7 @@ static constexpr char VIRGIL_CARD_CREATE[] = R"(
 virgil-card-create - creates a Virgil Card entity
 
 USAGE:
-    virgil card-create [options] [-D <config>...] [-o <file>] -k <file> [-p <arg>] [-s <scope>] [--data <key-value>...] [--info <key-value>...] <identity>
+    virgil card-create [options...] [-o <file>] -k <file> [-p <arg>] [-s <scope>] [--data <key-value>...] [--info <key-value>...] <identity>
 
 OPTIONS:
     -o <file>, --out=<file>  
@@ -162,7 +162,7 @@ static constexpr char VIRGIL_CARD_GET[] = R"(
 virgil-card-get - return the Virgil Card from the Virgil Keys Service by the Virgil Card id.
 
 USAGE:
-    virgil card-get [options] [-D <config>...] [-i <arg>] [-o <file>]
+    virgil card-get [options...] [-i <arg>] [-o <file>]
 
 OPTIONS:
     -i <arg>, --in=<arg>  
@@ -191,7 +191,7 @@ static constexpr char VIRGIL_CARD_REVOKE[] = R"(
 virgil-card-revoke - revokes a Virgil Card directly or by the Virgil Card id
 
 USAGE:
-    virgil card-revoke [options] [-D <config>...] [-i <file>] [-r <reason>]
+    virgil card-revoke [options...] [-i <file>] [-r <reason>]
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -220,7 +220,7 @@ static constexpr char VIRGIL_CARD_SEARCH[] = R"(
 virgil-card-search - searches for a Virgil Card(s) by its identities (required), identity-type and scope.
 
 USAGE:
-    virgil card-search [options] [-D <config>...] [-o <arg>] [-s <scope>] <identity>...
+    virgil card-search [options...] [-o <arg>] [-s <scope>] <identity>...
 
 OPTIONS:
     -o <file>, --out=<file>  
@@ -258,7 +258,7 @@ static constexpr char VIRGIL_DECRYPT[] = R"(
 virgil-decrypt - decrypts the encrypted data
 
 USAGE:
-    virgil decrypt [options] [-D <config>...] [-i <file>] [-o <file>] [-c <file>] [-p <arg>] <keypass>...
+    virgil decrypt [options...] [-i <file>] [-o <file>] [-c <file>] [-p <arg>] <keypass>...
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -299,7 +299,7 @@ static constexpr char VIRGIL_ENCRYPT[] = R"(
 virgil-encrypt - encrypts any data for the specified recipient(s)
 
 USAGE:
-    virgil encrypt [options] [-D <config>...] [-i <file>] [-o <file>] [-c <file>] [--] <recipient-id>...
+    virgil encrypt [options...] [-i <file>] [-o <file>] [-c <file>] [--] <recipient-id>...
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -336,7 +336,7 @@ static constexpr char VIRGIL_EXHASH[] = R"(
 virgil-exhash - derives the obfuscated data from incoming parameters
 
 USAGE:
-    virgil exhash [options] [-D <config>...] [-i <file>] [-o <file>] -z <file> [-g <alg>] [-x <int>]
+    virgil exhash [options...] [-i <file>] [-o <file>] -z <file> [-g <alg>] [-x <int>]
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -376,7 +376,7 @@ static constexpr char VIRGIL_GLOSSARY[] = R"(
 virgil-glossary - shows the list of Virgil Services terms
 
 USAGE:
-    virgil glossary [options] [-D <config>...] [-o <file>]
+    virgil glossary [options...] [-o <file>]
 
 OPTIONS:
     -o <file>, --out=<file>  
@@ -403,7 +403,7 @@ static constexpr char VIRGIL_KEY2PUB[] = R"(
 virgil-key2pub - extracts the Public Key from the Private Key
 
 USAGE:
-    virgil key2pub [options] [-D <config>...] [-i <file>] [-o <file>] [-p <arg>]
+    virgil key2pub [options...] [-i <file>] [-o <file>] [-p <arg>]
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -434,7 +434,7 @@ static constexpr char VIRGIL_KEYGEN[] = R"(
 virgil-keygen - generate private key with given algorithm
 
 USAGE:
-    virgil keygen [options] [-D <config>...] [-o <file>] [-g <alg>] [-p <arg> | --no-password]
+    virgil keygen [options...] [-o <file>] [-g <alg>] [-p <arg> | --no-password]
 
 OPTIONS:
     -o <file>, --out=<file>  
@@ -482,7 +482,7 @@ static constexpr char VIRGIL_SIGN[] = R"(
 virgil-sign - signs data with a provided user's Private Key
 
 USAGE:
-    virgil sign [options] [-D <config>...] [-i <file>] [-o <file>] -k <file> [-p <arg>] [--hash-algorithm <hash-alg>]
+    virgil sign [options...] [-i <file>] [-o <file>] -k <file> [-p <arg>] [--hash-algorithm <hash-alg>]
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -522,7 +522,7 @@ static constexpr char VIRGIL_VERIFY[] = R"(
 virgil-verify - verifies data and signature with a provided user's Public Key or Virgil Card
 
 USAGE:
-    virgil verify [options] [-D <config>...] [-i <file>] -S <file> <recipient-id>
+    virgil verify [options...] [-i <file>] -S <file> <recipient-id>
 
 OPTIONS:
     -i <file>, --in=<file>  
