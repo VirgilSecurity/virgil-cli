@@ -45,7 +45,7 @@ using cli::argument::validation::ArgumentValidationResult;
 using cli::error::ArgumentValidationError;
 
 ArgumentValidationResult ArgumentNumberValidation::doValidate(const ArgumentValue& argumentValue) const {
-    if (!argumentValue.isNumber()) {
+    if (!argumentValue.isNumber() && !argumentValue.isBool()) {
         return ArgumentValidationResult::failure(
                 tfm::format("Expected Number, but found value of the type %s.", argumentValue.typeString()));
     }
