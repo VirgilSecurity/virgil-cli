@@ -176,7 +176,7 @@ endif ()
 
 # Add system external dependencies
 find_package (CURL REQUIRED)
-find_package(Threads REQUIRED)
+find_package (Threads REQUIRED)
 if (USE_BOOST_REGEX)
     find_package(Boost 1.53 REQUIRED COMPONENTS regex)
     if (NOT Boost_FOUND)
