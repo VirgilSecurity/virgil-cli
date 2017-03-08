@@ -41,6 +41,7 @@
 #include <cli/argument/validation/ArgumentNotEmptyValidation.h>
 #include <cli/argument/validation/ArgumentTextValidation.h>
 #include <cli/argument/validation/ArgumentBoolValidation.h>
+#include <cli/argument/validation/ArgumentNumberValidation.h>
 #include <cli/argument/validation/ArgumentEnumValidation.h>
 #include <cli/argument/validation/ArgumentRangeValidation.h>
 #include <cli/argument/validation/ArgumentKeyValueValidation.h>
@@ -57,6 +58,8 @@ public:
     static std::unique_ptr<ArgumentTextValidation> isText();
 
     static std::unique_ptr<ArgumentBoolValidation> isBool();
+
+    static std::unique_ptr<ArgumentNumberValidation> isNumber();
 
     static std::unique_ptr<ArgumentEnumValidation> isEnum(const char** validValues);
 

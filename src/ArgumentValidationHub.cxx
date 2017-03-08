@@ -43,6 +43,7 @@ using cli::argument::validation::ArgumentAnyValidation;
 using cli::argument::validation::ArgumentNotEmptyValidation;
 using cli::argument::validation::ArgumentTextValidation;
 using cli::argument::validation::ArgumentBoolValidation;
+using cli::argument::validation::ArgumentNumberValidation;
 using cli::argument::validation::ArgumentEnumValidation;
 using cli::argument::validation::ArgumentRangeValidation;
 using cli::argument::validation::ArgumentKeyValueValidation;
@@ -62,6 +63,10 @@ std::unique_ptr<ArgumentTextValidation> ArgumentValidationHub::isText() {
 
 std::unique_ptr<ArgumentBoolValidation> ArgumentValidationHub::isBool() {
     return std::make_unique<ArgumentBoolValidation>();
+}
+
+std::unique_ptr<ArgumentNumberValidation> ArgumentValidationHub::isNumber() {
+    return std::make_unique<ArgumentNumberValidation>();
 }
 
 std::unique_ptr<ArgumentEnumValidation> ArgumentValidationHub::isEnum(const char** validValues) {
