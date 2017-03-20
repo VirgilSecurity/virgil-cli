@@ -593,7 +593,7 @@ USAGE:
 
 OPTIONS:
     -i <file>, --in=<file>  
-        Data to be signed. If omitted, stdin is used.
+        Data to be verified. If omitted, stdin is used.
     -S <file>, --sign=<file>  
         Digest sign.
     <recipient-id>
