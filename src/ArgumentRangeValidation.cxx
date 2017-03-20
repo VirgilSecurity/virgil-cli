@@ -59,10 +59,12 @@ ArgumentValidationResult ArgumentRangeValidation::doValidate(const ArgumentValue
     }
     auto number = argumentValue.asNumber();
     if (number < min_) {
-        return ArgumentValidationResult::failure(tfm::format("Invalid range: %d < %d.", number, min_));
+        return ArgumentValidationResult::failure(
+                tfm::format("Invalid range: %d < %d. Valid range: [%d, %d].", number, min_, min_, max_));
     }
     if (number > max_) {
-        return ArgumentValidationResult::failure(tfm::format("Invalid range: %d > %d.", number, max_));
+        return ArgumentValidationResult::failure(
+                tfm::format("Invalid range: %d > %d. Valid range: [%d, %d].", number, max_, min_, max_));
     }
     return ArgumentValidationResult::success();
 }
