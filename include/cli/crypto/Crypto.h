@@ -48,6 +48,7 @@
 #include <virgil/crypto/VirgilStreamSigner.h>
 #include <virgil/crypto/foundation/VirgilHash.h>
 #include <virgil/crypto/foundation/VirgilBase64.h>
+#include <virgil/crypto/foundation/VirgilPBKDF.h>
 
 #include <cli/model/FileDataSource.h>
 #include <cli/model/FileDataSink.h>
@@ -74,6 +75,7 @@ public:
     using Hash = virgil::crypto::foundation::VirgilHash;
     using HashAlgorithm = virgil::crypto::foundation::VirgilHash::Algorithm;
     using Base64 = virgil::crypto::foundation::VirgilBase64;
+    using KeyDerivation = virgil::crypto::foundation::VirgilPBKDF;
     // Smart pointers
     using DataSourceUnique = std::unique_ptr<DataSource>;
     using DataSinkUnique = std::unique_ptr<DataSink>;

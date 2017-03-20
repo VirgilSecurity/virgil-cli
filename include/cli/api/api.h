@@ -88,8 +88,8 @@ COMMANDS:
         Sign the data with the Private Key.
     verify
         Verify the data and the signature with the Public Key.
-    exhash
-        Derive Hash from the given data with the PBKDF function.
+    secret-alias
+        Derive a public value from the user's secret value.
     config
         Get the information about Virgil CLI configuration file.
     VIRGIL CARD SERVICE COMMANDS
@@ -384,49 +384,6 @@ CONFIGURATION VALUES:
     See virgil(1) documentation for values description.
 )";
 
-static constexpr char VIRGIL_EXHASH[] = R"(
-virgil-exhash - derives the obfuscated data from incoming parameters
-
-USAGE:
-    virgil exhash [options...] [-i <file>] [-o <file>] -z <file> [-g <alg>] [-x <int>]
-
-OPTIONS:
-    -i <file>, --in=<file>  
-        The string value to be hashed. If omitted, stdout is used.
-    -o <file>, --out=<file>  
-        Hash. If omitted, stdout is used.
-    -z <file>, --salt=<file>  
-        The hash salt.
-    -g <alg>, --algorithm=<alg>  
-        The underlying hash algorithm [default: sha384]:
-            * sha1 - secure Hash Algorithm 1;
-            * sha224 - secure Hash Algorithm 2, that are 224 bits;
-            * sha256 - secure Hash Algorithm 2, that are 256 bits;
-            * sha384 - secure Hash Algorithm 2, that are 384 bits;
-            * sha512 - secure Hash Algorithm 2, that are 512 bits;
-    -x <int>, --iterations=<int>  
-        Iterations count [default: 4096].
-    -h, --help  
-        Displays usage information and exits.
-    --version  
-        Displays version information and exits.
-    -v, --verbose  
-        Activates maximum verbosity.
-    --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 1-9).
-    -q, --quiet  
-        Quiet mode: suppress normal output.
-    -I, --interactive  
-        Enables interactive mode.
-    -D <config>  
-        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
-    -C <config-file>  
-        Additional configuration file. If multiple files are given, then applied next rules:
-            * duplicate value from the rightmost file overwrites previous.
-    --  
-        Ignores the rest of the labeled arguments following this flag.
-)";
-
 static constexpr char VIRGIL_GLOSSARY[] = R"(
 virgil-glossary - shows the list of Virgil Services terms
 
@@ -521,6 +478,49 @@ OPTIONS:
         Password to be used for private key encryption.
     --no-password  
         Keep private key without any encryption (not recommended).
+    -h, --help  
+        Displays usage information and exits.
+    --version  
+        Displays version information and exits.
+    -v, --verbose  
+        Activates maximum verbosity.
+    --v=<verbose-level>  
+        Activates verbosity upto given verbose level (valid range: 1-9).
+    -q, --quiet  
+        Quiet mode: suppress normal output.
+    -I, --interactive  
+        Enables interactive mode.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
+    --  
+        Ignores the rest of the labeled arguments following this flag.
+)";
+
+static constexpr char VIRGIL_SECRET_ALIAS[] = R"(
+virgil-secret-alias - derives a public value from the user's secret value
+
+USAGE:
+    virgil secret-alias [options...] [-i <file>] [-o <file>] --salt=<file> [--hash-algorithm=<hash-alg>] [--iterations=<iteration-count>]
+
+OPTIONS:
+    -i <file>, --in=<file>  
+        Secret value. If omitted, stdin is used.
+    -o <file>, --out=<file>  
+        Secret alias. If omitted, stdout is used.
+    --salt=<file>  
+        The salt to be used as mixin for the given secret value.
+    --hash-algorithm <hash-alg>  
+        The underlying hash algorithm [default: sha384]:
+            * sha1 - secure Hash Algorithm 1;
+            * sha224 - secure Hash Algorithm 2, that are 224 bits;
+            * sha256 - secure Hash Algorithm 2, that are 256 bits;
+            * sha384 - secure Hash Algorithm 2, that are 384 bits;
+            * sha512 - secure Hash Algorithm 2, that are 512 bits.
+    --iterations=<iteration-count>  
+        Iterations count [default: 4096].
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -720,9 +720,9 @@ static constexpr char VIRGIL_COMMAND_CARD_SEARCH[] = "card-search";
 static constexpr char VIRGIL_COMMAND_CONFIG[] = "config";
 static constexpr char VIRGIL_COMMAND_DECRYPT[] = "decrypt";
 static constexpr char VIRGIL_COMMAND_ENCRYPT[] = "encrypt";
-static constexpr char VIRGIL_COMMAND_EXHASH[] = "exhash";
 static constexpr char VIRGIL_COMMAND_KEY2PUB[] = "key2pub";
 static constexpr char VIRGIL_COMMAND_KEYGEN[] = "keygen";
+static constexpr char VIRGIL_COMMAND_SECRET_ALIAS[] = "secret-alias";
 static constexpr char VIRGIL_COMMAND_SIGN[] = "sign";
 static constexpr char VIRGIL_COMMAND_VERIFY[] = "verify";
 static const char* VIRGIL_COMMAND_VALUES[] = {
@@ -733,9 +733,9 @@ static const char* VIRGIL_COMMAND_VALUES[] = {
     VIRGIL_COMMAND_CONFIG,
     VIRGIL_COMMAND_DECRYPT,
     VIRGIL_COMMAND_ENCRYPT,
-    VIRGIL_COMMAND_EXHASH,
     VIRGIL_COMMAND_KEY2PUB,
     VIRGIL_COMMAND_KEYGEN,
+    VIRGIL_COMMAND_SECRET_ALIAS,
     VIRGIL_COMMAND_SIGN,
     VIRGIL_COMMAND_VERIFY,
     nullptr
@@ -773,20 +773,6 @@ static const char* VIRGIL_ENCRYPT_RECIPIENT_ID_VALUES[] = {
     nullptr
 };
 
-static constexpr char VIRGIL_EXHASH_ALG_SHA1[] = "sha1";
-static constexpr char VIRGIL_EXHASH_ALG_SHA224[] = "sha224";
-static constexpr char VIRGIL_EXHASH_ALG_SHA256[] = "sha256";
-static constexpr char VIRGIL_EXHASH_ALG_SHA384[] = "sha384";
-static constexpr char VIRGIL_EXHASH_ALG_SHA512[] = "sha512";
-static const char* VIRGIL_EXHASH_ALG_VALUES[] = {
-    VIRGIL_EXHASH_ALG_SHA1,
-    VIRGIL_EXHASH_ALG_SHA224,
-    VIRGIL_EXHASH_ALG_SHA256,
-    VIRGIL_EXHASH_ALG_SHA384,
-    VIRGIL_EXHASH_ALG_SHA512,
-    nullptr
-};
-
 static constexpr char VIRGIL_KEYGEN_ALG_BP256R1[] = "bp256r1";
 static constexpr char VIRGIL_KEYGEN_ALG_BP384R1[] = "bp384r1";
 static constexpr char VIRGIL_KEYGEN_ALG_BP512R1[] = "bp512r1";
@@ -821,6 +807,20 @@ static const char* VIRGIL_KEYGEN_ALG_VALUES[] = {
     nullptr
 };
 
+static constexpr char VIRGIL_SECRET_ALIAS_HASH_ALG_SHA1[] = "sha1";
+static constexpr char VIRGIL_SECRET_ALIAS_HASH_ALG_SHA224[] = "sha224";
+static constexpr char VIRGIL_SECRET_ALIAS_HASH_ALG_SHA256[] = "sha256";
+static constexpr char VIRGIL_SECRET_ALIAS_HASH_ALG_SHA384[] = "sha384";
+static constexpr char VIRGIL_SECRET_ALIAS_HASH_ALG_SHA512[] = "sha512";
+static const char* VIRGIL_SECRET_ALIAS_HASH_ALG_VALUES[] = {
+    VIRGIL_SECRET_ALIAS_HASH_ALG_SHA1,
+    VIRGIL_SECRET_ALIAS_HASH_ALG_SHA224,
+    VIRGIL_SECRET_ALIAS_HASH_ALG_SHA256,
+    VIRGIL_SECRET_ALIAS_HASH_ALG_SHA384,
+    VIRGIL_SECRET_ALIAS_HASH_ALG_SHA512,
+    nullptr
+};
+
 static constexpr char VIRGIL_SIGN_HASH_ALG_SHA1[] = "sha1";
 static constexpr char VIRGIL_SIGN_HASH_ALG_SHA224[] = "sha224";
 static constexpr char VIRGIL_SIGN_HASH_ALG_SHA256[] = "sha256";
@@ -842,6 +842,9 @@ static const char* VIRGIL_VERIFY_RECIPIENT_ID_VALUES[] = {
     VIRGIL_VERIFY_RECIPIENT_ID_VCARD,
     nullptr
 };
+
+static constexpr auto VIRGIL_SECRET_ALIAS_ITERATION_COUNT_MIN = 2048;
+static constexpr auto VIRGIL_SECRET_ALIAS_ITERATION_COUNT_MAX = 16384;
 
 static constexpr auto VIRGIL_VERBOSE_LEVEL_MIN = 1;
 static constexpr auto VIRGIL_VERBOSE_LEVEL_MAX = 9;

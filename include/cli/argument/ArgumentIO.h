@@ -129,6 +129,10 @@ public:
 
     model::HashAlgorithm getHashAlgorithm(ArgumentImportance argumentImportance) const;
 
+    model::FileDataSource getSaltSource(ArgumentImportance argumentImportance) const;
+
+    size_t getIterationCount(ArgumentImportance argumentImportance) const;
+
 private:
     model::FileDataSource getSource(const ArgumentValue& argumentValue) const;
 

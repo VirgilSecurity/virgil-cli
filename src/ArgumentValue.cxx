@@ -45,8 +45,6 @@ using cli::argument::ArgumentValue;
 
 static constexpr const char kArgumentValueDelimeters[] = ":=";
 
-static constexpr const char kArgumentValueType_Bool[] = "Boolean";
-
 static std::vector<std::string> split(std::string str, const char* delimiters) {
     std::vector<std::string> result;
     char *token = std::strtok(const_cast<char *>(str.data()), delimiters);
@@ -100,6 +98,13 @@ void ArgumentValue::parse() {
         default:
             // Do nothing
             break;
+    }
+    if (kind_ == ArgumentValue::Kind::String) {
+        char *end = nullptr;
+        unsigned long number = std::strtoul(value_.c_str(), &end, 0);
+        if (end == value_.c_str() + value_.size() && number != ULONG_MAX) {
+            kind_ = ArgumentValue::Kind::Number;
+        }
     }
     DLOG(INFO) << tfm::format("Parse ArgumentValue from '%s' to type: '%s'.", origin_, kindAsString(kind_));
 }

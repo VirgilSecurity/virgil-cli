@@ -353,6 +353,23 @@ HashAlgorithm ArgumentIO::getHashAlgorithm(ArgumentImportance argumentImportance
     return argumentValueSource_->readHashAlgorithm(argument.asValue());
 }
 
+FileDataSource ArgumentIO::getSaltSource(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read salt source.";
+    auto argument = argumentSource_->read(opt::SALT, argumentImportance);
+    ArgumentValidationHub::isText()->validate(argument, argumentImportance);
+    return getSource(argument.asValue());
+}
+
+size_t ArgumentIO::getIterationCount(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read iteration count (iterations).";
+    auto argument = argumentSource_->read(opt::ITERATIONS, argumentImportance);
+    argument.parse();
+    ArgumentValidationHub::isRange(
+            arg::value::VIRGIL_SECRET_ALIAS_ITERATION_COUNT_MIN,
+            arg::value::VIRGIL_SECRET_ALIAS_ITERATION_COUNT_MAX)->validate(argument, argumentImportance);
+    return argument.asValue().asNumber();
+}
+
 FileDataSource ArgumentIO::getSource(const ArgumentValue& argumentValue) const {
     if (argumentValue.isEmpty()) {
         ULOG3(INFO) << tfm::format("Read source is standard input.");
