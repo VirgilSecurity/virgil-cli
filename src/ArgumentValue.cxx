@@ -40,6 +40,7 @@
 
 #include <vector>
 #include <cstring>
+#include <limits>
 
 using cli::argument::ArgumentValue;
 
@@ -102,7 +103,7 @@ void ArgumentValue::parse() {
     if (kind_ == ArgumentValue::Kind::String) {
         char *end = nullptr;
         unsigned long number = std::strtoul(value_.c_str(), &end, 0);
-        if (end == value_.c_str() + value_.size() && number != ULONG_MAX) {
+        if (end == value_.c_str() + value_.size() && number != std::numeric_limits<unsigned long>::max()) {
             kind_ = ArgumentValue::Kind::Number;
         }
     }
