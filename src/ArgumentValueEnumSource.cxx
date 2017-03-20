@@ -58,7 +58,7 @@ void ArgumentValueEnumSource::doInit(const ArgumentSource& argumentSource) {
 }
 
 std::unique_ptr<KeyAlgorithm> ArgumentValueEnumSource::doReadKeyAlgorithm(const ArgumentValue& argumentValue) const {
-    return std::make_unique<KeyAlgorithm>(KeyAlgorithm::from(argumentValue.value()));
+    return std::make_unique<KeyAlgorithm>(cli::model::key_algorithm_from(argumentValue.value()));
 }
 
 std::unique_ptr<HashAlgorithm> ArgumentValueEnumSource::doReadHashAlgorithm(const ArgumentValue& argumentValue) const {

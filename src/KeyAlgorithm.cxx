@@ -40,47 +40,38 @@
 #include <cli/error/ArgumentError.h>
 
 using namespace cli;
-using cli::Crypto;
-using cli::model::KeyAlgorithm;
 
-KeyAlgorithm::KeyAlgorithm(Crypto::KeyAlgorithm algorithm) : algorithm_(algorithm) {
-}
-
-Crypto::KeyAlgorithm KeyAlgorithm::algorithm() const {
-    return algorithm_;
-}
-
-KeyAlgorithm KeyAlgorithm::from(const Crypto::Text& algorithm) {
+model::KeyAlgorithm model::key_algorithm_from(const std::string& algorithm) {
     if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_BP256R1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_BP256R1);
+        return model::KeyAlgorithm::EC_BP256R1;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_BP384R1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_BP384R1);
+        return model::KeyAlgorithm::EC_BP384R1;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_BP512R1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_BP512R1);
+        return model::KeyAlgorithm::EC_BP512R1;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_ED25519) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::FAST_EC_ED25519);
+        return model::KeyAlgorithm::FAST_EC_ED25519;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_RSA3072) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::RSA_3072);
+        return model::KeyAlgorithm::RSA_3072;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_RSA4096) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::RSA_4096);
+        return model::KeyAlgorithm::RSA_4096;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_RSA8192) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::RSA_8192);
+        return model::KeyAlgorithm::RSA_8192;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_SECP192K1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_SECP192K1);
+        return model::KeyAlgorithm::EC_SECP192K1;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_SECP192R1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_SECP192R1);
+        return model::KeyAlgorithm::EC_SECP192R1;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_SECP224K1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_SECP224K1);
+        return model::KeyAlgorithm::EC_SECP224K1;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_SECP224R1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_SECP224R1);
+        return model::KeyAlgorithm::EC_SECP224R1;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_SECP256K1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_SECP256K1);
+        return model::KeyAlgorithm::EC_SECP256K1;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_SECP256R1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_SECP256R1);
+        return model::KeyAlgorithm::EC_SECP256R1;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_SECP384R1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_SECP384R1);
+        return model::KeyAlgorithm::EC_SECP384R1;
     } else if (algorithm == arg::value::VIRGIL_KEYGEN_ALG_SECP521R1) {
-        return KeyAlgorithm(Crypto::KeyAlgorithm::EC_SECP521R1);
+        return model::KeyAlgorithm::EC_SECP521R1;
     } else {
         throw error::ArgumentValueError(opt::ALGORITHM, algorithm);
     }

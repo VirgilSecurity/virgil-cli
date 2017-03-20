@@ -37,18 +37,15 @@
 #ifndef VIRGIL_CLI_KEY_ALGORITHM_H
 #define VIRGIL_CLI_KEY_ALGORITHM_H
 
-#include <cli/crypto/Crypto.h>
+#include <virgil/crypto/VirgilKeyPair.h>
+
+#include <string>
 
 namespace cli { namespace model {
 
-class KeyAlgorithm {
-public:
-    explicit KeyAlgorithm(Crypto::KeyAlgorithm algorithm);
-    static KeyAlgorithm from(const Crypto::Text& algorithm);
-    Crypto::KeyAlgorithm algorithm() const;
-private:
-    Crypto::KeyAlgorithm algorithm_;
-};
+using KeyAlgorithm = virgil::crypto::VirgilKeyPair::Type;
+
+KeyAlgorithm key_algorithm_from(const std::string& algorithm);
 
 }}
 

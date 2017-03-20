@@ -68,7 +68,7 @@ void KeygenCommand::doProcess() const {
     auto keyPassword = getArgumentIO()->getKeyPassword(keyPasswordImportance);
 
     ULOG1(INFO)  << "Generate private key.";
-    VirgilKeyPair keyPair = VirgilKeyPair::generate(keyAlgorithm.algorithm(), keyPassword.bytesValue());
+    VirgilKeyPair keyPair = VirgilKeyPair::generate(keyAlgorithm, keyPassword.bytesValue());
     ULOG1(INFO)  << "Write private key to the output.";
     getArgumentIO()->getOutputSink(ArgumentImportance::Optional).write(keyPair.privateKey());
 }
