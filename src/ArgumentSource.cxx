@@ -74,8 +74,16 @@ ArgumentSource* ArgumentSource::appendSource(std::unique_ptr<ArgumentSource> sou
     } else {
         LOG(INFO) << tfm::format("Append argument source: %s->%s.", getName(), source->getName());
         nextSource_ = std::move(source);
-        return this;
+        return nextSource_.get();
     }
+}
+
+ArgumentSource* ArgumentSource::insertSource(std::unique_ptr<ArgumentSource> source) {
+    LOG(INFO) << tfm::format("Insert argument source: %s->%s.", getName(), source->getName());
+    auto nextSourceBackup = std::move(nextSource_);
+    nextSource_ = std::move(source);
+    nextSource_->nextSource_ = std::move(nextSourceBackup);
+    return this;
 }
 
 void ArgumentSource::setupRules(std::shared_ptr<ArgumentRules> argumentRules) {

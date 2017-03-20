@@ -35,12 +35,14 @@
  */
 
 #include <cli/argument/ArgumentCommandLineSource.h>
+#include <cli/argument/ArgumentConfigSource.h>
 
 #include <cli/memory.h>
 #include <cli/api/api.h>
 #include <cli/api/Version.h>
 #include <cli/io/Logger.h>
 #include <cli/error/ArgumentError.h>
+#include <cli/memory.h>
 
 #include <cli/argument/validation/ArgumentValidationHub.h>
 #include <cli/argument/internal/Argument_DocoptValue.h>
@@ -50,6 +52,7 @@
 using cli::argument::Argument;
 using cli::argument::ArgumentSource;
 using cli::argument::ArgumentCommandLineSource;
+using cli::argument::ArgumentConfigSource;
 using cli::argument::ArgumentRules;
 using cli::argument::ArgumentImportance;
 using cli::argument::validation::ArgumentValidationHub;
@@ -66,20 +69,6 @@ public:
     std::vector<std::string> cmdArgs;
     std::map<std::string, docopt::value> docoptArgs;
     std::map<std::string, std::string> configArgs;
-
-    void updateArgs(std::map<std::string, docopt::value> args) {
-        this->docoptArgs = std::move(args);
-        for (auto const& arg : this->docoptArgs) {
-            DLOG(INFO) << tfm::format("Found argument '%s' with value '%s'.", arg.first, arg.second);
-        }
-        auto configOverloads = internal::argument_from(this->docoptArgs[opt::D_SHORT]);
-        for (auto& configValue : configOverloads.asList()) {
-            configValue.parse();
-            ArgumentValidationHub::isKeyValue()->validate(configValue);
-            this->configArgs[configValue.key()] = configValue.value();
-        }
-        this->docoptArgs.erase(opt::D_SHORT);
-    }
 
     std::unique_ptr<docopt::value> findValue(const char* argName) {
         { // First find in arguments
@@ -129,7 +118,8 @@ bool ArgumentCommandLineSource::doCanRead(const char* argName, ArgumentImportanc
 
 void ArgumentCommandLineSource::doInit(const std::string& usage, const ArgumentParseOptions& usageOptions) {
     try {
-        impl_->updateArgs(docopt::docopt_parse(usage, impl_->cmdArgs, true, true, usageOptions.isOptionsFirst()));
+        parseArguments(usage, usageOptions);
+        processArguments();
     } catch (const docopt::DocoptArgumentError& error) {
         throw error::ArgumentParseError(error.what());
     } catch (const docopt::DocoptExitHelp&) {
@@ -154,4 +144,37 @@ void ArgumentCommandLineSource::doUpdateRules() {
 
 Argument ArgumentCommandLineSource::doRead(const char* argName) const {
     return internal::argument_from(*impl_->findValue(argName));
+}
+
+void ArgumentCommandLineSource::parseArguments(const std::string& usage, const ArgumentParseOptions& usageOptions) {
+    impl_->docoptArgs = docopt::docopt_parse(usage, impl_->cmdArgs, true, true, usageOptions.isOptionsFirst());
+    for (auto const& arg : impl_->docoptArgs) {
+        DLOG(INFO) << tfm::format("Found argument '%s' with value '%s'.", arg.first, arg.second);
+    }
+}
+
+void ArgumentCommandLineSource::processArguments() {
+    processConfigOverloads();
+    processConfigSources();
+}
+
+void ArgumentCommandLineSource::processConfigOverloads() {
+    auto configOverloads = internal::argument_from(impl_->docoptArgs[opt::D_SHORT]);
+    for (auto& configValue : configOverloads.asList()) {
+        configValue.parse();
+        ArgumentValidationHub::isKeyValue()->validate(configValue);
+        impl_->configArgs[configValue.key()] = configValue.value();
+    }
+    impl_->docoptArgs.erase(opt::D_SHORT);
+}
+
+void ArgumentCommandLineSource::processConfigSources() {
+    auto configSources= internal::argument_from(impl_->docoptArgs[opt::C_SHORT]);
+    for (auto& configFilePath : configSources.asList()) {
+        ArgumentValidationHub::isText()->validate(configFilePath);
+        this->insertSource(
+                std::make_unique<ArgumentConfigSource>(configFilePath.asString())
+        );
+    }
+    impl_->docoptArgs.erase(opt::C_SHORT);
 }

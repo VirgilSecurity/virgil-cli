@@ -99,7 +99,7 @@ ArgumentValueSource* ArgumentValueSource::appendSource(std::shared_ptr<ArgumentV
     } else {
         LOG(INFO) << tfm::format("Append argument value source: %s->%s.", getName(), source->getName());
         nextSource_ = std::move(source);
-        return this;
+        return nextSource_.get();
     }
 }
 

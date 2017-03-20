@@ -64,6 +64,8 @@ public:
 
     ArgumentSource* appendSource(std::unique_ptr<ArgumentSource> source);
 
+    ArgumentSource* insertSource(std::unique_ptr<ArgumentSource> source);
+
     void setupRules(std::shared_ptr<ArgumentRules> argumentRules);
 
     std::shared_ptr<ArgumentRules> getArgumentRules();

@@ -65,7 +65,11 @@ COMMON OPTIONS:
     -I, --interactive  
         Enables interactive mode.
     -D <config>  
-        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+        Rewrite value from the configuration file, i.e.
+        -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
 
@@ -99,10 +103,17 @@ COMMANDS:
         Revoke the Virgil Card by the Virgil Card id.
 
 CONFIGURATION VALUES:
+    This section contains complete list of the configuration values.
+    Each command may use all of them or just some of them, or even do not use at all.
+    See specific commands documentation to know which configuration values it uses.
         * APP_ACCESS_TOKEN - is a unique string value that provides an authenticated secure access to the Virgil services.
         * APP_KEY_ID - is a unique string value that identifies your application in our services.
-        * APP_KEY_DATA - is a Private key that is used to perform creation and revocation of Virgil Cards (Public key) in the Virgil services.
+        * APP_KEY_DATA - is a Private Key that is used to perform creation and revocation of Virgil Cards (Public Key) in the Virgil services.
         * APP_KEY_PASSWORD - password to the APP_KEY_DATA.
+    Configuration value can be read from the next sources (top is most priority):
+        * command line option -D
+        * command line option -C
+        * default configuration file $HOME/.virgil/conf/default-config.yaml
 )";
 
 static constexpr char VIRGIL_CARD_CREATE[] = R"(
@@ -149,13 +160,19 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
 
 CONFIGURATION VALUES:
-        * APP_KEY_ID - is a unique string value that identifies your application in our services.
-        * APP_KEY_DATA - is a Private key that is used to perform creation and revocation of Virgil Cards (Public key) in the Virgil services.
-        * APP_KEY_PASSWORD - password to the APP_KEY_DATA.
+    Use APP_ACCESS_TOKEN.
+    When application is used as --scope, then next configuration values is used:
+        * APP_KEY_ID
+        * APP_KEY_DATA
+        * APP_KEY_PASSWORD
+    See virgil(1) documentation for values description.
 )";
 
 static constexpr char VIRGIL_CARD_GET[] = R"(
@@ -183,8 +200,15 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
+
+CONFIGURATION VALUES:
+    Use APP_ACCESS_TOKEN.
+    See virgil(1) documentation for values description.
 )";
 
 static constexpr char VIRGIL_CARD_REVOKE[] = R"(
@@ -212,8 +236,19 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
+
+CONFIGURATION VALUES:
+    Use next configuration values:
+        * APP_ACCESS_TOKEN
+        * APP_KEY_ID
+        * APP_KEY_DATA
+        * APP_KEY_PASSWORD
+    See virgil(1) documentation for values description.
 )";
 
 static constexpr char VIRGIL_CARD_SEARCH[] = R"(
@@ -250,8 +285,15 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
+
+CONFIGURATION VALUES:
+    Use APP_ACCESS_TOKEN.
+    See virgil(1) documentation for values description.
 )";
 
 static constexpr char VIRGIL_DECRYPT[] = R"(
@@ -291,6 +333,9 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -328,8 +373,15 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
+
+CONFIGURATION VALUES:
+    Use APP_ACCESS_TOKEN when vcard or email is used as <recipient-id>
+    See virgil(1) documentation for values description.
 )";
 
 static constexpr char VIRGIL_EXHASH[] = R"(
@@ -368,6 +420,9 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -395,6 +450,9 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -426,6 +484,9 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -474,6 +535,9 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -514,6 +578,9 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
 )";
@@ -547,8 +614,15 @@ OPTIONS:
         Enables interactive mode.
     -D <config>  
         Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
     --  
         Ignores the rest of the labeled arguments following this flag.
+
+CONFIGURATION VALUES:
+    Use APP_ACCESS_TOKEN when vcard is used as <recipient-id>
+    See virgil(1) documentation for values description.
 )";
 
 
@@ -558,6 +632,7 @@ namespace cli { namespace opt {
 
 static constexpr char ALGORITHM[] = "--algorithm";
 static constexpr char CONTENT_INFO[] = "--content-info";
+static constexpr char C_SHORT[] = "-C";
 static constexpr char DATA[] = "--data";
 static constexpr char D_SHORT[] = "-D";
 static constexpr char HASH_ALGORITHM[] = "--hash-algorithm";

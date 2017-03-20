@@ -60,6 +60,11 @@ public:
     ArgumentCommandLineSource& operator=(ArgumentCommandLineSource&&);
     virtual ~ArgumentCommandLineSource() noexcept;
 private:
+    void parseArguments(const std::string& usage, const ArgumentParseOptions& usageOptions);
+    void processArguments();
+    void processConfigOverloads();
+    void processConfigSources();
+private:
     class Impl;
     std::unique_ptr<Impl> impl_;
 };
