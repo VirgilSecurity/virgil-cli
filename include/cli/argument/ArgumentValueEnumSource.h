@@ -47,7 +47,11 @@ private:
 
     virtual void doInit(const ArgumentSource& argumentSource) override;
 
-    virtual std::unique_ptr<model::KeyAlgorithm> doReadKeyAlgorithm(const ArgumentValue& argumentValue) const override;
+    virtual std::unique_ptr<model::KeyAlgorithm> doReadKeyAlgorithm(
+            const ArgumentValue& argumentValue) const override;
+
+    virtual std::unique_ptr<model::HashAlgorithm> doReadHashAlgorithm(
+            const ArgumentValue& argumentValue) const override;
 };
 
 }}

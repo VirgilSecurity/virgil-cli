@@ -127,6 +127,8 @@ public:
 
     model::CardRevocationReason getCardRevokeReason(ArgumentImportance argumentImportance) const;
 
+    model::HashAlgorithm getHashAlgorithm(ArgumentImportance argumentImportance) const;
+
 private:
     model::FileDataSource getSource(const ArgumentValue& argumentValue) const;
 

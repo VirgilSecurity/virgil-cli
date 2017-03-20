@@ -346,6 +346,12 @@ CardRevocationReason ArgumentIO::getCardRevokeReason(ArgumentImportance argument
     return card_revocation_reason_from(argument.asValue().asString());
 }
 
+HashAlgorithm ArgumentIO::getHashAlgorithm(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read hash algorithm.";
+    auto argument = argumentSource_->read(opt::HASH_ALGORITHM, argumentImportance);
+    ArgumentValidationHub::isEnum(arg::value::VIRGIL_SIGN_HASH_ALG_VALUES)->validate(argument, argumentImportance);
+    return argumentValueSource_->readHashAlgorithm(argument.asValue());
+}
 
 FileDataSource ArgumentIO::getSource(const ArgumentValue& argumentValue) const {
     if (argumentValue.isEmpty()) {

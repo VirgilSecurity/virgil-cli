@@ -47,6 +47,7 @@ using cli::model::PublicKey;
 using cli::model::PrivateKey;
 using cli::model::Password;
 using cli::model::Card;
+using cli::model::HashAlgorithm;
 
 const char* ArgumentValueEnumSource::doGetName() const {
     return "ArgumentValueEnumSource";
@@ -58,4 +59,8 @@ void ArgumentValueEnumSource::doInit(const ArgumentSource& argumentSource) {
 
 std::unique_ptr<KeyAlgorithm> ArgumentValueEnumSource::doReadKeyAlgorithm(const ArgumentValue& argumentValue) const {
     return std::make_unique<KeyAlgorithm>(KeyAlgorithm::from(argumentValue.value()));
+}
+
+std::unique_ptr<HashAlgorithm> ArgumentValueEnumSource::doReadHashAlgorithm(const ArgumentValue& argumentValue) const {
+    return std::make_unique<HashAlgorithm>(cli::model::hash_algorithm_from(argumentValue.value()));
 }

@@ -49,6 +49,7 @@ using cli::model::Card;
 using cli::model::ServiceConfig;
 using cli::model::EncryptCredentials;
 using cli::model::DecryptCredentials;
+using cli::model::HashAlgorithm;
 
 static constexpr const char kLogFormatMessage_ReadValueSuccess[] = "Read '%s' succeed from the source: '%s'.";
 static constexpr const char kLogFormatMessage_ReadValueFailed[] = "Read '%s' failed from the source: '%s'.";
@@ -59,6 +60,7 @@ static constexpr const char kValueName_PublicKey[] = "Public Key";
 static constexpr const char kValueName_PrivateKey[] = "Private Key";
 static constexpr const char kValueName_Password[] = "Password";
 static constexpr const char kValueName_VirgilCards[] = "Virgil Card(s)";
+static constexpr const char kValueName_HashAlgorithm[] = "Hash Algorithm";
 
 #define FOR_EACH_SOURCE(func, param, valueName) \
 do { \
@@ -127,6 +129,10 @@ Card ArgumentValueSource::readCard(const ArgumentValue& argumentValue) const {
     FOR_EACH_SOURCE(doReadCard, argumentValue, kValueName_VirgilCards);
 }
 
+HashAlgorithm ArgumentValueSource::readHashAlgorithm(const ArgumentValue& argumentValue) const {
+    FOR_EACH_SOURCE(doReadHashAlgorithm, argumentValue, kValueName_HashAlgorithm);
+}
+
 std::unique_ptr<KeyAlgorithm> ArgumentValueSource::doReadKeyAlgorithm(const ArgumentValue& argumentValue) const {
     CAN_NOT_HANDLE(argumentValue);
 }
@@ -148,5 +154,9 @@ std::unique_ptr<std::vector<Card>> ArgumentValueSource::doReadCards(const Argume
 }
 
 std::unique_ptr<Card> ArgumentValueSource::doReadCard(const ArgumentValue& argumentValue) const {
+    CAN_NOT_HANDLE(argumentValue);
+}
+
+std::unique_ptr<HashAlgorithm> ArgumentValueSource::doReadHashAlgorithm(const ArgumentValue& argumentValue) const {
     CAN_NOT_HANDLE(argumentValue);
 }

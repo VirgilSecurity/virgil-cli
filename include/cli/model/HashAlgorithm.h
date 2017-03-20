@@ -34,43 +34,19 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/command/SignCommand.h>
+#ifndef VIRGIL_CLI_MODEL_HASH_ALGORITHM_H
+#define VIRGIL_CLI_MODEL_HASH_ALGORITHM_H
 
-#include <cli/api/api.h>
-#include <cli/crypto/Crypto.h>
+#include <virgil/crypto/foundation/VirgilHash.h>
 
-#include <cli/io/Logger.h>
-#include <cli/memory.h>
+#include <string>
 
-using cli::Crypto;
-using cli::command::SignCommand;
-using cli::argument::ArgumentIO;
-using cli::argument::ArgumentImportance;
-using cli::argument::ArgumentSource;
-using cli::argument::ArgumentParseOptions;
+namespace cli { namespace model {
 
-const char* SignCommand::doGetName() const {
-    return arg::value::VIRGIL_COMMAND_SIGN;
-}
+using HashAlgorithm = virgil::crypto::foundation::VirgilHash::Algorithm;
 
-const char* SignCommand::doGetUsage() const {
-    return usage::VIRGIL_SIGN;
-}
+HashAlgorithm hash_algorithm_from(const std::string& str);
 
-ArgumentParseOptions SignCommand::doGetArgumentParseOptions() const {
-    return ArgumentParseOptions().disableOptionsFirst();
-}
+}}
 
-void SignCommand::doProcess() const {
-    ULOG1(INFO) << "Read arguments.";
-    auto data = getArgumentIO()->getInputSource(ArgumentImportance::Optional);
-    auto hashAlgorithm = getArgumentIO()->getHashAlgorithm(ArgumentImportance::Required);
-    auto privateKey = getArgumentIO()->getPrivateKey(ArgumentImportance::Required);
-
-    ULOG1(INFO) << "Sign input data.";
-    Crypto::StreamSigner signer(hashAlgorithm);
-    auto signature = signer.sign(data, privateKey.key(), privateKey.password().bytesValue());
-
-    ULOG1(INFO) << "Write signature to the output.";
-    getArgumentIO()->getOutputSink(ArgumentImportance::Optional).write(signature);
-}
+#endif //VIRGIL_CLI_MODEL_HASH_ALGORITHM_H
