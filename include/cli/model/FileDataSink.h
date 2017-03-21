@@ -57,6 +57,16 @@ public:
      * @throw ArgumentFileNotFound, if IO errors occurred.
      */
     FileDataSink(const std::string& fileName);
+
+    /**
+     * @brief Return true if sink use file for output.
+     */
+    bool isFileOutput() const;
+
+    /**
+     * @brief Return true if sink use console for output.
+     */
+    bool isConsoleOutput() const;
 public:
     virtual bool isGood() override;
     virtual void write(const virgil::crypto::VirgilByteArray& data) override;
@@ -65,6 +75,7 @@ private:
     using ostream_deleter = std::function<void(std::ostream*)>;
     using ostream_ptr = std::unique_ptr<std::ostream, ostream_deleter>;
     ostream_ptr out_;
+    const bool isFileOutput_;
 };
 
 }}

@@ -44,14 +44,22 @@
 
 using cli::model::FileDataSink;
 
-FileDataSink::FileDataSink() : out_(ostream_ptr(&std::cout, [](std::ostream*) {})) {
+FileDataSink::FileDataSink() : out_(ostream_ptr(&std::cout, [](std::ostream*) {})), isFileOutput_(false) {
 }
 
 FileDataSink::FileDataSink(const std::string& fileName)
-        : out_(ostream_ptr(new std::ofstream(fileName), std::default_delete<std::ostream>())) {
+        : out_(ostream_ptr(new std::ofstream(fileName), std::default_delete<std::ostream>())), isFileOutput_(true) {
     if (!*out_) {
         throw error::ArgumentFileNotFound(fileName);
     }
+}
+
+bool FileDataSink::isFileOutput() const {
+    return isFileOutput_;
+}
+
+bool FileDataSink::isConsoleOutput() const {
+    return !isFileOutput_;
 }
 
 bool FileDataSink::isGood() {
