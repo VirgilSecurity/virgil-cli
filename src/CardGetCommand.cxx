@@ -40,6 +40,8 @@
 #include <cli/crypto/Crypto.h>
 #include <cli/io/Logger.h>
 #include <cli/error/ArgumentError.h>
+#include <cli/formatter/CardKeyValueFormatter.h>
+#include <cli/formatter/CardRawFormatter.h>
 
 #include <cli/memory.h>
 
@@ -54,6 +56,8 @@ using cli::argument::ArgumentIO;
 using cli::argument::ArgumentImportance;
 using cli::argument::ArgumentParseOptions;
 using cli::error::ArgumentRuntimeError;
+using cli::formatter::CardKeyValueFormatter;
+using cli::formatter::CardRawFormatter;
 
 using virgil::sdk::client::Client;
 using virgil::sdk::client::ServiceConfig;
@@ -84,5 +88,9 @@ void CardGetCommand::doProcess() const {
     Client client(std::move(serviceConfig));
     auto card = client.getCard(input.stringValue()).get();
     ULOG1(INFO) << "Write card to the output.";
-    output.write(card.exportAsString());
+    if (output.isConsoleOutput()) {
+        output.write(CardKeyValueFormatter().format(card));
+    } else {
+        output.write(CardRawFormatter().format(card));
+    }
 }
