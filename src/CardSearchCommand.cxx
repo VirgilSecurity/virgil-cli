@@ -41,6 +41,8 @@
 #include <cli/io/Logger.h>
 #include <cli/io/Path.h>
 #include <cli/error/ArgumentError.h>
+#include <cli/formatter/CardRawFormatter.h>
+#include <cli/formatter/CardKeyValueFormatter.h>
 
 #include <cli/memory.h>
 
@@ -61,6 +63,8 @@ using cli::model::CardScope;
 using cli::model::card_scope_from;
 using cli::model::FileDataSink;
 using cli::io::Path;
+using cli::formatter::CardRawFormatter;
+using cli::formatter::CardKeyValueFormatter;
 
 using virgil::sdk::client::Client;
 using virgil::sdk::client::ServiceConfig;
@@ -84,9 +88,8 @@ static void purgeCardsToStandardOut(const std::vector<Card>& cards) {
     for (const auto& card : cards) {
         ULOG1(INFO) << tfm::format("Write Virgil Card: %s:%s (%s).",
                 card.identityType(), card.identity(), card.identifier());
-        std::cout << tfm::format("%s (%s):\n%s\n\n", card.identity(), card.identifier(), card.exportAsString());
+        std::cout << CardKeyValueFormatter().format(card) << std::endl;
     }
-    std::cout.flush();
 }
 
 static void purgeCardsToDir(const std::vector<Card>& cards, const std::string& outDir) {
@@ -96,7 +99,7 @@ static void purgeCardsToDir(const std::vector<Card>& cards, const std::string& o
                 card.identityType(), card.identity(), card.identifier(), fileName);
         FileDataSink fileDataSink(fileName);
         if (fileDataSink.isGood()) {
-            fileDataSink.write(card.exportAsString());
+            fileDataSink.write(CardRawFormatter().format(card));
         } else {
             ULOG(ERROR) << tfm::format("File '%s' was not written due to errors.", fileName);
         }
