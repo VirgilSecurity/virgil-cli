@@ -45,6 +45,7 @@
 
 #include <cli/command/KeygenCommand.h>
 #include <cli/command/KeyToPubCommand.h>
+#include <cli/command/KeyFormatCommand.h>
 #include <cli/command/EncryptCommand.h>
 #include <cli/command/DecryptCommand.h>
 #include <cli/command/SignCommand.h>
@@ -77,6 +78,8 @@ void HubCommand::doProcess() const {
         KeygenCommand(getArgumentIO()).process();
     } else if (commandName == arg::value::VIRGIL_COMMAND_KEY2PUB) {
         KeyToPubCommand(getArgumentIO()).process();
+    } else if (commandName == arg::value::VIRGIL_COMMAND_KEY_FORMAT) {
+        KeyFormatCommand(getArgumentIO()).process();
     } else if (commandName == arg::value::VIRGIL_COMMAND_ENCRYPT) {
         EncryptCommand(getArgumentIO()).process();
     } else if (commandName == arg::value::VIRGIL_COMMAND_DECRYPT) {

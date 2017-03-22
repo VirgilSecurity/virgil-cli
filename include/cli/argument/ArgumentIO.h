@@ -76,6 +76,10 @@ public:
 
     bool isInteractive() const;
 
+    bool isPublicKey() const;
+
+    bool isPrivateKey() const;
+
     // Get
     std::vector<std::unique_ptr<model::EncryptCredentials>>
     getEncryptCredentials(ArgumentImportance argumentImportance) const;
@@ -132,6 +136,8 @@ public:
     model::FileDataSource getSaltSource(ArgumentImportance argumentImportance) const;
 
     size_t getIterationCount(ArgumentImportance argumentImportance) const;
+
+    Crypto::Text getKeyFormat(ArgumentImportance argumentImportance) const;
 
 private:
     model::FileDataSource getSource(const ArgumentValue& argumentValue) const;

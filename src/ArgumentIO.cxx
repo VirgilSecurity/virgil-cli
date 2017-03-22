@@ -105,6 +105,20 @@ bool ArgumentIO::isInteractive() const {
     return argument.asValue().asOptionalBool();
 }
 
+bool ArgumentIO::isPublicKey() const {
+    ULOG2(INFO) << "Check if given Public Key as input.";
+    auto argument = argumentSource_->read(opt::PUBLIC, ArgumentImportance::Optional);
+    ArgumentValidationHub::isNumber()->validate(argument, ArgumentImportance::Optional);
+    return argument.asValue().asOptionalBool();
+}
+
+bool ArgumentIO::isPrivateKey() const {
+    ULOG2(INFO) << "Check if given Private Key as input.";
+    auto argument = argumentSource_->read(opt::PRIVATE, ArgumentImportance::Optional);
+    ArgumentValidationHub::isNumber()->validate(argument, ArgumentImportance::Optional);
+    return argument.asValue().asOptionalBool();
+}
+
 SecureValue ArgumentIO::getInput(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read input value.";
     auto argument = argumentSource_->read(opt::IN, argumentImportance);
@@ -368,6 +382,14 @@ size_t ArgumentIO::getIterationCount(ArgumentImportance argumentImportance) cons
             arg::value::VIRGIL_SECRET_ALIAS_ITERATION_COUNT_MIN,
             arg::value::VIRGIL_SECRET_ALIAS_ITERATION_COUNT_MAX)->validate(argument, argumentImportance);
     return argument.asValue().asNumber();
+}
+
+Crypto::Text ArgumentIO::getKeyFormat(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read key format.";
+    auto argument = argumentSource_->read(arg::KEY_FORMAT, argumentImportance);
+    ArgumentValidationHub::isEnum(
+            arg::value::VIRGIL_KEY_FORMAT_KEY_FORMAT_VALUES)->validate(argument, argumentImportance);
+    return argument.asValue().asString();
 }
 
 FileDataSource ArgumentIO::getSource(const ArgumentValue& argumentValue) const {

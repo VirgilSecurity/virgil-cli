@@ -80,6 +80,8 @@ COMMANDS:
         Generate a Private Key with provided parameters.
     key2pub
         Extract a Public Key from the Private Key.
+    key-format
+        Convert given key from a PEM format to a DER format and vice versa.
     encrypt
         Encrypt the data for given recipients who can be defined by their Public Keys and by the passwords (Recipient-id).
     decrypt
@@ -414,6 +416,48 @@ OPTIONS:
         Ignores the rest of the labeled arguments following this flag.
 )";
 
+static constexpr char VIRGIL_KEY_FORMAT[] = R"(
+virgil-key-format - convert given key from a PEM format to a DER format and vice versa.
+
+USAGE:
+    virgil key-format [options...] (--public | --private) <key-format> [-i <file>] [-o <file>] [-p <arg>]
+
+OPTIONS:
+    -i <file>, --in=<file>  
+        Source Private Key or Public Key. If omitted, stdin is used.
+    -o <file>, --out=<file>  
+        Destination Private Key or Public Key. If omitted, stdout is used.
+    -p <arg>, --private-key-password=<arg>  
+        Private Key password.
+    --public  
+        Specify that input key is Public Key.
+    --private  
+        Specify that input key is Private Key.
+    <key-format>
+        Target key format. Can be one of the next values:
+            * pem - PEM format (text);
+            * der - DER format (binary).
+    -h, --help  
+        Displays usage information and exits.
+    --version  
+        Displays version information and exits.
+    -v, --verbose  
+        Activates maximum verbosity.
+    --v=<verbose-level>  
+        Activates verbosity upto given verbose level (valid range: 1-9).
+    -q, --quiet  
+        Quiet mode: suppress normal output.
+    -I, --interactive  
+        Enables interactive mode.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
+    --  
+        Ignores the rest of the labeled arguments following this flag.
+)";
+
 static constexpr char VIRGIL_KEY2PUB[] = R"(
 virgil-key2pub - extracts the Public Key from the Private Key
 
@@ -644,8 +688,10 @@ static constexpr char ITERATIONS[] = "--iterations";
 static constexpr char NO_PASSWORD[] = "--no-password";
 static constexpr char OPTIONS_FIRST[] = "--";
 static constexpr char OUT[] = "--out";
+static constexpr char PRIVATE[] = "--private";
 static constexpr char PRIVATE_KEY[] = "--private-key";
 static constexpr char PRIVATE_KEY_PASSWORD[] = "--private-key-password";
+static constexpr char PUBLIC[] = "--public";
 static constexpr char QUIET[] = "--quiet";
 static constexpr char REVOCATION_REASON[] = "--revocation-reason";
 static constexpr char SALT[] = "--salt";
@@ -663,6 +709,7 @@ static constexpr char ARGS[] = "<args>";
 static constexpr char COMMAND[] = "<command>";
 static constexpr char IDENTITY[] = "<identity>";
 static constexpr char KEYPASS[] = "<keypass>";
+static constexpr char KEY_FORMAT[] = "<key-format>";
 static constexpr char RECIPIENT_ID[] = "<recipient-id>";
 
 }} // cli::arg
@@ -720,6 +767,7 @@ static constexpr char VIRGIL_COMMAND_CARD_SEARCH[] = "card-search";
 static constexpr char VIRGIL_COMMAND_CONFIG[] = "config";
 static constexpr char VIRGIL_COMMAND_DECRYPT[] = "decrypt";
 static constexpr char VIRGIL_COMMAND_ENCRYPT[] = "encrypt";
+static constexpr char VIRGIL_COMMAND_KEY_FORMAT[] = "key-format";
 static constexpr char VIRGIL_COMMAND_KEY2PUB[] = "key2pub";
 static constexpr char VIRGIL_COMMAND_KEYGEN[] = "keygen";
 static constexpr char VIRGIL_COMMAND_SECRET_ALIAS[] = "secret-alias";
@@ -733,6 +781,7 @@ static const char* VIRGIL_COMMAND_VALUES[] = {
     VIRGIL_COMMAND_CONFIG,
     VIRGIL_COMMAND_DECRYPT,
     VIRGIL_COMMAND_ENCRYPT,
+    VIRGIL_COMMAND_KEY_FORMAT,
     VIRGIL_COMMAND_KEY2PUB,
     VIRGIL_COMMAND_KEYGEN,
     VIRGIL_COMMAND_SECRET_ALIAS,
@@ -804,6 +853,14 @@ static const char* VIRGIL_KEYGEN_ALG_VALUES[] = {
     VIRGIL_KEYGEN_ALG_SECP256R1,
     VIRGIL_KEYGEN_ALG_SECP384R1,
     VIRGIL_KEYGEN_ALG_SECP521R1,
+    nullptr
+};
+
+static constexpr char VIRGIL_KEY_FORMAT_KEY_FORMAT_DER[] = "der";
+static constexpr char VIRGIL_KEY_FORMAT_KEY_FORMAT_PEM[] = "pem";
+static const char* VIRGIL_KEY_FORMAT_KEY_FORMAT_VALUES[] = {
+    VIRGIL_KEY_FORMAT_KEY_FORMAT_DER,
+    VIRGIL_KEY_FORMAT_KEY_FORMAT_PEM,
     nullptr
 };
 
