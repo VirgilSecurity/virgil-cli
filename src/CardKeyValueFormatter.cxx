@@ -44,11 +44,11 @@ using cli::model::Card;
 
 std::string CardKeyValueFormatter::format(const Card& card) const {
     return KeyValueFormatter::format({
-            {"version", card.cardVersion()},
-            {"scope", std::to_string(card.scope())},
-            {"identity type", card.identityType()},
+            {"id", card.identifier()},
             {"identity", card.identity()},
-            {"identifier", card.identifier()},
+            {"identity type", card.identityType()},
+            {"scope", std::to_string(card.scope())},
+            {"version", card.cardVersion()},
             {"public key", Crypto::ByteUtils::bytesToString(Crypto::KeyPair::publicKeyToPEM(card.publicKeyData()))},
     });
 }
