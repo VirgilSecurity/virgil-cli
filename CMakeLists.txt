@@ -77,6 +77,13 @@ else (VIRGIL_CLI_VERSION_FEATURE)
 endif (VIRGIL_CLI_VERSION_FEATURE)
 
 # Configurable variables
+## Set a default build type if none was specified
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "Setting build type to 'Debug' as none was specified.")
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif ()
+
 ## Installation directories
 set (INSTALL_BIN_DIR_NAME bin CACHE STRING "Installation directory name for executables")
 set (INSTALL_LIB_DIR_NAME lib CACHE STRING "Installation directory name for libraries")
