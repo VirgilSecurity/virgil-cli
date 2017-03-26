@@ -81,6 +81,7 @@ void CardGetCommand::doProcess() const {
     auto input = getArgumentIO()->getInput(ArgumentImportance::Optional);
     auto output = getArgumentIO()->getOutputSink(ArgumentImportance::Optional);
     auto appAccessToken = getArgumentIO()->getAppAccessToken(ArgumentImportance::Required);
+    auto noFormat = getArgumentIO()->isNoFormat();
 
     ULOG1(INFO) << "Request card.";
     auto serviceConfig = ServiceConfig::createConfig(appAccessToken.stringValue());
@@ -88,9 +89,9 @@ void CardGetCommand::doProcess() const {
     Client client(std::move(serviceConfig));
     auto card = client.getCard(input.stringValue()).get();
     ULOG1(INFO) << "Write card to the output.";
-    if (output.isConsoleOutput()) {
-        output.write(CardKeyValueFormatter().format(card));
+    if (noFormat || output.isFileOutput()) {
+        output.write(card.exportAsString());
     } else {
-        output.write(CardRawFormatter().format(card));
+        output.write(CardKeyValueFormatter().applyBaseProperties().format(card));
     }
 }

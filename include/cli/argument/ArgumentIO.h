@@ -65,7 +65,9 @@ namespace cli { namespace argument {
 class ArgumentIO {
 public:
     ArgumentIO(
-            std::unique_ptr<ArgumentSource> argumentSource, std::unique_ptr<ArgumentValueSource> argumentValueSource);
+            std::unique_ptr<ArgumentSource> argumentSource, std::unique_ptr<ArgumentValueSource> argumentValueSource,
+            std::unique_ptr<ArgumentValueSource> argumentValueLocalSource
+    );
 
     void configureUsage(const char* usage, const ArgumentParseOptions& parseOptions);
 
@@ -79,6 +81,8 @@ public:
     bool isPublicKey() const;
 
     bool isPrivateKey() const;
+
+    bool isNoFormat() const;
 
     // Get
     std::vector<std::unique_ptr<model::EncryptCredentials>>
@@ -123,11 +127,15 @@ public:
 
     model::CardInfo getCardInfo(ArgumentImportance argumentImportance) const;
 
+    std::vector<std::string> getCardOutputFormat(ArgumentImportance argumentImportance) const;
+
     model::SecureValue getAppAccessToken(ArgumentImportance argumentImportance) const;
 
     model::ApplicationCredentials getAppCredentials(ArgumentImportance argumentImportance) const;
 
     model::Card getCardFromInput(ArgumentImportance argumentImportance) const;
+
+    std::vector<model::Card> getCardListFromInput(ArgumentImportance argumentImportance) const;
 
     model::CardRevocationReason getCardRevokeReason(ArgumentImportance argumentImportance) const;
 
@@ -158,6 +166,7 @@ private:
 private:
     std::unique_ptr<ArgumentSource> argumentSource_;
     std::unique_ptr<ArgumentValueSource> argumentValueSource_;
+    std::unique_ptr<ArgumentValueSource> argumentValueLocalSource_;
 };
 
 }}

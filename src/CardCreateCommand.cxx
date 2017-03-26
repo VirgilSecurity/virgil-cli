@@ -41,7 +41,6 @@
 #include <cli/io/Logger.h>
 #include <cli/error/ArgumentError.h>
 #include <cli/formatter/CardKeyValueFormatter.h>
-#include <cli/formatter/CardRawFormatter.h>
 
 #include <cli/memory.h>
 
@@ -60,7 +59,6 @@ using cli::argument::ArgumentParseOptions;
 using cli::error::ArgumentRuntimeError;
 using cli::error::ArgumentLogicError;
 using cli::formatter::CardKeyValueFormatter;
-using cli::formatter::CardRawFormatter;
 
 using virgil::sdk::client::Client;
 using virgil::sdk::client::ServiceConfig;
@@ -92,6 +90,7 @@ void CardCreateCommand::doProcess() const {
     auto data = getArgumentIO()->getCardData(ArgumentImportance::Optional);
     auto info = getArgumentIO()->getCardInfo(ArgumentImportance::Optional);
     auto appAccessToken = getArgumentIO()->getAppAccessToken(ArgumentImportance::Required);
+    auto noFormat = getArgumentIO()->isNoFormat();
 
     ULOG1(INFO) << "Create request for card creation.";
     auto createCardRequest = CreateCardRequest::createRequest(
@@ -132,9 +131,9 @@ void CardCreateCommand::doProcess() const {
     Client client(std::move(serviceConfig));
     auto card = client.createCard(createCardRequest).get();
     ULOG1(INFO) << "Write card to the output.";
-    if (output.isConsoleOutput()) {
-        output.write(CardKeyValueFormatter().format(card));
+    if (noFormat || output.isFileOutput()) {
+        output.write(card.exportAsString());
     } else {
-        output.write(CardRawFormatter().format(card));
+        output.write(CardKeyValueFormatter().applyBaseProperties().format(card));
     }
 }

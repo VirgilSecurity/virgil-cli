@@ -130,8 +130,20 @@ std::unique_ptr<ArgumentValueSource> createArgumentValueSource() {
     return std::move(argumentValueSource);
 }
 
+std::unique_ptr<ArgumentValueSource> createArgumentValueLocalSource() {
+    auto argumentValueSource = std::make_unique<ArgumentValueFileSource>();
+    argumentValueSource->appendSource(
+            std::make_unique<ArgumentValueEnumSource>()
+    )->appendSource(
+            std::make_unique<ArgumentValueTextSource>()
+    );
+    return std::move(argumentValueSource);
+}
+
 std::unique_ptr<ArgumentIO> createArgumentIO(int argc, const char* argv[]) {
-    return std::make_unique<ArgumentIO>(createArgumentSource(argc,argv), createArgumentValueSource());
+    return std::make_unique<ArgumentIO>(
+            createArgumentSource(argc, argv), createArgumentValueSource(), createArgumentValueLocalSource()
+    );
 }
 
 std::unique_ptr<Command> createRootCommand(int argc, const char* argv[]) {

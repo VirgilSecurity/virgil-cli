@@ -74,11 +74,15 @@ using namespace cli::model;
 #undef IN
 #undef OUT
 
-ArgumentIO::ArgumentIO(
-        std::unique_ptr<ArgumentSource> argumentSource, std::unique_ptr<ArgumentValueSource> argumentValueSource)
-        : argumentSource_(std::move(argumentSource)), argumentValueSource_(std::move(argumentValueSource)) {
+ArgumentIO::ArgumentIO(std::unique_ptr<ArgumentSource> argumentSource,
+        std::unique_ptr<ArgumentValueSource> argumentValueSource,
+        std::unique_ptr<ArgumentValueSource> argumentValueLocalSource)
+        : argumentSource_(std::move(argumentSource)), argumentValueSource_(std::move(argumentValueSource)),
+        argumentValueLocalSource_(std::move(argumentValueLocalSource))
+{
     DCHECK(argumentSource_);
     DCHECK(argumentValueSource_);
+    DCHECK(argumentValueLocalSource_);
 }
 
 void ArgumentIO::configureUsage(const char* usage, const ArgumentParseOptions& parseOptions) {
@@ -115,6 +119,13 @@ bool ArgumentIO::isPublicKey() const {
 bool ArgumentIO::isPrivateKey() const {
     ULOG2(INFO) << "Check if given Private Key as input.";
     auto argument = argumentSource_->read(opt::PRIVATE, ArgumentImportance::Optional);
+    ArgumentValidationHub::isNumber()->validate(argument, ArgumentImportance::Optional);
+    return argument.asValue().asOptionalBool();
+}
+
+bool ArgumentIO::isNoFormat() const {
+    ULOG2(INFO) << "Check if output should not be formatted.";
+    auto argument = argumentSource_->read(opt::NO_FORMAT, ArgumentImportance::Optional);
     ArgumentValidationHub::isNumber()->validate(argument, ArgumentImportance::Optional);
     return argument.asValue().asOptionalBool();
 }
@@ -327,6 +338,14 @@ CardInfo ArgumentIO::getCardInfo(ArgumentImportance argumentImportance) const {
     return CardInfo(device, deviceName);
 }
 
+std::vector<std::string> ArgumentIO::getCardOutputFormat(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Virgil Card output format.";
+    auto argument = argumentSource_->read(opt::FORMAT, argumentImportance);
+    ArgumentValidationHub::isEnum(arg::value::VIRGIL_CARD_INFO_OUTPUT_FORMAT_VALUES)
+            ->validateList(argument, argumentImportance);
+    return argument.asStringList();
+}
+
 SecureValue ArgumentIO::getAppAccessToken(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Application Access Token.";
     auto argument = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN, argumentImportance);
@@ -351,6 +370,19 @@ Card ArgumentIO::getCardFromInput(ArgumentImportance argumentImportance) const {
     auto argument = argumentSource_->read(opt::IN, argumentImportance);
     ArgumentValidationHub::isText()->validate(argument, argumentImportance);
     return argumentValueSource_->readCard(argument.asValue());
+}
+
+std::vector<Card> ArgumentIO::getCardListFromInput(ArgumentImportance argumentImportance) const {
+    ULOG2(INFO) << "Read Virgil Card(s) from input.";
+    auto argument = argumentSource_->read(opt::IN, argumentImportance);
+    ArgumentValidationHub::isText()->validateList(argument, argumentImportance);
+    // Use arguments if given or read them from the standard input
+    auto resolvedArgument = argument.isList() ? std::move(argument) : Argument(FileDataSource().readMultiLine());
+    std::vector<Card> result;
+    for (auto argumentValue : resolvedArgument.asList()) {
+        result.push_back(argumentValueLocalSource_->readCard(argumentValue));
+    }
+    return result;
 }
 
 CardRevocationReason ArgumentIO::getCardRevokeReason(ArgumentImportance argumentImportance) const {

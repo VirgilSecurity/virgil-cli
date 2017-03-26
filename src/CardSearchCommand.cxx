@@ -41,7 +41,6 @@
 #include <cli/io/Logger.h>
 #include <cli/io/Path.h>
 #include <cli/error/ArgumentError.h>
-#include <cli/formatter/CardRawFormatter.h>
 #include <cli/formatter/CardKeyValueFormatter.h>
 
 #include <cli/memory.h>
@@ -63,7 +62,6 @@ using cli::model::CardScope;
 using cli::model::card_scope_from;
 using cli::model::FileDataSink;
 using cli::io::Path;
-using cli::formatter::CardRawFormatter;
 using cli::formatter::CardKeyValueFormatter;
 
 using virgil::sdk::client::Client;
@@ -84,11 +82,15 @@ ArgumentParseOptions CardSearchCommand::doGetArgumentParseOptions() const {
     return ArgumentParseOptions().disableOptionsFirst();
 }
 
-static void purgeCardsToStandardOut(const std::vector<Card>& cards) {
+static void purgeCardsToStandardOut(const std::vector<Card>& cards, bool noFormat) {
     for (const auto& card : cards) {
         ULOG1(INFO) << tfm::format("Write Virgil Card: %s:%s (%s).",
                 card.identityType(), card.identity(), card.identifier());
-        std::cout << CardKeyValueFormatter().format(card) << std::endl;
+        if (noFormat) {
+            std::cout << card.exportAsString() << std::endl;
+        } else {
+            std::cout << CardKeyValueFormatter().applyBaseProperties().format(card) << std::endl;
+        }
     }
 }
 
@@ -99,16 +101,16 @@ static void purgeCardsToDir(const std::vector<Card>& cards, const std::string& o
                 card.identityType(), card.identity(), card.identifier(), fileName);
         FileDataSink fileDataSink(fileName);
         if (fileDataSink.isGood()) {
-            fileDataSink.write(CardRawFormatter().format(card));
+            fileDataSink.write(card.exportAsString());
         } else {
             ULOG(ERROR) << tfm::format("File '%s' was not written due to errors.", fileName);
         }
     }
 }
 
-static void purgeCards(const std::vector<Card>& cards, const std::string& outDir) {
+static void purgeCards(const std::vector<Card>& cards, const std::string& outDir, bool noFormat) {
     if (outDir.empty()) {
-        purgeCardsToStandardOut(cards);
+        purgeCardsToStandardOut(cards, noFormat);
     } else if (!Path::createDir(outDir.c_str())) {
         throw ArgumentRuntimeError(tfm::format("Can not create output directory '%s'.", outDir));
     } else {
@@ -144,6 +146,7 @@ void CardSearchCommand::doProcess() const {
     auto scope = getArgumentIO()->getCardScope(ArgumentImportance::Required);
     auto cardIdentityGroup = getArgumentIO()->getCardIdentityGroup(ArgumentImportance::Required);
     auto appAccessToken = getArgumentIO()->getAppAccessToken(ArgumentImportance::Required);
+    auto noFormat = getArgumentIO()->isNoFormat();
 
     auto serviceConfig = ServiceConfig::createConfig(appAccessToken.stringValue());
     serviceConfig.cardValidator(std::make_unique<CardValidator>(std::make_shared<ServiceCrypto>()));
@@ -158,6 +161,6 @@ void CardSearchCommand::doProcess() const {
         auto cards = client.searchCards(searchCriteria).get();
         UVLOG(INFO, (cards.empty() ? 0 : 1))
                 << tfm::format("Found %d Virgil Card(s) for identities: %s", cards.size(), format_list(identities));
-        purgeCards(cards, output.stringValue());
+        purgeCards(cards, output.stringValue(), noFormat);
     }
 }

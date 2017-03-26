@@ -103,6 +103,8 @@ COMMANDS:
         Search for the Virgil Card from the Virgil Keys Service by the identity.
     card-revoke
         Revoke the Virgil Card by the Virgil Card id.
+    card-info
+        Show Virgil Card information.
 
 CONFIGURATION VALUES:
     This section contains complete list of the configuration values.
@@ -143,6 +145,8 @@ OPTIONS:
         Format: <key>:<value> (2 positions must be used).
             * the first key must be device_name with any value;
             * the second key must be device with any value.
+    --no-format  
+        Do not apply formating when print term:Virgil Card to the standard output.
     <identity>
         Identity that will be associated with created Virgil Card.
         Format: <type>:<value>
@@ -187,7 +191,9 @@ OPTIONS:
     -i <arg>, --in=<arg>  
         Virgil Card id. If omitted, stdin is used.
     -o <file>, --out=<file>  
-        A folder where Virgil Cards will be saved. If omitted, stdout is used.
+        A file where Virgil Card will be saved. If omitted, stdout is used.
+    --no-format  
+        Do not apply formating when print term:Virgil Card to the standard output.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -211,6 +217,51 @@ OPTIONS:
 CONFIGURATION VALUES:
     Use APP_ACCESS_TOKEN.
     See virgil(1) documentation for values description.
+)";
+
+static constexpr char VIRGIL_CARD_INFO[] = R"(
+virgil-card-info - show Virgil Card information
+
+USAGE:
+    virgil card-info [options...] [-i <file>...] [-o <file>] [-f <output-format>...]
+
+OPTIONS:
+    -i <file>, --in=<file>  
+        Virgil Card. If omitted, stdin is used.
+        If multiple Virgil Cards are given from the stdin they must be splitted with an empty line.
+    -o <file>, --out=<file>  
+        Information about Virgil Card(s). If omitted, stdout is used.
+    -f <output-format>, --format=<output-format>  
+        Defines what specific information will be shown.
+        If omitted, then base information will be shown [default: id identity identity-type version scope public-key].
+            * id - identifier.
+            * identity - identity.
+            * identity-type - identity type.
+            * public-key - Public Key.
+            * version - version.
+            * scope - scope.
+            * data - custom user payload.
+            * info - info about device on which card was created.
+            * signatures - signatures.
+    -h, --help  
+        Displays usage information and exits.
+    --version  
+        Displays version information and exits.
+    -v, --verbose  
+        Activates maximum verbosity.
+    --v=<verbose-level>  
+        Activates verbosity upto given verbose level (valid range: 1-9).
+    -q, --quiet  
+        Quiet mode: suppress normal output.
+    -I, --interactive  
+        Enables interactive mode.
+    -D <config>  
+        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+    -C <config-file>  
+        Additional configuration file. If multiple files are given, then applied next rules:
+            * duplicate value from the rightmost file overwrites previous.
+    --  
+        Ignores the rest of the labeled arguments following this flag.
 )";
 
 static constexpr char VIRGIL_CARD_REVOKE[] = R"(
@@ -267,6 +318,8 @@ OPTIONS:
             * for global Virgil Card the scope must be global;
             * for application Virgil Card the scope must be application.
         If omitted, application is used.
+    --no-format  
+        Do not apply formating when print term:Virgil Card to the standard output.
     <identity>
         Identity to be found.
         Multiple identitites can be used for the Virgil Cards search.
@@ -679,12 +732,14 @@ static constexpr char CONTENT_INFO[] = "--content-info";
 static constexpr char C_SHORT[] = "-C";
 static constexpr char DATA[] = "--data";
 static constexpr char D_SHORT[] = "-D";
+static constexpr char FORMAT[] = "--format";
 static constexpr char HASH_ALGORITHM[] = "--hash-algorithm";
 static constexpr char HELP[] = "--help";
 static constexpr char IN[] = "--in";
 static constexpr char INFO[] = "--info";
 static constexpr char INTERACTIVE[] = "--interactive";
 static constexpr char ITERATIONS[] = "--iterations";
+static constexpr char NO_FORMAT[] = "--no-format";
 static constexpr char NO_PASSWORD[] = "--no-password";
 static constexpr char OPTIONS_FIRST[] = "--";
 static constexpr char OUT[] = "--out";
@@ -738,6 +793,28 @@ static const char* VIRGIL_CARD_CREATE_SCOPE_VALUES[] = {
     nullptr
 };
 
+static constexpr char VIRGIL_CARD_INFO_OUTPUT_FORMAT_DATA[] = "data";
+static constexpr char VIRGIL_CARD_INFO_OUTPUT_FORMAT_ID[] = "id";
+static constexpr char VIRGIL_CARD_INFO_OUTPUT_FORMAT_IDENTITY[] = "identity";
+static constexpr char VIRGIL_CARD_INFO_OUTPUT_FORMAT_IDENTITY_TYPE[] = "identity-type";
+static constexpr char VIRGIL_CARD_INFO_OUTPUT_FORMAT_INFO[] = "info";
+static constexpr char VIRGIL_CARD_INFO_OUTPUT_FORMAT_PUBLIC_KEY[] = "public-key";
+static constexpr char VIRGIL_CARD_INFO_OUTPUT_FORMAT_SCOPE[] = "scope";
+static constexpr char VIRGIL_CARD_INFO_OUTPUT_FORMAT_SIGNATURES[] = "signatures";
+static constexpr char VIRGIL_CARD_INFO_OUTPUT_FORMAT_VERSION[] = "version";
+static const char* VIRGIL_CARD_INFO_OUTPUT_FORMAT_VALUES[] = {
+    VIRGIL_CARD_INFO_OUTPUT_FORMAT_DATA,
+    VIRGIL_CARD_INFO_OUTPUT_FORMAT_ID,
+    VIRGIL_CARD_INFO_OUTPUT_FORMAT_IDENTITY,
+    VIRGIL_CARD_INFO_OUTPUT_FORMAT_IDENTITY_TYPE,
+    VIRGIL_CARD_INFO_OUTPUT_FORMAT_INFO,
+    VIRGIL_CARD_INFO_OUTPUT_FORMAT_PUBLIC_KEY,
+    VIRGIL_CARD_INFO_OUTPUT_FORMAT_SCOPE,
+    VIRGIL_CARD_INFO_OUTPUT_FORMAT_SIGNATURES,
+    VIRGIL_CARD_INFO_OUTPUT_FORMAT_VERSION,
+    nullptr
+};
+
 static constexpr char VIRGIL_CARD_REVOKE_REASON_COMPROMISED[] = "compromised";
 static constexpr char VIRGIL_CARD_REVOKE_REASON_UNSPECIFIED[] = "unspecified";
 static const char* VIRGIL_CARD_REVOKE_REASON_VALUES[] = {
@@ -762,6 +839,7 @@ static const char* VIRGIL_CARD_SEARCH_SCOPE_VALUES[] = {
 
 static constexpr char VIRGIL_COMMAND_CARD_CREATE[] = "card-create";
 static constexpr char VIRGIL_COMMAND_CARD_GET[] = "card-get";
+static constexpr char VIRGIL_COMMAND_CARD_INFO[] = "card-info";
 static constexpr char VIRGIL_COMMAND_CARD_REVOKE[] = "card-revoke";
 static constexpr char VIRGIL_COMMAND_CARD_SEARCH[] = "card-search";
 static constexpr char VIRGIL_COMMAND_CONFIG[] = "config";
@@ -776,6 +854,7 @@ static constexpr char VIRGIL_COMMAND_VERIFY[] = "verify";
 static const char* VIRGIL_COMMAND_VALUES[] = {
     VIRGIL_COMMAND_CARD_CREATE,
     VIRGIL_COMMAND_CARD_GET,
+    VIRGIL_COMMAND_CARD_INFO,
     VIRGIL_COMMAND_CARD_REVOKE,
     VIRGIL_COMMAND_CARD_SEARCH,
     VIRGIL_COMMAND_CONFIG,
