@@ -69,6 +69,8 @@ public:
 
     std::vector<ArgumentValue> asList() const;
 
+    std::vector<std::string> asStringList() const;
+
 private:
     std::vector<ArgumentValue> values_;
 };

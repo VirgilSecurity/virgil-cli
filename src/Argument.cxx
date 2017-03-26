@@ -86,3 +86,11 @@ ArgumentValue Argument::asValue() const {
 std::vector<ArgumentValue> Argument::asList() const {
     return values_;
 }
+
+std::vector<std::string> Argument::asStringList() const {
+    std::vector<std::string> result;
+    for (auto argumentValue : values_) {
+        result.push_back(argumentValue.value());
+    }
+    return result;
+}
