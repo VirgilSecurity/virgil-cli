@@ -41,6 +41,7 @@
 using cli::Crypto;
 using cli::model::Password;
 using cli::model::PrivateKey;
+using cli::model::Card;
 using cli::argument::ArgumentValueTextSource;
 
 void ArgumentValueTextSource::doInit(const ArgumentSource& argumentSource) {
@@ -57,4 +58,20 @@ std::unique_ptr<Password> ArgumentValueTextSource::doReadPassword(const Argument
 
 std::unique_ptr<PrivateKey> ArgumentValueTextSource::doReadPrivateKey(const ArgumentValue& argumentValue) const {
     return std::make_unique<PrivateKey>(Crypto::ByteUtils::stringToBytes(argumentValue.value()), Crypto::Bytes());
+}
+
+std::unique_ptr<Card> ArgumentValueTextSource::doReadCard(const ArgumentValue& argumentValue) const {
+    return std::make_unique<Card>(Card::importFromString(argumentValue.value()));
+}
+
+std::unique_ptr<std::vector<Card>> ArgumentValueTextSource::doReadCards(
+        const ArgumentValue& argumentValue) const {
+
+    auto result = std::make_unique<std::vector<Card>>();
+    std::istringstream input(argumentValue.value());
+    std::string cardString;
+    while (std::getline(input, cardString)) {
+        result->push_back(Card::importFromString(cardString));
+    }
+    return result;
 }

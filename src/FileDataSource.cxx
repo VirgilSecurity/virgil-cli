@@ -83,6 +83,12 @@ Crypto::Text FileDataSource::readLine() {
     return result;
 }
 
+std::vector<Crypto::Text> FileDataSource::readMultiLine() {
+    std::vector<Crypto::Text> result;
+    for (Crypto::Text line; std::getline(*in_, line); result.push_back(std::move(line)));
+    return result;
+}
+
 Crypto::Text FileDataSource::readText() {
     Crypto::Text result;
     std::copy(std::istreambuf_iterator<char>(*in_), std::istreambuf_iterator<char>(), std::back_inserter(result));

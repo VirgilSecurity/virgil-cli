@@ -61,6 +61,7 @@ private:
     static Crypto::Text readLine(const ArgumentValue& argumentValue);
     static Crypto::Text readText(const ArgumentValue& argumentValue);
     static Crypto::Bytes readBytes(const ArgumentValue& argumentValue);
+    static std::vector<Crypto::Text> readMultiLine(const ArgumentValue& argumentValue);
  };
 
 }}

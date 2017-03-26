@@ -64,7 +64,7 @@ using cli::model::PrivateKey;
 using cli::model::Password;
 using cli::model::Card;
 using cli::model::Password;
-using cli::error::ArgumentFileNotFound;
+using cli::error::ArgumentNotFoundError;
 
 using virgil::sdk::VirgilSdkException;
 using virgil::sdk::client::Client;
@@ -91,7 +91,7 @@ public:
 
     std::unique_ptr<Client> buildClient() const {
         if (accessToken_.empty()) {
-            throw ArgumentFileNotFound(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN);
+            throw ArgumentNotFoundError(arg::value::VIRGIL_CONFIG_APP_ACCESS_TOKEN);
         }
 
         auto serviceConfig = ServiceConfig::createConfig(accessToken_);
@@ -121,6 +121,10 @@ void ArgumentValueVirgilSource::doInit(const ArgumentSource& argumentSource) {
 }
 
 std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const ArgumentValue& argumentValue) const {
+    if (argumentValue.isEmpty()) {
+        return nullptr;
+    }
+
     auto client = impl_->buildClient();
 
     auto globalCardsFuture = client->searchCards(SearchCardsCriteria::createCriteria(
@@ -149,6 +153,9 @@ std::unique_ptr<std::vector<Card>> ArgumentValueVirgilSource::doReadCards(const 
 }
 
 std::unique_ptr<Card> ArgumentValueVirgilSource::doReadCard(const ArgumentValue& argumentValue) const {
+    if (argumentValue.isEmpty()) {
+        return nullptr;
+    }
     try {
         ULOG1(INFO) << tfm::format("Get Virgil Card with id: '%s' from the Cards service.", argumentValue.value());
         auto client = impl_->buildClient();

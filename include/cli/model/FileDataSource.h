@@ -42,6 +42,7 @@
 #include <functional>
 #include <istream>
 #include <memory>
+#include <vector>
 
 
 namespace cli { namespace model {
@@ -68,6 +69,7 @@ public:
     virtual virgil::crypto::VirgilByteArray readAll();
     virtual std::string readText();
     virtual std::string readLine();
+    virtual std::vector<std::string> readMultiLine();
 private:
     using istream_deleter = std::function<void(std::istream*)>;
     using istream_ptr = std::unique_ptr<std::istream, istream_deleter>;

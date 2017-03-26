@@ -49,6 +49,8 @@
 #include <virgil/sdk/crypto/Crypto.h>
 #include <virgil/sdk/client/CardValidator.h>
 
+#include <sstream>
+
 using cli::Crypto;
 using cli::argument::ArgumentValue;
 using cli::argument::ArgumentValueFileSource;
@@ -99,7 +101,9 @@ std::unique_ptr<std::vector<Card>> ArgumentValueFileSource::doReadCards(const Ar
         return nullptr;
     }
     auto result = std::make_unique<std::vector<Card>>();
-    result->push_back(Card::importFromString(readText(argumentValue)));
+    for (auto cardString : readMultiLine(argumentValue)) {
+        result->push_back(Card::importFromString(cardString));
+    }
     return result;
 }
 
@@ -124,4 +128,8 @@ Crypto::Text ArgumentValueFileSource::readText(const ArgumentValue& argumentValu
 
 Crypto::Bytes ArgumentValueFileSource::readBytes(const ArgumentValue& argumentValue) {
     return FileDataSource(argumentValue.value()).readAll();
+}
+
+std::vector<Crypto::Text> ArgumentValueFileSource::readMultiLine(const ArgumentValue& argumentValue) {
+    return FileDataSource(argumentValue.value()).readMultiLine();
 }
