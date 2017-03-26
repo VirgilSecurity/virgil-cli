@@ -82,5 +82,6 @@ std::string KeyValueFormatter::format(const Container& container) const {
         out << key << std::string(keyPadding, paddingSymbol) << separationSymbol;
         out << wrap_multiline(value, maxKeyLength + separationSymbol.size()) << "\n";
     }
+    out << std::endl;
     return out.str();
 }
