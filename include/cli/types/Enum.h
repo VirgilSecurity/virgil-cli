@@ -34,52 +34,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/formatter/CardRawFormatter.h>
+#ifndef VIRGIL_CLI_TYPES_ENUM_H
+#define VIRGIL_CLI_TYPES_ENUM_H
 
-#include <cli/crypto/Crypto.h>
+namespace cli { namespace types {
 
-#include <sstream>
+typedef unsigned short EnumType;
 
-using cli::Crypto;
-using cli::formatter::CardRawFormatter;
-using cli::model::CardProperty;
+}}
 
-std::string CardRawFormatter::doFormat(const model::Card& card) const {
-    std::ostringstream output;
-
-    if (hasProperty(CardProperty::Identifier)) {
-        output << card.identifier() << std::endl;
-    }
-    if (hasProperty(CardProperty::Identity)) {
-        output << card.identity() << std::endl;
-    }
-    if (hasProperty(CardProperty::IdentityType)) {
-        output << card.identityType() << std::endl;
-    }
-    if (hasProperty(CardProperty::Scope)) {
-        output << std::to_string(card.scope()) << std::endl;
-    }
-    if (hasProperty(CardProperty::Version)) {
-        output << card.cardVersion() << std::endl;
-    }
-    if (hasProperty(CardProperty::PublicKey)) {
-        output << Crypto::ByteUtils::bytesToString(Crypto::KeyPair::publicKeyToPEM(card.publicKeyData())) << std::endl;
-    }
-    if (hasProperty(CardProperty::Data)) {
-        for (auto data : card.data()) {
-            output << data.first << " -> " << data.second << std::endl;
-        }
-    }
-    if (hasProperty(CardProperty::Info)) {
-        for (auto info : card.info()) {
-            output << info.first << " -> " << info.second << std::endl;
-        }
-    }
-    if (hasProperty(CardProperty::Signatures)) {
-        for (auto signature : card.cardResponse().signatures()) {
-            output << signature.first << " -> " << Crypto::ByteUtils::bytesToHex(signature.second) << std::endl;
-        }
-    }
-
-    return output.str();
-}
+#endif //VIRGIL_CLI_TYPES_ENUM_H

@@ -34,52 +34,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/formatter/CardRawFormatter.h>
+#ifndef VIRGIL_CLI_CARD_PROPERTY_H
+#define VIRGIL_CLI_CARD_PROPERTY_H
 
-#include <cli/crypto/Crypto.h>
+#include <cli/types/EnumHelper.h>
 
-#include <sstream>
+namespace cli { namespace model {
 
-using cli::Crypto;
-using cli::formatter::CardRawFormatter;
-using cli::model::CardProperty;
+enum class CardProperty : cli::types::EnumType {
+    Identifier   = 1 << 1,
+    Identity     = 1 << 2,
+    IdentityType = 1 << 3,
+    PublicKey    = 1 << 4,
+    Version      = 1 << 5,
+    Scope        = 1 << 6,
+    Data         = 1 << 7,
+    Info         = 1 << 8,
+    Signatures   = 1 << 9,
+};
 
-std::string CardRawFormatter::doFormat(const model::Card& card) const {
-    std::ostringstream output;
+}}
 
-    if (hasProperty(CardProperty::Identifier)) {
-        output << card.identifier() << std::endl;
-    }
-    if (hasProperty(CardProperty::Identity)) {
-        output << card.identity() << std::endl;
-    }
-    if (hasProperty(CardProperty::IdentityType)) {
-        output << card.identityType() << std::endl;
-    }
-    if (hasProperty(CardProperty::Scope)) {
-        output << std::to_string(card.scope()) << std::endl;
-    }
-    if (hasProperty(CardProperty::Version)) {
-        output << card.cardVersion() << std::endl;
-    }
-    if (hasProperty(CardProperty::PublicKey)) {
-        output << Crypto::ByteUtils::bytesToString(Crypto::KeyPair::publicKeyToPEM(card.publicKeyData())) << std::endl;
-    }
-    if (hasProperty(CardProperty::Data)) {
-        for (auto data : card.data()) {
-            output << data.first << " -> " << data.second << std::endl;
-        }
-    }
-    if (hasProperty(CardProperty::Info)) {
-        for (auto info : card.info()) {
-            output << info.first << " -> " << info.second << std::endl;
-        }
-    }
-    if (hasProperty(CardProperty::Signatures)) {
-        for (auto signature : card.cardResponse().signatures()) {
-            output << signature.first << " -> " << Crypto::ByteUtils::bytesToHex(signature.second) << std::endl;
-        }
-    }
-
-    return output.str();
-}
+#endif //VIRGIL_CLI_CARD_PROPERTY_H

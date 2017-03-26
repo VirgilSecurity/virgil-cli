@@ -37,13 +37,14 @@
 #ifndef VIRGIL_CLI_CARD_RAW_FORMATTER_H
 #define VIRGIL_CLI_CARD_RAW_FORMATTER_H
 
+#include <cli/formatter/CardFormatter.h>
 #include <cli/model/Card.h>
 
 namespace cli { namespace formatter {
 
-class CardRawFormatter {
-public:
-    std::string format(const model::Card& card) const;
+class CardRawFormatter : public CardFormatter {
+private:
+    virtual std::string doFormat(const model::Card& card) const override;
 };
 
 }}

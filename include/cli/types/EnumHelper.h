@@ -34,52 +34,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/formatter/CardRawFormatter.h>
+#ifndef VIRGIL_CLI_TYPES_ENUM_HELPER_H
+#define VIRGIL_CLI_TYPES_ENUM_HELPER_H
 
-#include <cli/crypto/Crypto.h>
+#include <cli/types/Enum.h>
 
-#include <sstream>
+namespace cli { namespace types {
 
-using cli::Crypto;
-using cli::formatter::CardRawFormatter;
-using cli::model::CardProperty;
+namespace bitwise {
 
-std::string CardRawFormatter::doFormat(const model::Card& card) const {
-    std::ostringstream output;
-
-    if (hasProperty(CardProperty::Identifier)) {
-        output << card.identifier() << std::endl;
-    }
-    if (hasProperty(CardProperty::Identity)) {
-        output << card.identity() << std::endl;
-    }
-    if (hasProperty(CardProperty::IdentityType)) {
-        output << card.identityType() << std::endl;
-    }
-    if (hasProperty(CardProperty::Scope)) {
-        output << std::to_string(card.scope()) << std::endl;
-    }
-    if (hasProperty(CardProperty::Version)) {
-        output << card.cardVersion() << std::endl;
-    }
-    if (hasProperty(CardProperty::PublicKey)) {
-        output << Crypto::ByteUtils::bytesToString(Crypto::KeyPair::publicKeyToPEM(card.publicKeyData())) << std::endl;
-    }
-    if (hasProperty(CardProperty::Data)) {
-        for (auto data : card.data()) {
-            output << data.first << " -> " << data.second << std::endl;
-        }
-    }
-    if (hasProperty(CardProperty::Info)) {
-        for (auto info : card.info()) {
-            output << info.first << " -> " << info.second << std::endl;
-        }
-    }
-    if (hasProperty(CardProperty::Signatures)) {
-        for (auto signature : card.cardResponse().signatures()) {
-            output << signature.first << " -> " << Crypto::ByteUtils::bytesToHex(signature.second) << std::endl;
-        }
-    }
-
-    return output.str();
+template <typename Enum>
+EnumType And(Enum e, EnumType flag) {
+    return static_cast<EnumType>(flag) & static_cast<EnumType>(e);
 }
+template <typename Enum>
+EnumType Not(Enum e, EnumType flag) {
+    return static_cast<EnumType>(flag) & ~(static_cast<EnumType>(e));
+}
+template <typename Enum>
+EnumType Or(Enum e, EnumType flag) {
+    return static_cast<EnumType>(flag) | static_cast<EnumType>(e);
+}
+
+} // namespace bitwise
+
+template <typename Enum>
+void addFlag(Enum e, EnumType* flag) {
+    *flag = bitwise::Or<Enum>(e, *flag);
+}
+
+template <typename Enum>
+void removeFlag(Enum e, EnumType* flag) {
+    *flag = bitwise::Not<Enum>(e, *flag);
+}
+
+template <typename Enum>
+bool hasFlag(Enum e, EnumType flag) {
+    return bitwise::And<Enum>(e, flag) > 0x0;
+}
+
+}}
+
+#endif //VIRGIL_CLI_TYPES_ENUM_HELPER_H

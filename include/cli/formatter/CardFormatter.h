@@ -34,52 +34,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/formatter/CardRawFormatter.h>
+#ifndef VIRGIL_CLI_CARD_FORMATTER_H
+#define VIRGIL_CLI_CARD_FORMATTER_H
 
-#include <cli/crypto/Crypto.h>
+#include <cli/model/Card.h>
+#include <cli/model/CardProperty.h>
+#include <cli/types/Enum.h>
 
-#include <sstream>
+namespace cli { namespace formatter {
 
-using cli::Crypto;
-using cli::formatter::CardRawFormatter;
-using cli::model::CardProperty;
+class CardFormatter {
+public:
+    void showProperty(model::CardProperty cardProperty);
+    void showProperty(std::initializer_list<model::CardProperty> cardProperties);
+    void hideProperty(model::CardProperty cardProperty);
+    void hideProperty(std::initializer_list<model::CardProperty> cardProperties);
+    bool hasProperty(model::CardProperty cardProperty) const;
+    std::string format(const model::Card& card) const;
+    CardFormatter& applyBaseProperties();
+private:
+    virtual std::string doFormat(const model::Card& card) const = 0;
+private:
+    types::EnumType settings_ = 0x00;
+};
 
-std::string CardRawFormatter::doFormat(const model::Card& card) const {
-    std::ostringstream output;
+}}
 
-    if (hasProperty(CardProperty::Identifier)) {
-        output << card.identifier() << std::endl;
-    }
-    if (hasProperty(CardProperty::Identity)) {
-        output << card.identity() << std::endl;
-    }
-    if (hasProperty(CardProperty::IdentityType)) {
-        output << card.identityType() << std::endl;
-    }
-    if (hasProperty(CardProperty::Scope)) {
-        output << std::to_string(card.scope()) << std::endl;
-    }
-    if (hasProperty(CardProperty::Version)) {
-        output << card.cardVersion() << std::endl;
-    }
-    if (hasProperty(CardProperty::PublicKey)) {
-        output << Crypto::ByteUtils::bytesToString(Crypto::KeyPair::publicKeyToPEM(card.publicKeyData())) << std::endl;
-    }
-    if (hasProperty(CardProperty::Data)) {
-        for (auto data : card.data()) {
-            output << data.first << " -> " << data.second << std::endl;
-        }
-    }
-    if (hasProperty(CardProperty::Info)) {
-        for (auto info : card.info()) {
-            output << info.first << " -> " << info.second << std::endl;
-        }
-    }
-    if (hasProperty(CardProperty::Signatures)) {
-        for (auto signature : card.cardResponse().signatures()) {
-            output << signature.first << " -> " << Crypto::ByteUtils::bytesToHex(signature.second) << std::endl;
-        }
-    }
-
-    return output.str();
-}
+#endif //VIRGIL_CLI_CARD_FORMATTER_H

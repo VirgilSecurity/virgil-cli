@@ -34,52 +34,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cli/formatter/CardRawFormatter.h>
+#include <cli/formatter/CardFormatter.h>
 
-#include <cli/crypto/Crypto.h>
+#include <cli/types/EnumHelper.h>
 
-#include <sstream>
-
-using cli::Crypto;
-using cli::formatter::CardRawFormatter;
+using cli::formatter::CardFormatter;
+using cli::model::Card;
 using cli::model::CardProperty;
 
-std::string CardRawFormatter::doFormat(const model::Card& card) const {
-    std::ostringstream output;
 
-    if (hasProperty(CardProperty::Identifier)) {
-        output << card.identifier() << std::endl;
-    }
-    if (hasProperty(CardProperty::Identity)) {
-        output << card.identity() << std::endl;
-    }
-    if (hasProperty(CardProperty::IdentityType)) {
-        output << card.identityType() << std::endl;
-    }
-    if (hasProperty(CardProperty::Scope)) {
-        output << std::to_string(card.scope()) << std::endl;
-    }
-    if (hasProperty(CardProperty::Version)) {
-        output << card.cardVersion() << std::endl;
-    }
-    if (hasProperty(CardProperty::PublicKey)) {
-        output << Crypto::ByteUtils::bytesToString(Crypto::KeyPair::publicKeyToPEM(card.publicKeyData())) << std::endl;
-    }
-    if (hasProperty(CardProperty::Data)) {
-        for (auto data : card.data()) {
-            output << data.first << " -> " << data.second << std::endl;
-        }
-    }
-    if (hasProperty(CardProperty::Info)) {
-        for (auto info : card.info()) {
-            output << info.first << " -> " << info.second << std::endl;
-        }
-    }
-    if (hasProperty(CardProperty::Signatures)) {
-        for (auto signature : card.cardResponse().signatures()) {
-            output << signature.first << " -> " << Crypto::ByteUtils::bytesToHex(signature.second) << std::endl;
-        }
-    }
+std::string CardFormatter::format(const Card& card) const {
+    return doFormat(card);
+}
 
-    return output.str();
+void CardFormatter::showProperty(CardProperty cardProperty) {
+    cli::types::addFlag(cardProperty, &settings_);
+}
+
+void CardFormatter::showProperty(std::initializer_list<CardProperty> cardProperties) {
+    for (auto property : cardProperties) {
+        showProperty(property);
+    }
+}
+
+void CardFormatter::hideProperty(CardProperty cardProperty) {
+    cli::types::removeFlag(cardProperty, &settings_);
+}
+
+void CardFormatter::hideProperty(std::initializer_list<CardProperty> cardProperties) {
+    for (auto property : cardProperties) {
+        hideProperty(property);
+    }
+}
+
+bool CardFormatter::hasProperty(CardProperty cardProperty) const {
+    return cli::types::hasFlag(cardProperty, settings_);
+}
+
+CardFormatter& CardFormatter::applyBaseProperties() {
+    showProperty({
+            CardProperty::Identifier,
+            CardProperty::Identity,
+            CardProperty::IdentityType,
+            CardProperty::Version,
+            CardProperty::Scope,
+            CardProperty::PublicKey
+    });
+    return *this;
 }

@@ -37,15 +37,18 @@
 #ifndef VIRGIL_CLI_CARD_KEY_VALUE_FORMATTER_H
 #define VIRGIL_CLI_CARD_KEY_VALUE_FORMATTER_H
 
+#include <cli/formatter/CardFormatter.h>
 #include <cli/formatter/KeyValueFormatter.h>
 #include <cli/model/Card.h>
 
 namespace cli { namespace formatter {
 
-class CardKeyValueFormatter : public KeyValueFormatter {
-public:
-    using KeyValueFormatter::KeyValueFormatter;
-    std::string format(const model::Card& card) const;
+class CardKeyValueFormatter : public CardFormatter {
+private:
+    virtual std::string doFormat(const model::Card& card) const override;
+
+private:
+    KeyValueFormatter formatter_;
 };
 
 }}

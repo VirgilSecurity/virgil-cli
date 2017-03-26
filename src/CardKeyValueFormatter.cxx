@@ -37,19 +37,57 @@
 #include <cli/formatter/CardKeyValueFormatter.h>
 
 #include <cli/crypto/Crypto.h>
+#include <cli/io/Logger.h>
 
+using cli::formatter::KeyValueFormatter;
 using cli::formatter::CardKeyValueFormatter;
 
 using cli::model::Card;
+using cli::model::CardProperty;
 
-std::string CardKeyValueFormatter::format(const Card& card) const {
-    return KeyValueFormatter::format({
-            {"id", card.identifier()},
-            {"identity", card.identity()},
-            {"identity type", card.identityType()},
-            {"scope", std::to_string(card.scope())},
-            {"version", card.cardVersion()},
-            {"public key", Crypto::ByteUtils::bytesToString(Crypto::KeyPair::publicKeyToPEM(card.publicKeyData()))},
-    });
+static void add(KeyValueFormatter::Container& values, const std::string& key, const std::string& value) {
+    values.emplace_back(key, value);
+}
+
+std::string CardKeyValueFormatter::doFormat(const model::Card& card) const {
+    KeyValueFormatter::Container values;
+
+    if (hasProperty(CardProperty::Identifier)) {
+        add(values, "id", card.identifier());
+    }
+    if (hasProperty(CardProperty::Identity)) {
+        add(values, "identity", card.identity());
+    }
+    if (hasProperty(CardProperty::IdentityType)) {
+        add(values, "identity type", card.identityType());
+    }
+    if (hasProperty(CardProperty::Scope)) {
+        add(values, "scope", std::to_string(card.scope()));
+    }
+    if (hasProperty(CardProperty::Version)) {
+        add(values, "version", card.cardVersion());
+    }
+    if (hasProperty(CardProperty::PublicKey)) {
+        add(values, "public key",
+                Crypto::ByteUtils::bytesToString(Crypto::KeyPair::publicKeyToPEM(card.publicKeyData())));
+    }
+    if (hasProperty(CardProperty::Data)) {
+        for (auto data : card.data()) {
+            add(values, tfm::format("data (%s)", data.first), data.second);
+        }
+    }
+    if (hasProperty(CardProperty::Info)) {
+        for (auto info : card.info()) {
+            add(values, tfm::format("info (%s)", info.first), info.second);
+        }
+    }
+    if (hasProperty(CardProperty::Signatures)) {
+        for (auto signature : card.cardResponse().signatures()) {
+            add(values, tfm::format("signature (%s)", signature.first),
+                    Crypto::ByteUtils::bytesToHex(signature.second));
+        }
+    }
+
+    return formatter_.format(values);
 }
 
