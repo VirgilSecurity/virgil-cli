@@ -292,7 +292,11 @@ install (TARGETS virgil_cli
 )
 
 if (UNIX)
-#     install (DIRECTORY "doc/man/" DESTINATION "${INSTALL_MAN_DIR_NAME}")
+     install (
+             DIRECTORY "docs/man/"
+             DESTINATION "${INSTALL_MAN_DIR_NAME}"
+             FILES_MATCHING PATTERN "virgil*.[1-9]"
+      )
 elseif (WIN32 AND NOT CYGWIN)
     install (PROGRAMS "${CURL_LIBRARY_DLL}" DESTINATION "${INSTALL_BIN_DIR_NAME}")
     if (MSVC)
