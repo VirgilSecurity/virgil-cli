@@ -439,36 +439,6 @@ CONFIGURATION VALUES:
     See virgil(1) documentation for values description.
 )";
 
-static constexpr char VIRGIL_GLOSSARY[] = R"(
-virgil-glossary - shows the list of Virgil Services terms
-
-USAGE:
-    virgil glossary [options...] [-o <file>]
-
-OPTIONS:
-    -o <file>, --out=<file>  
-        The list of glossary terms. If omitted, stdout is used.
-    -h, --help  
-        Displays usage information and exits.
-    --version  
-        Displays version information and exits.
-    -v, --verbose  
-        Activates maximum verbosity.
-    --v=<verbose-level>  
-        Activates verbosity upto given verbose level (valid range: 1-9).
-    -q, --quiet  
-        Quiet mode: suppress normal output.
-    -I, --interactive  
-        Enables interactive mode.
-    -D <config>  
-        Rewrite value from the configuration file, i.e. -D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
-    -C <config-file>  
-        Additional configuration file. If multiple files are given, then applied next rules:
-            * duplicate value from the rightmost file overwrites previous.
-    --  
-        Ignores the rest of the labeled arguments following this flag.
-)";
-
 static constexpr char VIRGIL_KEY_FORMAT[] = R"(
 virgil-key-format - convert given key from a PEM format to a DER format and vice versa.
 
