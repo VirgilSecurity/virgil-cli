@@ -67,6 +67,12 @@ public:
      * @brief Return true if sink use console for output.
      */
     bool isConsoleOutput() const;
+
+    /**
+     * @brief Add new line to the output.
+     */
+    void addNewLine();
+
 public:
     virtual bool isGood() override;
     virtual void write(const virgil::crypto::VirgilByteArray& data) override;

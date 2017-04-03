@@ -62,6 +62,10 @@ bool FileDataSink::isConsoleOutput() const {
     return !isFileOutput_;
 }
 
+void FileDataSink::addNewLine() {
+    *out_ << std::endl;
+}
+
 bool FileDataSink::isGood() {
     return out_->good();
 }
