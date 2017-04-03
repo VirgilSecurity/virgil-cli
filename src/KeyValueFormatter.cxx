@@ -43,23 +43,68 @@
 
 using cli::formatter::KeyValueFormatter;
 
-static inline std::string& rtrim(std::string &s) {
+static inline std::string& rtrim(std::string& s) {
     s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
     return s;
 }
+
 static std::string find_and_replace(const std::string& source, std::string const& find, std::string const& replace) {
     std::string result = source;
-    for(std::string::size_type pos = 0; (pos = result.find(find, pos)) != std::string::npos;) {
+    for (std::string::size_type pos = 0; (pos = result.find(find, pos)) != std::string::npos;) {
         result.replace(pos, find.length(), replace);
         pos += replace.length();
     }
     return rtrim(result);
 }
 
-static std::string wrap_multiline(const std::string& lines, size_t padding) {
+static std::string add_multiline_padding(const std::string& lines, size_t padding) {
     const std::string from = "\n";
     const std::string to = from + std::string(padding, ' ');
     return find_and_replace(lines, from, to);
+}
+
+static size_t get_multiline_string_length_max(const std::string& str) {
+    std::istringstream input(str);
+    size_t maxLineLength = 0;
+    for (std::string line; std::getline(input, line); maxLineLength = std::max(line.size(), maxLineLength)) {}
+    return maxLineLength;
+}
+
+static std::string add_horizontal_border(
+        const std::string& str, size_t padding, size_t spacing, size_t lineLengthMax,
+        char horizontalSymbol, char cornerSymbol) {
+
+    const auto horizontalBorder = std::string(lineLengthMax + padding + spacing, horizontalSymbol);
+    std::ostringstream output;
+    output << cornerSymbol << horizontalBorder << cornerSymbol << std::endl;
+    output << str;
+    output << cornerSymbol << horizontalBorder << cornerSymbol << std::endl;
+    return output.str();
+}
+
+static std::string add_vertical_border(
+        const std::string& str, size_t padding, size_t spacing, size_t lineLengthMax, char verticalSymbol) {
+
+    std::istringstream input(str);
+    std::ostringstream output;
+    const auto paddingString = std::string(padding, ' ');
+    for (std::string line; std::getline(input, line);) {
+        const auto spacingString = std::string(lineLengthMax - line.length() + spacing, ' ');
+        output << verticalSymbol << paddingString << line << spacingString << verticalSymbol << std::endl;
+    }
+
+    return output.str();
+}
+
+static std::string add_border(const std::string& str) {
+    constexpr auto horizontalSymbol = '-';
+    constexpr auto verticalSymbol = '|';
+    constexpr auto cornerSymbol = '+';
+    constexpr size_t padding = 2;
+    constexpr size_t spacing = 1;
+    const size_t maxLineLength = get_multiline_string_length_max(str);
+    return add_horizontal_border(add_vertical_border(str, padding, spacing, maxLineLength, verticalSymbol),
+            padding, spacing, maxLineLength, horizontalSymbol, cornerSymbol);
 }
 
 KeyValueFormatter::KeyValueFormatter(size_t width) : width_(width) {
@@ -73,6 +118,7 @@ std::string KeyValueFormatter::format(const Container& container) const {
     }
 
     std::ostringstream out;
+    out << std::endl;
     for (const auto& keyValue: container) {
         const auto& key = keyValue.first;
         const auto& value = keyValue.second;
@@ -80,8 +126,8 @@ std::string KeyValueFormatter::format(const Container& container) const {
         const auto paddingSymbol = ' ';
         const std::string separationSymbol = " : ";
         out << key << std::string(keyPadding, paddingSymbol) << separationSymbol;
-        out << wrap_multiline(value, maxKeyLength + separationSymbol.size()) << "\n";
+        out << add_multiline_padding(value, maxKeyLength + separationSymbol.size()) << std::endl;
     }
     out << std::endl;
-    return out.str();
+    return add_border(out.str());
 }
