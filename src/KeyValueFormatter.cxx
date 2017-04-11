@@ -129,5 +129,5 @@ std::string KeyValueFormatter::format(const Container& container) const {
         out << add_multiline_padding(value, maxKeyLength + separationSymbol.size()) << std::endl;
     }
     out << std::endl;
-    return add_border(out.str());
+    return tfm::format("\n%s", add_border(out.str()));
 }

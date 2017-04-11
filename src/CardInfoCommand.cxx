@@ -134,7 +134,6 @@ void CardInfoCommand::doProcess() const {
                 card.identityType(), card.identity(), card.identifier());
         auto cardInfo = formatter->format(card);
         ULOG1(INFO) << "Write card info to the output.";
-        output.addNewLine();
         output.write(cardInfo);
     }
 }
