@@ -41,6 +41,7 @@
 #include <cli/command/Command.h>
 #include <cli/error/ArgumentError.h>
 #include <cli/io/Logger.h>
+#include <cli/io/Path.h>
 
 #include <cli/model/EncryptCredentials.h>
 #include <cli/model/DecryptCredentials.h>
@@ -75,14 +76,11 @@ using namespace cli::model;
 #undef OUT
 
 ArgumentIO::ArgumentIO(std::unique_ptr<ArgumentSource> argumentSource,
-        std::unique_ptr<ArgumentValueSource> argumentValueSource,
-        std::unique_ptr<ArgumentValueSource> argumentValueLocalSource)
-        : argumentSource_(std::move(argumentSource)), argumentValueSource_(std::move(argumentValueSource)),
-        argumentValueLocalSource_(std::move(argumentValueLocalSource))
+        std::unique_ptr<ArgumentValueSource> argumentValueSource)
+        : argumentSource_(std::move(argumentSource)), argumentValueSource_(std::move(argumentValueSource))
 {
     DCHECK(argumentSource_);
     DCHECK(argumentValueSource_);
-    DCHECK(argumentValueLocalSource_);
 }
 
 void ArgumentIO::configureUsage(const char* usage, const ArgumentParseOptions& parseOptions) {
@@ -376,12 +374,26 @@ std::vector<Card> ArgumentIO::getCardListFromInput(ArgumentImportance argumentIm
     ULOG2(INFO) << "Read Virgil Card(s) from input.";
     auto argument = argumentSource_->read(opt::IN, argumentImportance);
     ArgumentValidationHub::isText()->validateList(argument, argumentImportance);
-    // Use arguments if given or read them from the standard input
-    auto resolvedArgument = argument.isList() ? std::move(argument) : Argument(FileDataSource().readMultiLine());
+
     std::vector<Card> result;
-    for (auto argumentValue : resolvedArgument.asList()) {
-        result.push_back(argumentValueLocalSource_->readCard(argumentValue));
+    if (argument.isList()) {
+        // If arguments are given, then the source is files.
+        argumentValueSource_->resetFilter({ ArgumentSourceType::File });
+        for (auto argumentValue : argument.asList()) {
+            if (!io::Path::existsFile(argumentValue.value())) {
+                ULOG(WARNING) << tfm::format("File '%s' does not exist.", argumentValue.value());
+                continue;
+            }
+            result.push_back(argumentValueSource_->readCard(argumentValue));
+        }
+    } else {
+        // Source is standard input so it should be parsed.
+        argumentValueSource_->resetFilter({ ArgumentSourceType::Parser });
+        for (auto cardString : FileDataSource().readMultiLine()) {
+            result.push_back(argumentValueSource_->readCard(ArgumentValue(cardString)));
+        }
     }
+    argumentValueSource_->resetFilter({ ArgumentSourceType::Any });
     return result;
 }
 

@@ -38,8 +38,10 @@
 
 #include <cli/error/ArgumentError.h>
 #include <cli/io/Logger.h>
+#include <cli/types/EnumHelper.h>
 
 using cli::argument::ArgumentValueSource;
+using cli::argument::ArgumentSourceType;
 using cli::error::ArgumentValueSourceError;
 using cli::model::PublicKey;
 using cli::model::PrivateKey;
@@ -65,6 +67,9 @@ static constexpr const char kValueName_HashAlgorithm[] = "Hash Algorithm";
 #define FOR_EACH_SOURCE(func, param, valueName) \
 do { \
     for (auto source = this; source != nullptr; source = source->nextSource_.get()) { \
+        if (!cli::types::hasFlag(source->getType(), useSourceTypes_)) { \
+            continue; \
+        } \
         auto value = source->func(param); \
         if (value) { \
             LOG(INFO) << tfm::format(kLogFormatMessage_ReadValueSuccess, valueName, source->getName()); \
@@ -85,6 +90,10 @@ do { \
 
 const char* ArgumentValueSource::getName() const {
     return doGetName();
+}
+
+ArgumentSourceType ArgumentValueSource::getType() const {
+    return doGetType();
 }
 
 void ArgumentValueSource::init(const ArgumentSource& argumentSource) {
@@ -131,6 +140,13 @@ Card ArgumentValueSource::readCard(const ArgumentValue& argumentValue) const {
 
 HashAlgorithm ArgumentValueSource::readHashAlgorithm(const ArgumentValue& argumentValue) const {
     FOR_EACH_SOURCE(doReadHashAlgorithm, argumentValue, kValueName_HashAlgorithm);
+}
+
+void ArgumentValueSource::resetFilter(const std::vector<ArgumentSourceType>& useSourceTypes) {
+    useSourceTypes_ = 0;
+    for (auto sourceType : useSourceTypes) {
+        cli::types::addFlag(sourceType, &useSourceTypes_);
+    }
 }
 
 std::unique_ptr<KeyAlgorithm> ArgumentValueSource::doReadKeyAlgorithm(const ArgumentValue& argumentValue) const {

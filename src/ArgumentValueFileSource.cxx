@@ -54,6 +54,7 @@
 using cli::Crypto;
 using cli::argument::ArgumentValue;
 using cli::argument::ArgumentValueFileSource;
+using cli::argument::ArgumentSourceType;
 using cli::model::KeyAlgorithm;
 using cli::model::PublicKey;
 using cli::model::PrivateKey;
@@ -69,6 +70,10 @@ using ServiceCardValidator = virgil::sdk::client::CardValidator;
 
 const char* ArgumentValueFileSource::doGetName() const {
     return "ArgumentValueFileSource";
+}
+
+ArgumentSourceType ArgumentValueFileSource::doGetType() const {
+    return ArgumentSourceType::File;
 }
 
 void ArgumentValueFileSource::doInit(const ArgumentSource& argumentSource) {

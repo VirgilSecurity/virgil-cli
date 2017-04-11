@@ -73,6 +73,7 @@ using cli::argument::ArgumentValueFileSource;
 using cli::argument::ArgumentValueVirgilSource;
 using cli::argument::ArgumentValueEnumSource;
 using cli::argument::ArgumentValueTextSource;
+using cli::argument::ArgumentSourceType;
 using cli::cmd::StandardCommandPrompt;
 using cli::command::Command;
 using cli::command::HubCommand;
@@ -127,23 +128,12 @@ std::unique_ptr<ArgumentValueSource> createArgumentValueSource() {
     )->appendSource(
             std::make_unique<ArgumentValueTextSource>()
     );
-    return std::move(argumentValueSource);
-}
-
-std::unique_ptr<ArgumentValueSource> createArgumentValueLocalSource() {
-    auto argumentValueSource = std::make_unique<ArgumentValueFileSource>();
-    argumentValueSource->appendSource(
-            std::make_unique<ArgumentValueEnumSource>()
-    )->appendSource(
-            std::make_unique<ArgumentValueTextSource>()
-    );
+    argumentValueSource->resetFilter({ ArgumentSourceType::Any });
     return std::move(argumentValueSource);
 }
 
 std::unique_ptr<ArgumentIO> createArgumentIO(int argc, const char* argv[]) {
-    return std::make_unique<ArgumentIO>(
-            createArgumentSource(argc, argv), createArgumentValueSource(), createArgumentValueLocalSource()
-    );
+    return std::make_unique<ArgumentIO>(createArgumentSource(argc, argv), createArgumentValueSource());
 }
 
 std::unique_ptr<Command> createRootCommand(int argc, const char* argv[]) {

@@ -56,6 +56,7 @@
 
 using cli::Configurations;
 using cli::argument::ArgumentSource;
+using cli::argument::ArgumentSourceType;
 using cli::argument::ArgumentValueVirgilSource;
 using cli::argument::ArgumentImportance;
 using cli::model::KeyAlgorithm;
@@ -111,6 +112,10 @@ ArgumentValueVirgilSource::ArgumentValueVirgilSource()
 
 const char* ArgumentValueVirgilSource::doGetName() const {
     return "ArgumentValueVirgilSource";
+}
+
+ArgumentSourceType ArgumentValueVirgilSource::doGetType() const {
+    return ArgumentSourceType::Service;
 }
 
 void ArgumentValueVirgilSource::doInit(const ArgumentSource& argumentSource) {

@@ -49,6 +49,7 @@ using cli::model::Password;
 using cli::model::PrivateKey;
 using cli::model::Card;
 using cli::argument::ArgumentValueTextSource;
+using cli::argument::ArgumentSourceType;
 using cli::error::ArgumentParseError;
 
 static constexpr const char kParseErrorFormat[] = "Invalid format. Can not import Virgil Card from the text: '%s'.";
@@ -59,6 +60,10 @@ void ArgumentValueTextSource::doInit(const ArgumentSource& argumentSource) {
 
 const char* ArgumentValueTextSource::doGetName() const {
     return "ArgumentValueTextSource";
+}
+
+ArgumentSourceType ArgumentValueTextSource::doGetType() const {
+    return ArgumentSourceType::Parser;
 }
 
 std::unique_ptr<Password> ArgumentValueTextSource::doReadPassword(const ArgumentValue& argumentValue) const {

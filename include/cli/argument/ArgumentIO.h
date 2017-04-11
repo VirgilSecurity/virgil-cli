@@ -65,8 +65,7 @@ namespace cli { namespace argument {
 class ArgumentIO {
 public:
     ArgumentIO(
-            std::unique_ptr<ArgumentSource> argumentSource, std::unique_ptr<ArgumentValueSource> argumentValueSource,
-            std::unique_ptr<ArgumentValueSource> argumentValueLocalSource
+            std::unique_ptr<ArgumentSource> argumentSource, std::unique_ptr<ArgumentValueSource> argumentValueSource
     );
 
     void configureUsage(const char* usage, const ArgumentParseOptions& parseOptions);
@@ -166,7 +165,6 @@ private:
 private:
     std::unique_ptr<ArgumentSource> argumentSource_;
     std::unique_ptr<ArgumentValueSource> argumentValueSource_;
-    std::unique_ptr<ArgumentValueSource> argumentValueLocalSource_;
 };
 
 }}

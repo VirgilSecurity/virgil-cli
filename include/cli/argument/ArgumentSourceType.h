@@ -34,25 +34,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef VIRGIL_CLI_CARD_PROPERTY_H
-#define VIRGIL_CLI_CARD_PROPERTY_H
+#ifndef VIRGIL_CLI_ARGUMENT_SOURCE_TYPE_H
+#define VIRGIL_CLI_ARGUMENT_SOURCE_TYPE_H
 
 #include <cli/types/Enum.h>
 
-namespace cli { namespace model {
+#include <limits>
 
-enum class CardProperty : cli::types::EnumType {
-    Identifier   = 1 << 1,
-    Identity     = 1 << 2,
-    IdentityType = 1 << 3,
-    PublicKey    = 1 << 4,
-    Version      = 1 << 5,
-    Scope        = 1 << 6,
-    Data         = 1 << 7,
-    Info         = 1 << 8,
-    Signatures   = 1 << 9,
+namespace cli { namespace argument {
+
+enum class ArgumentSourceType : cli::types::EnumType {
+    File      = 1 << 1,
+    Service   = 1 << 2,
+    Parser    = 1 << 3,
+    Any       = std::numeric_limits<cli::types::EnumType>::max(),
 };
 
 }}
 
-#endif //VIRGIL_CLI_CARD_PROPERTY_H
+#endif //VIRGIL_CLI_ARGUMENT_SOURCE_TYPE_H

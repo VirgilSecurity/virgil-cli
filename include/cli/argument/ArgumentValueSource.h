@@ -39,6 +39,8 @@
 
 #include <cli/argument/ArgumentSource.h>
 
+#include <cli/argument/ArgumentSourceType.h>
+
 #include <cli/model/Card.h>
 #include <cli/model/PublicKey.h>
 #include <cli/model/PrivateKey.h>
@@ -59,6 +61,8 @@ class ArgumentValueSource {
 public:
     const char* getName() const;
 
+    ArgumentSourceType getType() const;
+
     void init(const ArgumentSource& argumentSource);
 
     ArgumentValueSource* appendSource(std::shared_ptr<ArgumentValueSource> source);
@@ -77,10 +81,14 @@ public:
 
     model::HashAlgorithm readHashAlgorithm(const ArgumentValue& argumentValue) const;
 
+    void resetFilter(const std::vector<ArgumentSourceType>& useSourceTypes);
+
 private:
     virtual void doInit(const ArgumentSource& argumentSource) = 0;
 
     virtual const char* doGetName() const = 0;
+
+    virtual ArgumentSourceType doGetType() const = 0;
 
     virtual std::unique_ptr<model::KeyAlgorithm> doReadKeyAlgorithm(const ArgumentValue& argumentValue) const;
 
@@ -98,6 +106,7 @@ private:
 
 private:
     std::shared_ptr<ArgumentValueSource> nextSource_;
+    cli::types::EnumType useSourceTypes_;
 };
 
 }}

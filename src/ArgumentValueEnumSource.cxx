@@ -42,6 +42,7 @@
 using cli::Crypto;
 using cli::argument::ArgumentSource;
 using cli::argument::ArgumentValueEnumSource;
+using cli::argument::ArgumentSourceType;
 using cli::model::KeyAlgorithm;
 using cli::model::PublicKey;
 using cli::model::PrivateKey;
@@ -51,6 +52,10 @@ using cli::model::HashAlgorithm;
 
 const char* ArgumentValueEnumSource::doGetName() const {
     return "ArgumentValueEnumSource";
+}
+
+ArgumentSourceType ArgumentValueEnumSource::doGetType() const {
+    return ArgumentSourceType::Parser;
 }
 
 void ArgumentValueEnumSource::doInit(const ArgumentSource& argumentSource) {

@@ -45,6 +45,8 @@ class ArgumentValueFileSource : public ArgumentValueSource {
 private:
     virtual const char* doGetName() const override;
 
+    virtual ArgumentSourceType doGetType() const override;
+
     virtual void doInit(const ArgumentSource& argumentSource) override;
 
     virtual std::unique_ptr<model::Password> doReadPassword(const ArgumentValue& argumentValue) const override;
