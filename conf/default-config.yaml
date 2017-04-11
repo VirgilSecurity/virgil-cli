@@ -1,6 +1,9 @@
-# Virgil Security CLI configuration file
+# Virgil Security CLI configuration file.
+
+# Configuration file version.
 version: 1
 
+# Logger setting. Use Easylogging++ logger, details on https://github.com/muflihun/easyloggingpp.
 logger: |
   * GLOBAL:
       FORMAT               =  "%datetime{%Y-%d-%M %H:%m:%s,%g}  [%logger] %level %msg"
@@ -13,3 +16,15 @@ logger: |
       LOG_FLUSH_THRESHOLD  =  100 ## Flush after every 100 logs
   * VERBOSE:
       FORMAT               =  "%datetime{%Y-%d-%M %H:%m:%s,%g}  [%logger] %level%vlevel  %msg"
+
+# Unique string value that provides an authenticated secure access to the Virgil Services.
+#APP_ACCESS_TOKEN: "AT.82aa4ba2e9214d55c013fe567ce5d0bbe2832820c4dbf4e83e3d7b6941137219"
+
+# Unique string value that identifies your application in Virgil Services.
+#APP_KEY_ID: "71da6657b3a66dd97c3e0a687f4f41a2859d5c3b67bf2d9366dba1119d78e98c"
+
+# User's Private Key that is used to perform creation and revocation of Virgil Cards (Public Key) in the Virgil Services.
+#APP_KEY: "/full/path/my-application.virgilkey"
+
+# A password to the APP_KEY.
+#APP_KEY_PASSWORD: "strong_password"
