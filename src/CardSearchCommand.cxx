@@ -89,7 +89,7 @@ static void purgeCardsToStandardOut(const std::vector<Card>& cards, bool noForma
         if (noFormat) {
             std::cout << card.exportAsString() << std::endl;
         } else {
-            std::cout << std::endl << CardKeyValueFormatter().applyBaseProperties().format(card);
+            std::cout << std::endl << CardKeyValueFormatter().showBaseProperties().format(card);
         }
     }
 }

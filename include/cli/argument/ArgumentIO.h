@@ -83,6 +83,8 @@ public:
 
     bool isNoFormat() const;
 
+    bool isAll() const;
+
     // Get
     std::vector<std::unique_ptr<model::EncryptCredentials>>
     getEncryptCredentials(ArgumentImportance argumentImportance) const;

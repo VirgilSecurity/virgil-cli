@@ -134,6 +134,6 @@ void CardCreateCommand::doProcess() const {
     if (noFormat || output.isFileOutput()) {
         output.write(card.exportAsString());
     } else {
-        output.write(CardKeyValueFormatter().applyBaseProperties().format(card));
+        output.write(CardKeyValueFormatter().showBaseProperties().format(card));
     }
 }

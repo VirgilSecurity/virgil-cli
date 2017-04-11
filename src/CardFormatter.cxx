@@ -71,7 +71,7 @@ bool CardFormatter::hasProperty(CardProperty cardProperty) const {
     return cli::types::hasFlag(cardProperty, settings_);
 }
 
-CardFormatter& CardFormatter::applyBaseProperties() {
+CardFormatter& CardFormatter::showBaseProperties() {
     showProperty({
             CardProperty::Identifier,
             CardProperty::Identity,
@@ -79,6 +79,21 @@ CardFormatter& CardFormatter::applyBaseProperties() {
             CardProperty::Version,
             CardProperty::Scope,
             CardProperty::PublicKey
+    });
+    return *this;
+}
+
+CardFormatter& CardFormatter::showAllProperties() {
+    showProperty({
+            CardProperty::Identifier,
+            CardProperty::Identity,
+            CardProperty::IdentityType,
+            CardProperty::Version,
+            CardProperty::Scope,
+            CardProperty::PublicKey,
+            CardProperty::Data,
+            CardProperty::Info,
+            CardProperty::Signatures,
     });
     return *this;
 }

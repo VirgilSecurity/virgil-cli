@@ -93,6 +93,6 @@ void CardGetCommand::doProcess() const {
         output.write(card.exportAsString());
     } else {
         output.addNewLine();
-        output.write(CardKeyValueFormatter().applyBaseProperties().format(card));
+        output.write(CardKeyValueFormatter().showBaseProperties().format(card));
     }
 }

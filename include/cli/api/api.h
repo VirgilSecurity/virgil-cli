@@ -223,7 +223,7 @@ static constexpr char VIRGIL_CARD_INFO[] = R"(
 virgil-card-info - show Virgil Card information
 
 USAGE:
-    virgil card-info [options...] [-i <file>...] [-o <file>] [-f <output-format>...]
+    virgil card-info [options...] [-i <file>...] [-o <file>] [-f <output-format>...] [--all]
 
 OPTIONS:
     -i <file>, --in=<file>  
@@ -243,6 +243,8 @@ OPTIONS:
             * data - custom user payload.
             * info - info about device on which card was created.
             * signatures - signatures.
+    --all  
+        All possible information will be shown.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -698,6 +700,7 @@ CONFIGURATION VALUES:
 namespace cli { namespace opt {
 
 static constexpr char ALGORITHM[] = "--algorithm";
+static constexpr char ALL[] = "--all";
 static constexpr char CONTENT_INFO[] = "--content-info";
 static constexpr char C_SHORT[] = "-C";
 static constexpr char DATA[] = "--data";

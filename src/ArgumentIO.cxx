@@ -128,6 +128,13 @@ bool ArgumentIO::isNoFormat() const {
     return argument.asValue().asOptionalBool();
 }
 
+bool ArgumentIO::isAll() const {
+    ULOG2(INFO) << "Check if --all flag is given.";
+    auto argument = argumentSource_->read(opt::ALL, ArgumentImportance::Optional);
+    ArgumentValidationHub::isNumber()->validate(argument, ArgumentImportance::Optional);
+    return argument.asValue().asOptionalBool();
+}
+
 SecureValue ArgumentIO::getInput(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read input value.";
     auto argument = argumentSource_->read(opt::IN, argumentImportance);

@@ -116,13 +116,18 @@ void CardInfoCommand::doProcess() const {
     ULOG1(INFO) << "Read arguments.";
     const auto cardList = getArgumentIO()->getCardListFromInput(ArgumentImportance::Optional);
     const auto cardOutputFormat = getArgumentIO()->getCardOutputFormat(ArgumentImportance::Required);
+    const auto isAll = getArgumentIO()->isAll();
     auto output = getArgumentIO()->getOutputSink(ArgumentImportance::Optional);
 
     ULOG1(INFO) << "Define Virgil Card formatter.";
     auto formatter = define_formatter(cardOutputFormat.size());
 
     ULOG1(INFO) << "Configure Virgil Card formatter";
-    configure_formatter(*formatter, cardOutputFormat);
+    if (isAll) {
+        formatter->showAllProperties();
+    } else {
+        configure_formatter(*formatter, cardOutputFormat);
+    }
 
     for (const auto& card : cardList) {
         ULOG1(INFO) << tfm::format("Process Virgil Card: %s:%s (%s).",

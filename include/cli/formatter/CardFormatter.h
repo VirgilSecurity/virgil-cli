@@ -51,7 +51,8 @@ public:
     void hideProperty(std::initializer_list<model::CardProperty> cardProperties);
     bool hasProperty(model::CardProperty cardProperty) const;
     std::string format(const model::Card& card) const;
-    CardFormatter& applyBaseProperties();
+    CardFormatter& showBaseProperties();
+    CardFormatter& showAllProperties();
 private:
     virtual std::string doFormat(const model::Card& card) const = 0;
 private:
