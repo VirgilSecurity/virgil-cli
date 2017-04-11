@@ -12,7 +12,7 @@ For a full overview head over to our [documentation portal](https://developer.vi
 The Virgil CLI is provided as a script and an archive of the files, and it is available for Mac and Linux OS.
 
 In order to use the CLI:
-1. download the CLI archive or script for you platform [here](/);
+1. download the CLI archive or script for you platform [here](https://cdn.virgilsecurity.com/apps/virgil-cli/);
 2. install the CLI with:
       - MAC OS [install guide](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/settings/install/macos);
       - Linux OS [install guide](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/settings/install/linux).
