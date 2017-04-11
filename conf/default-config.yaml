@@ -1,4 +1,5 @@
 # Virgil Security CLI configuration file
+version: 1
 
 logger: |
   * GLOBAL:
