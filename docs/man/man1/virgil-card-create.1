@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "VIRGIL-CARD-CREATE" "1" "Mar 27, 2017" "3.0.0" "virgil-cli"
+.TH "VIRGIL-CARD-CREATE" "1" "Apr 11, 2017" "3.0.0" "virgil-cli"
 .SH NAME
 virgil-card-create \- creates a Virgil Card entity
 .
@@ -61,7 +61,7 @@ Private Key\&.
 .INDENT 0.0
 .TP
 .B \-p <arg>, \-\-private\-key\-password=<arg>
-The Private Key password (if exists).
+The user\(aqs Private Key password (if exists).
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -69,7 +69,7 @@ The Private Key password (if exists).
 Determines a Virgil Card scope that can be either global or application [default: application].
 .INDENT 7.0
 .IP \(bu 2
-for global Virgil Card the scope must be \fBglobal\fP;
+for Global Virgil Card the scope must be \fBglobal\fP;
 .IP \(bu 2
 for application Virgil Card the scope must be \fBapplication\fP;
 .UNINDENT
@@ -96,7 +96,7 @@ the second key must be \fBdevice\fP with any value.
 .INDENT 0.0
 .TP
 .B \-\-no\-format
-Do not apply formating when print term:\fIVirgil Card\fP to the standard output.
+Do not apply formating when print Virgil Card to the standard output.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -108,7 +108,7 @@ Format: <type>:<value>
 .IP \(bu 2
 for confirmed Virgil Card identity type must be \fBemail\fP and identity value must be a valid email;
 .IP \(bu 2
-for segregated Virgil Card the identity type and value can be any value.
+for Segregated Virgil Card the identity type and value can be any value.
 .UNINDENT
 .UNINDENT
 .SH CONFIGURATION VALUES
@@ -120,7 +120,7 @@ When \fBapplication\fP is used as \fI\%\-\-scope\fP, then next configuration val
 .IP \(bu 2
 \fIAPP_KEY_ID\fP
 .IP \(bu 2
-\fIAPP_KEY_DATA\fP
+\fIAPP_KEY\fP
 .IP \(bu 2
 \fIAPP_KEY_PASSWORD\fP
 .UNINDENT

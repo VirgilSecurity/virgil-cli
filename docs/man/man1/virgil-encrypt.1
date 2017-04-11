@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "VIRGIL-ENCRYPT" "1" "Mar 27, 2017" "3.0.0" "virgil-cli"
+.TH "VIRGIL-ENCRYPT" "1" "Apr 11, 2017" "3.0.0" "virgil-cli"
 .SH NAME
 virgil-encrypt \- encrypts any data for the specified recipient(s)
 .
@@ -48,19 +48,19 @@ virgil encrypt [options...] [\-i <file>] [\-o <file>] [\-c <file>] [\-\-] <recip
 .UNINDENT
 .UNINDENT
 .sp
-\fIrecipient\-id\fP is an identifier which will be associated with the Public Key used for the encryption. Thus, the email, the Public Key (accompanied by the alias or not), the Virgil Card or the Virgil Card id can be used as well as any combinations of these recipient identifiers.
+\fIrecipient\-id\fP is an identifier which will be associated with the Public Key used for the encryption. Thus, the email, the Public Key (accompanied by the alias or not), the Virgil Card or the Virgil Card ID can be used as well as any combinations of these recipient identifiers.
 .sp
 Please note that for decryption you will need a provided password or a Private Key associated with the Public Key used for encryption.
 .SH OPTIONS
 .INDENT 0.0
 .TP
 .B \-i <file>, \-\-in=<file>
-Data to be encrypted. If omitted, stdin is used.
+The file with data which necessary to encrypt. If omitted, stdin is used.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-o <file>, \-\-out=<file>
-Encrypted data. If omitted, stdout is used.
+The file which contains the encrypted data. If omitted, stdout is used.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -77,9 +77,9 @@ Contains information about one recipient. Format: [password|email|vcard|pubkey]:
 .IP \(bu 2
 if \fBpassword\fP, then <value> \- a password for encrypting;
 .IP \(bu 2
-if \fBemail\fP, then <value> \- the email of the recipient;
+if \fBemail\fP, then <value> \- an email of the recipient;
 .IP \(bu 2
-if \fBvcard\fP, then <value> \- the recipient\(aqs Virgil Card id or the Virgil Card itself (the file stored locally);
+if \fBvcard\fP, then <value> \- the recipient\(aqs Virgil Card ID or the Virgil Card itself (the file stored locally);
 .IP \(bu 2
 if \fBpubkey\fP, then <value> \- Public Key of the recipient. An alias may also be added. Example: pubkey:bob/public.key:ForBob
 .UNINDENT
@@ -136,7 +136,7 @@ virgil encrypt \-i plain.txt \-o plain.enc password:Strong_Password_123
 .UNINDENT
 .INDENT 0.0
 .IP 4. 3
-Alice encrypts \fIplain.txt\fP with a combination of a password and recipient\-id:
+Alice encrypts \fIplain.txt\fP with a combination of a password and a recipient\-id:
 .UNINDENT
 .INDENT 0.0
 .INDENT 3.5
@@ -150,7 +150,7 @@ virgil encrypt \-i plain.txt \-o plain.enc email:bob@email.com password:Strong_P
 .UNINDENT
 .INDENT 0.0
 .IP 5. 3
-Alice encrypts \fIplain.txt\fP for Bob using his Virgil Card id:
+Alice encrypts \fIplain.txt\fP for Bob using his Virgil Card ID:
 .UNINDENT
 .INDENT 0.0
 .INDENT 3.5

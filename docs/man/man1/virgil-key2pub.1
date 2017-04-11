@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "VIRGIL-KEY2PUB" "1" "Mar 27, 2017" "3.0.0" "virgil-cli"
+.TH "VIRGIL-KEY2PUB" "1" "Apr 11, 2017" "3.0.0" "virgil-cli"
 .SH NAME
 virgil-key2pub \- extracts the Public Key from the Private Key
 .
@@ -44,29 +44,29 @@ virgil key2pub [options...] [\-i <file>] [\-o <file>] [\-p <arg>]
 .SH DESCRIPTION
 .INDENT 0.0
 .INDENT 3.5
-\fBvirgil key2pub\fP extracts the Public Key from the Private Key\&.
+\fBvirgil key2pub\fP extracts the Public Key from the user\(aqs Private Key\&.
 .UNINDENT
 .UNINDENT
 .SH OPTIONS
 .INDENT 0.0
 .TP
 .B \-i <file>, \-\-in=<file>
-Private key. If omitted, stdin is used.
+The file that contains user\(aqs Private Key. If omitted, stdin is used.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-o <file>, \-\-out=<file>
-Public key. If omitted, stdout is used.
+A file name where Public Key will be saved. If omitted, stdout is used.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-p <arg>, \-\-private\-key\-password=<arg>
-Private Key Password.
+User\(aqs Private Key Password.
 .UNINDENT
 .SH EXAMPLES
 .INDENT 0.0
 .IP 1. 3
-Extract the Public Key from the Private Key.
+Extract the Public Key from the user\(aqs Private Key that not protected with password.
 .UNINDENT
 .INDENT 0.0
 .INDENT 3.5

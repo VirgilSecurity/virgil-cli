@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "VIRGIL-DECRYPT" "1" "Mar 27, 2017" "3.0.0" "virgil-cli"
+.TH "VIRGIL-DECRYPT" "1" "Apr 11, 2017" "3.0.0" "virgil-cli"
 .SH NAME
 virgil-decrypt \- decrypts the encrypted data
 .
@@ -46,7 +46,7 @@ virgil decrypt [options...] [\-i <file>] [\-o <file>] [\-c <file>] [\-p <arg>] <
 .INDENT 3.5
 \fBvirgil decrypt\fP decrypts the encrypted data with a keypass\&.
 .sp
-\fIkeypass\fP consists of the given password used as the recipient\-id or the Private Key associated with the Public Key used for encryption. You also may need the Private Key password if there is one.
+\fIkeypass\fP consists of the given password used as the recipient\-id or the user\(aqs Private Key associated with the Public Key used for encryption. You also may need the Private Key password if there is one.
 .sp
 Please note that you will need a password and/or the \fIrecipient\-id\fP for encryption.
 .UNINDENT
@@ -55,27 +55,27 @@ Please note that you will need a password and/or the \fIrecipient\-id\fP for enc
 .INDENT 0.0
 .TP
 .B \-i <file>, \-\-in=<file>
-Data to be decrypted. If omitted, stdin is used.
+The file with data which necessary to decrypt. If omitted, stdin is used.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-o <file>, \-\-out=<file>
-Decrypted data. If omitted, stdout is used.
+The file with the decrypted data. If omitted, stdout is used.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-c <file>, \-\-content\-info=<file>
-Content info\&. Use this option if content info is not embedded in the encrypted data.
+Content info\&. Use this option if content info was not embedded in the encrypted data.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-p <arg>, \-\-private\-key\-password=<arg>
-Private Key Password.
+User\(aqs Private Key Password.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B <keypass>
-Contains Private Key or password. Format: (privkey|password):<value>[:<alias>]
+Contains user\(aqs Private Key or password. Format: (privkey|password):<value>[:<alias>]
 .INDENT 7.0
 .INDENT 3.5
 .INDENT 0.0
@@ -108,7 +108,7 @@ if \fBpassword\fP then:
 .SH EXAMPLES
 .INDENT 0.0
 .IP 1. 3
-Anyone with the password decrypts \fIplain.enc\fP:
+Anyone with the password decrypt \fIplain.enc\fP:
 .UNINDENT
 .INDENT 0.0
 .INDENT 3.5
@@ -122,7 +122,7 @@ virgil decrypt \-i plain.enc \-o plain.txt password:strong_password
 .UNINDENT
 .INDENT 0.0
 .IP 2. 3
-Bob decrypts \fIplain.enc\fP with his private key:
+Bob decrypts \fIplain.enc\fP with his Private Key:
 .UNINDENT
 .INDENT 0.0
 .INDENT 3.5

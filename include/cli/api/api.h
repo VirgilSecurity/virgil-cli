@@ -49,7 +49,7 @@ OPTIONS:
     <command>
         Specific command to execute, see sections below.
     <args>
-        Options and arguments fot the target command.
+        Options and arguments for the target command.
 
 COMMON OPTIONS:
     -h, --help  
@@ -77,17 +77,17 @@ COMMANDS:
     This section contains brief description of the available commands that are available via Virgil CLI.
     CRYPTO COMMANDS
     keygen
-        Generate a Private Key with provided parameters.
+        Generate a user's Private Key with provided parameters.
     key2pub
         Extract a Public Key from the Private Key.
     key-format
         Convert given key from a PEM format to a DER format and vice versa.
     encrypt
-        Encrypt the data for given recipients who can be defined by their Public Keys and by the passwords (Recipient-id).
+        Encrypt the data for recipients who can be defined by their Public Keys and by the passwords (Recipient-id).
     decrypt
-        Decrypt the data for a given recipient who can be defined by his Public Key or by the password.
+        Decrypt the data for a recipient who can be defined by his Public Key or by the password.
     sign
-        Sign the data with the Private Key.
+        Sign the data with the user's Private Key.
     verify
         Verify the data and the signature with the Public Key.
     secret-alias
@@ -98,11 +98,11 @@ COMMANDS:
     card-create
         Create a Virgil Card entity.
     card-get
-        Get the Virgil Card from the Virgil Keys Service by the Virgil Card id.
+        Get the Virgil Card from the Virgil Services by the Virgil Card ID.
     card-search
-        Search for the Virgil Card from the Virgil Keys Service by the identity.
+        Search for the Virgil Card from the Virgil Services by the identity.
     card-revoke
-        Revoke the Virgil Card by the Virgil Card id.
+        Revoke the Virgil Card by the Virgil Card ID.
     card-info
         Show Virgil Card information.
 
@@ -110,10 +110,10 @@ CONFIGURATION VALUES:
     This section contains complete list of the configuration values.
     Each command may use all of them or just some of them, or even do not use at all.
     See specific commands documentation to know which configuration values it uses.
-        * APP_ACCESS_TOKEN - is a unique string value that provides an authenticated secure access to the Virgil services.
-        * APP_KEY_ID - is a unique string value that identifies your application in our services.
-        * APP_KEY_DATA - is a Private Key that is used to perform creation and revocation of Virgil Cards (Public Key) in the Virgil services.
-        * APP_KEY_PASSWORD - password to the APP_KEY_DATA.
+        * APP_ACCESS_TOKEN - is a unique string value that provides an authenticated secure access to the Virgil Services.
+        * APP_KEY_ID - is a unique string value that identifies your application in Virgil Services.
+        * APP_KEY - is a user's Private Key that is used to perform creation and revocation of Virgil Cards (Public Key) in the Virgil Services.
+        * APP_KEY_PASSWORD - a password to the APP_KEY.
     Configuration value can be read from the next sources (top is most priority):
         * command line option -D
         * command line option -C
@@ -132,10 +132,10 @@ OPTIONS:
     -k <file>, --private-key=<file>  
         Private Key.
     -p <arg>, --private-key-password=<arg>  
-        The Private Key password (if exists).
+        The user's Private Key password (if exists).
     -s <scope>, --scope=<scope>  
         Determines a Virgil Card scope that can be either global or application [default: application].
-            * for global Virgil Card the scope must be global;
+            * for Global Virgil Card the scope must be global;
             * for application Virgil Card the scope must be application;
         If omitted, application is used.
     --data=<key-value>  
@@ -146,12 +146,12 @@ OPTIONS:
             * the first key must be device_name with any value;
             * the second key must be device with any value.
     --no-format  
-        Do not apply formating when print term:Virgil Card to the standard output.
+        Do not apply formating when print Virgil Card to the standard output.
     <identity>
         Identity that will be associated with created Virgil Card.
         Format: <type>:<value>
             * for confirmed Virgil Card identity type must be email and identity value must be a valid email;
-            * for segregated Virgil Card the identity type and value can be any value.
+            * for Segregated Virgil Card the identity type and value can be any value.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -176,24 +176,24 @@ CONFIGURATION VALUES:
     Use APP_ACCESS_TOKEN.
     When application is used as --scope, then next configuration values is used:
         * APP_KEY_ID
-        * APP_KEY_DATA
+        * APP_KEY
         * APP_KEY_PASSWORD
     See virgil(1) documentation for values description.
 )";
 
 static constexpr char VIRGIL_CARD_GET[] = R"(
-virgil-card-get - return the Virgil Card from the Virgil Keys Service by the Virgil Card id.
+virgil-card-get - return the Virgil Card from the Virgil Services by the Virgil Card ID.
 
 USAGE:
     virgil card-get [options...] [-i <arg>] [-o <file>]
 
 OPTIONS:
     -i <arg>, --in=<arg>  
-        Virgil Card id. If omitted, stdin is used.
+        Virgil Card ID. If omitted, stdin is used.
     -o <file>, --out=<file>  
         A file where Virgil Card will be saved. If omitted, stdout is used.
     --no-format  
-        Do not apply formating when print term:Virgil Card to the standard output.
+        Do not apply formating when print Virgil Card to the standard output.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -265,14 +265,14 @@ OPTIONS:
 )";
 
 static constexpr char VIRGIL_CARD_REVOKE[] = R"(
-virgil-card-revoke - revokes a Virgil Card directly or by the Virgil Card id
+virgil-card-revoke - revokes a Virgil Card directly or by the Virgil Card ID
 
 USAGE:
     virgil card-revoke [options...] [-i <file>] [-r <reason>]
 
 OPTIONS:
     -i <file>, --in=<file>  
-        The Virgil Card id or the Virgil Card itself for revocation. If omitted, stdin is used.
+        The Virgil Card ID or the Virgil Card itself for revocation. If omitted, stdin is used.
     -r <reason>, --revocation-reason=<reason>  
         The revocation reason must be unspecified or compromised [default: unspecified].
     -h, --help  
@@ -299,7 +299,7 @@ CONFIGURATION VALUES:
     Use next configuration values:
         * APP_ACCESS_TOKEN
         * APP_KEY_ID
-        * APP_KEY_DATA
+        * APP_KEY
         * APP_KEY_PASSWORD
     See virgil(1) documentation for values description.
 )";
@@ -315,17 +315,17 @@ OPTIONS:
         A folder where Virgil Cards will be saved. If omitted, stdout is used.
     -s <scope>, --scope=<scope>  
         Specifies the scope to perform search on [default: application].
-            * for global Virgil Card the scope must be global;
+            * for Global Virgil Card the scope must be global;
             * for application Virgil Card the scope must be application.
         If omitted, application is used.
     --no-format  
-        Do not apply formating when print term:Virgil Card to the standard output.
+        Do not apply formating when print Virgil Card to the standard output.
     <identity>
         Identity to be found.
         Multiple identitites can be used for the Virgil Cards search.
         Format: <type>:<value>
             * for confirmed Virgil Card identity type must be email and identity value must be a valid email;
-            * for segregated Virgil Card the identity type and value can be any value.
+            * for Segregated Virgil Card the identity type and value can be any value.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -359,15 +359,15 @@ USAGE:
 
 OPTIONS:
     -i <file>, --in=<file>  
-        Data to be decrypted. If omitted, stdin is used.
+        The file with data which necessary to decrypt. If omitted, stdin is used.
     -o <file>, --out=<file>  
-        Decrypted data. If omitted, stdout is used.
+        The file with the decrypted data. If omitted, stdout is used.
     -c <file>, --content-info=<file>  
-        Content info. Use this option if content info is not embedded in the encrypted data.
+        Content info. Use this option if content info was not embedded in the encrypted data.
     -p <arg>, --private-key-password=<arg>  
-        Private Key Password.
+        User's Private Key Password.
     <keypass>
-        Contains Private Key or password. Format: (privkey|password):<value>[:<alias>]
+        Contains user's Private Key or password. Format: (privkey|password):<value>[:<alias>]
             * if privkey then:
                   + <value> - recipient's Private Key,
                   + <alias> - Private Key alias;
@@ -403,16 +403,16 @@ USAGE:
 
 OPTIONS:
     -i <file>, --in=<file>  
-        Data to be encrypted. If omitted, stdin is used.
+        The file with data which necessary to encrypt. If omitted, stdin is used.
     -o <file>, --out=<file>  
-        Encrypted data. If omitted, stdout is used.
+        The file which contains the encrypted data. If omitted, stdout is used.
     -c <file>, --content-info=<file>  
         Content info <Content info> - meta information about the encrypted data. If omitted, becomes a part of the encrypted data.
     <recipient-id>
         Contains information about one recipient. Format: [password|email|vcard|pubkey]:<value>
             * if password, then <value> - a password for encrypting;
-            * if email, then <value> - the email of the recipient;
-            * if vcard, then <value> - the recipient's Virgil Card id or the Virgil Card itself (the file stored locally);
+            * if email, then <value> - an email of the recipient;
+            * if vcard, then <value> - the recipient's Virgil Card ID or the Virgil Card itself (the file stored locally);
             * if pubkey, then <value> - Public Key of the recipient. An alias may also be added. Example: pubkey:bob/public.key:ForBob
     -h, --help  
         Displays usage information and exits.
@@ -453,9 +453,9 @@ OPTIONS:
     -p <arg>, --private-key-password=<arg>  
         Private Key password.
     --public  
-        Specify that input key is Public Key.
+        Specify that input key is a Public Key.
     --private  
-        Specify that input key is Private Key.
+        Specify that input key is a Private Key.
     <key-format>
         Target key format. Can be one of the next values:
             * pem - PEM format (text);
@@ -489,11 +489,11 @@ USAGE:
 
 OPTIONS:
     -i <file>, --in=<file>  
-        Private key. If omitted, stdin is used.
+        The file that contains user's Private Key. If omitted, stdin is used.
     -o <file>, --out=<file>  
-        Public key. If omitted, stdout is used.
+        A file name where Public Key will be saved. If omitted, stdout is used.
     -p <arg>, --private-key-password=<arg>  
-        Private Key Password.
+        User's Private Key Password.
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -525,7 +525,7 @@ OPTIONS:
     -o <file>, --out=<file>  
         The generated Private Key. If omitted, stdout is used.
     -g <alg>, --algorithm=<alg>  
-        Generate an Elliptic Curve key or an RSA key with one of the following algorithms [default: ed25519]:
+        Generate Private Key with one of the following algorithms [default: ed25519]:
             * bp256r1 - 256-bits Brainpool curve;
             * bp384r1 - 384-bits Brainpool curve;
             * bp512r1 - 512-bits Brainpool curve;
@@ -542,9 +542,9 @@ OPTIONS:
             * rsa8192 - 8192-bits "RSA" key.
             * ed25519 - Ed25519;
     -p <arg>, --private-key-password=<arg>  
-        Password to be used for private key encryption.
+        Password to be used for Private Key encryption.
     --no-password  
-        Keep private key without any encryption (not recommended).
+        Keep Private Key without any encryption (not recommended).
     -h, --help  
         Displays usage information and exits.
     --version  
@@ -617,11 +617,11 @@ USAGE:
 
 OPTIONS:
     -i <file>, --in=<file>  
-        Data to be signed. If omitted, stdin is used.
+        The file with data which necessary to sign. If omitted, stdin is used.
     -o <file>, --out=<file>  
-        Digest sign. If omitted, stdout is used.
+        The signed data. If omitted, stdout is used.
     -k <file>, --private-key=<file>  
-        Signer's Private Key.
+        The file that contains signer's Private Key.
     -p <arg>, --private-key-password=<arg>  
         Private Key password.
     --hash-algorithm=<hash-alg>  
@@ -660,12 +660,12 @@ USAGE:
 
 OPTIONS:
     -i <file>, --in=<file>  
-        Data to be verified. If omitted, stdin is used.
+        The file with data which necessary to verify. If omitted, stdin is used.
     -S <file>, --sign=<file>  
         Digest sign.
     <recipient-id>
         Contains information about the sender. Format: [vcard | pubkey]:<value>
-            * if vcard, then <value> - the sender's Virgil Card id or the Virgil Card itself (the file stored locally);
+            * if vcard, then <value> - the sender's Virgil Card ID or the Virgil Card itself (the file stored locally);
             * if pubkey, then <value> - Public Key of the recipient.
     -h, --help  
         Displays usage information and exits.
@@ -840,12 +840,12 @@ static const char* VIRGIL_COMMAND_VALUES[] = {
 };
 
 static constexpr char VIRGIL_CONFIG_APP_ACCESS_TOKEN[] = "APP_ACCESS_TOKEN";
-static constexpr char VIRGIL_CONFIG_APP_KEY_DATA[] = "APP_KEY_DATA";
+static constexpr char VIRGIL_CONFIG_APP_KEY[] = "APP_KEY";
 static constexpr char VIRGIL_CONFIG_APP_KEY_ID[] = "APP_KEY_ID";
 static constexpr char VIRGIL_CONFIG_APP_KEY_PASSWORD[] = "APP_KEY_PASSWORD";
 static const char* VIRGIL_CONFIG_VALUES[] = {
     VIRGIL_CONFIG_APP_ACCESS_TOKEN,
-    VIRGIL_CONFIG_APP_KEY_DATA,
+    VIRGIL_CONFIG_APP_KEY,
     VIRGIL_CONFIG_APP_KEY_ID,
     VIRGIL_CONFIG_APP_KEY_PASSWORD,
     nullptr

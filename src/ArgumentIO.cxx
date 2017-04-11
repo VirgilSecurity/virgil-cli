@@ -354,7 +354,7 @@ SecureValue ArgumentIO::getAppAccessToken(ArgumentImportance argumentImportance)
 ApplicationCredentials ArgumentIO::getAppCredentials(ArgumentImportance argumentImportance) const {
     ULOG2(INFO) << "Read Virgil Application Credentials (identifier, private key, private key password).";
     auto argumentAppKeyId = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY_ID, argumentImportance);
-    auto argumentAppKeyData = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY_DATA, argumentImportance);
+    auto argumentAppKeyData = argumentSource_->readSecure(arg::value::VIRGIL_CONFIG_APP_KEY, argumentImportance);
     ArgumentValidationHub::isText()->validate(argumentAppKeyId, argumentImportance);
     ArgumentValidationHub::isText()->validate(argumentAppKeyData, argumentImportance);
     auto appId = argumentValueSource_->readPassword(argumentAppKeyId.asValue());

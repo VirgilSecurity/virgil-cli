@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "VIRGIL" "1" "Mar 27, 2017" "3.0.0" "virgil-cli"
+.TH "VIRGIL" "1" "Apr 11, 2017" "3.0.0" "virgil-cli"
 .SH NAME
 virgil \- command line tool for using Virgil Security stack functionality
 .
@@ -53,7 +53,7 @@ Specific command to execute, see sections below.
 .INDENT 0.0
 .TP
 .B <args>
-Options and arguments fot the target command.
+Options and arguments for the target command.
 .UNINDENT
 .SH COMMON OPTIONS
 .INDENT 0.0
@@ -122,7 +122,7 @@ This section contains brief description of the available commands that are avail
 .INDENT 0.0
 .TP
 \fBkeygen\fP
-Generate a Private Key with provided parameters.
+Generate a user\(aqs Private Key with provided parameters.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -137,17 +137,17 @@ Convert given key from a PEM format to a DER format and vice versa.
 .INDENT 0.0
 .TP
 \fBencrypt\fP
-Encrypt the data for given recipients who can be defined by their Public Keys and by the passwords (Recipient\-id).
+Encrypt the data for recipients who can be defined by their Public Keys and by the passwords (Recipient\-id).
 .UNINDENT
 .INDENT 0.0
 .TP
 \fBdecrypt\fP
-Decrypt the data for a given recipient who can be defined by his Public Key or by the password.
+Decrypt the data for a recipient who can be defined by his Public Key or by the password.
 .UNINDENT
 .INDENT 0.0
 .TP
 \fBsign\fP
-Sign the data with the Private Key.
+Sign the data with the user\(aqs Private Key.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -174,17 +174,17 @@ Create a Virgil Card entity.
 .INDENT 0.0
 .TP
 \fBcard\-get\fP
-Get the Virgil Card from the Virgil Keys Service by the Virgil Card id\&.
+Get the Virgil Card from the Virgil Services by the Virgil Card ID\&.
 .UNINDENT
 .INDENT 0.0
 .TP
 \fBcard\-search\fP
-Search for the Virgil Card from the Virgil Keys Service by the identity\&.
+Search for the Virgil Card from the Virgil Services by the identity\&.
 .UNINDENT
 .INDENT 0.0
 .TP
 \fBcard\-revoke\fP
-Revoke the Virgil Card by the Virgil Card id.
+Revoke the Virgil Card by the Virgil Card ID.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -200,13 +200,13 @@ Each command may use all of them or just some of them, or even do not use at all
 See specific commands documentation to know which configuration values it uses.
 .INDENT 0.0
 .IP \(bu 2
-\fBAPP_ACCESS_TOKEN\fP \- is a unique string value that provides an authenticated secure access to the Virgil services.
+\fBAPP_ACCESS_TOKEN\fP \- is a unique string value that provides an authenticated secure access to the Virgil Services.
 .IP \(bu 2
-\fBAPP_KEY_ID\fP \- is a unique string value that identifies your application in our services.
+\fBAPP_KEY_ID\fP \- is a unique string value that identifies your application in Virgil Services.
 .IP \(bu 2
-\fBAPP_KEY_DATA\fP \- is a Private Key that is used to perform creation and revocation of Virgil Cards (Public Key) in the Virgil services.
+\fBAPP_KEY\fP \- is a user\(aqs Private Key that is used to perform creation and revocation of Virgil Cards (Public Key) in the Virgil Services.
 .IP \(bu 2
-\fBAPP_KEY_PASSWORD\fP \- password to the \fBAPP_KEY_DATA\fP\&.
+\fBAPP_KEY_PASSWORD\fP \- a password to the \fBAPP_KEY\fP\&.
 .UNINDENT
 .sp
 Configuration value can be read from the next sources (top is most priority):

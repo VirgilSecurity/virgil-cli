@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "VIRGIL-SIGN" "1" "Mar 27, 2017" "3.0.0" "virgil-cli"
+.TH "VIRGIL-SIGN" "1" "Apr 11, 2017" "3.0.0" "virgil-cli"
 .SH NAME
 virgil-sign \- signs data with a provided user's Private Key
 .
@@ -51,17 +51,17 @@ virgil sign [options...] [\-i <file>] [\-o <file>] \-k <file> [\-p <arg>] [\-\-h
 .INDENT 0.0
 .TP
 .B \-i <file>, \-\-in=<file>
-Data to be signed. If omitted, stdin is used.
+The file with data which necessary to sign. If omitted, stdin is used.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-o <file>, \-\-out=<file>
-Digest sign. If omitted, stdout is used.
+The signed data. If omitted, stdout is used.
 .UNINDENT
 .INDENT 0.0
 .TP
 .B \-k <file>, \-\-private\-key=<file>
-Signer\(aqs Private Key.
+The file that contains signer\(aqs Private Key.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -91,7 +91,7 @@ The underlying hash algorithm [default: sha384]:
 .UNINDENT
 .SH EXAMPLES
 .sp
-Alice signs \fIplain.txt\fP with her Private Key. The Private Key is protected with the password "STRONGPASS".
+Alice signs \fIplain.txt\fP with her Private Key, that is protected with the password "STRONGPASS".
 .INDENT 0.0
 .INDENT 3.5
 .sp
