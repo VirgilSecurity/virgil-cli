@@ -71,8 +71,8 @@ ArgumentParseOptions CardInfoCommand::doGetArgumentParseOptions() const {
     return ArgumentParseOptions().disableOptionsFirst();
 }
 
-static std::unique_ptr<CardFormatter> define_formatter(size_t infoOptionsCount) {
-    if (infoOptionsCount == 1) {
+static std::unique_ptr<CardFormatter> define_formatter(size_t infoOptionsCount, bool isAll) {
+    if (infoOptionsCount == 1 && !isAll) {
         // Only one Virgil Card property will be shown, so print it as is.
         return std::make_unique<CardRawFormatter>();
     } else {
@@ -120,7 +120,7 @@ void CardInfoCommand::doProcess() const {
     auto output = getArgumentIO()->getOutputSink(ArgumentImportance::Optional);
 
     ULOG1(INFO) << "Define Virgil Card formatter.";
-    auto formatter = define_formatter(cardOutputFormat.size());
+    auto formatter = define_formatter(cardOutputFormat.size(), isAll);
 
     ULOG1(INFO) << "Configure Virgil Card formatter";
     if (isAll) {
