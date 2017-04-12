@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016 Virgil Security Inc.
+# Copyright (C) 2015-2017 Virgil Security Inc.
 #
 # Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #
@@ -52,8 +52,8 @@ file (WRITE "@VIRGIL_DEPENDS_ARGS_FILE@"
 
 ExternalProject_Add (${PROJECT_NAME}
     DOWNLOAD_DIR "@VIRGIL_DEPENDS_PACKAGE_DOWNLOAD_DIR@"
-    URL "https://github.com/VirgilSecurity/virgil-sdk-cpp/archive/v3.2.3.tar.gz"
-    URL_HASH SHA1=82eb545c235b06392a5c5414d034de5940a612cd
+    URL "https://github.com/VirgilSecurity/virgil-sdk-cpp/archive/b12fc03f65d115b2beca2fdbd86a3c242f1b40ab.tar.gz"
+    URL_HASH SHA1=b866343cf68ea297a3a3899c41157d1b232b9fd4
     PREFIX "@VIRGIL_DEPENDS_PACKAGE_BUILD_DIR@"
     CMAKE_ARGS "@VIRGIL_DEPENDS_CMAKE_ARGS@"
 )

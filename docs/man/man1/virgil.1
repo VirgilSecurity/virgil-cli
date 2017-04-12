@@ -1,0 +1,229 @@
+.\" Man page generated from reStructuredText.
+.
+.TH "VIRGIL" "1" "Apr 11, 2017" "3.0.0" "virgil-cli"
+.SH NAME
+virgil \- command line tool for using Virgil Security stack functionality
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.SH SYNOPSIS
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+virgil <command> [options] [<args>...]
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH DESCRIPTION
+.sp
+\fBvirgil\fP is a command line tool for using Virgil Security stack functionality.
+.SH OPTIONS
+.INDENT 0.0
+.TP
+.B <command>
+Specific command to execute, see sections below.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B <args>
+Options and arguments for the target command.
+.UNINDENT
+.SH COMMON OPTIONS
+.INDENT 0.0
+.TP
+.B \-h, \-\-help
+Displays usage information and exits.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-version
+Displays version information and exits.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-v, \-\-verbose
+Activates maximum verbosity
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-v=<verbose\-level>
+Activates verbosity with given level (valid range: 1\-9)
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-q, \-\-quiet
+Quiet mode: suppress normal output.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-I, \-\-interactive
+Enables interactive mode.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-D <config>
+Rewrite value from the configuration file, i.e.
+.INDENT 7.0
+.INDENT 3.5
+\-D APP_ACCESS_TOKEN=AT.KJHjdskhFDJkshfd=
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-C <config\-file>
+Additional configuration file. If multiple files are given, then applied next rules:
+.INDENT 7.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+duplicate value from the rightmost file overwrites previous.
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-\-
+Ignores the rest of the labeled arguments following this flag.
+.UNINDENT
+.SH COMMANDS
+.sp
+This section contains brief description of the available commands that are available via Virgil CLI.
+.sp
+\fBCRYPTO COMMANDS\fP
+.INDENT 0.0
+.TP
+\fBkeygen\fP
+Generate a user\(aqs Private Key with provided parameters.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBkey2pub\fP
+Extract a Public Key from the Private Key.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBkey\-format\fP
+Convert given key from a PEM format to a DER format and vice versa.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBencrypt\fP
+Encrypt the data for recipients who can be defined by their Public Keys and by the passwords (Recipient\-id).
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBdecrypt\fP
+Decrypt the data for a recipient who can be defined by his Public Key or by the password.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBsign\fP
+Sign the data with the user\(aqs Private Key.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBverify\fP
+Verify the data and the signature with the Public Key.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBsecret\-alias\fP
+Derive a public value from the user\(aqs secret value.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBconfig\fP
+Get the information about Virgil CLI configuration file.
+.UNINDENT
+.sp
+\fBVIRGIL CARD SERVICE COMMANDS\fP
+.INDENT 0.0
+.TP
+\fBcard\-create\fP
+Create a Virgil Card entity.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBcard\-get\fP
+Get the Virgil Card from the Virgil Services by the Virgil Card ID\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBcard\-search\fP
+Search for the Virgil Card from the Virgil Services by the identity\&.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBcard\-revoke\fP
+Revoke the Virgil Card by the Virgil Card ID.
+.UNINDENT
+.INDENT 0.0
+.TP
+\fBcard\-info\fP
+Show Virgil Card information.
+.UNINDENT
+.SH CONFIGURATION VALUES
+.sp
+This section contains complete list of the configuration values.
+.sp
+Each command may use all of them or just some of them, or even do not use at all.
+.sp
+See specific commands documentation to know which configuration values it uses.
+.INDENT 0.0
+.IP \(bu 2
+\fBAPP_ACCESS_TOKEN\fP \- is a unique string value that provides an authenticated secure access to the Virgil Services.
+.IP \(bu 2
+\fBAPP_KEY_ID\fP \- is a unique string value that identifies your application in Virgil Services.
+.IP \(bu 2
+\fBAPP_KEY\fP \- is a user\(aqs Private Key that is used to perform creation and revocation of Virgil Cards (Public Key) in the Virgil Services.
+.IP \(bu 2
+\fBAPP_KEY_PASSWORD\fP \- a password to the \fBAPP_KEY\fP\&.
+.UNINDENT
+.sp
+Configuration value can be read from the next sources (top is most priority):
+.INDENT 0.0
+.IP \(bu 2
+command line option \fI\%\-D\fP
+.IP \(bu 2
+command line option \fI\%\-C\fP
+.IP \(bu 2
+default configuration file \fI$HOME/.virgil/conf/default\-config.yaml\fP
+.UNINDENT
+.SH SEE ALSO
+.sp
+\fBvirgil\-keygen(1)\fP
+.SH AUTHOR
+Virgil Security, Inc
+.SH COPYRIGHT
+2016, Virgil Security, Inc
+.\" Generated by docutils manpage writer.
+.

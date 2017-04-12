@@ -1,0 +1,122 @@
+/**
+ * Copyright (C) 2015-2017 Virgil Security Inc.
+ *
+ * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+
+#include <cli/api/Configurations.h>
+
+#include <cli/io/Path.h>
+#include <cli/io/Logger.h>
+
+#include <yaml-cpp/yaml.h>
+
+#include <fstream>
+#include <stdexcept>
+
+using cli::Configurations;
+using cli::io::Path;
+
+static constexpr const char kConfigurationFile_Name[] = "default-config.yaml";
+static constexpr const char kConfigurationFile_Content[] = R"(@CLI_DEFAULT_CONFIG_CONTENT@)";
+
+static constexpr const char kLogFile_Name[] = "default.log";
+
+void Configurations::init() {
+    initConfigFile();
+}
+
+void Configurations::initConfigFile() {
+    auto configDirPath = Path::cfgPath();
+    auto configFilePath = Path::joinPath(configDirPath, kConfigurationFile_Name);
+    if (Path::existsFile(configFilePath)) {
+        return;
+    }
+
+    if (!Path::createFile(configDirPath)) {
+        throw std::runtime_error(
+                tfm::format("Can not create path '%s'. Possible administrative privileges required.", configDirPath));
+    }
+
+    std::ofstream configFile(configFilePath);
+    if (!configFile.is_open()) {
+        throw std::runtime_error(
+                tfm::format("Can not open file '%s'. Possible administrative privileges required.", configFilePath));
+    }
+    configFile << kConfigurationFile_Content;
+    if (!configFile.good()) {
+        throw std::runtime_error(tfm::format("Can not write file '%s'.", configFilePath));
+    }
+}
+
+std::string Configurations::getDefaultConfigFilePath() {
+    return Path::joinPath(Path::cfgPath(), kConfigurationFile_Name);
+}
+
+void Configurations::apply(int argc, const char* argv[]) {
+    applyConfigFile(argc, argv);
+}
+
+void Configurations::applyConfigFile(int argc, const char* argv[]) {
+    // Add common flags
+    el::Loggers::addFlag(el::LoggingFlag::AutoSpacing);
+    el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
+    el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
+    START_EASYLOGGINGPP(argc, argv);
+    // User logger
+    el::Configurations userLoggerConfig;
+    userLoggerConfig.setToDefault();
+    userLoggerConfig.setGlobally(el::ConfigurationType::Enabled, "true");
+    userLoggerConfig.setGlobally(el::ConfigurationType::Format, "[** %level **] %msg");
+    userLoggerConfig.setGlobally(el::ConfigurationType::ToFile, "false");
+    userLoggerConfig.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
+    el::Loggers::getLogger(kLoggerId_User)->configure(userLoggerConfig);
+    el::Helpers::installLogDispatchCallback<cli::io::UserLogDispatchCallback>(kLoggerCallbackId_User);
+    // Default loggers
+    auto configFilePath = getDefaultConfigFilePath();
+    if (Path::existsFile(configFilePath)) {
+        YAML::Node config = YAML::LoadFile(configFilePath);
+        auto loggerConfigContent = config["logger"];
+        el::Configurations commonLoggerConfig;
+        if (!commonLoggerConfig.parseFromText(loggerConfigContent.as<std::string>())) {
+            throw std::runtime_error(tfm::format("Invalid logger configuration was read from '%s'.", configFilePath));
+        }
+        commonLoggerConfig.setGlobally(el::ConfigurationType::Filename, Path::joinPath(Path::logPath(), kLogFile_Name));
+        el::Loggers::reconfigureAllLoggers(commonLoggerConfig);
+        el::Loggers::getLogger(kLoggerId_User)->configure(userLoggerConfig);
+    } else {
+        ULOG(ERROR) << "Failed to read log default configuration file, so use defaults.";
+    }
+}
+

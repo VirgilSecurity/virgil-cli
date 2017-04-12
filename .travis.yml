@@ -18,15 +18,6 @@ env:
 
 matrix:
   include:
-    # 1 Linux GCC Builds
-    - os: linux
-      compiler: g++
-      env: COMPILER='g++-4.8'
-      addons:
-        apt:
-         sources: ['ubuntu-toolchain-r-test']
-         packages: ['g++-4.8', 'libcurl4-openssl-dev']
-
     - os: linux
       compiler: g++
       env: COMPILER='g++-4.9'
