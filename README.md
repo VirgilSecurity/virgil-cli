@@ -1,6 +1,8 @@
+[![Production](https://travis-ci.org/VirgilSecurity/virgil-cli.svg?branch=master)](https://travis-ci.org/VirgilSecurity/virgil-cli)
+
 # Virgil CLI
 
-[Installation](#installation) | [Commands](#commands) | [Using Example](#using-example) | [Support](#support)
+[Installation](#installation) | [Uninstallation](#uninstallation) | [Commands](#commands) | [Using Example](#using-example) | [Support](#support)
 
 [Virgil Security](https://virgilsecurity.com) is a stack of security libraries and all the necessary infrastructure to enable seamless, end-to-end encryption for any application, platform or device. The Command-line interface (CLI) program is a command line tool for utilizing [Virgil Services](https://developer.virgilsecurity.com/docs/java/references). In a few simple steps you can encrypt and decrypt, sign and verify.
 
@@ -17,6 +19,14 @@ In order to use the CLI:
       - MAC OS [install guide](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/settings/install/macos);
       - Linux OS [install guide](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/settings/install/linux).
 
+## Uninstallation
+
+If you need to uninstall the CLI, use this command:
+
+```bash
+./utils/unistall.sh [--prefix=] [--keep-config]
+```
+[You can find example and option explanation ](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/settings/uninstallation) in our documentation.
 
 
 ## Commands
