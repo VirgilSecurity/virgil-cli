@@ -542,9 +542,7 @@ PublicKey ArgumentIO::readSenderKey(const ArgumentValue& argumentValue) const {
     if (argumentValue.key() == arg::value::VIRGIL_VERIFY_RECIPIENT_ID_PUBKEY) {
         return argumentValueSource_->readPublicKey(argumentValue);
     } else if (argumentValue.key() == arg::value::VIRGIL_VERIFY_RECIPIENT_ID_VCARD) {
-        auto cards = argumentValueSource_->readCards(argumentValue);
-        CHECK(cards.size() == 1);
-        auto card = cards.front();
+        auto card = argumentValueSource_->readCard(argumentValue);
         return PublicKey(card.publicKeyData(), card.identifier());
     }
     throw error::ArgumentLogicError(
