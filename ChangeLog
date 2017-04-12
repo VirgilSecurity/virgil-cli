@@ -1,5 +1,14 @@
 virgil CLI ChangeLog (Sorted per date)
 
+= Version v3.0.0 released 2017-04-12
+
+## Changes:
+
+  * Total API redesign
+  * Documentation redesign
+  * Support Virgil Cards on the high level
+
+
 = Version v2.0.0-beta2 released 2016-07-14
 
 ## Improvement
