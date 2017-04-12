@@ -41,6 +41,7 @@
 #include <cli/io/Logger.h>
 #include <cli/io/Path.h>
 #include <cli/error/ArgumentError.h>
+#include <cli/formatter/BorderFormatter.h>
 #include <cli/formatter/CardKeyValueFormatter.h>
 
 #include <cli/memory.h>
@@ -62,6 +63,7 @@ using cli::model::CardScope;
 using cli::model::card_scope_from;
 using cli::model::FileDataSink;
 using cli::io::Path;
+using cli::formatter::BorderFormatter;
 using cli::formatter::CardKeyValueFormatter;
 
 using virgil::sdk::client::Client;
@@ -89,7 +91,7 @@ static void purgeCardsToStandardOut(const std::vector<Card>& cards, bool noForma
         if (noFormat) {
             std::cout << card.exportAsString() << std::endl;
         } else {
-            std::cout << CardKeyValueFormatter().showBaseProperties().format(card);
+            std::cout << BorderFormatter().format(CardKeyValueFormatter().showBaseProperties().format(card));
         }
     }
 }

@@ -40,6 +40,7 @@
 #include <cli/crypto/Crypto.h>
 #include <cli/io/Logger.h>
 #include <cli/error/ArgumentError.h>
+#include <cli/formatter/BorderFormatter.h>
 #include <cli/formatter/CardKeyValueFormatter.h>
 
 #include <cli/memory.h>
@@ -58,6 +59,7 @@ using cli::argument::ArgumentImportance;
 using cli::argument::ArgumentParseOptions;
 using cli::error::ArgumentRuntimeError;
 using cli::error::ArgumentLogicError;
+using cli::formatter::BorderFormatter;
 using cli::formatter::CardKeyValueFormatter;
 
 using virgil::sdk::client::Client;
@@ -134,6 +136,6 @@ void CardCreateCommand::doProcess() const {
     if (noFormat || output.isFileOutput()) {
         output.write(card.exportAsString());
     } else {
-        output.write(CardKeyValueFormatter().showBaseProperties().format(card));
+        output.write(BorderFormatter().format(CardKeyValueFormatter().showBaseProperties().format(card)));
     }
 }
