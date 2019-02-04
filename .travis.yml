@@ -1,47 +1,17 @@
-language: cpp
-sudo: false
+language: go
 
-branches:
-  only:
-    - master
-    - develop
-    - release
-
-cache:
-  directories:
-    - $HOME/cmake
-
-env:
-  global:
-    - BUILD_DIR_NAME=build
-    - BUILD_TYPE='Release'
-
-matrix:
-  include:
-    - os: linux
-      compiler: g++
-      env: COMPILER='g++-4.9'
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-4.9', 'libcurl4-openssl-dev']
-
-    - os: linux
-      compiler: g++
-      env: COMPILER='g++-5'
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5', 'libcurl4-openssl-dev']
+go: stable
 
 before_install:
-  - bash ./ci/install-deps.sh
-
-install:
-  - export CXX=${COMPILER}
-
-before_script:
-  - bash ./ci/configure.sh
+    - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+    - dep ensure
 
 script:
-  - bash ./ci/run.sh
+  go test ./...
+
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: curl -sL https://git.io/goreleaser | bash
+  on:
+    tags: true

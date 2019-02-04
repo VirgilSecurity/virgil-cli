@@ -1,14 +1,16 @@
-#####
-build*/
-docs/html/
-docs/latex/
-.depends_cache/
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
 .idea/
-
-#####
-# OS X temporary files that should never be committed
-
-.DS_Store
-*.swp
-*.lock
-profile
+*.exe
+*.yaml
+vendor/
