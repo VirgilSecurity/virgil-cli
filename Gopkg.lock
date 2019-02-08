@@ -10,31 +10,31 @@
   version = "v0.3.1"
 
 [[projects]]
-  branch = "master"
-  digest = "1:318f1c959a8a740366fce4b1e1eb2fd914036b4af58fbd0a003349b305f118ad"
-  name = "github.com/golang/protobuf"
-  packages = ["proto"]
+  digest = "1:9be17245803efdd46d01f9540f9343e36670858b30d75389e32a4ef308aed3cf"
+  name = "github.com/VirgilSecurity/virgil-passw0rd-go"
+  packages = ["."]
   pruneopts = "UT"
-  revision = "347cf4a86c1cb8d262994d8ef5924d4576c5b331"
+  revision = "e050b8e844ab4d75a7927aa89afc3f80ed369557"
+  version = "v1.0.2"
 
 [[projects]]
-  digest = "1:ca718d6ba73ade50dd0e544cfebfb08f8b4cb9d9dbbb7eee79c15e58107eeef8"
-  name = "github.com/passw0rd/phe-go"
+  digest = "1:17d8cee2b007709e3684c841cbcb5f9709484365b48a8a3179dc628b40e0d1c0"
+  name = "github.com/VirgilSecurity/virgil-phe-go"
   packages = [
     ".",
     "swu",
   ]
   pruneopts = "UT"
-  revision = "59767c923ae32d1e8f26e74e33fcd9ce413755b5"
-  version = "v1.0.2"
+  revision = "053fac9e94bce812a3cc167d3fd6b35554b0eda3"
+  version = "v1.0.3"
 
 [[projects]]
-  digest = "1:8722eb58f4817e51492ed925779c9d68874e6c846fe0d141dfec2599aa2c91b7"
-  name = "github.com/passw0rd/sdk-go"
-  packages = ["."]
+  branch = "master"
+  digest = "1:318f1c959a8a740366fce4b1e1eb2fd914036b4af58fbd0a003349b305f118ad"
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
   pruneopts = "UT"
-  revision = "ee86370516d103a809aa5674c50f1f0bff5c7f0c"
-  version = "v1.0.1"
+  revision = "c823c79ea1570fb5ff454033735a8e68575d1d0f"
 
 [[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
@@ -75,8 +75,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/passw0rd/phe-go",
-    "github.com/passw0rd/sdk-go",
+    "github.com/VirgilSecurity/virgil-passw0rd-go",
+    "github.com/VirgilSecurity/virgil-phe-go",
     "github.com/pkg/errors",
     "gopkg.in/urfave/cli.v2",
     "gopkg.in/urfave/cli.v2/altsrc",

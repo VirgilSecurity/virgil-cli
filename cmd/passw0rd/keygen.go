@@ -40,7 +40,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/passw0rd/phe-go"
+	"github.com/VirgilSecurity/virgil-phe-go"
 	"gopkg.in/urfave/cli.v2"
 )
 
