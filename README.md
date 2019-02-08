@@ -2,7 +2,7 @@
 
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://github.com/VirgilSecurity/virgil/blob/master/LICENSE)
 
-##Passw0rd
+## Passw0rd
 
 ### Update keys
 This command is used to update the `app_secret_key` and `service_public_key` of a specific application
