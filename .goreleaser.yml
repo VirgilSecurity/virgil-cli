@@ -14,7 +14,7 @@ builds:
       goarch: 386
     - goos: windows
       goarch: 386
-  binary: cli
+  binary: virgil
 archive:
   replacements:
     darwin: macOS
