@@ -1,4 +1,4 @@
-project_name: cli
+project_name: virgil
 builds:
 - env:
   - CGO_ENABLED=0
