@@ -34,28 +34,28 @@ The Virgil CLI is provided as a binary file, and it is available for Mac OS, Fre
 #### FreeBSD / Linux / Mac OS
 Run the CLI with the following command:
 ```bash
-./cli
+./virgil
 ```
-> or use `sudo ./cli` when you need to run the command as an administrator
+> or use `sudo ./virgil` when you need to run the command as an administrator
 
 #### Windows OS
 Run the CLI with the following command:
 ```bash
-cli.exe
-# or just `cli`
+virgil.exe
+# or just `virgil`
 ```
 
 ### Update keys
 This command is used to update the `app_secret_key` and `service_public_key` of a specific application
 
 ```bash
-./cli pwd update-keys <service_public_key> <app_secret_key> <update_token>
+./virgil passw0rd update-keys <service_public_key> <app_secret_key> <update_token>
 ```
 
 ### Generate a secret key
 This command is used to generate a new `app_secret_key`:
 ```bash
-./cli pwd keygen
+./cli passw0rd keygen
 ```
 
 
