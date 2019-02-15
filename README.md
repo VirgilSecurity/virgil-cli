@@ -49,13 +49,21 @@ virgil.exe
 This command is used to update the `app_secret_key` and `service_public_key` of a specific application
 
 ```bash
+# FreeBSD / Linux / Mac OS
 ./virgil passw0rd update-keys <service_public_key> <app_secret_key> <update_token>
+
+# Windows OS
+virgil passw0rd update-keys <service_public_key> <app_secret_key> <update_token>
 ```
 
 ### Generate a secret key
 This command is used to generate a new `app_secret_key`:
 ```bash
+# FreeBSD / Linux / Mac OS
 ./virgil passw0rd keygen
+
+# Windows OS
+virgil passw0rd keygen
 ```
 
 
