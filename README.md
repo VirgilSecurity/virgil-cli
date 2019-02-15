@@ -55,7 +55,7 @@ This command is used to update the `app_secret_key` and `service_public_key` of 
 ### Generate a secret key
 This command is used to generate a new `app_secret_key`:
 ```bash
-./cli passw0rd keygen
+./virgil passw0rd keygen
 ```
 
 
