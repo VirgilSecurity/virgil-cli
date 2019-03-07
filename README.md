@@ -20,8 +20,8 @@
 
 ## Features
 Using the Virgil CLI you can:
-  * get your Virgil Passw0rd application credentials, such as: Application Token, Application Secret Key
-  * update your Virgil Passw0rd application credentials
+  * get your Virgil PURE application credentials, such as: Application Token, Application Secret Key
+  * update your Virgil PURE application credentials
 
 To get more information, run the Virgil CLI or its command with the `--help` or `-h` option that displays full help list and available commands.
 
