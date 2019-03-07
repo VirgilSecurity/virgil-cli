@@ -34,63 +34,22 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package passw0rd
+package cmd
 
 import (
-	"encoding/base64"
-	"fmt"
-
-	"github.com/VirgilSecurity/virgil-passw0rd-go"
-	"github.com/VirgilSecurity/virgil-phe-go"
-	"github.com/pkg/errors"
+	"github.com/VirgilSecurity/virgil-cli/cmd/pure"
 	"gopkg.in/urfave/cli.v2"
 )
 
-func UpdateKeys() *cli.Command {
+//PureKit manages virgil PHE service implementation
+func PureKit() *cli.Command {
 	return &cli.Command{
-		Name:      "update-keys",
-		Aliases:   []string{"u"},
-		ArgsUsage: "public_key service_secret_key update_token",
-		Usage:     "update secret key and public key using update token",
-		Action: func(context *cli.Context) error {
-			return updateFunc(context)
+		Name:    "purekit",
+		Aliases: []string{"pure", "pwd"},
+		Usage:   "Manage your PureKit application keys",
+		Subcommands: []*cli.Command{
+			pure.Keygen(),
+			pure.UpdateKeys(),
 		},
 	}
-}
-func updateFunc(context *cli.Context) error {
-
-	if context.NArg() < 3 {
-		return errors.New("invalid number of arguments")
-	}
-
-	pkStr := context.Args().First()
-	skStr := context.Args().Get(1)
-	tokenStr := context.Args().Get(2)
-
-	pkVersion, pk, err := passw0rd.ParseVersionAndContent("PK", pkStr)
-	if err != nil {
-		return err
-	}
-	skVersion, sk, err := passw0rd.ParseVersionAndContent("SK", skStr)
-	if err != nil {
-		return err
-	}
-	tokenVersion, updateToken, err := passw0rd.ParseVersionAndContent("UT", tokenStr)
-
-	if err != nil {
-		return err
-	}
-
-	if (pkVersion+1) != tokenVersion || (skVersion+1) != tokenVersion {
-		return errors.New("Key version must be 1 less than token version")
-	}
-
-	newSk, newPk, err := phe.RotateClientKeys(pk, sk, updateToken)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("New server public key:\nPK.%d.%s\nNew client private key:\nSK.%d.%s\n", tokenVersion, base64.StdEncoding.EncodeToString(newPk), tokenVersion, base64.StdEncoding.EncodeToString(newSk))
-
-	return nil
 }

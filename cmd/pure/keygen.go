@@ -34,22 +34,26 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package cmd
+package pure
 
 import (
-	"github.com/VirgilSecurity/virgil-cli/cmd/passw0rd"
+	"encoding/base64"
+	"fmt"
+
+	"github.com/VirgilSecurity/virgil-phe-go"
 	"gopkg.in/urfave/cli.v2"
 )
 
-//Passw0rd manages virgil PHE service implementation
-func Passw0rd() *cli.Command {
+//Keygen generates PureKit private key
+func Keygen() *cli.Command {
 	return &cli.Command{
-		Name:    "passw0rd",
-		Aliases: []string{"pwd"},
-		Usage:   "Manage your passw0rd applications",
-		Subcommands: []*cli.Command{
-			passw0rd.Keygen(),
-			passw0rd.UpdateKeys(),
+		Name:    "keygen",
+		Aliases: []string{"kg"},
+		Usage:   "Generate a new Passw0rd app secret key",
+		Action: func(context *cli.Context) error {
+			key := phe.GenerateClientKey()
+			fmt.Println("SK.1." + base64.StdEncoding.EncodeToString(key))
+			return nil
 		},
 	}
 }

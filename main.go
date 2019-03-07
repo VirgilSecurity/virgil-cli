@@ -73,7 +73,7 @@ func main() {
 		Usage:   "VirgilSecurity command line interface",
 		Flags:   flags,
 		Commands: []*cli.Command{
-			cmd.Passw0rd(),
+			cmd.PureKit(),
 		},
 		Before: func(c *cli.Context) error {
 

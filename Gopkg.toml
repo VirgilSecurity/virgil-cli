@@ -26,12 +26,12 @@
 
 
 [[constraint]]
-  name = "github.com/VirgilSecurity/virgil-passw0rd-go"
-  version = "1.0.2"
-
-[[constraint]]
   name = "github.com/VirgilSecurity/virgil-phe-go"
   version = "1.0.3"
+
+[[constraint]]
+  name = "github.com/VirgilSecurity/virgil-purekit-go"
+  version = "2.0.0"
 
 [[constraint]]
   name = "github.com/pkg/errors"

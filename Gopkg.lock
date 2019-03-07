@@ -10,14 +10,6 @@
   version = "v0.3.1"
 
 [[projects]]
-  digest = "1:9be17245803efdd46d01f9540f9343e36670858b30d75389e32a4ef308aed3cf"
-  name = "github.com/VirgilSecurity/virgil-passw0rd-go"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "e050b8e844ab4d75a7927aa89afc3f80ed369557"
-  version = "v1.0.2"
-
-[[projects]]
   digest = "1:17d8cee2b007709e3684c841cbcb5f9709484365b48a8a3179dc628b40e0d1c0"
   name = "github.com/VirgilSecurity/virgil-phe-go"
   packages = [
@@ -29,12 +21,20 @@
   version = "v1.0.3"
 
 [[projects]]
+  digest = "1:b128c793c89c0ace15ed2ae4ee82e7039d49852774b6703565d538f513375ffd"
+  name = "github.com/VirgilSecurity/virgil-purekit-go"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "4c32433ebc6363519072d5912a7d544db6d9c760"
+  version = "v2.0.0"
+
+[[projects]]
   branch = "master"
   digest = "1:318f1c959a8a740366fce4b1e1eb2fd914036b4af58fbd0a003349b305f118ad"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
   pruneopts = "UT"
-  revision = "c823c79ea1570fb5ff454033735a8e68575d1d0f"
+  revision = "b5d812f8a3706043e23a9cd5babf2e5423744d30"
 
 [[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
@@ -50,7 +50,7 @@
   name = "golang.org/x/crypto"
   packages = ["hkdf"]
   pruneopts = "UT"
-  revision = "b8fe1690c61389d7d2a8074a507d1d40c5d30448"
+  revision = "8dd112bcdc25174059e45e07517d9fc663123347"
 
 [[projects]]
   branch = "v2"
@@ -75,8 +75,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/VirgilSecurity/virgil-passw0rd-go",
     "github.com/VirgilSecurity/virgil-phe-go",
+    "github.com/VirgilSecurity/virgil-purekit-go",
     "github.com/pkg/errors",
     "gopkg.in/urfave/cli.v2",
     "gopkg.in/urfave/cli.v2/altsrc",
