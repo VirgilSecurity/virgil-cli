@@ -50,20 +50,20 @@ This command is used to update the `app_secret_key` and `service_public_key` of 
 
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil passw0rd update-keys <service_public_key> <app_secret_key> <update_token>
+./virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
 
 # Windows OS
-virgil passw0rd update-keys <service_public_key> <app_secret_key> <update_token>
+virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
 ```
 
 ### Generate a secret key
 This command is used to generate a new `app_secret_key`:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil passw0rd keygen
+./virgil pure keygen
 
 # Windows OS
-virgil passw0rd keygen
+virgil pure keygen
 ```
 
 
@@ -73,4 +73,6 @@ See [LICENSE](https://github.com/VirgilSecurity/virgil-cli/tree/master/LICENSE) 
 ## Support
 Our developer support team is here to help you. Find out more information on our [Help Center](https://help.virgilsecurity.com/).
 
-Also, get extra help from our support team: support@VirgilSecurity.com.
+You can find us on [Twitter](https://twitter.com/VirgilSecurity) or send us email support@VirgilSecurity.com.
+
+Also, get extra help from our support team on [Slack](https://virgilsecurity.com/join-community).
