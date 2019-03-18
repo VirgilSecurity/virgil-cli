@@ -34,82 +34,74 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
+package cmd
 
 import (
+	"bufio"
+	"crypto/subtle"
 	"fmt"
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
-	"os"
-
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
-
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/howeyc/gopass"
+	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
+	"net/http"
+	"os"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
-
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
-	}
-
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-		},
-		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
-			}
-
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
-				return nil
-			}
-
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
+func Register(client *client.VirgilHttpClient) *cli.Command {
+	return &cli.Command{
+		Name:      "register",
+		Aliases:   []string{"register"},
+		ArgsUsage: "email",
+		Usage:     "Registers a new account",
+		Action: func(context *cli.Context) error {
+			return registerFunc(context, client)
 		},
 	}
+}
 
-	err := app.Run(os.Args)
+func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
+
+
+	if context.NArg() < 1 {
+		return errors.New("Invalid number of arguments. Please, specify email ")
+	}
+
+	email := context.Args().First()
+
+	pwd, err := gopass.GetPasswdPrompt("Enter account password:\r\n", false, os.Stdin, os.Stdout)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	pwdAgain, err := gopass.GetPasswdPrompt("Again:\r\n", false, os.Stdin, os.Stdout)
+	if err != nil {
+		return err
+	}
+
+	if subtle.ConstantTimeCompare(pwd, pwdAgain) != 1 {
+		err = errors.New("passwords do not match")
+		return err
+	}
+
+	fmt.Println("Enter account name:")
+	scanner := bufio.NewScanner(os.Stdin)
+
+	scanner.Scan()
+	name := scanner.Text()
+
+	req := &models.CreateAccountRequest{Email: email, Password: string(pwd), Name: name}
+
+	_, _, err = vcli.Send(http.MethodPost, "", "auth/register", req, nil)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Account registered.")
+
+	utils.DeleteAccessToken()
+	utils.DeleteAppID()
+	return nil
 }

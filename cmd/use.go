@@ -34,82 +34,81 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
+package cmd
 
 import (
 	"fmt"
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
-	"os"
-
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
-
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
+	"net/http"
+	"strings"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
-
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
-	}
-
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-		},
-		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
-			}
-
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
-				return nil
-			}
-
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
+func UseApp(client *client.VirgilHttpClient) *cli.Command {
+	return &cli.Command{
+		Name:      "use app",
+		Aliases:   []string{"use"},
+		ArgsUsage: "name",
+		Usage:     "Changes context to app with specified name",
+		Action: func(context *cli.Context) error {
+			return useFunc(context, client)
 		},
 	}
+}
 
-	err := app.Run(os.Args)
+func useFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
+
+	if context.NArg() < 1 {
+		return errors.New("Invalid number of arguments. Please, specify application name")
+	}
+
+	appName := strings.Join(context.Args().Slice(), " ")
+
+	token, err := utils.LoadAccessTokenOrLogin(vcli)
+
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	var apps []*models.Application
+	apps, err = listFunc(token, vcli)
+
+	if err != nil {
+		return err
+	}
+
+	for _, app := range apps {
+		if app.Name == appName {
+			utils.SaveAppID(app.ID)
+			fmt.Println("Application context set")
+			return nil
+		}
+	}
+
+	return errors.New("there is no app with name " + appName)
+}
+
+func listFunc(token string, vcli *client.VirgilHttpClient) (apps []*models.Application, err error) {
+
+	for err == nil {
+		_, _, vErr := vcli.Send(http.MethodGet, token, "applications", nil, &apps)
+		if err == nil {
+			break
+		}
+
+		token, err = utils.CheckRetry(vErr, vcli)
+	}
+
+	if err != nil {
+		return apps, err
+	}
+
+	if apps != nil {
+		return apps, nil
+	}
+
+	return nil, errors.New("empty response")
 }

@@ -34,82 +34,15 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
+package models
 
-import (
-	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
-	"os"
+type CreateAccountRequest struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+}
 
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
-
-	"gopkg.in/urfave/cli.v2"
-)
-
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
-
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
-	}
-
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-		},
-		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
-			}
-
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
-				return nil
-			}
-
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
-		},
-	}
-
-	err := app.Run(os.Args)
-	if err != nil {
-		log.Fatal(err)
-	}
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

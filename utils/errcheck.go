@@ -34,82 +34,42 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
+package utils
 
 import (
 	"fmt"
+	"github.com/VirgilSecurity/virgil-services-core-kit/http"
+	"strings"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
-	"os"
-
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
-
-	"gopkg.in/urfave/cli.v2"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
+var ErrEntityNotFound = fmt.Errorf("entity not found")
+var ErrEmailIsNotConfirmed = fmt.Errorf("email is not confirmed")
+var ErrApplicationAlreadyRegistered = fmt.Errorf("error: application with given name already registered")
+var ErrApiKeyAlreadyRegistered = fmt.Errorf("error: api key with given name already registered")
 
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
+func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient) (token string, err error) {
+
+	if errToCheck.StatusCode == http.StatusUnauthorized {
+		err = Login("", "", vcli)
+		if err != nil {
+			return
+		}
+		return LoadAccessToken()
 	}
-
-	if commit != "none" {
-		commit = commit[:8]
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40400 ||
+		strings.Contains(errToCheck.Error(), "Entity was not found ") {
+		return "", ErrEntityNotFound
 	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40002 {
+		return "", ErrApplicationAlreadyRegistered
 	}
-
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-		},
-		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
-			}
-
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
-				return nil
-			}
-
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
-		},
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40003 {
+		return "", ErrApiKeyAlreadyRegistered
 	}
-
-	err := app.Run(os.Args)
-	if err != nil {
-		log.Fatal(err)
+	if errToCheck.Code == 40300 {
+		return "", ErrEmailIsNotConfirmed
 	}
+	return "", errToCheck
 }

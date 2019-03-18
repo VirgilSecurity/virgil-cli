@@ -34,82 +34,64 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
+package app
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
-	"os"
-
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
-
+	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
+func Delete(vcli *client.VirgilHttpClient) *cli.Command {
+	return &cli.Command{
+		Name:      "delete-application",
+		Aliases:   []string{"delete", "d"},
+		ArgsUsage: "app_id",
+		Usage:     "Deletes the app by id",
+		Action: func(context *cli.Context) (err error) {
 
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
-	}
-
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-		},
-		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
+			if context.NArg() < 1 {
+				return errors.New("Invalid number of arguments. Please, specify application id")
 			}
 
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
-				return nil
+			appID := context.Args().First()
+
+			err = deleteAppFunc(appID, vcli)
+			if err == nil {
+				fmt.Println("Application delete ok.")
+			} else if err == utils.ErrEntityNotFound {
+				return errors.New(fmt.Sprintf("Application with id %s not found.\n", appID))
 			}
 
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
+			defaultAppID, _ := utils.LoadAppID()
+			if defaultAppID == appID {
+				utils.DeleteAppID()
+			}
+
+			return err
 		},
 	}
+}
 
-	err := app.Run(os.Args)
+func deleteAppFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
+
+	token, err := utils.LoadAccessTokenOrLogin(vcli)
+
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	for err == nil {
+		_, _, vErr := vcli.Send(http.MethodDelete, token, "applications/"+appID, nil, nil)
+		if vErr == nil {
+			break
+		}
+
+		token, err = utils.CheckRetry(vErr, vcli)
+	}
+	return err
 }

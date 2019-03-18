@@ -34,82 +34,47 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
+package cmd
 
 import (
 	"fmt"
+	"net/http"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
-	"os"
-
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
-
 	"gopkg.in/urfave/cli.v2"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
+func Logout(vcli *client.VirgilHttpClient) *cli.Command {
+	return &cli.Command{
+		Name:  "logout",
+		Usage: "Unregister account access token",
+		Action: func(context *cli.Context) error {
 
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
-	}
-
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-		},
-		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
+			token, err := utils.LoadAccessToken()
+			if err != nil {
+				return err
 			}
 
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
-				return nil
+			_, _, err = vcli.Send(http.MethodDelete, token, "auth/logout", nil, nil)
+
+			ok := true
+			var httpError *client.VirgilAPIError
+			if err != nil {
+				httpError, ok = err.(*client.VirgilAPIError)
+				ok = ok && httpError.Code == http.StatusUnauthorized
 			}
 
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
+			if err == nil || ok {
+				utils.DeleteAppID()
+				err = utils.DeleteAccessToken()
+				if err == nil {
+					fmt.Println("Logout ok.")
+					return nil
+				}
+			}
+			return err
 		},
-	}
-
-	err := app.Run(os.Args)
-	if err != nil {
-		log.Fatal(err)
 	}
 }

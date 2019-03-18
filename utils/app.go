@@ -1,3 +1,12 @@
+package utils
+
+import (
+	"io/ioutil"
+	"os"
+	"os/user"
+	"path/filepath"
+)
+
 /*
  * Copyright (C) 2015-2019 Virgil Security Inc.
  *
@@ -34,82 +43,67 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
-
 import (
-	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
-	"os"
-
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
-
-	"gopkg.in/urfave/cli.v2"
+	"github.com/pkg/errors"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
+func SaveAppID(appID string) error {
 
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
-	}
-
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-		},
-		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
-			}
-
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
-				return nil
-			}
-
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
-		},
-	}
-
-	err := app.Run(os.Args)
+	u, err := user.Current()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	appIDPath := filepath.Join(u.HomeDir, ".virgil_app")
+
+	if _, err := os.Stat(appIDPath); os.IsNotExist(err) {
+		if err = os.Mkdir(appIDPath, 0700); err != nil {
+			return err
+		}
+	}
+
+	appIDPath = filepath.Join(appIDPath, "virgil_app")
+
+	if err = ioutil.WriteFile(appIDPath, []byte(appID), 0600); err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoadAppID() (appID string, err error) {
+	u, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+
+	tokenPath := filepath.Join(u.HomeDir, ".virgil_app")
+
+	if _, err := os.Stat(tokenPath); os.IsNotExist(err) {
+		return "", errors.New("virgil_app folder does not exist")
+	}
+
+	tokenPath = filepath.Join(tokenPath, "virgil_app")
+
+	if appID, err := ioutil.ReadFile(tokenPath); err != nil {
+		return "", err
+	} else {
+		return string(appID), nil
+	}
+}
+
+func DeleteAppID() error {
+	u, err := user.Current()
+	if err != nil {
+		return err
+	}
+
+	appIDPath := filepath.Join(u.HomeDir, ".virgil_app")
+
+	if _, err := os.Stat(appIDPath); os.IsNotExist(err) {
+		return errors.New(".virgil_app directory does not exist")
+	}
+
+	appIDPath = filepath.Join(appIDPath, "virgil_app")
+
+	return os.Remove(appIDPath)
 }

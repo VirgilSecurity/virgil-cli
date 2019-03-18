@@ -34,82 +34,67 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
+package utils
 
 import (
+	"bufio"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
+	"net/http"
 	"os"
 
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
-
-	"gopkg.in/urfave/cli.v2"
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/howeyc/gopass"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
+//Login obtains temporary account access token. Email and password may be empty
+func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
+	if email == "" {
+		fmt.Println("Enter your email:")
+
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+
+		email = scanner.Text()
 	}
 
-	if commit != "none" {
-		commit = commit[:8]
+	if password == "" {
+		pwd, err := gopass.GetPasswdPrompt("Enter account password:\r\n", false, os.Stdin, os.Stdout)
+		if err != nil {
+			return err
+		}
+		password = string(pwd)
 	}
 
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
+	//_, err = gopass.GetPasswdPrompt("Enter 2-factor code:\r\n", true, os.Stdin, os.Stdout)
+	//if err != nil {
+	//	return
+	//}
+
+	req := &models.LoginRequest{
+		Email:    email,
+		Password: password,
 	}
 
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-		},
-		Before: func(c *cli.Context) error {
+	_, cookie, err := vcli.Send(http.MethodPost, "", "auth/login", req, nil)
 
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
-			}
-
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
-				return nil
-			}
-
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
-		},
-	}
-
-	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return SaveAccessToken(cookie)
+}
+
+
+func LoadAccessTokenOrLogin(vcli *client.VirgilHttpClient) (token string, err error) {
+	token, err = LoadAccessToken()
+	if err != nil {
+		err = Login("", "", vcli)
+		if err != nil {
+			return "", err
+		}
+		return LoadAccessToken()
+	}
+	return
 }

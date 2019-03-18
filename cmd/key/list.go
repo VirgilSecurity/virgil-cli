@@ -34,82 +34,83 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
+package key
 
 import (
+	"encoding/base64"
 	"fmt"
+	"net/http"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
-	"os"
-
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
-
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
+func List(vcli *client.VirgilHttpClient) *cli.Command {
+	return &cli.Command{
+		Name:    "list",
+		Aliases: []string{"l"},
+		Usage:   "Lists your api-keys",
+		Flags:   []cli.Flag{&cli.StringFlag{Name: "app_id"}},
+		Action: func(context *cli.Context) (err error) {
 
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
-	}
-
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-		},
-		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
+			appID := context.String("app_id")
+			if appID == "" {
+				appID, _ := utils.LoadAppID()
+				if appID == "" {
+					return errors.New("Please, specify app_id (flag --app_id)")
+				}
+			} else {
+				utils.SaveAppID(appID)
 			}
 
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
-				return nil
+			var keys []*models.AccessKey
+			keys, err = listFunc(vcli)
+
+			if err != nil {
+				return err
 			}
 
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
+			if len(keys) == 0 {
+				fmt.Println("There is no api keys for application")
+			}
+
+			for _, k := range keys {
+				fmt.Printf("=====  %s  =====\n", k.Name)
+				fmt.Printf(" API_KEY_ID : %s \n", k.ID)
+				fmt.Printf(" PublicKey : %s \n", base64.StdEncoding.EncodeToString(k.PublicKey))
+			}
+			return nil
 		},
 	}
+}
 
-	err := app.Run(os.Args)
+func listFunc(vcli *client.VirgilHttpClient) (keys []*models.AccessKey, err error) {
+
+	token, err := utils.LoadAccessTokenOrLogin(vcli)
+
 	if err != nil {
-		log.Fatal(err)
+		return keys, err
 	}
+
+	for err == nil {
+		_, _, vErr := vcli.Send(http.MethodGet, token, "access_keys", nil, &keys)
+		if vErr == nil {
+			break
+		}
+
+		token, err = utils.CheckRetry(vErr, vcli)
+	}
+
+	if err != nil {
+		return
+	}
+
+	if keys != nil {
+		return keys, nil
+	}
+
+	return nil, errors.New("empty response")
 }

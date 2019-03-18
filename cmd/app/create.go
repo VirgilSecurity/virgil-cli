@@ -34,82 +34,91 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
+package app
 
 import (
+	"bufio"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
+	"net/http"
 	"os"
 
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 
+	"github.com/VirgilSecurity/virgil-cli/models"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
 )
 
-var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
-)
+func Create(vcli *client.VirgilHttpClient) *cli.Command {
+	return &cli.Command{
+		Name:      "create",
+		Aliases:   []string{"c"},
+		ArgsUsage: "app_name",
+		Usage:     "Create a new app",
+		Action: func(context *cli.Context) (err error) {
 
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
-	}
-
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-		},
-		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
+			if context.NArg() < 1 {
+				return errors.New("Invalid number of arguments. Please, specify application name")
 			}
 
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
-				return nil
+			name := context.Args().First()
+
+			var appID string
+			appID, err = CreateFunc(name, vcli)
+
+			if err != nil {
+				return err
 			}
 
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
+			fmt.Println("APP_ID:", appID)
+			utils.SaveAppID(appID)
+			return nil
 		},
 	}
+}
 
-	err := app.Run(os.Args)
+func CreateFunc(name string, vcli *client.VirgilHttpClient) (appID string, err error) {
+
+	fmt.Println("Enter new app description:")
+	scanner := bufio.NewScanner(os.Stdin)
+
+	description := ""
+	for description == "" {
+		scanner.Scan()
+		description = scanner.Text()
+		if description == "" {
+			fmt.Println("description can't be empty")
+			fmt.Println("Enter new app description:")
+		}
+	}
+
+	req := &models.CreateAppRequest{Name: name, Description: description, Type: "pki"}
+	resp := &models.Application{}
+
+	token, err := utils.LoadAccessTokenOrLogin(vcli)
+
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
+
+	for err == nil {
+		_, _, vErr := vcli.Send(http.MethodPost, token, "applications", req, resp)
+		if vErr == nil {
+			break
+		}
+
+		token, err = utils.CheckRetry(vErr, vcli)
+	}
+
+	if err != nil {
+		return
+	}
+
+	if resp != nil {
+		return resp.ID, nil
+	}
+
+	return "", errors.New("empty response")
 }

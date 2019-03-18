@@ -34,7 +34,15 @@
   name = "github.com/golang/protobuf"
   packages = ["proto"]
   pruneopts = "UT"
-  revision = "b5d812f8a3706043e23a9cd5babf2e5423744d30"
+  revision = "d3c38a4eb4970272b87a425ae00ccc4548e2f9bb"
+
+[[projects]]
+  branch = "master"
+  digest = "1:0778dc7fce1b4669a8bfa7ae506ec1f595b6ab0f8989c1c0d22a8ca1144e9972"
+  name = "github.com/howeyc/gopass"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "bf9dde6d0d2c004a008c27aaee91170c786f6db8"
 
 [[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
@@ -46,11 +54,25 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8e4024a39f73657fda08fc46908003698955a5f1fdeba7ceb6801070720de922"
+  digest = "1:ffcf6b658fb482299b329d61ecef7e27674cb36d9cfa12c044cd4e67099cd920"
   name = "golang.org/x/crypto"
-  packages = ["hkdf"]
+  packages = [
+    "hkdf",
+    "ssh/terminal",
+  ]
   pruneopts = "UT"
-  revision = "8dd112bcdc25174059e45e07517d9fc663123347"
+  revision = "a1f597ede03a7bef967a422b5b3a5bd08805a01e"
+
+[[projects]]
+  branch = "master"
+  digest = "1:1aa109187d52894bd8929a34a0a483ea4e57d7e32e86d81c64cea84c1978d68e"
+  name = "golang.org/x/sys"
+  packages = [
+    "unix",
+    "windows",
+  ]
+  pruneopts = "UT"
+  revision = "6c81ef8f67ca3f42fc9cd71dfbd5f35b0c4b5771"
 
 [[projects]]
   branch = "v2"
@@ -62,6 +84,22 @@
   ]
   pruneopts = "UT"
   revision = "d3ae77c26ac8db90639677e4831a728d33c36111"
+
+[[projects]]
+  digest = "1:e8506be1f410667bede4fd2af604de7e4bd50912edb75fb3b6672c83881c0eac"
+  name = "gopkg.in/virgil.v5"
+  packages = ["errors"]
+  pruneopts = "UT"
+  revision = "00a20afcd55d6cf57cc55d69e12d7433734c3572"
+  version = "v5.1.5"
+
+[[projects]]
+  branch = "v5"
+  digest = "1:578fc7802c8a1208420f219b8612f03df8bdeb89a18691185387d35404233ecf"
+  name = "gopkg.in/virgilsecurity/virgil-crypto-go.v5"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "685c1b6f56fd10297784cb04b2d137452fbb9837"
 
 [[projects]]
   digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
@@ -77,9 +115,11 @@
   input-imports = [
     "github.com/VirgilSecurity/virgil-phe-go",
     "github.com/VirgilSecurity/virgil-purekit-go",
+    "github.com/howeyc/gopass",
     "github.com/pkg/errors",
     "gopkg.in/urfave/cli.v2",
     "gopkg.in/urfave/cli.v2/altsrc",
+    "gopkg.in/virgilsecurity/virgil-crypto-go.v5",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
