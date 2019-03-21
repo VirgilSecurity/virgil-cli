@@ -115,6 +115,7 @@ func (vc *VirgilHttpClient) Send(method string, token string, urlPath string, pa
 				cookie = c.Value
 			}
 		}
+
 		return resp.Header, cookie, nil
 	}
 

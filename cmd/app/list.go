@@ -63,7 +63,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 
 			currentAppID, err := utils.LoadAppID()
 			if len(apps) == 0 {
-				fmt.Println("There is no api keys for application")
+				fmt.Println("There are no applications created for the account")
 			}
 
 			for _, app := range apps {

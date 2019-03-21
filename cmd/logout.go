@@ -53,28 +53,24 @@ func Logout(vcli *client.VirgilHttpClient) *cli.Command {
 		Action: func(context *cli.Context) error {
 
 			token, err := utils.LoadAccessToken()
-			if err != nil {
-				return err
+			if token == "" {
+				fmt.Println("Logout ok.")
+				return nil
 			}
 
-			_, _, err = vcli.Send(http.MethodDelete, token, "auth/logout", nil, nil)
+			_, _, vErr := vcli.Send(http.MethodDelete, token, "auth/logout", nil, nil)
 
-			ok := true
-			var httpError *client.VirgilAPIError
-			if err != nil {
-				httpError, ok = err.(*client.VirgilAPIError)
-				ok = ok && httpError.Code == http.StatusUnauthorized
-			}
-
-			if err == nil || ok {
+			if vErr == nil || vErr.StatusCode == http.StatusUnauthorized {
 				utils.DeleteAppID()
 				err = utils.DeleteAccessToken()
 				if err == nil {
 					fmt.Println("Logout ok.")
 					return nil
+				} else {
+					return err
 				}
 			}
-			return err
+			return vErr
 		},
 	}
 }

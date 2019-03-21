@@ -93,10 +93,10 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 
 	req := &models.CreateAccountRequest{Email: email, Password: string(pwd), Name: name}
 
-	_, _, err = vcli.Send(http.MethodPost, "", "auth/register", req, nil)
+	_, _,vErr := vcli.Send(http.MethodPost, "", "auth/register", req, nil)
 
-	if err != nil {
-		return err
+	if vErr != nil {
+		return vErr
 	}
 
 	fmt.Println("Account registered.")

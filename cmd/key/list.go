@@ -74,7 +74,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 			}
 
 			if len(keys) == 0 {
-				fmt.Println("There is no api keys for application")
+				fmt.Println("There are no api keys created for application")
 			}
 
 			for _, k := range keys {

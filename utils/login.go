@@ -77,10 +77,10 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 		Password: password,
 	}
 
-	_, cookie, err := vcli.Send(http.MethodPost, "", "auth/login", req, nil)
+	_, cookie, vErr := vcli.Send(http.MethodPost, "", "auth/login", req, nil)
 
-	if err != nil {
-		return err
+	if vErr != nil {
+		return vErr
 	}
 
 	return SaveAccessToken(cookie)

@@ -11,7 +11,6 @@
 ## Content
 - [Installation](#installation)
 - [Launching CLI](#launching-cli)
-- [Features](#features)
 - [Commands usage](#commands-usage)
   - [Update keys](#update-keys)
   - [Generate a secret key](#generate-a-secret-key)
@@ -44,7 +43,7 @@ Run the CLI with the following command:
 virgil.exe
 # or just `virgil`
 ```
-
+##Commands usage
 ### Update keys
 This command is used to update the `app_secret_key` and `service_public_key` of a specific application
 
@@ -64,6 +63,121 @@ This command is used to generate a new `app_secret_key`:
 
 # Windows OS
 virgil pure keygen
+```
+
+### Register new account
+This command is used to create a new account:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil register <email>
+
+# Windows OS
+virgil register <email>
+```
+
+### Login into account
+This command is used to open session for account:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil login
+
+# Windows OS
+virgil login
+```
+
+### Logout from account
+This command is used to close the current session for account:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil logout
+
+# Windows OS
+virgil logout
+```
+
+### Create new application
+This command is used to create new application:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app create <application name>
+
+# Windows OS
+virgil app create <application name>
+```
+
+
+### Delete application
+This command is used to delete application:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app delete <application_id>
+
+# Windows OS
+virgil app app delete <application_id>
+```
+
+### List applications
+This command is used to print list of all user applications:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app list
+
+# Windows OS
+virgil app list
+```
+
+
+### Update application
+This command is used to update name and description of application:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app update <application_id>
+
+# Windows OS
+virgil app update <application_id>
+```
+
+
+### Create new api-key
+This command is used to create new api-key for current application:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil apikey create <api-key name>
+
+# Windows OS
+virgil apikey create <api-key name>
+```
+
+
+### Delete api-key
+This command is used to delete api-key:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil apikey delete <api_key_id>
+
+# Windows OS
+virgil apikey app delete <api_key_id>
+```
+
+### List applications
+This command is used to print list of all users api-keys:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil apikey list
+
+# Windows OS
+virgil apikey list
+```
+
+
+### Update application
+This command is used to update name of api-key:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil apikey update <api_key_id>
+
+# Windows OS
+virgil apikey update <api_key_id>
 ```
 
 
