@@ -11,18 +11,18 @@
 ## Content
 - [Installation](#installation)
 - [Launching CLI](#launching-cli)
-- [Commands usage](#commands-usage)
-  - [Update keys](#update-keys)
-  - [Generate a secret key](#generate-a-secret-key)
+- [Usage](#usage)
+  - [Manage Virgil Account](#manage-virgil-account)
+    - [Register new Account](#register-new-account)
+    - [Login into Account](#login-into-account)
+    - [Logout from Account](#logout-from-acccount)
+  - [Manage PURE application](#manage-pure-application)
+    - [Update keys](#update-keys)
+    - [Generate a secret key](#generate-a-secret-key)
+  - [Manage E2EE application](#manage-pure-application)
 - [License](#license)
 - [Support](#support)
 
-## Features
-Using the Virgil CLI you can:
-  * get your Virgil PURE application credentials, such as: Application Token, Application Secret Key
-  * update your Virgil PURE application credentials
-
-To get more information, run the Virgil CLI or its command with the `--help` or `-h` option that displays full help list and available commands.
 
 ## Installation
 The Virgil CLI is provided as a binary file, and it is available for Mac OS, FreeBSD,  Linux OS and Windows OS. Download the latest CLI package here: https://github.com/VirgilSecurity/virgil-cli/releases.
@@ -43,8 +43,50 @@ Run the CLI with the following command:
 virgil.exe
 # or just `virgil`
 ```
-##Commands usage
-### Update keys
+
+To get more information, run the Virgil CLI or its command with the `--help` or `-h` option that displays full help list and available commands.
+
+
+## Usage
+
+### Manage Virgil Account
+
+#### Register new account
+This command is used to create a new account:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil register <email>
+
+# Windows OS
+virgil register <email>
+```
+
+#### Login into account
+This command is used to open session for account:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil login
+
+# Windows OS
+virgil login
+```
+
+#### Logout from account
+This command is used to close the current session for account:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil logout
+
+# Windows OS
+virgil logout
+```
+
+### Manage PURE application
+Using the Virgil CLI you can:
+  * get your Virgil PURE application credentials, such as: Application Token, Application Secret Key
+  * update your Virgil PURE application credentials
+
+#### Update keys
 This command is used to update the `app_secret_key` and `service_public_key` of a specific application
 
 ```bash
@@ -55,7 +97,7 @@ This command is used to update the `app_secret_key` and `service_public_key` of 
 virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
 ```
 
-### Generate a secret key
+#### Generate a secret key
 This command is used to generate a new `app_secret_key`:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -65,58 +107,32 @@ This command is used to generate a new `app_secret_key`:
 virgil pure keygen
 ```
 
-### Register new account
-This command is used to create a new account:
-```bash
-# FreeBSD / Linux / Mac OS
-./virgil register <email>
 
-# Windows OS
-virgil register <email>
-```
 
-### Login into account
-This command is used to open session for account:
-```bash
-# FreeBSD / Linux / Mac OS
-./virgil login
+### Manage E2EE application
 
-# Windows OS
-virgil login
-```
-
-### Logout from account
-This command is used to close the current session for account:
-```bash
-# FreeBSD / Linux / Mac OS
-./virgil logout
-
-# Windows OS
-virgil logout
-```
-
-### Create new application
+#### Create new application
 This command is used to create new application:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil app create <application name>
+./virgil app create --type e2ee <application name>
 
 # Windows OS
-virgil app create <application name>
+virgil app create --type e2ee <application name>
 ```
 
 
-### Delete application
+#### Delete application
 This command is used to delete application:
 ```bash
 # FreeBSD / Linux / Mac OS
 ./virgil app delete <application_id>
 
 # Windows OS
-virgil app app delete <application_id>
+virgil app delete <application_id>
 ```
 
-### List applications
+#### List applications
 This command is used to print list of all user applications:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -127,7 +143,7 @@ virgil app list
 ```
 
 
-### Update application
+#### Update application
 This command is used to update name and description of application:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -138,7 +154,7 @@ virgil app update <application_id>
 ```
 
 
-### Create new api-key
+#### Create new api-key
 This command is used to create new api-key for current application:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -149,7 +165,7 @@ virgil apikey create <api-key name>
 ```
 
 
-### Delete api-key
+#### Delete api-key
 This command is used to delete api-key:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -159,7 +175,7 @@ This command is used to delete api-key:
 virgil apikey app delete <api_key_id>
 ```
 
-### List applications
+#### List applications
 This command is used to print list of all users api-keys:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -170,7 +186,7 @@ virgil apikey list
 ```
 
 
-### Update application
+#### Update application
 This command is used to update name of api-key:
 ```bash
 # FreeBSD / Linux / Mac OS
