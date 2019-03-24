@@ -64,24 +64,26 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "name"}, &cli.StringFlag{Name: "app_id"}},
 		Action: func(context *cli.Context) (err error) {
 
-			name := context.String("name")
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "api-key name", "")
 
-			if name == "" {
-				if context.NArg() < 1 {
-					return errors.New("Invalid number of arguments. Please, specify api-key name")
-				} else {
-					name = context.Args().First()
-				}
+			defaultApp, _ := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
 			}
 
-			appID := context.String("app_id")
+			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
 			if appID == "" {
-				appID, _ := utils.LoadAppID()
-				if appID == "" {
-					return errors.New("Please, specify app_id (flag --app_id)")
-				}
-			} else {
-				utils.SaveAppID(appID)
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
+
+			app, err := getApp(appID, vcli)
+			if err != nil {
+				return err
+			}
+			if app.Type != "pki" {
+				return errors.New("Key creation available only for e2ee applications")
+
 			}
 
 			var apiKeyID string
@@ -120,20 +122,7 @@ func CreateFunc(name string, vcli *client.VirgilHttpClient) (apiKeyID string, er
 	req := &models.CreateAccessKeyRequest{Name: name, PublicKey: pubKey, Signature: sign}
 	resp := &models.AccessKey{}
 
-	token, err := utils.LoadAccessTokenOrLogin(vcli)
-
-	if err != nil {
-		return "", err
-	}
-
-	for err == nil {
-		_, _, vErr := vcli.Send(http.MethodPost, token, "access_keys", req, resp)
-		if vErr == nil {
-			break
-		}
-
-		token, err = utils.CheckRetry(vErr, vcli)
-	}
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "access_keys", req, resp)
 
 	if err != nil {
 		return
@@ -147,4 +136,25 @@ func CreateFunc(name string, vcli *client.VirgilHttpClient) (apiKeyID string, er
 	}
 
 	return "", errors.New("empty response")
+}
+
+func getApp(appID string, vcli *client.VirgilHttpClient) (app *models.Application, err error) {
+
+	var apps []*models.Application
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
+
+	if err != nil {
+		return
+	}
+
+	if len(apps) != 0 {
+		for _, a := range apps {
+			if a.ID == appID {
+				return a, errors.New(fmt.Sprintf("application with id %s not found", appID))
+			}
+		}
+		return nil, nil
+	}
+
+	return nil, errors.New("empty response")
 }

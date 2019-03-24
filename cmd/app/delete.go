@@ -54,11 +54,12 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 		Usage:     "Deletes the app by id",
 		Action: func(context *cli.Context) (err error) {
 
-			if context.NArg() < 1 {
-				return errors.New("Invalid number of arguments. Please, specify application id")
+			defaultApp, _ := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
 			}
-
-			appID := context.Args().First()
+			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", "application id", defaultAppID)
 
 			err = deleteAppFunc(appID, vcli)
 			if err == nil {
@@ -67,9 +68,8 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 				return errors.New(fmt.Sprintf("Application with id %s not found.\n", appID))
 			}
 
-			defaultAppID, _ := utils.LoadAppID()
 			if defaultAppID == appID {
-				utils.DeleteAppID()
+				utils.DeleteDefaultApp()
 			}
 
 			return err
@@ -79,19 +79,6 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 
 func deleteAppFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
 
-	token, err := utils.LoadAccessTokenOrLogin(vcli)
-
-	if err != nil {
-		return err
-	}
-
-	for err == nil {
-		_, _, vErr := vcli.Send(http.MethodDelete, token, "applications/"+appID, nil, nil)
-		if vErr == nil {
-			break
-		}
-
-		token, err = utils.CheckRetry(vErr, vcli)
-	}
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "applications/"+appID, nil, nil)
 	return err
 }

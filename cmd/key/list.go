@@ -56,15 +56,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:   []cli.Flag{&cli.StringFlag{Name: "app_id"}},
 		Action: func(context *cli.Context) (err error) {
 
-			appID := context.String("app_id")
-			if appID == "" {
-				appID, _ := utils.LoadAppID()
-				if appID == "" {
-					return errors.New("Please, specify app_id (flag --app_id)")
-				}
-			} else {
-				utils.SaveAppID(appID)
-			}
+
 
 			var keys []*models.AccessKey
 			keys, err = listFunc(vcli)
@@ -89,20 +81,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 
 func listFunc(vcli *client.VirgilHttpClient) (keys []*models.AccessKey, err error) {
 
-	token, err := utils.LoadAccessTokenOrLogin(vcli)
-
-	if err != nil {
-		return keys, err
-	}
-
-	for err == nil {
-		_, _, vErr := vcli.Send(http.MethodGet, token, "access_keys", nil, &keys)
-		if vErr == nil {
-			break
-		}
-
-		token, err = utils.CheckRetry(vErr, vcli)
-	}
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "access_keys", nil, &keys)
 
 	if err != nil {
 		return

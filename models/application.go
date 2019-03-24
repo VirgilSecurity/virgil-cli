@@ -39,7 +39,7 @@ package models
 type CreateAppRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Type string `json:"type"`
+	Type        string `json:"type"`
 }
 
 type CreateAppResp struct {
@@ -47,8 +47,9 @@ type CreateAppResp struct {
 }
 
 type Application struct {
-	ID string `json:"id"`
-	Name string `json:"name"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Type        string `json:"type"`
 	Description string `json:"description"`
 }
 

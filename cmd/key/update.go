@@ -47,7 +47,6 @@ import (
 	"github.com/VirgilSecurity/virgil-cli/models"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -60,21 +59,9 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id"}},
 		Action: func(context *cli.Context) (err error) {
 
-			appID := context.String("app_id")
-			if appID == "" {
-				appID, _ := utils.LoadAppID()
-				if appID == "" {
-					return errors.New("Please, specify app_id (flag --app_id)")
-				}
-			} else {
-				utils.SaveAppID(appID)
-			}
+			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "api_key_id", "api-key id", "")
 
-			if context.NArg() < 1 {
-				return errors.New("Invalid number of arguments. Please, specify api-key id")
-			}
-
-			err = UpdateFunc(context.Args().First(), vcli)
+			err = UpdateFunc(apiKeyID, vcli)
 
 			if err != nil {
 				return err
@@ -103,20 +90,7 @@ func UpdateFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
 
 	req := &models.UpdateAccessKeyRequest{Name: name}
 
-	token, err := utils.LoadAccessTokenOrLogin(vcli)
-
-	if err != nil {
-		return err
-	}
-
-	for err == nil {
-		_, _, vErr := vcli.Send(http.MethodPut, token, "access_keys/"+apiKeyID, req, nil)
-		if vErr == nil {
-			break
-		}
-
-		token, err = utils.CheckRetry(vErr, vcli)
-	}
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "access_keys/"+apiKeyID, req, nil)
 
 	return err
 }

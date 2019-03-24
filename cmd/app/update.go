@@ -37,17 +37,14 @@
 package app
 
 import (
-	"bufio"
 	"fmt"
-	"net/http"
-	"os"
-
 	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/pkg/errors"
+	"net/http"
 
 	"github.com/VirgilSecurity/virgil-cli/models"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -59,71 +56,37 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 		Usage:     "Updates current app",
 		Action: func(context *cli.Context) (err error) {
 
-			if context.NArg() < 1 {
-				return errors.New("Invalid number of arguments. Please, specify application id")
+			defaultApp, err := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
 			}
 
-			appID := context.Args().First()
-
-			if appID == "" {
-				appID, err = utils.LoadAppID()
-				if err != nil {
-					return err
-				}
-			}
+			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", "application id", defaultAppID)
 
 			err = UpdateFunc(appID, vcli)
 
-			if err != nil {
-				return err
+			if err == nil {
+				fmt.Println("Application update ok.")
+			} else if err == utils.ErrEntityNotFound {
+				return errors.New(fmt.Sprintf("Application with id %s not found.\n", appID))
 			}
 
-			utils.SaveAppID(appID)
-			return nil
+			return err
 		},
 	}
 }
 
 func UpdateFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
-	fmt.Println("Enter new app name:")
-	scanner := bufio.NewScanner(os.Stdin)
 
-	name := ""
-	for name == "" {
-		scanner.Scan()
-		name = scanner.Text()
-		if name == "" {
-			fmt.Println("name can't be empty")
-			fmt.Println("Enter new app name:")
-		}
-	}
-	fmt.Println("Enter new app description:")
-	description := ""
-	for description == "" {
-		scanner.Scan()
-		description = scanner.Text()
-		if description == "" {
-			fmt.Printf("description can't be empty")
-			fmt.Println("Enter new app description:")
-		}
-	}
+	name := utils.ReadConsoleValue("name", "new app name")
+
+	description := utils.ReadConsoleValue("description", "new app description")
+
 	req := &models.UpdateAppRequest{Name: name, Description: description}
 	resp := &models.Application{}
 
-	token, err := utils.LoadAccessTokenOrLogin(vcli)
-
-	if err != nil {
-		return err
-	}
-
-	for err == nil {
-		_, _, vErr := vcli.Send(http.MethodPost, token, "applications/"+appID, req, resp)
-		if vErr == nil {
-			break
-		}
-
-		token, err = utils.CheckRetry(vErr, vcli)
-	}
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "applications/"+appID, req, resp)
 
 	return err
 }

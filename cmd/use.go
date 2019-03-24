@@ -82,7 +82,7 @@ func useFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 
 	for _, app := range apps {
 		if app.Name == appName {
-			utils.SaveAppID(app.ID)
+			utils.SaveDefaultApp(app)
 			fmt.Println("Application context set")
 			return nil
 		}

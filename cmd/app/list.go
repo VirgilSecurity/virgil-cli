@@ -61,14 +61,18 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 				return err
 			}
 
-			currentAppID, err := utils.LoadAppID()
+			defaultApp, err := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
+			}
 			if len(apps) == 0 {
 				fmt.Println("There are no applications created for the account")
 			}
 
 			for _, app := range apps {
 				fmt.Printf("=====  %s  =====", app.Name)
-				if app.ID == currentAppID {
+				if app.ID == defaultAppID {
 					fmt.Printf(" (default)")
 				}
 
@@ -82,20 +86,8 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 
 func listFunc(vcli *client.VirgilHttpClient) (apps []*models.Application, err error) {
 
-	token, err := utils.LoadAccessTokenOrLogin(vcli)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
 
-	if err != nil {
-		return apps, err
-	}
-
-	for err == nil {
-		_, _, vErr := vcli.Send(http.MethodGet, token, "applications", nil, &apps)
-		if vErr == nil {
-			break
-		}
-
-		token, err = utils.CheckRetry(vErr, vcli)
-	}
 	if err != nil {
 		return
 	}

@@ -55,21 +55,7 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id"}},
 		Action: func(context *cli.Context) (err error) {
 
-			if context.NArg() < 1 {
-				return errors.New("Invalid number of arguments. Please, specify api-key id")
-			}
-
-			appID := context.String("app_id")
-			if appID == "" {
-				appID, _ := utils.LoadAppID()
-				if appID == "" {
-					return errors.New("Please, specify app_id (flag --app_id)")
-				}
-			} else {
-				utils.SaveAppID(appID)
-			}
-
-			apiKeyID := context.Args().First()
+			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "api-key id", "")
 
 			err = deleteApiKeyIDFunc(apiKeyID, vcli)
 
@@ -86,20 +72,7 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 
 func deleteApiKeyIDFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
 
-	token, err := utils.LoadAccessTokenOrLogin(vcli)
-
-	if err != nil {
-		return err
-	}
-
-	for err == nil {
-		_, _, vErr := vcli.Send(http.MethodDelete, token, "access_keys/"+apiKeyID, nil, nil)
-		if vErr == nil {
-			break
-		}
-
-		token, err = utils.CheckRetry(vErr, vcli)
-	}
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "access_keys/"+apiKeyID, nil, nil)
 
 	return err
 }

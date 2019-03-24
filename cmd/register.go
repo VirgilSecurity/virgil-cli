@@ -37,7 +37,6 @@
 package cmd
 
 import (
-	"bufio"
 	"crypto/subtle"
 	"fmt"
 	"github.com/VirgilSecurity/virgil-cli/client"
@@ -64,12 +63,7 @@ func Register(client *client.VirgilHttpClient) *cli.Command {
 
 func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 
-
-	if context.NArg() < 1 {
-		return errors.New("Invalid number of arguments. Please, specify email ")
-	}
-
-	email := context.Args().First()
+	email := utils.ReadParamOrDefaultOrFromConsole(context, "email", "email", "")
 
 	pwd, err := gopass.GetPasswdPrompt("Enter account password:\r\n", false, os.Stdin, os.Stdout)
 	if err != nil {
@@ -85,15 +79,11 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 		return err
 	}
 
-	fmt.Println("Enter account name:")
-	scanner := bufio.NewScanner(os.Stdin)
-
-	scanner.Scan()
-	name := scanner.Text()
+	name := utils.ReadConsoleValue("name", "account name")
 
 	req := &models.CreateAccountRequest{Email: email, Password: string(pwd), Name: name}
 
-	_, _,vErr := vcli.Send(http.MethodPost, "", "auth/register", req, nil)
+	_, _, vErr := vcli.Send(http.MethodPost, "", "auth/register", req, nil)
 
 	if vErr != nil {
 		return vErr
@@ -102,6 +92,6 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 	fmt.Println("Account registered.")
 
 	utils.DeleteAccessToken()
-	utils.DeleteAppID()
+	utils.DeleteDefaultApp()
 	return nil
 }

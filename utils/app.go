@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"encoding/json"
+	"github.com/VirgilSecurity/virgil-cli/models"
 	"io/ioutil"
 	"os"
 	"os/user"
@@ -47,7 +49,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func SaveAppID(appID string) error {
+func SaveDefaultApp(app *models.Application) error {
 
 	u, err := user.Current()
 	if err != nil {
@@ -64,34 +66,41 @@ func SaveAppID(appID string) error {
 
 	appIDPath = filepath.Join(appIDPath, "virgil_app")
 
-	if err = ioutil.WriteFile(appIDPath, []byte(appID), 0600); err != nil {
+	jsonBody, err := json.Marshal(app)
+	if err != nil {
+		return err
+	}
+	if err = ioutil.WriteFile(appIDPath, jsonBody, 0600); err != nil {
 		return err
 	}
 	return nil
 }
 
-func LoadAppID() (appID string, err error) {
+func LoadDefaultApp() (app *models.Application, err error) {
 	u, err := user.Current()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	tokenPath := filepath.Join(u.HomeDir, ".virgil_app")
 
 	if _, err := os.Stat(tokenPath); os.IsNotExist(err) {
-		return "", errors.New("virgil_app folder does not exist")
+		return nil, errors.New("virgil_app folder does not exist")
 	}
 
 	tokenPath = filepath.Join(tokenPath, "virgil_app")
 
-	if appID, err := ioutil.ReadFile(tokenPath); err != nil {
-		return "", err
+	if jsonBody, err := ioutil.ReadFile(tokenPath); err != nil {
+		return nil, err
 	} else {
-		return string(appID), nil
+		if err = json.Unmarshal(jsonBody, &app); err != nil {
+			return nil, err
+		}
+		return app, nil
 	}
 }
 
-func DeleteAppID() error {
+func DeleteDefaultApp() error {
 	u, err := user.Current()
 	if err != nil {
 		return err

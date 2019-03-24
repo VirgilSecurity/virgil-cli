@@ -37,12 +37,9 @@
 package app
 
 import (
-	"bufio"
 	"fmt"
-	"net/http"
-	"os"
-
 	"github.com/VirgilSecurity/virgil-cli/utils"
+	"net/http"
 
 	"github.com/VirgilSecurity/virgil-cli/models"
 
@@ -57,60 +54,39 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 		Aliases:   []string{"c"},
 		ArgsUsage: "app_name",
 		Usage:     "Create a new app",
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "type",}},
+
 		Action: func(context *cli.Context) (err error) {
 
-			if context.NArg() < 1 {
-				return errors.New("Invalid number of arguments. Please, specify application name")
-			}
-
-			name := context.Args().First()
-
+			appType := utils.ReadFlagOrConsoleValue(context, "type", "application type ( e2ee or pure )", "e2ee", "pure")
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "application name", "")
 			var appID string
-			appID, err = CreateFunc(name, vcli)
+
+			appID, err = CreateFunc(name, appType, vcli)
 
 			if err != nil {
 				return err
 			}
 
 			fmt.Println("APP_ID:", appID)
-			utils.SaveAppID(appID)
+			fmt.Println("Application create ok.")
 			return nil
 		},
 	}
 }
 
-func CreateFunc(name string, vcli *client.VirgilHttpClient) (appID string, err error) {
+func CreateFunc(name, appType string, vcli *client.VirgilHttpClient) (appID string, err error) {
 
-	fmt.Println("Enter new app description:")
-	scanner := bufio.NewScanner(os.Stdin)
+	description := utils.ReadConsoleValue("description", "new app description")
 
-	description := ""
-	for description == "" {
-		scanner.Scan()
-		description = scanner.Text()
-		if description == "" {
-			fmt.Println("description can't be empty")
-			fmt.Println("Enter new app description:")
-		}
+	virgilAppType := "pki"
+	if appType == "pure" {
+		virgilAppType = "phe"
 	}
-
-	req := &models.CreateAppRequest{Name: name, Description: description, Type: "pki"}
+	req := &models.CreateAppRequest{Name: name, Description: description, Type: virgilAppType}
 	resp := &models.Application{}
 
-	token, err := utils.LoadAccessTokenOrLogin(vcli)
-
-	if err != nil {
-		return "", err
-	}
-
-	for err == nil {
-		_, _, vErr := vcli.Send(http.MethodPost, token, "applications", req, resp)
-		if vErr == nil {
-			break
-		}
-
-		token, err = utils.CheckRetry(vErr, vcli)
-	}
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "applications", req, resp)
 
 	if err != nil {
 		return
