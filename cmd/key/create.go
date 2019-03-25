@@ -64,7 +64,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "name"}, &cli.StringFlag{Name: "app_id"}},
 		Action: func(context *cli.Context) (err error) {
 
-			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "api-key name", "")
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter api-key name", "")
 
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""

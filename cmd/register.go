@@ -63,7 +63,7 @@ func Register(client *client.VirgilHttpClient) *cli.Command {
 
 func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 
-	email := utils.ReadParamOrDefaultOrFromConsole(context, "email", "email", "")
+	email := utils.ReadParamOrDefaultOrFromConsole(context, "email", "Enter email", "")
 
 	pwd, err := gopass.GetPasswdPrompt("Enter account password:\r\n", false, os.Stdin, os.Stdout)
 	if err != nil {
@@ -79,7 +79,7 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 		return err
 	}
 
-	name := utils.ReadConsoleValue("name", "account name")
+	name := utils.ReadConsoleValue("name", "Enter account name")
 
 	req := &models.CreateAccountRequest{Email: email, Password: string(pwd), Name: name}
 

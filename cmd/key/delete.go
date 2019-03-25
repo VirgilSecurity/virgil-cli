@@ -55,7 +55,7 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id"}},
 		Action: func(context *cli.Context) (err error) {
 
-			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "api-key id", "")
+			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "Enter api-key id", "")
 
 			err = deleteApiKeyIDFunc(apiKeyID, vcli)
 

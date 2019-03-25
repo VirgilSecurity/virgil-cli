@@ -58,8 +58,8 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 
 		Action: func(context *cli.Context) (err error) {
 
-			appType := utils.ReadFlagOrConsoleValue(context, "type", "application type ( e2ee or pure )", "e2ee", "pure")
-			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "application name", "")
+			appType := utils.ReadFlagOrConsoleValue(context, "type", "Enter application type ( e2ee or pure )", "e2ee", "pure")
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter application name", "")
 			var appID string
 
 			appID, err = CreateFunc(name, appType, vcli)
@@ -77,7 +77,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 
 func CreateFunc(name, appType string, vcli *client.VirgilHttpClient) (appID string, err error) {
 
-	description := utils.ReadConsoleValue("description", "new app description")
+	description := utils.ReadConsoleValue("description", "Enter new app description")
 
 	virgilAppType := "pki"
 	if appType == "pure" {

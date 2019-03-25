@@ -62,7 +62,7 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 				defaultAppID = defaultApp.ID
 			}
 
-			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", "application id", defaultAppID)
+			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", "Enter application id", defaultAppID)
 
 			err = UpdateFunc(appID, vcli)
 
@@ -79,9 +79,9 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 
 func UpdateFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
 
-	name := utils.ReadConsoleValue("name", "new app name")
+	name := utils.ReadConsoleValue("name", "Enter new app name")
 
-	description := utils.ReadConsoleValue("description", "new app description")
+	description := utils.ReadConsoleValue("description", "Enter new app description")
 
 	req := &models.UpdateAppRequest{Name: name, Description: description}
 	resp := &models.Application{}

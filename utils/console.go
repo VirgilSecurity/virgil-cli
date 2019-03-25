@@ -23,7 +23,7 @@ func ReadParamOrDefaultOrFromConsole(context *cli.Context, paramName, paramDescr
 
 func ReadConsoleValue(paramName, paramDescription string, options ...string) string {
 
-	fmt.Printf("Enter %s:\n", paramDescription)
+	fmt.Printf("%s:\n", paramDescription)
 
 	value := ""
 	valueSet := false
@@ -33,14 +33,14 @@ func ReadConsoleValue(paramName, paramDescription string, options ...string) str
 		if len(options) == 0 {
 			if value == "" {
 				fmt.Printf("%s can't be empty\n", paramName)
-				fmt.Printf("Enter %s:\n", paramDescription)
+				fmt.Printf("%s:\n", paramDescription)
 			} else {
 				valueSet = true
 			}
 		} else {
 			if !contains(options, value) {
 				fmt.Printf("invalid %s value\n", paramName)
-				fmt.Printf("Enter %s:\n", paramDescription)
+				fmt.Printf("%s:\n", paramDescription)
 			} else {
 				valueSet = true
 			}

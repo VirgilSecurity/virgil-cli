@@ -59,7 +59,7 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id"}},
 		Action: func(context *cli.Context) (err error) {
 
-			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "api_key_id", "api-key id", "")
+			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "api_key_id", "Enter api-key id", "")
 
 			err = UpdateFunc(apiKeyID, vcli)
 

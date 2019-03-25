@@ -38,6 +38,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/VirgilSecurity/virgil-cli/models"
 	"net/http"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
@@ -59,8 +60,13 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 			if defaultApp != nil {
 				defaultAppID = defaultApp.ID
 			}
-			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", "application id", defaultAppID)
+			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", "Enter application id", defaultAppID)
 
+			app, err := getApp(appID, vcli)
+			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("Are you sure, that you want to delete application %s (y/n) ?", app.Name), "y", "n")
+			if yesOrNo == "n" {
+				return
+			}
 			err = deleteAppFunc(appID, vcli)
 			if err == nil {
 				fmt.Println("Application delete ok.")
@@ -81,4 +87,25 @@ func deleteAppFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "applications/"+appID, nil, nil)
 	return err
+}
+
+func getApp(appID string, vcli *client.VirgilHttpClient) (app *models.Application, err error) {
+
+	var apps []*models.Application
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
+
+	if err != nil {
+		return
+	}
+
+	if len(apps) != 0 {
+		for _, a := range apps {
+			if a.ID == appID {
+				return a, errors.New(fmt.Sprintf("application with id %s not found", appID))
+			}
+		}
+		return nil, nil
+	}
+
+	return nil, errors.New("empty response")
 }
