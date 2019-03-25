@@ -153,6 +153,17 @@ This command is used to update name and description of application:
 virgil app update <application_id>
 ```
 
+#### Use application
+This command is used to set context. 
+After this all future commands without application_id indication will be applied for application, set in context
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app use <app_name>
+
+# Windows OS
+virgil app use <app_name>
+```
+
 
 #### Create new api-key
 This command is used to create new api-key for current application:
@@ -175,7 +186,7 @@ This command is used to delete api-key:
 virgil apikey app delete <api_key_id>
 ```
 
-#### List applications
+#### List api-keys
 This command is used to print list of all users api-keys:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -186,7 +197,7 @@ virgil apikey list
 ```
 
 
-#### Update application
+#### Update api-key
 This command is used to update name of api-key:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -195,6 +206,7 @@ This command is used to update name of api-key:
 # Windows OS
 virgil apikey update <api_key_id>
 ```
+
 
 
 ## License
