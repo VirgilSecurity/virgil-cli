@@ -30,6 +30,18 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:4cf11742b199ab3aacf26b00187e72f7ff8ba2145f363b74f295d54f098f79e4"
+  name = "github.com/agl/ed25519"
+  packages = [
+    ".",
+    "edwards25519",
+    "extra25519",
+  ]
+  pruneopts = "UT"
+  revision = "5312a61534124124185d41f09206b9fef1d88403"
+
+[[projects]]
+  branch = "master"
   digest = "1:318f1c959a8a740366fce4b1e1eb2fd914036b4af58fbd0a003349b305f118ad"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
@@ -45,6 +57,14 @@
   revision = "bf9dde6d0d2c004a008c27aaee91170c786f6db8"
 
 [[projects]]
+  branch = "master"
+  digest = "1:04d69739a5e01a32391a952b4243c1308fb875b9ad7302355eb37bbdb8c3e70b"
+  name = "github.com/minio/sha256-simd"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3557f3d43a123835ffa5846e4d055146e773d52e"
+
+[[projects]]
   digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
   name = "github.com/pkg/errors"
   packages = ["."]
@@ -54,10 +74,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ffcf6b658fb482299b329d61ecef7e27674cb36d9cfa12c044cd4e67099cd920"
+  digest = "1:8d37f6d96edbd5fa79a2054af6b63af21a05df1aa93f6455136ff9dbbfb355a3"
   name = "golang.org/x/crypto"
   packages = [
+    "curve25519",
+    "ed25519",
+    "ed25519/internal/edwards25519",
     "hkdf",
+    "pbkdf2",
     "ssh/terminal",
   ]
   pruneopts = "UT"
@@ -86,6 +110,19 @@
   revision = "d3ae77c26ac8db90639677e4831a728d33c36111"
 
 [[projects]]
+  digest = "1:ae38cc547fb8e6ae79599d1c5f86da9d3c3ee1d46b90c0b69aa17572be509b14"
+  name = "gopkg.in/virgil.v5"
+  packages = [
+    "cryptoimpl",
+    "cryptoimpl/gcm",
+    "cryptoimpl/keytypes",
+    "errors",
+  ]
+  pruneopts = "UT"
+  revision = "00a20afcd55d6cf57cc55d69e12d7433734c3572"
+  version = "v5.1.5"
+
+[[projects]]
   digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -103,6 +140,7 @@
     "github.com/pkg/errors",
     "gopkg.in/urfave/cli.v2",
     "gopkg.in/urfave/cli.v2/altsrc",
+    "gopkg.in/virgil.v5/cryptoimpl",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
