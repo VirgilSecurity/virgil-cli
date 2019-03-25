@@ -158,10 +158,10 @@ virgil app update <application_id>
 This command is used to create new api-key for current application:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil apikey create <api-key name>
+./virgil apikey create --app_id <app_id> <api-key name>
 
 # Windows OS
-virgil apikey create <api-key name>
+virgil apikey create --app_id <app_id> <api-key name>
 ```
 
 
