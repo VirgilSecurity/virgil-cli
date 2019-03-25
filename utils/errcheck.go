@@ -48,6 +48,7 @@ var ErrEntityNotFound = fmt.Errorf("entity not found")
 var ErrEmailIsNotConfirmed = fmt.Errorf("email is not confirmed")
 var ErrApplicationAlreadyRegistered = fmt.Errorf("error: application with given name already registered")
 var ErrApiKeyAlreadyRegistered = fmt.Errorf("error: api key with given name already registered")
+var ErrEmptyMFACode = fmt.Errorf("error: Multi factor authorization code is empty field")
 
 func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient) (token string, err error) {
 
@@ -69,6 +70,9 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	}
 	if errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40003 {
 		return "", ErrApiKeyAlreadyRegistered
+	}
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40098 {
+		return "", ErrEmptyMFACode
 	}
 	if errToCheck.Code == 40300 {
 		return "", ErrEmailIsNotConfirmed

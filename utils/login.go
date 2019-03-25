@@ -67,25 +67,29 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 		password = string(pwd)
 	}
 
-	//_, err = gopass.GetPasswdPrompt("Enter 2-factor code:\r\n", true, os.Stdin, os.Stdout)
-	//if err != nil {
-	//	return
-	//}
-
 	req := &models.LoginRequest{
 		Email:    email,
 		Password: password,
 	}
 
 	_, cookie, vErr := vcli.Send(http.MethodPost, "", "auth/login", req, nil)
-
-	if vErr != nil {
-		return vErr
+	_, err = CheckRetry(vErr, vcli)
+	if err == ErrEmptyMFACode {
+		code, err := gopass.GetPasswdPrompt("Enter 2-factor code:\r\n", true, os.Stdin, os.Stdout)
+		if err != nil {
+			return err
+		}
+		req.Verification = &models.Verification{MFACode: string(code)}
+		_, cookie, vErr = vcli.Send(http.MethodPost, "", "auth/login", req, nil)
+		if vErr != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
 	}
 
 	return SaveAccessToken(cookie)
 }
-
 
 func LoadAccessTokenOrLogin(vcli *client.VirgilHttpClient) (token string, err error) {
 	token, err = LoadAccessToken()

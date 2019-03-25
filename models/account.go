@@ -43,6 +43,11 @@ type CreateAccountRequest struct {
 }
 
 type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email        string        `json:"email"`
+	Password     string        `json:"password"`
+	Verification *Verification `json:"verification"`
+}
+
+type Verification struct {
+	MFACode string `json:"mfa_code"`
 }
