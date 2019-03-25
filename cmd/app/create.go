@@ -77,13 +77,11 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 
 func CreateFunc(name, appType string, vcli *client.VirgilHttpClient) (appID string, err error) {
 
-	description := utils.ReadConsoleValue("description", "Enter new app description")
-
 	virgilAppType := "pki"
 	if appType == "pure" {
 		virgilAppType = "phe"
 	}
-	req := &models.CreateAppRequest{Name: name, Description: description, Type: virgilAppType}
+	req := &models.CreateAppRequest{Name: name, Type: virgilAppType}
 	resp := &models.Application{}
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "applications", req, resp)

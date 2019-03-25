@@ -101,10 +101,10 @@ func getApp(appID string, vcli *client.VirgilHttpClient) (app *models.Applicatio
 	if len(apps) != 0 {
 		for _, a := range apps {
 			if a.ID == appID {
-				return a, errors.New(fmt.Sprintf("application with id %s not found", appID))
+				return a, nil
 			}
 		}
-		return nil, nil
+		return nil, errors.New(fmt.Sprintf("application with id %s not found", appID))
 	}
 
 	return nil, errors.New("empty response")

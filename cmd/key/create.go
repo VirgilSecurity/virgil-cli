@@ -64,8 +64,6 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "name"}, &cli.StringFlag{Name: "app_id"}},
 		Action: func(context *cli.Context) (err error) {
 
-			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter api-key name", "")
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -76,6 +74,8 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 			if appID == "" {
 				return errors.New("Please, specify app_id (flag --app_id)")
 			}
+
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter api-key name", "")
 
 			app, err := getApp(appID, vcli)
 			if err != nil {
@@ -150,10 +150,10 @@ func getApp(appID string, vcli *client.VirgilHttpClient) (app *models.Applicatio
 	if len(apps) != 0 {
 		for _, a := range apps {
 			if a.ID == appID {
-				return a, errors.New(fmt.Sprintf("application with id %s not found", appID))
+				return a, nil
 			}
 		}
-		return nil, nil
+		return nil, errors.New(fmt.Sprintf("application with id %s not found", appID))
 	}
 
 	return nil, errors.New("empty response")

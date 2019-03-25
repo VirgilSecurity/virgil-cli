@@ -68,16 +68,21 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 			}
 			if len(apps) == 0 {
 				fmt.Println("There are no applications created for the account")
+				return nil
 			}
-
+			fmt.Printf("|%25s|%35s|%5s\n", "Application name   ", "APP_ID   ", " type ")
+			fmt.Printf("|%25s|%35s|%5s\n", "-------------------------", "-----------------------------------", "-----")
 			for _, app := range apps {
-				fmt.Printf("=====  %s  =====", app.Name)
-				if app.ID == defaultAppID {
-					fmt.Printf(" (default)")
-				}
 
-				fmt.Printf("\nAPP_ID %s \n", app.ID)
-				fmt.Printf("Description : %s \n", app.Description)
+				appName := app.Name
+				if app.ID == defaultAppID {
+					appName += " (default)"
+				}
+				appType := "e2ee"
+				if app.Type == "phe" {
+					appType = "pure"
+				}
+				fmt.Printf("|%25s|%35s|%5s\n", appName, app.ID, appType)
 			}
 			return nil
 		},
