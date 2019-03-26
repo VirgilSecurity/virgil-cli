@@ -49,7 +49,7 @@ func Login(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:      "login",
 		ArgsUsage: "[email]",
-		Usage:     "Obtain temporary account access token",
+		Usage:     "Open user session",
 		Action: func(context *cli.Context) error {
 
 			err := utils.Login(context.Args().First(), "", client)

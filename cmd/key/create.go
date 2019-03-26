@@ -57,7 +57,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 		Aliases:   []string{"c"},
 		ArgsUsage: "api-key name",
 		Usage:     "Create a new api-key",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "name"}, &cli.StringFlag{Name: "app_id"}},
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, _ := utils.LoadDefaultApp()

@@ -45,7 +45,7 @@ import (
 func Key(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:    "apikey",
-		Aliases: []string{"k"},
+		Aliases: []string{"key"},
 		Usage:   "Manage your api keys",
 		Subcommands: []*cli.Command{
 			key.Create(client),

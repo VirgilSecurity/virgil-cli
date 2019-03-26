@@ -48,11 +48,10 @@ import (
 
 func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:      "delete-api-key",
-		Aliases:   []string{"delete", "d"},
+		Name:      "delete",
+		Aliases:   []string{"d"},
 		ArgsUsage: "api-key_id",
-		Usage:     "Deletes the api key by id",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id"}},
+		Usage:     "Delete api-key by id",
 		Action: func(context *cli.Context) (err error) {
 
 			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "Enter api-key id", "")

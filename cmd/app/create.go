@@ -54,7 +54,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 		Aliases:   []string{"c"},
 		ArgsUsage: "app_name",
 		Usage:     "Create a new app",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "type",}},
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "type", Usage: "application type (e2ee or pure)"}},
 
 		Action: func(context *cli.Context) (err error) {
 

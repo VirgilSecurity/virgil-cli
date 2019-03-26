@@ -52,9 +52,8 @@ import (
 func Register(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:      "register",
-		Aliases:   []string{"register"},
 		ArgsUsage: "email",
-		Usage:     "Registers a new account",
+		Usage:     "Register a new account",
 		Action: func(context *cli.Context) error {
 			return registerFunc(context, client)
 		},

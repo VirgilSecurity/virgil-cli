@@ -49,10 +49,10 @@ import (
 
 func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:      "delete-application",
-		Aliases:   []string{"delete", "d"},
+		Name:      "delete",
+		Aliases:   []string{"d"},
 		ArgsUsage: "app_id",
-		Usage:     "Deletes the app by id",
+		Usage:     "Delete app by id",
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, _ := utils.LoadDefaultApp()

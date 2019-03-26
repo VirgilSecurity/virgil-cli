@@ -53,7 +53,7 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 		Name:      "update",
 		Aliases:   []string{"u"},
 		ArgsUsage: "app_id",
-		Usage:     "Updates current app",
+		Usage:     "Update app by id",
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, err := utils.LoadDefaultApp()
@@ -81,9 +81,7 @@ func UpdateFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
 
 	name := utils.ReadConsoleValue("name", "Enter new app name")
 
-	description := utils.ReadConsoleValue("description", "Enter new app description")
-
-	req := &models.UpdateAppRequest{Name: name, Description: description}
+	req := &models.UpdateAppRequest{Name: name}
 	resp := &models.Application{}
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "applications/"+appID, req, resp)

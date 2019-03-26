@@ -44,8 +44,7 @@ import (
 
 func Application(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:    "application",
-		Aliases: []string{"app"},
+		Name:    "app",
 		Usage:   "Manage your applications",
 		Subcommands: []*cli.Command{
 			app.Create(client),

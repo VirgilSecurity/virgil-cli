@@ -49,10 +49,10 @@ import (
 
 func UseApp(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:      "use app",
-		Aliases:   []string{"use"},
+		Name:      "use",
+		Aliases:   []string{"use-default-app"},
 		ArgsUsage: "name",
-		Usage:     "Changes context to app with specified name",
+		Usage:     "Changes context to app with specified name. All future commands without specifying app_id will be applied to current app",
 		Action: func(context *cli.Context) error {
 			return useFunc(context, client)
 		},
@@ -83,7 +83,8 @@ func useFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 	for _, app := range apps {
 		if app.Name == appName {
 			utils.SaveDefaultApp(app)
-			fmt.Println("Application context set")
+			fmt.Println("Application context set ok")
+			fmt.Println("All future commands without specifying app_id will be applied to current app")
 			return nil
 		}
 	}

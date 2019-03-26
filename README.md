@@ -163,10 +163,10 @@ This command is used to set context.
 After this all future commands without application_id indication will be applied for application, set in context
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil app use <app_name>
+./virgil use <app_name>
 
 # Windows OS
-virgil app use <app_name>
+virgil use <app_name>
 ```
 
 
@@ -188,7 +188,7 @@ This command is used to delete api-key:
 ./virgil apikey delete <api_key_id>
 
 # Windows OS
-virgil apikey app delete <api_key_id>
+virgil apikey delete <api_key_id>
 ```
 
 #### List api-keys

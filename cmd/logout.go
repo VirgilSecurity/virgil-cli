@@ -49,7 +49,7 @@ import (
 func Logout(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:  "logout",
-		Usage: "Unregister account access token",
+		Usage: "Close user session",
 		Action: func(context *cli.Context) error {
 
 			token, err := utils.LoadAccessToken()

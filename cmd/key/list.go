@@ -52,11 +52,8 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:    "list",
 		Aliases: []string{"l"},
-		Usage:   "Lists your api-keys",
-		Flags:   []cli.Flag{&cli.StringFlag{Name: "app_id"}},
+		Usage:   "List your api-keys",
 		Action: func(context *cli.Context) (err error) {
-
-
 
 			var keys []*models.AccessKey
 			keys, err = listFunc(vcli)

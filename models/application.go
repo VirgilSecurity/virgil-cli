@@ -50,10 +50,8 @@ type Application struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Type        string `json:"type"`
-	Description string `json:"description"`
 }
 
 type UpdateAppRequest struct {
 	Name        string `json:"name"`
-	Description string `json:"description"`
 }

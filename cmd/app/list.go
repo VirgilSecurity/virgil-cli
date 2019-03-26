@@ -51,7 +51,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:    "list",
 		Aliases: []string{"l"},
-		Usage:   "Lists your apps",
+		Usage:   "List your apps",
 		Action: func(context *cli.Context) (err error) {
 
 			var apps []*models.Application
