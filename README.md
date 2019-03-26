@@ -11,23 +11,22 @@
 ## Content
 - [Installation](#installation)
 - [Launching CLI](#launching-cli)
-- [Usage](#usage)
-  - [Manage Virgil Account](#manage-virgil-account)
-    - [Register new Account](#register-new-account)
-    - [Login into Account](#login-into-account)
-    - [Logout from Account](#logout-from-acccount)
-  - [Manage PURE application](#manage-pure-application)
-    - [Update keys](#update-keys)
-    - [Generate a secret key](#generate-a-secret-key)
-  - [Manage E2EE application](#manage-pure-application)
-    - [Create new application](#create-new-e2ee-application)
-    - [Delete application](#delete-application)
-    - [Get list of E2EE applications](#list-applications)
-    - [Update application](#update-application)
-    - [Create new API Key](#create-new-api-key)
-    - [Delete API Key](#delete-api-key)
-    - [Get list of API Keys](#list-api-key)
-    - [Update API Key](#update-api-key)
+- [Manage Virgil Account](#manage-virgil-account)
+  - [Register new Account](#register-new-account)
+  - [Login into Account](#login-into-account)
+  - [Logout from Account](#logout-from-acccount)
+- [Manage PURE application](#manage-pure-application)
+  - [Update keys](#update-keys)
+  - [Generate a secret key](#generate-a-secret-key)
+- [Manage E2EE application](#manage-pure-application)
+  - [Create new application](#create-new-e2ee-application)
+  - [Delete application](#delete-application)
+  - [Get list of E2EE applications](#list-applications)
+  - [Update application](#update-application)
+  - [Create new API Key](#create-new-api-key)
+  - [Delete API Key](#delete-api-key)
+  - [Get list of API Keys](#list-api-key)
+  - [Update API Key](#update-api-key)
 - [License](#license)
 - [Support](#support)
 
@@ -57,9 +56,9 @@ To get more information, run the Virgil CLI or its command with the `--help` or 
 
 ## Usage
 
-### Manage Virgil Account
+## Manage Virgil Account
 
-#### Register new account
+### Register new account
 This command is used to create a new account:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -69,7 +68,7 @@ This command is used to create a new account:
 virgil register <email>
 ```
 
-#### Login into account
+### Login into account
 This command is used to open session for account:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -79,7 +78,7 @@ This command is used to open session for account:
 virgil login
 ```
 
-#### Logout from account
+### Logout from account
 This command is used to close the current session for account:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -89,9 +88,9 @@ This command is used to close the current session for account:
 virgil logout
 ```
 
-### Manage PURE application
+## Manage PURE application
 
-#### Update keys
+### Update keys
 This command is used to update the `app_secret_key` and `service_public_key` of a Pure application
 
 ```bash
@@ -102,7 +101,7 @@ This command is used to update the `app_secret_key` and `service_public_key` of 
 virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
 ```
 
-#### Generate a secret key
+### Generate a secret key
 This command is used to generate a new `app_secret_key` for a Pure application:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -114,9 +113,9 @@ virgil pure keygen
 
 
 
-### Manage E2EE application
+## Manage E2EE application
 
-#### Create new E2EE application
+### Create new E2EE application
 This command is used to create new application:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -127,7 +126,7 @@ virgil app create --type e2ee <application name>
 ```
 
 
-#### Delete application
+### Delete application
 This command is used to delete application:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -137,7 +136,7 @@ This command is used to delete application:
 virgil app delete <application_id>
 ```
 
-#### List applications
+### List applications
 This command is used to print list of all user applications:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -148,7 +147,7 @@ virgil app list
 ```
 
 
-#### Update application
+### Update application
 This command is used to update name of application:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -158,7 +157,7 @@ This command is used to update name of application:
 virgil app update <application_id>
 ```
 
-#### Use application
+### Use application
 This command is used to set context.
 After this all future commands without application_id indication will be applied for application, set in context
 ```bash
@@ -170,7 +169,7 @@ virgil use <app_name>
 ```
 
 
-#### Create new api-key
+### Create new api-key
 This command is used to create new api-key for current application:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -181,7 +180,7 @@ virgil apikey create --app_id <app_id> <api-key name>
 ```
 
 
-#### Delete api-key
+### Delete api-key
 This command is used to delete api-key:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -191,7 +190,7 @@ This command is used to delete api-key:
 virgil apikey delete <api_key_id>
 ```
 
-#### List api-keys
+### List api-keys
 This command is used to print list of all users api-keys:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -202,7 +201,7 @@ virgil apikey list
 ```
 
 
-#### Update api-key
+### Update api-key
 This command is used to update name of api-key:
 ```bash
 # FreeBSD / Linux / Mac OS
