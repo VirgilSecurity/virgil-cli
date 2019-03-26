@@ -149,7 +149,7 @@ virgil app list
 
 
 #### Update application
-This command is used to update name and description of application:
+This command is used to update name of application:
 ```bash
 # FreeBSD / Linux / Mac OS
 ./virgil app update <application_id>
