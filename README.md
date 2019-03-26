@@ -54,8 +54,6 @@ virgil.exe
 To get more information, run the Virgil CLI or its command with the `--help` or `-h` option that displays full help list and available commands.
 
 
-## Usage
-
 ## Manage Virgil Account
 
 ### Register new account
