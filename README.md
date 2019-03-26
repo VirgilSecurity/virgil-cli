@@ -20,6 +20,14 @@
     - [Update keys](#update-keys)
     - [Generate a secret key](#generate-a-secret-key)
   - [Manage E2EE application](#manage-pure-application)
+    - [Create new application](#create-new-e2ee-application)
+    - [Delete application](#delete-application)
+    - [Get list of E2EE applications](#list-applications)
+    - [Update application](#update-application)
+    - [Create new API Key](#create-new-api-key)
+    - [Delete API Key](#delete-api-key)
+    - [Get list of API Keys](#list-api-key)
+    - [Update API Key](#update-api-key)
 - [License](#license)
 - [Support](#support)
 
@@ -82,12 +90,9 @@ virgil logout
 ```
 
 ### Manage PURE application
-Using the Virgil CLI you can:
-  * get your Virgil PURE application credentials, such as: Application Token, Application Secret Key
-  * update your Virgil PURE application credentials
 
 #### Update keys
-This command is used to update the `app_secret_key` and `service_public_key` of a specific application
+This command is used to update the `app_secret_key` and `service_public_key` of a Pure application
 
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -98,7 +103,7 @@ virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
 ```
 
 #### Generate a secret key
-This command is used to generate a new `app_secret_key`:
+This command is used to generate a new `app_secret_key` for a Pure application:
 ```bash
 # FreeBSD / Linux / Mac OS
 ./virgil pure keygen
@@ -111,7 +116,7 @@ virgil pure keygen
 
 ### Manage E2EE application
 
-#### Create new application
+#### Create new E2EE application
 This command is used to create new application:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -154,7 +159,7 @@ virgil app update <application_id>
 ```
 
 #### Use application
-This command is used to set context. 
+This command is used to set context.
 After this all future commands without application_id indication will be applied for application, set in context
 ```bash
 # FreeBSD / Linux / Mac OS
