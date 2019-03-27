@@ -23,6 +23,7 @@
   - [Delete application](#delete-application)
   - [Get list of E2EE applications](#list-applications)
   - [Update application](#update-application)
+  - [Set up default Application](#use-application)
   - [Create new API Key](#create-new-api-key)
   - [Delete API Key](#delete-api-key)
   - [Get list of API Keys](#list-api-key)
@@ -110,7 +111,6 @@ virgil pure keygen
 ```
 
 
-
 ## Manage E2EE application
 
 ### Create new E2EE application
@@ -122,7 +122,7 @@ This command is used to create new application:
 # Windows OS
 virgil app create --type e2ee <application name>
 ```
-
+> Note! You have to verify your email in order to be able to create more than one application
 
 ### Delete application
 This command is used to delete application:
@@ -156,8 +156,8 @@ virgil app update <application_id>
 ```
 
 ### Use application
-This command is used to set context.
-After this all future commands without application_id indication will be applied for application, set in context
+This command allows you to specify the application that will be used by default. In this way, you'll be able you to use CLI commands without specifying `app_id` where it's needed. 
+
 ```bash
 # FreeBSD / Linux / Mac OS
 ./virgil use <app_name>
