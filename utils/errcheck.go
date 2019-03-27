@@ -65,27 +65,27 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	}
 
 	if errToCheck.StatusCode == http.StatusNotFound ||
-		errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40400 ||
+		errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40400 ||
 		strings.Contains(errToCheck.Error(), "Entity was not found ") {
 		return "", ErrEntityNotFound
 	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40002 &&
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40002 &&
 		strings.Contains(errToCheck.Errors[0].Message, "Application with given name already registered") {
 		return "", ErrApplicationAlreadyRegistered
 	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40002 &&
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40002 &&
 		strings.Contains(errToCheck.Errors[0].Message, "Email is not valid") {
 		return "", ErrAuthFailed
 	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40003 &&
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40003 &&
 		strings.Contains(errToCheck.Errors[0].Message, "Password is invalid") {
 		return "", ErrAuthFailed
 	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40003 &&
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40003 &&
 		strings.Contains(errToCheck.Errors[0].Message, "Access Key already registered with given name") {
 		return "", ErrApiKeyAlreadyRegistered
 	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) == 1 && errToCheck.Errors[0].Code == 40098 {
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40098 {
 		return "", ErrEmptyMFACode
 	}
 	if errToCheck.Code == 40300 {

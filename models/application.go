@@ -36,6 +36,8 @@
 
 package models
 
+import "time"
+
 type CreateAppRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -47,11 +49,12 @@ type CreateAppResp struct {
 }
 
 type Application struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Type        string `json:"type"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Type      string    `json:"type"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type UpdateAppRequest struct {
-	Name        string `json:"name"`
+	Name string `json:"name"`
 }

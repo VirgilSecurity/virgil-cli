@@ -36,6 +36,8 @@
 
 package models
 
+import "time"
+
 type CreateAccessKeyRequest struct {
 	Name      string `json:"name"`
 	PublicKey []byte `json:"public_key"`
@@ -43,9 +45,10 @@ type CreateAccessKeyRequest struct {
 }
 
 type AccessKey struct {
-	ID        string `json:"id"`
-	PublicKey []byte `json:"public_key"`
-	Name      string `json:"name"`
+	ID        string    `json:"id"`
+	PublicKey []byte    `json:"public_key"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type UpdateAccessKeyRequest struct {

@@ -64,12 +64,13 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 
 			if len(keys) == 0 {
 				fmt.Println("There are no api keys created for application")
+				return nil
 			}
+			fmt.Printf("|%25s|%35s|%63s |%20s\n", "Api key name   ", "API_KEY_ID   ", " PublicKey ", " created_at ")
+			fmt.Printf("|%25s|%35s|%64s|%20s\n", "-------------------------", "-----------------------------------", "----------------------------------------------------------------", "---------------------------------------")
 
 			for _, k := range keys {
-				fmt.Printf("=====  %s  =====\n", k.Name)
-				fmt.Printf(" API_KEY_ID : %s \n", k.ID)
-				fmt.Printf(" PublicKey : %s \n", base64.StdEncoding.EncodeToString(k.PublicKey))
+				fmt.Printf("|%25s|%35s|%63s |%20s\n", k.Name, k.ID, base64.StdEncoding.EncodeToString(k.PublicKey), k.CreatedAt)
 			}
 			return nil
 		},
