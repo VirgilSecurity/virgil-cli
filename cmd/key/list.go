@@ -40,6 +40,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"sort"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
@@ -66,6 +67,9 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 				fmt.Println("There are no api keys created for application")
 				return nil
 			}
+			sort.Slice(keys, func(i, j int) bool {
+				return keys[i].CreatedAt.Before(keys[j].CreatedAt)
+			})
 			fmt.Printf("|%25s|%35s|%63s |%20s\n", "Api key name   ", "API_KEY_ID   ", " PublicKey ", " created_at ")
 			fmt.Printf("|%25s|%35s|%64s|%20s\n", "-------------------------", "-----------------------------------", "----------------------------------------------------------------", "---------------------------------------")
 

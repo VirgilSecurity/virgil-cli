@@ -37,6 +37,7 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"net/http"
 )

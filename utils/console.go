@@ -67,8 +67,8 @@ func ReadConsoleValue(paramName, paramDescription string, options ...string) str
 		scanner.Scan()
 		value = scanner.Text()
 		if len(options) == 0 {
-			if value == "" {
-				fmt.Printf("%s can't be empty\n", paramName)
+			if len(value) < 3 {
+				fmt.Printf("%s length can't be less than 3\n", paramName)
 				fmt.Printf("%s:\n", paramDescription)
 			} else {
 				valueSet = true

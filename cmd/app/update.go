@@ -64,6 +64,10 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 
 			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", "Enter application id", defaultAppID)
 
+			_, err = getApp(appID, vcli)
+			if err != nil {
+				return err
+			}
 			err = UpdateFunc(appID, vcli)
 
 			if err == nil {
