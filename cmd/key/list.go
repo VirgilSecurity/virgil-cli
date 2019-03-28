@@ -95,3 +95,20 @@ func listFunc(vcli *client.VirgilHttpClient) (keys []*models.AccessKey, err erro
 
 	return nil, errors.New("empty response")
 }
+
+func getKey(keyID string, vcli *client.VirgilHttpClient) (app *models.AccessKey, err error) {
+
+	kk, err := listFunc(vcli)
+	if err != nil {
+		return
+	}
+
+	if len(kk) != 0 {
+		for _, k := range kk {
+			if k.ID == keyID {
+				return k, nil
+			}
+		}
+	}
+	return nil, errors.New(fmt.Sprintf("key with id %s not found", keyID))
+}

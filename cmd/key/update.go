@@ -60,6 +60,11 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 
 			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "api_key_id", "Enter api-key id", "")
 
+			_, err = getKey(apiKeyID, vcli)
+			if err != nil {
+				return err
+			}
+
 			err = UpdateFunc(apiKeyID, vcli)
 
 			if err != nil {
