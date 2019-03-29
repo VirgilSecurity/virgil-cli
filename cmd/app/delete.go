@@ -63,6 +63,9 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", "Enter application id", defaultAppID)
 
 			app, err := getApp(appID, vcli)
+			if err != nil {
+				return err
+			}
 			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("Are you sure, that you want to delete application %s (y/n) ?", app.Name), "y", "n")
 			if yesOrNo == "n" {
 				return
