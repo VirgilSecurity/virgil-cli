@@ -1,81 +1,222 @@
-[![Production](https://travis-ci.org/VirgilSecurity/virgil-cli.svg?branch=master)](https://travis-ci.org/VirgilSecurity/virgil-cli)
-
 # Virgil CLI
-
-[Installation](#installation) | [Uninstallation](#uninstallation) | [Commands](#commands) | [Using Example](#using-example) | [Support](#support)
-
-[Virgil Security](https://virgilsecurity.com) is a stack of security libraries and all the necessary infrastructure to enable seamless, end-to-end encryption for any application, platform or device. The Command-line interface (CLI) program is a command line tool for utilizing [Virgil Services](https://developer.virgilsecurity.com/docs/java/references). In a few simple steps you can encrypt and decrypt, sign and verify.
+[![Build Status](https://travis-ci.org/VirgilSecurity/virgil-cli.png?branch=v5)](https://travis-ci.org/VirgilSecurity/virgil-cli)
+[![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://github.com/VirgilSecurity/virgil/blob/master/LICENSE)
 
 
-For a full overview head over to our [documentation portal](https://developer.virgilsecurity.com/docs/java/references/utilities/cli).
+<a href="https://developer.virgilsecurity.com/docs"><img width="230px" src="https://cdn.virgilsecurity.com/assets/images/github/logos/virgil-logo-red.png" align="left" hspace="10" vspace="6"></a> [Virgil Security](https://virgilsecurity.com) introduces to developers a **Virgil CLI** – a tool that provides commands for interacting with the Virgil Security services. With minimal configuration, you can start using all of the functionality provided by the Virgil from your favorite terminal program.
+- **Linux shells** – Use common shell programs such as Bash, Zsh, and tsch to run commands in Linux, macOS, or Unix.
+- **Windows command line** – On Microsoft Windows, run commands in either PowerShell or the Windows Command Processor.
+
+
+## Content
+- [Installation](#installation)
+- [Launching CLI](#launching-cli)
+- [Manage Virgil Account](#manage-virgil-account)
+  - [Register new Account](#register-new-account)
+  - [Login into Account](#login-into-account)
+  - [Logout from Account](#logout-from-acccount)
+- [Manage PURE application](#manage-pure-application)
+  - [Update keys](#update-keys)
+  - [Generate a secret key](#generate-a-secret-key)
+- [Manage E2EE application](#manage-pure-application)
+  - [Create new application](#create-new-e2ee-application)
+  - [Delete application](#delete-application)
+  - [Get list of E2EE applications](#list-applications)
+  - [Update application](#update-application)
+  - [Set up default Application](#use-application)
+  - [Create new API Key](#create-new-api-key)
+  - [Delete API Key](#delete-api-key)
+  - [Get list of API Keys](#list-api-key)
+  - [Update API Key](#update-api-key)
+- [License](#license)
+- [Support](#support)
+
 
 ## Installation
+The Virgil CLI is provided as a binary file, and it is available for Mac OS, FreeBSD,  Linux OS and Windows OS. Download the latest CLI package here: https://github.com/VirgilSecurity/virgil-cli/releases.
 
-The Virgil CLI is provided as a script and an archive of the files, and it is available for Mac and Linux OS.
 
-In order to use the CLI:
-1. download the CLI archive or script for you platform [here](https://cdn.virgilsecurity.com/apps/virgil-cli/);
-2. install the CLI with:
-      - MAC OS [install guide](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/settings/install/macos);
-      - Linux OS [install guide](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/settings/install/linux).
+## Launching Virgil CLI
 
-## Uninstallation
-
-If you need to uninstall the CLI, use this command:
-
+#### FreeBSD / Linux / Mac OS
+Run the CLI with the following command:
 ```bash
-./utils/uninstall.sh [--prefix=<install-prefix>] [--keep-config]
+./virgil
 ```
-[You can find example and option explanation ](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/settings/uninstallation) in our documentation.
+> or use `sudo ./virgil` when you need to run the command as an administrator
 
-
-## Commands
-
-Using the CLI you can:
-  * [Generate a Virgil Key](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/generate-key) (Private Key)
-  * [Extract a Public Key](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/public-key)
-  * [Create](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/create-card) a User's Virgil Card
-  * [Get](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/get-card) a User's Virgil Card
-  * [Search](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/search-card) for a User's Virgil Card
-  * [Revoke](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/revoke-card) a User's Virgil Card
-  * [Encrypt data](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/encrypt)
-  * [Decrypt](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/decrypt) the encrypted data
-  * [Sign data](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/sign)
-  * [Verify](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/verify) the signature
-  * Some additional commands:
-    * Change [Key format](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/additional-commands/key-format)
-    * See use's [Card info](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/additional-commands/card-info) (content)
-    * Use [Secret Alias](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/additional-commands/secret-alias)
-
-[Learn more about the CLI commands](https://developer.virgilsecurity.com/docs/java/references/utilities/cli) in our documentation.
-
-## Using Example
-
-Virgil Security makes it very easy to sign anything in minutes. With our CLI you need only a few lines of the code and you will get a signed data for every one of your users and devices.
-
-Example: Alice signs some plain.txt:
-
-Alice generates private key (private.virgilkey) with the password (strong_pass)
-
+#### Windows OS
+Run the CLI with the following command:
 ```bash
-virgil keygen -o private.virgilkey -p strong_pass
-```
-and then Alice signs some 'plain.txt' using her private key
-
-```bash
-virgil sign -i plain.txt -o plain.signed -k private.virgilkey -p strong_pass
+virgil.exe
+# or just `virgil`
 ```
 
-This will result in the creation of a newly signed file (plain.signed).  In this example, the signed file will be stored in the folder, from which the command was run.
+To get more information, run the Virgil CLI or its command with the `--help` or `-h` option that displays full help list and available commands.
 
 
-[More examples about how to sign data](https://developer.virgilsecurity.com/docs/java/references/utilities/cli/commands/sign)  with the CLI you can find in our documentation.
+## Manage Virgil Account
+
+### Register new account
+This command is used to create a new account:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil register <email>
+
+# Windows OS
+virgil register <email>
+```
+
+### Login into account
+This command is used to open session for account:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil login
+
+# Windows OS
+virgil login
+```
+
+### Logout from account
+This command is used to close the current session for account:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil logout
+
+# Windows OS
+virgil logout
+```
+
+## Manage PURE application
+
+### Update keys
+This command is used to update the `app_secret_key` and `service_public_key` of a Pure application
+
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
+
+# Windows OS
+virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
+```
+
+### Generate a secret key
+This command is used to generate a new `app_secret_key` for a Pure application:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil pure keygen
+
+# Windows OS
+virgil pure keygen
+```
+
+
+## Manage E2EE application
+
+### Create new E2EE application
+This command is used to create new application:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app create --type e2ee <application name>
+
+# Windows OS
+virgil app create --type e2ee <application name>
+```
+> Note! You have to verify your email in order to be able to create more than one application
+
+### Delete application
+This command is used to delete application:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app delete <application_id>
+
+# Windows OS
+virgil app delete <application_id>
+```
+
+### List applications
+This command is used to print list of all user applications:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app list
+
+# Windows OS
+virgil app list
+```
+
+
+### Update application
+This command is used to update name of application:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app update <application_id>
+
+# Windows OS
+virgil app update <application_id>
+```
+
+### Use application
+This command allows you to specify the application that will be used by default. In this way, you'll be able you to use CLI commands without specifying `app_id` where it's needed. 
+
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil use <app_name>
+
+# Windows OS
+virgil use <app_name>
+```
+
+
+### Create new api-key
+This command is used to create new api-key for current application:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil apikey create --app_id <app_id> <api-key name>
+
+# Windows OS
+virgil apikey create --app_id <app_id> <api-key name>
+```
+
+
+### Delete api-key
+This command is used to delete api-key:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil apikey delete <api_key_id>
+
+# Windows OS
+virgil apikey delete <api_key_id>
+```
+
+### List api-keys
+This command is used to print list of all users api-keys:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil apikey list
+
+# Windows OS
+virgil apikey list
+```
+
+
+### Update api-key
+This command is used to update name of api-key:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil apikey update <api_key_id>
+
+# Windows OS
+virgil apikey update <api_key_id>
+```
+
 
 
 ## License
-
 See [LICENSE](https://github.com/VirgilSecurity/virgil-cli/tree/master/LICENSE) for details.
 
 ## Support
+Our developer support team is here to help you. Find out more information on our [Help Center](https://help.virgilsecurity.com/).
 
-Our developer support team is here to help you. You can find us on [Twitter](https://twitter.com/virgilsecurity) and [email](mailto:support@virgilsecurity.com).
+You can find us on [Twitter](https://twitter.com/VirgilSecurity) or send us email support@VirgilSecurity.com.
+
+Also, get extra help from our support team on [Slack](https://virgilsecurity.com/join-community).
