@@ -39,6 +39,7 @@ package utils
 import (
 	"bufio"
 	"fmt"
+	"github.com/pkg/errors"
 	"net/http"
 	"os"
 
@@ -83,7 +84,7 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 			req.Verification = &models.Verification{MFACode: string(code)}
 			_, cookie, vErr = vcli.Send(http.MethodPost, "", "auth/login", req, nil)
 			if vErr != nil {
-				return err
+				return errors.New(fmt.Sprintf("Authorization failed.\n"))
 			}
 		} else if err != nil {
 			return err

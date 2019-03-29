@@ -126,6 +126,7 @@ func CreateFunc(name string, vcli *client.VirgilHttpClient) (apiKeyID string, er
 
 	if resp != nil {
 
+		fmt.Println("This secret is only shown ONCE. Make note of it and store it in a safe, secure location.")
 		fmt.Println("API_KEY:", base64.StdEncoding.EncodeToString(prKey))
 
 		return resp.ID, nil
