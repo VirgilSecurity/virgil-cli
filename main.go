@@ -92,6 +92,12 @@ func main() {
 			cmd.Key(vcli),
 			cmd.UseApp(vcli),
 			cmd.PureKit(),
+			cmd.Keygen(),
+			cmd.Key2Pub(),
+			cmd.Encrypt(),
+			cmd.Decrypt(),
+			cmd.Sign(),
+			cmd.Verify(),
 		},
 		Before: func(c *cli.Context) error {
 
