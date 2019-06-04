@@ -1,14 +1,11 @@
 package cmd
 
 import (
-	"bufio"
+	"encoding/base64"
 	"fmt"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 	"gopkg.in/virgil.v5/cryptoimpl"
 	"io/ioutil"
-	"os"
-	"strings"
-
-	"github.com/VirgilSecurity/virgil-cli/utils"
 
 	"gopkg.in/urfave/cli.v2"
 )
@@ -25,47 +22,25 @@ func Verify() *cli.Command {
 		},
 		Action: func(context *cli.Context) error {
 
-			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
-			signatureFileName := utils.ReadFlagOrDefault(context, "i", "")
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
+			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
+			signatureFileName := utils.ReadFlagOrDefault(context, "s", "")
 
-			publicKeyString := ""
-			if keyFileName != "" {
-
-				f, err := os.Open(keyFileName)
-				if err != nil {
-					return err
-				}
-				defer func() {
-					if err := f.Close(); err != nil {
-						panic(err)
-					}
-				}()
-
-				scanner := bufio.NewScanner(f)
-				for scanner.Scan() {
-					t := scanner.Text()
-					if strings.Contains(t, "BEGIN ") {
-						continue
-					}
-					publicKeyString = t
-					break
-				}
-
-			} else {
-				publicKeyString = utils.ReadParamOrDefaultOrFromConsole(context, "pub_key", "public key", "")
+			publicKeyString, err := utils.ReadKeyFromFileOrParamOrFromConsole(context, keyFileName, "pub_key", "public key")
+			if err != nil {
+				return err
 			}
-
 
 			data, err := ioutil.ReadFile(inputFileName)
 			if err != nil {
-				fmt.Print(err)
+				return err
 			}
 
 			signature, err := ioutil.ReadFile(signatureFileName)
 			if err != nil {
-				fmt.Print(err)
+				return err
 			}
+
 			err = VerifyFunc(publicKeyString, data, signature)
 
 			if err != nil {
@@ -85,6 +60,16 @@ func VerifyFunc(publicKeyString string, data, signature []byte) (err error) {
 	if err != nil {
 		return err
 	}
+	dd, err := base64.StdEncoding.DecodeString(string(data))
 
-	return crypto.VerifySignature(data, signature, pk)
+	if err != nil {
+		return err
+	}
+	ss, err := base64.StdEncoding.DecodeString(string(signature))
+
+	if err != nil {
+		return err
+	}
+
+	return crypto.VerifySignature(dd, ss, pk)
 }

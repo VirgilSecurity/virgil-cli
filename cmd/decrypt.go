@@ -1,65 +1,38 @@
 package cmd
 
-
 import (
-	"bufio"
 	"encoding/base64"
 	"fmt"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 	"gopkg.in/virgil.v5/cryptoimpl"
 	"io"
 	"io/ioutil"
 	"os"
-	"strings"
-
-	"github.com/VirgilSecurity/virgil-cli/utils"
 
 	"gopkg.in/urfave/cli.v2"
 )
-
 
 func Decrypt() *cli.Command {
 	return &cli.Command{
 		Name:      "decrypt",
 		ArgsUsage: "[pr_key]",
 		Usage:     "Decrypt data",
-		Flags: []cli.Flag{&cli.StringFlag{Name: "o", Usage: "destination file name"},
+		Flags: []cli.Flag{
+			&cli.StringFlag{Name: "o", Usage: "destination file name"},
 			&cli.StringFlag{Name: "key", Usage: "private key file"},
 			&cli.StringFlag{Name: "p", Usage: "private key password"},
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
 
-			pass := utils.ReadFlagOrDefault(context, "p", "")
-
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
-			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
+			pass := utils.ReadFlagOrDefault(context, "p", "")
+			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
 
-			privateKeyString := ""
-			if keyFileName != "" {
-
-				f, err := os.Open(keyFileName)
-				if err != nil {
-					return err
-				}
-				defer func() {
-					if err := f.Close(); err != nil {
-						panic(err)
-					}
-				}()
-
-				scanner := bufio.NewScanner(f)
-				for scanner.Scan() {
-					t := scanner.Text()
-					if strings.Contains(t, "BEGIN ") {
-						continue
-					}
-					privateKeyString = t
-					break
-				}
-
-			} else {
-				privateKeyString = utils.ReadParamOrDefaultOrFromConsole(context, "pr_key", "private key", "")
+			privateKeyString, err := utils.ReadKeyFromFileOrParamOrFromConsole(context, keyFileName, "pr_key", "private key")
+			if err != nil {
+				return err
 			}
 
 			var writer io.Writer
@@ -100,7 +73,6 @@ func Decrypt() *cli.Command {
 
 func DecryptFunc(privateKeyString, password string, data []byte) (publicKey []byte, err error) {
 
-	fmt.Println(privateKeyString)
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {
@@ -110,7 +82,6 @@ func DecryptFunc(privateKeyString, password string, data []byte) (publicKey []by
 	dd, err := base64.StdEncoding.DecodeString(string(data))
 
 	if err != nil {
-		fmt.Println("conversion err")
 		return nil, err
 	}
 

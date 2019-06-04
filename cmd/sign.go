@@ -1,20 +1,16 @@
 package cmd
 
 import (
-	"bufio"
 	"encoding/base64"
 	"fmt"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 	"gopkg.in/virgil.v5/cryptoimpl"
 	"io"
 	"io/ioutil"
 	"os"
-	"strings"
-
-	"github.com/VirgilSecurity/virgil-cli/utils"
 
 	"gopkg.in/urfave/cli.v2"
 )
-
 
 func Sign() *cli.Command {
 	return &cli.Command{
@@ -34,31 +30,9 @@ func Sign() *cli.Command {
 			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
 
-			privateKeyString := ""
-			if keyFileName != "" {
-
-				f, err := os.Open(keyFileName)
-				if err != nil {
-					return err
-				}
-				defer func() {
-					if err := f.Close(); err != nil {
-						panic(err)
-					}
-				}()
-
-				scanner := bufio.NewScanner(f)
-				for scanner.Scan() {
-					t := scanner.Text()
-					if strings.Contains(t, "BEGIN ") {
-						continue
-					}
-					privateKeyString = t
-					break
-				}
-
-			} else {
-				privateKeyString = utils.ReadParamOrDefaultOrFromConsole(context, "pr_key", "private key", "")
+			privateKeyString, err := utils.ReadKeyFromFileOrParamOrFromConsole(context, keyFileName, "pr_key", "private key")
+			if err != nil {
+				return err
 			}
 
 			var writer io.Writer
@@ -81,14 +55,14 @@ func Sign() *cli.Command {
 			if err != nil {
 				fmt.Print(err)
 			}
-			key, err := SignFunc(privateKeyString, pass, data)
+			signature, err := SignFunc(privateKeyString, pass, data)
 
 			if err != nil {
 				fmt.Println("decryption err")
 				return err
 			}
 
-			_, err = fmt.Fprintln(writer, string(key))
+			_, err = fmt.Fprintln(writer, base64.StdEncoding.EncodeToString(signature))
 			if err != nil {
 				return err
 			}
@@ -99,7 +73,6 @@ func Sign() *cli.Command {
 
 func SignFunc(privateKeyString, password string, data []byte) (publicKey []byte, err error) {
 
-	fmt.Println(privateKeyString)
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {

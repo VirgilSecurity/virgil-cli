@@ -46,6 +46,35 @@ import (
 
 var scanner = bufio.NewScanner(os.Stdin)
 
+func ReadKeyFromFileOrParamOrFromConsole(context *cli.Context, fileName, paramName, paramDescription string) (string, error) {
+	value := ""
+	if fileName != "" {
+		f, err := os.Open(fileName)
+		if err != nil {
+			return "", err
+		}
+		defer func() {
+			if err := f.Close(); err != nil {
+				panic(err)
+			}
+		}()
+
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			t := scanner.Text()
+			if strings.Contains(t, "BEGIN ") {
+				continue
+			}
+			value = t
+			break
+		}
+
+	} else {
+		value = ReadParamOrDefaultOrFromConsole(context, paramName, paramDescription, "")
+	}
+	return value, nil
+}
+
 func ReadParamOrDefaultOrFromConsole(context *cli.Context, paramName, paramDescription, defaultValue string) string {
 	value := strings.Join(context.Args().Slice(), " ")
 	if value != "" {

@@ -37,29 +37,38 @@
 package utils
 
 import (
-	"github.com/VirgilSecurity/virgil-cli/client"
-	"net/http"
+	"encoding/json"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"io/ioutil"
+	"os"
+	"os/user"
+	"path/filepath"
 )
 
-func SendWithCheckRetry(vcli *client.VirgilHttpClient, method string, urlPath string, payload interface{}, respObj interface{}, extraOptions ...interface{}) (headers http.Header, cookie string, err error) {
-	token := ""
-	if len(extraOptions) == 0 {
-		token, err = LoadAccessTokenOrLogin(vcli)
+func SaveConfig(token string) error {
 
-		if err != nil {
-			return nil, "", err
-		}
-
-	}
-	var vErr *client.VirgilAPIError
-	for vErr == nil {
-		headers, cookie, vErr = vcli.Send(method, token, urlPath, payload, respObj, extraOptions...)
-		if vErr == nil {
-			break
-		}
-
-		token, err = CheckRetry(vErr, vcli)
+	u, err := user.Current()
+	if err != nil {
+		return err
 	}
 
+	tokenPath := filepath.Join(u.HomeDir, ".virgil-conf")
+
+	if _, err := os.Stat(tokenPath); os.IsNotExist(err) {
+		if err = os.Mkdir(tokenPath, 0700); err != nil {
+			return err
+		}
+	}
+
+	tokenPath = filepath.Join(tokenPath, "token")
+
+	if err = ioutil.WriteFile(tokenPath, []byte(token), 0600); err != nil {
+		return err
+	}
+	return nil
+}
+
+func ParseAppConfig(data []byte) (res models.AppParams, err error) {
+	err = json.Unmarshal(data, &res)
 	return
 }
