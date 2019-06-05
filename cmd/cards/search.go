@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"github.com/VirgilSecurity/virgil-cli/utils"
 	"gopkg.in/urfave/cli.v2"
+	"gopkg.in/virgil.v5/cryptoimpl"
 	"gopkg.in/virgil.v5/sdk"
-	"gopkg.in/virgilsecurity/virgil-crypto-go.v5"
 	"io/ioutil"
 	"time"
 )
 
 var (
-	crypto      = virgil_crypto_go.NewVirgilCrypto()
-	cardCrypto  = virgil_crypto_go.NewVirgilCardCrypto()
-	tokenSigner = virgil_crypto_go.NewVirgilAccessTokenSigner()
+	crypto      = cryptoimpl.NewVirgilCrypto()
+	cardCrypto  = cryptoimpl.NewVirgilCardCrypto()
+	tokenSigner = cryptoimpl.NewVirgilAccessTokenSigner()
 )
 
 func Search() *cli.Command {

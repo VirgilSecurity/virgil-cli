@@ -127,14 +127,6 @@
   version = "v5.1.5"
 
 [[projects]]
-  branch = "v5"
-  digest = "1:578fc7802c8a1208420f219b8612f03df8bdeb89a18691185387d35404233ecf"
-  name = "gopkg.in/virgilsecurity/virgil-crypto-go.v5"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "685c1b6f56fd10297784cb04b2d137452fbb9837"
-
-[[projects]]
   digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -154,7 +146,6 @@
     "gopkg.in/urfave/cli.v2/altsrc",
     "gopkg.in/virgil.v5/cryptoimpl",
     "gopkg.in/virgil.v5/sdk",
-    "gopkg.in/virgilsecurity/virgil-crypto-go.v5",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
