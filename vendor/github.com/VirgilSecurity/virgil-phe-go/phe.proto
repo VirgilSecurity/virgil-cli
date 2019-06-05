@@ -1,0 +1,56 @@
+syntax = "proto3";
+package phe;
+
+message Keypair {
+    bytes public_key = 1;
+    bytes private_key = 2;
+}
+
+message EnrollmentRecord {
+    bytes ns = 1;
+    bytes nc = 2;
+    bytes t0 = 3;
+    bytes t1 = 4;
+}
+
+message ProofOfSuccess {
+    bytes term1 = 1;
+    bytes term2 = 2;
+    bytes term3 = 3;
+    bytes blind_x = 4;
+}
+
+message ProofOfFail {
+    bytes term1 = 1;
+    bytes term2 = 2;
+    bytes term3 = 3;
+    bytes term4 = 4;
+    bytes blind_a = 5;
+    bytes blind_b = 6;
+}
+
+message UpdateToken {
+    bytes a = 1;
+    bytes b = 2;
+}
+
+message EnrollmentResponse {
+    bytes ns = 1;
+    bytes c0 = 2;
+    bytes c1 = 3;
+    ProofOfSuccess proof = 4;
+}
+
+message VerifyPasswordRequest {
+    bytes ns = 1;
+    bytes c0 = 2;
+}
+
+message VerifyPasswordResponse {
+    bool res = 1;
+    bytes c1 = 2;
+    oneof proof {
+        ProofOfSuccess success = 3;
+        ProofOfFail fail = 4;
+    }
+}

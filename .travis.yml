@@ -4,10 +4,7 @@ go: stable
 
 before_install:
     - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-    - dep ensure
-    - cd  vendor/gopkg.in/virgilsecurity/virgil-crypto-go.v5/
-    - make
-    - cd ../../../../
+
 
 script:
   go test ./...

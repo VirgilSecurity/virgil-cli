@@ -1,0 +1,7 @@
+language: go
+go:
+ - stable
+ - tip
+
+script:
+ - go test -v ./... -tags=integration
