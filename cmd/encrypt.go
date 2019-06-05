@@ -12,7 +12,7 @@ import (
 	"gopkg.in/urfave/cli.v2"
 )
 
-var crypto  =  cryptoimpl.NewVirgilCrypto()
+var crypto = cryptoimpl.NewVirgilCrypto()
 
 func Encrypt() *cli.Command {
 	return &cli.Command{
@@ -20,19 +20,23 @@ func Encrypt() *cli.Command {
 		ArgsUsage: "[pub_key]",
 		Usage:     "Encrypt data",
 		Flags: []cli.Flag{&cli.StringFlag{Name: "o", Usage: "destination file name"},
-			&cli.StringFlag{Name: "key", Usage: "public key file"},
+			&cli.StringSliceFlag{Name: "key", Usage: "public key file"},
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
 
-
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
 			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
-			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
+			keyFileNames := context.StringSlice("key")
+			// utils.ReadFlagOrDefault(context, "key", "")
 
-			publicKeyString, err := utils.ReadKeyFromFileOrParamOrFromConsole(context, keyFileName, "pub_key", "public key")
-			if err != nil {
-				return err
+			var err error
+			pubKeyStrings := make([]string, len(keyFileNames))
+			for i, f := range keyFileNames {
+				pubKeyStrings[i], err = utils.ReadKeyFromFileOrParamOrFromConsole(context, f, "pub_key", "public key")
+				if err != nil {
+					return err
+				}
 			}
 
 			var writer io.Writer
@@ -55,13 +59,13 @@ func Encrypt() *cli.Command {
 			if err != nil {
 				fmt.Print(err)
 			}
-			key, err := EncryptFunc(publicKeyString, data)
+			key, err := EncryptFunc(data, pubKeyStrings)
 
 			if err != nil {
 				return err
 			}
 
-			_, err = fmt.Fprintln(writer, base64.StdEncoding.EncodeToString(key))
+			_, err = fmt.Fprint(writer, base64.StdEncoding.EncodeToString(key))
 			if err != nil {
 				return err
 			}
@@ -70,13 +74,19 @@ func Encrypt() *cli.Command {
 	}
 }
 
-func EncryptFunc(publicKeyString string, data []byte) (publicKey []byte, err error) {
+func EncryptFunc(data []byte, publicKeysStrings []string) (publicKey []byte, err error) {
 
-	pk, err := cryptoimpl.DecodePublicKey([]byte(publicKeyString))
+	pkk := make([]interface {
+		IsPublic() bool
+		Identifier() []byte
+	}, len(publicKeysStrings))
 
-	if err != nil {
-		return nil, err
+	for i, s := range publicKeysStrings {
+		pkk[i], err = cryptoimpl.DecodePublicKey([]byte(s))
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return crypto.Encrypt(data, pk)
+	return crypto.Encrypt(data, pkk...)
 }

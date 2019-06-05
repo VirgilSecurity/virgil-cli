@@ -62,7 +62,7 @@ func Sign() *cli.Command {
 				return err
 			}
 
-			_, err = fmt.Fprintln(writer, base64.StdEncoding.EncodeToString(signature))
+			_, err = fmt.Fprint(writer, base64.StdEncoding.EncodeToString(signature))
 			if err != nil {
 				return err
 			}

@@ -62,7 +62,7 @@ func Decrypt() *cli.Command {
 				return err
 			}
 
-			_, err = fmt.Fprintln(writer, string(key))
+			_, err = fmt.Fprint(writer, string(key))
 			if err != nil {
 				return err
 			}
