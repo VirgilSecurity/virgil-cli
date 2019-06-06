@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/VirgilSecurity/virgil-cli/utils"
 	"gopkg.in/virgil.v5/cryptoimpl"
@@ -27,8 +28,13 @@ func Encrypt() *cli.Command {
 
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
 			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
+			if inputFileName == "" {
+				return errors.New("input file isn't specified (use -i)")
+			}
 			keyFileNames := context.StringSlice("key")
-			// utils.ReadFlagOrDefault(context, "key", "")
+			if len(keyFileNames) == 0 {
+				return errors.New("key file isn't specified (use -key)")
+			}
 
 			var err error
 			pubKeyStrings := make([]string, len(keyFileNames))
@@ -55,20 +61,23 @@ func Encrypt() *cli.Command {
 			} else {
 				writer = os.Stdout
 			}
+
 			data, err := ioutil.ReadFile(inputFileName)
 			if err != nil {
-				fmt.Print(err)
+				return err
 			}
-			key, err := EncryptFunc(data, pubKeyStrings)
+			encData, err := EncryptFunc(data, pubKeyStrings)
 
 			if err != nil {
 				return err
 			}
 
-			_, err = fmt.Fprint(writer, base64.StdEncoding.EncodeToString(key))
+			_, err = fmt.Fprint(writer, base64.StdEncoding.EncodeToString(encData))
 			if err != nil {
 				return err
 			}
+			fmt.Println()
+
 			return err
 		},
 	}
@@ -84,7 +93,7 @@ func EncryptFunc(data []byte, publicKeysStrings []string) (publicKey []byte, err
 	for i, s := range publicKeysStrings {
 		pkk[i], err = cryptoimpl.DecodePublicKey([]byte(s))
 		if err != nil {
-			return nil, err
+			return nil, errors.New("can't import public key")
 		}
 	}
 

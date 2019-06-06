@@ -66,6 +66,8 @@ func Decrypt() *cli.Command {
 			if err != nil {
 				return err
 			}
+			fmt.Println()
+
 			return err
 		},
 	}

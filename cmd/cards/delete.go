@@ -27,6 +27,10 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 			cardID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "Enter card id", "")
 
 			configFileName := utils.ReadFlagOrDefault(context, "c", "")
+			if configFileName == "" {
+				return errors.New("configuration file isn't specified (use -c)")
+			}
+
 			identity := utils.ReadFlagOrConsoleValue(context, "i", "Enter card identity")
 
 			data, err := ioutil.ReadFile(configFileName)
@@ -35,6 +39,9 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 			}
 
 			conf, err := utils.ParseAppConfig(data)
+			if err != nil {
+				fmt.Print(err)
+			}
 
 			privateKey, err := crypto.ImportPrivateKey(conf.ApiKey, "")
 			if err != nil {

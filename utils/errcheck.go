@@ -65,6 +65,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	}
 
 	if errToCheck.StatusCode == http.StatusNotFound ||
+		errToCheck.Code == 40015 ||
 		errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40400 ||
 		strings.Contains(errToCheck.Error(), "Entity was not found ") {
 		return "", ErrEntityNotFound

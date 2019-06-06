@@ -38,6 +38,7 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/VirgilSecurity/virgil-cli/models"
 	"io/ioutil"
 	"os"
@@ -70,5 +71,11 @@ func SaveConfig(token string) error {
 
 func ParseAppConfig(data []byte) (res models.AppParams, err error) {
 	err = json.Unmarshal(data, &res)
+	if err != nil {
+		return res, errors.New("error parsing config: " + err.Error())
+	}
+	if res.AppID == "" || res.ApiKeyID == "" || len(res.ApiKey) == 0 {
+		return res, errors.New("error parsing config: all APP_ID, API_KEY, API_KEY_ID must be specified")
+	}
 	return
 }
