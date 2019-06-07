@@ -59,7 +59,7 @@ type UpdateAppRequest struct {
 	Name string `json:"name"`
 }
 
-type AppParams struct {
+type AppConfig struct {
 	AppID    string `json:"APP_ID"`
 	ApiKeyID string `json:"API_KEY_ID"`
 	ApiKey   []byte `json:"API_KEY"`

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/VirgilSecurity/virgil-cli/utils"
 	"gopkg.in/virgil.v5/cryptoimpl"
@@ -28,7 +29,11 @@ func Decrypt() *cli.Command {
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
 			pass := utils.ReadFlagOrDefault(context, "p", "")
+
 			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
+			if inputFileName == "" {
+				return errors.New("input file isn't specified (use -i)")
+			}
 
 			privateKeyString, err := utils.ReadKeyFromFileOrParamOrFromConsole(context, keyFileName, "pr_key", "private key")
 			if err != nil {
@@ -53,12 +58,11 @@ func Decrypt() *cli.Command {
 			}
 			data, err := ioutil.ReadFile(inputFileName)
 			if err != nil {
-				fmt.Print(err)
+				return err
 			}
 			key, err := DecryptFunc(privateKeyString, pass, data)
 
 			if err != nil {
-				fmt.Println("decryption err")
 				return err
 			}
 
@@ -66,7 +70,6 @@ func Decrypt() *cli.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Println()
 
 			return err
 		},
@@ -78,7 +81,9 @@ func DecryptFunc(privateKeyString, password string, data []byte) (publicKey []by
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, errors.New("can't import private key")
+		}
 	}
 
 	dd, err := base64.StdEncoding.DecodeString(string(data))

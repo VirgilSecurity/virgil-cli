@@ -83,12 +83,5 @@ func SignFunc(privateKeyString, password string, data []byte) (publicKey []byte,
 		return nil, errors.New("can't import private key")
 	}
 
-	dd, err := base64.StdEncoding.DecodeString(string(data))
-
-	if err != nil {
-		fmt.Println("conversion err")
-		return nil, err
-	}
-
-	return crypto.Sign(dd, pk)
+	return crypto.Sign(data, pk)
 }

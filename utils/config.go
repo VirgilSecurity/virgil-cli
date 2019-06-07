@@ -69,13 +69,13 @@ func SaveConfig(token string) error {
 	return nil
 }
 
-func ParseAppConfig(data []byte) (res models.AppParams, err error) {
-	err = json.Unmarshal(data, &res)
+func ParseAppConfig(data []byte) (config models.AppConfig, err error) {
+	err = json.Unmarshal(data, &config)
 	if err != nil {
-		return res, errors.New("error parsing config: " + err.Error())
+		return config, errors.New("error parsing config: " + err.Error())
 	}
-	if res.AppID == "" || res.ApiKeyID == "" || len(res.ApiKey) == 0 {
-		return res, errors.New("error parsing config: all APP_ID, API_KEY, API_KEY_ID must be specified")
+	if config.AppID == "" || config.ApiKeyID == "" || len(config.ApiKey) == 0 {
+		return config, errors.New("error parsing config: all APP_ID, API_KEY, API_KEY_ID must be specified")
 	}
 	return
 }

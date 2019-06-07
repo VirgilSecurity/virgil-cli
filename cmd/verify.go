@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/VirgilSecurity/virgil-cli/utils"
 	"gopkg.in/virgil.v5/cryptoimpl"
@@ -23,9 +24,17 @@ func Verify() *cli.Command {
 		Action: func(context *cli.Context) error {
 
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
+			if keyFileName == "" {
+				return errors.New("key file isn't specified (use -key)")
+			}
 			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
+			if inputFileName == "" {
+				return errors.New("input file isn't specified (use -i)")
+			}
 			signatureFileName := utils.ReadFlagOrDefault(context, "s", "")
-
+			if signatureFileName == "" {
+				return errors.New("signature file isn't specified (use -s)")
+			}
 			publicKeyString, err := utils.ReadKeyFromFileOrParamOrFromConsole(context, keyFileName, "pub_key", "public key")
 			if err != nil {
 				return err
@@ -58,18 +67,19 @@ func VerifyFunc(publicKeyString string, data, signature []byte) (err error) {
 	pk, err := cryptoimpl.DecodePublicKey([]byte(publicKeyString))
 
 	if err != nil {
-		return err
+		return errors.New("can't import public key")
 	}
-	dd, err := base64.StdEncoding.DecodeString(string(data))
 
-	if err != nil {
-		return err
-	}
 	ss, err := base64.StdEncoding.DecodeString(string(signature))
 
 	if err != nil {
 		return err
 	}
 
-	return crypto.VerifySignature(dd, ss, pk)
+	err = crypto.VerifySignature(data, ss, pk)
+	if err != nil {
+		return errors.New("signature is invalid")
+	}
+
+	return nil
 }
