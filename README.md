@@ -29,6 +29,7 @@
   - [Get list of API Keys](#list-api-key)
   - [Update API Key](#update-api-key)
 - [Manage application cards](#manage-application-cards)
+  - [Config file](#config-file)
   - [Get cards list](#get-cards-list)
   - [Delete card](#delete-card)
 - [Cryptographic operations](#cryptographic-operations)
@@ -220,6 +221,21 @@ virgil apikey update <api_key_id>
 ```
 
 ## Manage application cards
+
+### Config file
+
+Config file is a json, with contains API_KEY, API_KEY_ID, APP_ID
+
+It could be generated on dashboard or by hands
+
+config file example : 
+```$xslt
+{
+  "API_KEY": "1234567890",
+  "API_KEY_ID": "12345678901234567890",
+  "APP_ID": "12345678901234567890"
+}
+```
 
 ### Get cards list
 This command searches for any Virgil Card by its identity:
