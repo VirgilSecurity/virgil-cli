@@ -32,8 +32,8 @@
   - [Get cards list](#list-cards)
   - [Delete card](#delete-card)
 - [Cryptographic operations](#cryptographic-operations)
-  - [Generate private key](#generateprivate-key)
-  - [Extract public key](#extract public key)
+  - [Generate private key](#generate-private-key)
+  - [Extract public key](#extract-public-key)
   - [Encrypt](#encrypt)
   - [Decrypt](#decrypt)
   - [Sign](#sign)
@@ -307,7 +307,7 @@ This command signs data with a provided User’s Private Key:
 virgil verify  -i <file> -s <file> -key <public_key_file> ,
 ```
 flags :
--i  - File with data which necessary to verify..
+-i  - File with data which necessary to verify.
 -o  - Digest sign.
 -key  - Public key file.  If omitted, stdin is used. 
 

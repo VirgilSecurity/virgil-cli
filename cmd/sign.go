@@ -7,7 +7,6 @@ import (
 	"github.com/VirgilSecurity/virgil-cli/utils"
 	"gopkg.in/virgil.v5/cryptoimpl"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"gopkg.in/urfave/cli.v2"
@@ -28,12 +27,12 @@ func Sign() *cli.Command {
 			pass := utils.ReadFlagOrDefault(context, "p", "")
 
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
-			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
-			if inputFileName == "" {
-				return errors.New("input file isn't specified (use -i)")
+			dataToSign, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "data", "data to sign")
+			if err == nil {
+				return err
 			}
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
-			privateKeyString, err := utils.ReadKeyFromFileOrParamOrFromConsole(context, keyFileName, "pr_key", "private key")
+			privateKeyString, err := utils.ReadKeyStringFromFile(context, keyFileName)
 			if err != nil {
 				return err
 			}
@@ -54,11 +53,8 @@ func Sign() *cli.Command {
 			} else {
 				writer = os.Stdout
 			}
-			data, err := ioutil.ReadFile(inputFileName)
-			if err != nil {
-				return err
-			}
-			signature, err := SignFunc(privateKeyString, pass, data)
+
+			signature, err := SignFunc(privateKeyString, pass, dataToSign)
 
 			if err != nil {
 				return err

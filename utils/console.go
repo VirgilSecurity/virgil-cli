@@ -40,39 +40,44 @@ import (
 	"bufio"
 	"fmt"
 	"gopkg.in/urfave/cli.v2"
+	"io/ioutil"
 	"os"
 	"strings"
 )
 
 var scanner = bufio.NewScanner(os.Stdin)
 
-func ReadKeyFromFileOrParamOrFromConsole(context *cli.Context, fileName, paramName, paramDescription string) (string, error) {
+func ReadKeyStringFromFile(context *cli.Context, fileName string) (string, error) {
 	value := ""
-	if fileName != "" {
-		f, err := os.Open(fileName)
-		if err != nil {
-			return "", err
+	f, err := os.Open(fileName)
+	if err != nil {
+		return "", err
+	}
+	defer func() {
+		if err := f.Close(); err != nil {
+			panic(err)
 		}
-		defer func() {
-			if err := f.Close(); err != nil {
-				panic(err)
-			}
-		}()
+	}()
 
-		scanner := bufio.NewScanner(f)
-		for scanner.Scan() {
-			t := scanner.Text()
-			if strings.Contains(t, "BEGIN ") {
-				continue
-			}
-			value = t
-			break
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		t := scanner.Text()
+		if strings.Contains(t, "BEGIN ") {
+			continue
 		}
-
-	} else {
-		value = ReadParamOrDefaultOrFromConsole(context, paramName, paramDescription, "")
+		value = t
+		break
 	}
 	return value, nil
+}
+
+func ReadFileFlagOrParamOrFromConsole(context *cli.Context, flag, paramName, paramDescription string) ([]byte, error) {
+
+	inputFileName := ReadFlagOrDefault(context, flag, "")
+	if inputFileName == "" {
+		return []byte(ReadParamOrDefaultOrFromConsole(context, paramName, paramDescription, "")), nil
+	}
+	return ioutil.ReadFile(inputFileName)
 }
 
 func ReadParamOrDefaultOrFromConsole(context *cli.Context, paramName, paramDescription, defaultValue string) string {

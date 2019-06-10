@@ -35,7 +35,7 @@ func Verify() *cli.Command {
 			if signatureFileName == "" {
 				return errors.New("signature file isn't specified (use -s)")
 			}
-			publicKeyString, err := utils.ReadKeyFromFileOrParamOrFromConsole(context, keyFileName, "pub_key", "public key")
+			publicKeyString, err := utils.ReadKeyStringFromFile(context, keyFileName)
 			if err != nil {
 				return err
 			}

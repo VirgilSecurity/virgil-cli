@@ -7,7 +7,6 @@ import (
 	"github.com/VirgilSecurity/virgil-cli/utils"
 	"gopkg.in/virgil.v5/cryptoimpl"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"gopkg.in/urfave/cli.v2"
@@ -16,7 +15,7 @@ import (
 func Decrypt() *cli.Command {
 	return &cli.Command{
 		Name:      "decrypt",
-		ArgsUsage: "[pr_key]",
+		ArgsUsage: "[inp]",
 		Usage:     "Decrypt data",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "o", Usage: "destination file name"},
@@ -28,14 +27,17 @@ func Decrypt() *cli.Command {
 
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
+			if keyFileName == "" {
+				return errors.New("key file isn't specified (use -key)")
+			}
 			pass := utils.ReadFlagOrDefault(context, "p", "")
 
-			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
-			if inputFileName == "" {
-				return errors.New("input file isn't specified (use -i)")
+			dataToDecrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", "data to decrypt")
+			if err != nil {
+				return err
 			}
 
-			privateKeyString, err := utils.ReadKeyFromFileOrParamOrFromConsole(context, keyFileName, "pr_key", "private key")
+			privateKeyString, err := utils.ReadKeyStringFromFile(context, keyFileName)
 			if err != nil {
 				return err
 			}
@@ -56,11 +58,8 @@ func Decrypt() *cli.Command {
 			} else {
 				writer = os.Stdout
 			}
-			data, err := ioutil.ReadFile(inputFileName)
-			if err != nil {
-				return err
-			}
-			key, err := DecryptFunc(privateKeyString, pass, data)
+
+			key, err := DecryptFunc(privateKeyString, pass, dataToDecrypt)
 
 			if err != nil {
 				return err
@@ -70,6 +69,7 @@ func Decrypt() *cli.Command {
 			if err != nil {
 				return err
 			}
+			fmt.Println()
 
 			return err
 		},

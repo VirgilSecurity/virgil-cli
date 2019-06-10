@@ -7,7 +7,6 @@ import (
 	"github.com/VirgilSecurity/virgil-cli/utils"
 	"gopkg.in/virgil.v5/cryptoimpl"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"gopkg.in/urfave/cli.v2"
@@ -27,19 +26,19 @@ func Encrypt() *cli.Command {
 		Action: func(context *cli.Context) error {
 
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
-			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
-			if inputFileName == "" {
-				return errors.New("input file isn't specified (use -i)")
+			dataToEncrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", "data to decrypt")
+			if err != nil {
+				return err
 			}
+
 			keyFileNames := context.StringSlice("key")
 			if len(keyFileNames) == 0 {
 				return errors.New("key file isn't specified (use -key)")
 			}
 
-			var err error
 			pubKeyStrings := make([]string, len(keyFileNames))
 			for i, f := range keyFileNames {
-				pubKeyStrings[i], err = utils.ReadKeyFromFileOrParamOrFromConsole(context, f, "pub_key", "public key")
+				pubKeyStrings[i], err = utils.ReadKeyStringFromFile(context, f)
 				if err != nil {
 					return err
 				}
@@ -62,11 +61,7 @@ func Encrypt() *cli.Command {
 				writer = os.Stdout
 			}
 
-			data, err := ioutil.ReadFile(inputFileName)
-			if err != nil {
-				return err
-			}
-			encData, err := EncryptFunc(data, pubKeyStrings)
+			encData, err := EncryptFunc(dataToEncrypt, pubKeyStrings)
 
 			if err != nil {
 				return err
