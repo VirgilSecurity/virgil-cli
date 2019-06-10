@@ -28,8 +28,8 @@
   - [Delete API Key](#delete-api-key)
   - [Get list of API Keys](#list-api-key)
   - [Update API Key](#update-api-key)
-- [Manage appliction cards](#manage-application-cards)
-  - [Get cards list](#list-cards)
+- [Manage application cards](#manage-application-cards)
+  - [Get cards list](#get-cards-list)
   - [Delete card](#delete-card)
 - [Cryptographic operations](#cryptographic-operations)
   - [Generate private key](#generate-private-key)
@@ -219,6 +219,39 @@ This command is used to update name of api-key:
 virgil apikey update <api_key_id>
 ```
 
+## Manage application cards
+
+### Get cards list
+This command searches for any Virgil Card by its identity:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil cards search -c <file> identity,
+
+# Windows OS
+virgil keygen cards search -c <file> identity,
+```
+```
+flags :
+-c  - Config file name.
+```
+
+### Delete card
+This command deletes Virgil Card by it's id
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil cards delete -c <file> -i identity [card_id],
+
+# Windows OS
+virgil cards delete -c <file> -i identity [card_id],
+```
+```
+flags :
+-c  - Config file name.
+-i  - Card identity, mandatory.
+```
+
+
+
 ## Cryptographic operations
 
 ### Generate private key
@@ -230,9 +263,11 @@ This command generates a User's Private Key:
 # Windows OS
 virgil keygen -o <file> -p password,
 ```
+```
 flags :
 -o  - Key file name. If omitted, stdout is used.
 -p  - Use password to encrypt Private Key. If omitted (not recommended), private key will be generated without password
+```
 
 ### Extract public key
 This command extracts a Public Key from a Private Key:
@@ -243,11 +278,12 @@ This command extracts a Public Key from a Private Key:
 # Windows OS
 virgil key2pub  -i <file> -o <file> -p password,
 ```
+```
 flags :
 -i  - Key's File Name. If omitted, stdin is used.
 -o  - Public key's file name. If omitted, stdout is used.
 -p  - Use password to decrypt Private Key. 
-
+```
 
 ### Encrypt
 This command encrypts any data for the specified public key(s):
@@ -258,11 +294,13 @@ This command encrypts any data for the specified public key(s):
 # Windows OS
 virgil encrypt  -i <file> -o <file> -key <public_key_file_1> -key <public_key_file_2> ...,
 ```
+
+```
 flags :
 -i  - Data to be encrypted - If omitted, stdin is used..
 -o  - Encrypted data. If omitted, stdout is used..
 -key  - Public key file (could be many files). 
-
+```
 
 ### Decrypt
 This command decrypts the encrypted data with a a Private Key:
@@ -273,12 +311,13 @@ This command decrypts the encrypted data with a a Private Key:
 # Windows OS
 virgil decrypt  -i <file> -o <file> -key <private_key_file>  -p password,
 ```
+```
 flags :
 -i  - Data to be decrypted - If omitted, stdin is used.
 -o  - Decrypted data. If omitted, stdout is used.
 -key  - Private key file. 
 -p  - Use password to decrypt Private Key. 
-
+```
 
 ### Sign
 This command signs data with a provided User’s Private Key:
@@ -289,12 +328,13 @@ This command signs data with a provided User’s Private Key:
 # Windows OS
 virgil sign  -i <file> -o <file> -key <private_key_file>  -p password,
 ```
+```
 flags :
 -i  - Data to be signed - If omitted, stdin is used.
 -o  - The signed data. If omitted, stdout is used.
 -key  - Private key file. 
 -p  - Use password to decrypt Private Key. 
-
+```
 
 
 ### Verify signature
@@ -306,11 +346,12 @@ This command signs data with a provided User’s Private Key:
 # Windows OS
 virgil verify  -i <file> -s <file> -key <public_key_file> ,
 ```
+```
 flags :
 -i  - File with data which necessary to verify.
 -o  - Digest sign.
 -key  - Public key file.  If omitted, stdin is used. 
-
+```
 
 
 ## License
