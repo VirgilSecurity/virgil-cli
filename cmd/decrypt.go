@@ -32,7 +32,7 @@ func Decrypt() *cli.Command {
 			}
 			pass := utils.ReadFlagOrDefault(context, "p", "")
 
-			dataToDecrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", "data to decrypt")
+			dataToDecrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", "Enter data to decrypt")
 			if err != nil {
 				return err
 			}

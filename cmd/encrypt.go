@@ -26,7 +26,7 @@ func Encrypt() *cli.Command {
 		Action: func(context *cli.Context) error {
 
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
-			dataToEncrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", "data to decrypt")
+			dataToEncrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", "Enter data to encrypt")
 			if err != nil {
 				return err
 			}

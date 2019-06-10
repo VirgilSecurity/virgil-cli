@@ -27,7 +27,7 @@ func Sign() *cli.Command {
 			pass := utils.ReadFlagOrDefault(context, "p", "")
 
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
-			dataToSign, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "data", "data to sign")
+			dataToSign, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "data", "Enter data to sign")
 			if err == nil {
 				return err
 			}

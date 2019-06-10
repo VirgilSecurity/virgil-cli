@@ -83,8 +83,16 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 		strings.Contains(errToCheck.Errors[0].Message, "Email is not valid") {
 		return "", ErrAuthFailed
 	}
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40002 &&
+		strings.Contains(errToCheck.Errors[0].Message, "Email is empty") {
+		return "", ErrAuthFailed
+	}
 	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40003 &&
 		strings.Contains(errToCheck.Errors[0].Message, "Password is invalid") {
+		return "", ErrAuthFailed
+	}
+	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40003 &&
+		strings.Contains(errToCheck.Errors[0].Message, "Password is empty") {
 		return "", ErrAuthFailed
 	}
 	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40003 &&

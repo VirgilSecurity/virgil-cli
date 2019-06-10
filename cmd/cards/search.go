@@ -74,6 +74,7 @@ func Search() *cli.Command {
 
 			if len(cards) == 0 {
 				fmt.Println("there are no cards found for identity : " + identity)
+				return nil
 			}
 
 			fmt.Printf("|%64s |%63s |%20s\n", " Card Id   ", "Public key   ", " created_at ")
@@ -90,4 +91,3 @@ func Search() *cli.Command {
 		},
 	}
 }
-
