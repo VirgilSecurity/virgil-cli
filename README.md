@@ -365,7 +365,7 @@ virgil verify  -i <file> -s <file> -key <public_key_file> ,
 ```
 flags :
 -i  - File with data which necessary to verify.
--o  - Digest sign.
+-s  - Digest sign.
 -key  - Public key file.  If omitted, stdin is used. 
 ```
 
