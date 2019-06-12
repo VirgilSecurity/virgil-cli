@@ -244,7 +244,7 @@ This command searches for any Virgil Card by its identity:
 ./virgil cards search -c <file> identity,
 
 # Windows OS
-virgil keygen cards search -c <file> identity,
+virgil cards search -c <file> identity,
 ```
 ```
 flags :
