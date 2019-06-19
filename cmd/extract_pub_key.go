@@ -102,7 +102,7 @@ func Key2PubFunc(privateKeyString, password string) (publicKey []byte, err error
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("can't parse private key (may be key password required)")
 	}
 
 	pubKey, err := pk.ExtractPublicKey()

@@ -47,9 +47,8 @@ import (
 var (
 	ErrEntityNotFound               = fmt.Errorf("entity not found")
 	ErrEmailIsNotConfirmed          = fmt.Errorf("email is not confirmed")
-	ErrAuthFailed                   = fmt.Errorf("email or password is invalid")
 	ErrApplicationAlreadyRegistered = fmt.Errorf("error: application with given name already registered")
-	ErrIncorrectEmailOrPassword     = fmt.Errorf("authorization failed: incorrect email or password")
+	ErrAuthFailed     = fmt.Errorf("authorization failed: incorrect email or password")
 	ErrApiKeyAlreadyRegistered      = fmt.Errorf("error: api key with given name already registered")
 	ErrEmptyMFACode                 = fmt.Errorf("error: Multi factor authorization code is empty field")
 	ErrPasswordTooWeak              = fmt.Errorf("error: Password is too weak")
@@ -77,7 +76,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	}
 	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40001 &&
 		strings.Contains(errToCheck.Errors[0].Message, "Invalid email or password") {
-		return "", ErrIncorrectEmailOrPassword
+		return "", ErrAuthFailed
 	}
 	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40002 &&
 		strings.Contains(errToCheck.Errors[0].Message, "Application with given name already registered") {

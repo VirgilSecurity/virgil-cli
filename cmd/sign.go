@@ -76,7 +76,7 @@ func SignFunc(privateKeyString, password string, data []byte) (publicKey []byte,
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {
-		return nil, errors.New("can't import private key")
+		return nil, errors.New("can't parse private key (may be key password required)")
 	}
 
 	return crypto.Sign(data, pk)

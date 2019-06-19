@@ -241,10 +241,10 @@ config file example :
 This command searches for any Virgil Card by its identity:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil cards search -c <file> identity,
+./virgil cards search -c <file> <identity>,
 
 # Windows OS
-virgil cards search -c <file> identity,
+virgil cards search -c <file> <identity>,
 ```
 ```
 flags :
@@ -255,10 +255,10 @@ flags :
 This command deletes Virgil Card by it's id
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil cards delete -c <file> -i identity [card_id],
+./virgil cards delete -c <file> -i <identity> <card_id>,
 
 # Windows OS
-virgil cards delete -c <file> -i identity [card_id],
+virgil cards delete -c <file> -i <identity> <card_id>,
 ```
 ```
 flags :
