@@ -110,13 +110,17 @@
   revision = "d3ae77c26ac8db90639677e4831a728d33c36111"
 
 [[projects]]
-  digest = "1:ae38cc547fb8e6ae79599d1c5f86da9d3c3ee1d46b90c0b69aa17572be509b14"
+  digest = "1:ea0be3be5b39e73d29ce990b9b24024bce576613a3ae7d5b4938d595de679cc5"
   name = "gopkg.in/virgil.v5"
   packages = [
+    ".",
+    "common",
+    "cryptoapi",
     "cryptoimpl",
     "cryptoimpl/gcm",
     "cryptoimpl/keytypes",
     "errors",
+    "sdk",
   ]
   pruneopts = "UT"
   revision = "00a20afcd55d6cf57cc55d69e12d7433734c3572"
@@ -141,6 +145,7 @@
     "gopkg.in/urfave/cli.v2",
     "gopkg.in/urfave/cli.v2/altsrc",
     "gopkg.in/virgil.v5/cryptoimpl",
+    "gopkg.in/virgil.v5/sdk",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
