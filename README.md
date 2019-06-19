@@ -30,7 +30,7 @@
   - [Update API Key](#update-api-key)
 - [Manage application cards](#manage-application-cards)
   - [Config file](#config-file)
-  - [Get cards list](#get-cards-list)
+  - [Search cards](#search-cards)
   - [Delete card](#delete-card)
 - [Cryptographic operations](#cryptographic-operations)
   - [Generate private key](#generate-private-key)
@@ -237,7 +237,7 @@ config file example :
 }
 ```
 
-### Get cards list
+### Search cards
 This command searches for any Virgil Card by its identity:
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -274,10 +274,10 @@ flags :
 This command generates a User's Private Key:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil keygen -o <file>  -p password,
+./virgil keygen -o <file>  -p <password>,
 
 # Windows OS
-virgil keygen -o <file> -p password,
+virgil keygen -o <file> -p <password>,
 ```
 ```
 flags :
@@ -289,10 +289,10 @@ flags :
 This command extracts a Public Key from a Private Key:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil key2pub -i <file> -o <file>  -p password,
+./virgil key2pub -i <file> -o <file>  -p <password>,
 
 # Windows OS
-virgil key2pub  -i <file> -o <file> -p password,
+virgil key2pub  -i <file> -o <file> -p <password>,
 ```
 ```
 flags :
@@ -322,10 +322,10 @@ flags :
 This command decrypts the encrypted data with a a Private Key:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil decrypt  -i <file> -o <file>  -key <private_key_file> -p password,
+./virgil decrypt  -i <file> -o <file>  -key <private_key_file> -p <password>,
 
 # Windows OS
-virgil decrypt  -i <file> -o <file> -key <private_key_file>  -p password,
+virgil decrypt  -i <file> -o <file> -key <private_key_file>  -p <password>,
 ```
 ```
 flags :
@@ -339,10 +339,10 @@ flags :
 This command signs data with a provided User’s Private Key:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil sign  -i <file> -o <file>  -key <private_key_file> -p password,
+./virgil sign  -i <file> -o <file>  -key <private_key_file> -p <password>,
 
 # Windows OS
-virgil sign  -i <file> -o <file> -key <private_key_file>  -p password,
+virgil sign  -i <file> -o <file> -key <private_key_file>  -p <password>,
 ```
 ```
 flags :
