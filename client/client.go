@@ -78,15 +78,13 @@ func (vc *VirgilHttpClient) Send(method string, token string, urlPath string, pa
 		return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: new request").Error()}
 	}
 
-	if token != "" {
-		req.AddCookie(&http.Cookie{Name: "gosession", Value: token})
-	}
-
 	if len(extraOptions) > 0 {
 		appToken, ok := extraOptions[0].(string)
 		if ok {
-			req.Header.Add("AppToken", appToken)
+			req.Header.Add("Authorization", "Virgil "+appToken)
 		}
+	} else if token != "" {
+		req.AddCookie(&http.Cookie{Name: "gosession", Value: token})
 	}
 
 	client := vc.getHttpClient()

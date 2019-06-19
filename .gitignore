@@ -13,4 +13,4 @@
 .idea/
 *.exe
 *.yaml
-vendor/
+/vendor

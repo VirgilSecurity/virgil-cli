@@ -34,63 +34,48 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package cmd
+package utils
 
 import (
-	"crypto/subtle"
-	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/client"
+	"encoding/json"
+	"errors"
 	"github.com/VirgilSecurity/virgil-cli/models"
-	"github.com/VirgilSecurity/virgil-cli/utils"
-	"github.com/howeyc/gopass"
-	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
-	"net/http"
+	"io/ioutil"
 	"os"
+	"os/user"
+	"path/filepath"
 )
 
-func Register(client *client.VirgilHttpClient) *cli.Command {
-	return &cli.Command{
-		Name:      "register",
-		ArgsUsage: "email",
-		Usage:     "Register a new account",
-		Action: func(context *cli.Context) error {
-			return registerFunc(context, client)
-		},
+func SaveConfig(token string) error {
+
+	u, err := user.Current()
+	if err != nil {
+		return err
 	}
+
+	tokenPath := filepath.Join(u.HomeDir, ".virgil-conf")
+
+	if _, err := os.Stat(tokenPath); os.IsNotExist(err) {
+		if err = os.Mkdir(tokenPath, 0700); err != nil {
+			return err
+		}
+	}
+
+	tokenPath = filepath.Join(tokenPath, "token")
+
+	if err = ioutil.WriteFile(tokenPath, []byte(token), 0600); err != nil {
+		return err
+	}
+	return nil
 }
 
-func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
-
-	email := utils.ReadParamOrDefaultOrFromConsole(context, "email", "Enter email", "")
-
-	pwd, err := gopass.GetPasswdPrompt("Enter account password:\r\n", false, os.Stdin, os.Stdout)
+func ParseAppConfig(data []byte) (config models.AppConfig, err error) {
+	err = json.Unmarshal(data, &config)
 	if err != nil {
-		return err
+		return config, errors.New("error parsing config: " + err.Error())
 	}
-	pwdAgain, err := gopass.GetPasswdPrompt("Again:\r\n", false, os.Stdin, os.Stdout)
-	if err != nil {
-		return err
+	if config.AppID == "" || config.ApiKeyID == "" || len(config.ApiKey) == 0 {
+		return config, errors.New("error parsing config: all APP_ID, API_KEY, API_KEY_ID must be specified")
 	}
-
-	if subtle.ConstantTimeCompare(pwd, pwdAgain) != 1 {
-		err = errors.New("passwords do not match")
-		return err
-	}
-
-	name := utils.ReadConsoleValue("name", "Enter account name")
-
-	req := &models.CreateAccountRequest{Email: email, Password: string(pwd), Name: name}
-
-	_, _, vErr := utils.SendWithCheckRetry(vcli, http.MethodPost, "auth/register", req, nil)
-
-	if vErr != nil {
-		return vErr
-	}
-
-	fmt.Println("Account registered.")
-
-	utils.DeleteAccessToken()
-	utils.DeleteDefaultApp()
-	return nil
+	return
 }

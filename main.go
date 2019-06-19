@@ -78,6 +78,11 @@ func main() {
 		Address: "https://dashboard.virgilsecurity.com/api/",
 	}
 
+	apiGatewayClient := &client.VirgilHttpClient{
+		Address: "https://api.virgilsecurity.com/",
+	}
+
+
 	app := &cli.App{
 		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
 		Name:                  "CLI",
@@ -92,6 +97,13 @@ func main() {
 			cmd.Key(vcli),
 			cmd.UseApp(vcli),
 			cmd.PureKit(),
+			cmd.Keygen(),
+			cmd.Key2Pub(),
+			cmd.Encrypt(),
+			cmd.Decrypt(),
+			cmd.Sign(),
+			cmd.Verify(),
+			cmd.Cards(apiGatewayClient),
 		},
 		Before: func(c *cli.Context) error {
 
