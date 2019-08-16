@@ -19,7 +19,7 @@ func Revoke(vcli *client.VirgilHttpClient) *cli.Command {
 		ArgsUsage: "[id]",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "c", Usage: "private key password"},
-			&cli.StringFlag{Name: "i", Usage: "card identity"},
+			&cli.StringFlag{Name: "i", Usage: "config file name"},
 		},
 		Usage: "delete cards by id",
 		Action: func(context *cli.Context) error {

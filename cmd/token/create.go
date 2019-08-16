@@ -56,7 +56,6 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "app id"}},
 
 		Action: func(context *cli.Context) (err error) {
-			fmt.Println("fg")
 			defaultApp, err := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -71,13 +70,9 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 
 			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter token name", "")
 
-			fmt.Println("!")
-
 			token, err := CreateFunc(appID, name, vcli)
-			fmt.Println("!")
 
 			if err != nil {
-				fmt.Println("2")
 				return err
 			}
 
@@ -92,12 +87,9 @@ func CreateFunc(appID, name string, vcli *client.VirgilHttpClient) (token string
 	req := &models.CreateAppTokenRequest{Name: name}
 	resp := &models.ApplicationToken{}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/applications/"+appID + "/tokens", req, resp)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/applications/"+appID+"/tokens", req, resp)
 
-	fmt.Println("/applications/" + appID + "/tokens")
 	if err != nil {
-
-		fmt.Println(err)
 		return "", err
 	}
 	if resp != nil {
