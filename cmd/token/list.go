@@ -34,94 +34,73 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package main
+package token
 
 import (
 	"fmt"
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"log"
-	"os"
-
-	"github.com/VirgilSecurity/virgil-cli/cmd"
-	"gopkg.in/urfave/cli.v2/altsrc"
-
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
+	"net/http"
+	"sort"
 )
 
-var (
-	version = "5.2.0"
-	commit  = "none"
-	date    = "unknown"
-)
+func List(vcli *client.VirgilHttpClient) *cli.Command {
+	return &cli.Command{
+		Name:    "list",
+		Aliases: []string{"l"},
+		Usage:   "List your app tokens",
+		Flags:   []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "app id"}},
+		Action: func(context *cli.Context) (err error) {
 
-func main() {
-	flags := []cli.Flag{
-		&cli.StringFlag{
-			Name:    "config",
-			Aliases: []string{"cfg"},
-			Usage:   "Yaml config file path",
-		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
-	}
-
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
-	apiGatewayClient := &client.VirgilHttpClient{
-		Address: "https://api.virgilsecurity.com/",
-	}
-
-	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
-		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
-			cmd.PureKit(),
-			cmd.Keygen(),
-			cmd.Key2Pub(),
-			cmd.Encrypt(),
-			cmd.Decrypt(),
-			cmd.Sign(),
-			cmd.Verify(),
-			cmd.Cards(apiGatewayClient),
-			cmd.Token(vcli),
-		},
-		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
+			defaultApp, err := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
 			}
 
-			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
+			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
+
+			var tokens []*models.ApplicationToken
+			tokens, err = listFunc(appID, vcli)
+
+			if err != nil {
+				return err
+			}
+			if len(tokens) == 0 {
+				fmt.Println("There are no tokens created for the application")
 				return nil
 			}
+			sort.Slice(tokens, func(i, j int) bool {
+				return tokens[i].CreatedAt.Before(tokens[j].CreatedAt)
+			})
+			fmt.Printf("|%25s|%20s\n", " Name  ", " Created On ")
+			fmt.Printf("|%25s|%20s\n", "-------------------------", "----------------------------------------")
+			for _, t := range tokens {
 
-			return altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config"))(c)
+				fmt.Printf("|%23s  |  %18s\n", t.Name, t.CreatedAt)
+			}
+			return nil
 		},
 	}
+}
 
-	err := app.Run(os.Args)
+func listFunc(appID string, vcli *client.VirgilHttpClient) (apps []*models.ApplicationToken, err error) {
+
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications/"+appID+"/tokens", nil, &apps)
+
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
+
+	if apps != nil {
+		return apps, nil
+	}
+
+	return nil, errors.New("empty response")
 }

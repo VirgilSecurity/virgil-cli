@@ -34,44 +34,75 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package models
+package token
 
-import "time"
+import (
+	"fmt"
+	"github.com/VirgilSecurity/virgil-cli/utils"
+	"net/http"
 
-type CreateAppRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Type        string `json:"type"`
+	"github.com/VirgilSecurity/virgil-cli/models"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
+)
+
+func Create(vcli *client.VirgilHttpClient) *cli.Command {
+	return &cli.Command{
+		Name:      "new",
+		ArgsUsage: "token_name",
+		Usage:     "Create a new app token",
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "app id"}},
+
+		Action: func(context *cli.Context) (err error) {
+			fmt.Println("fg")
+			defaultApp, err := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
+			}
+
+			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
+			fmt.Println(appID)
+
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter token name", "")
+
+			fmt.Println("!")
+
+			token, err := CreateFunc(appID, name, vcli)
+			fmt.Println("!")
+
+			if err != nil {
+				fmt.Println("2")
+				return err
+			}
+
+			fmt.Println("token: ", token)
+			return nil
+		},
+	}
 }
 
-type CreateAppResp struct {
-	ID string `json:"id"`
-}
+func CreateFunc(appID, name string, vcli *client.VirgilHttpClient) (token string, err error) {
 
-type CreateAppTokenRequest struct {
-	Name string `json:"name"`
-}
+	req := &models.CreateAppTokenRequest{Name: name}
+	resp := &models.ApplicationToken{}
 
-type Application struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Type      string    `json:"type"`
-	CreatedAt time.Time `json:"created_at"`
-}
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/applications/"+appID + "/tokens", req, resp)
 
-type ApplicationToken struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"token_name"`
-	CreatedAt time.Time `json:"created_at"`
-	Token     string    `json:"app_token"`
-}
+	fmt.Println("/applications/" + appID + "/tokens")
+	if err != nil {
 
-type UpdateAppRequest struct {
-	Name string `json:"name"`
-}
+		fmt.Println(err)
+		return "", err
+	}
+	if resp != nil {
+		return resp.Token, nil
+	}
 
-type AppConfig struct {
-	AppID    string `json:"APP_ID"`
-	ApiKeyID string `json:"API_KEY_ID"`
-	ApiKey   []byte `json:"API_KEY"`
+	return "", errors.New("empty response")
 }

@@ -13,9 +13,9 @@ import (
 	"time"
 )
 
-func Delete(vcli *client.VirgilHttpClient) *cli.Command {
+func Revoke(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:      "delete",
+		Name:      "revoke",
 		ArgsUsage: "[id]",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "c", Usage: "private key password"},

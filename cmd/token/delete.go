@@ -34,44 +34,65 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package models
+package token
 
-import "time"
+import (
+	"fmt"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"net/http"
 
-type CreateAppRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Type        string `json:"type"`
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
+)
+
+func Delete(vcli *client.VirgilHttpClient) *cli.Command {
+	return &cli.Command{
+		Name:      "delete",
+		Aliases:   []string{"d"},
+		ArgsUsage: "name",
+		Usage:     "Delete app token by name",
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "app id"}},
+		Action: func(context *cli.Context) (err error) {
+
+			defaultApp, _ := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
+			}
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter token name", "")
+
+			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
+
+			var tokens []*models.ApplicationToken
+			tokens, err = listFunc(appID, vcli)
+
+			if err != nil {
+				return err
+			}
+			for _, t := range tokens {
+
+				if t.Name == name {
+					err = deleteAppTokenFunc(appID, t.ID, vcli)
+					if err == nil {
+						fmt.Println("delete ok.")
+					}
+					return err
+				}
+
+			}
+			fmt.Println("token not found")
+			return err
+		},
+	}
 }
 
-type CreateAppResp struct {
-	ID string `json:"id"`
-}
+func deleteAppTokenFunc(appID, appTokenID string, vcli *client.VirgilHttpClient) (err error) {
 
-type CreateAppTokenRequest struct {
-	Name string `json:"name"`
-}
-
-type Application struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Type      string    `json:"type"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
-type ApplicationToken struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"token_name"`
-	CreatedAt time.Time `json:"created_at"`
-	Token     string    `json:"app_token"`
-}
-
-type UpdateAppRequest struct {
-	Name string `json:"name"`
-}
-
-type AppConfig struct {
-	AppID    string `json:"APP_ID"`
-	ApiKeyID string `json:"API_KEY_ID"`
-	ApiKey   []byte `json:"API_KEY"`
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "applications/"+appID+"/tokens/"+appTokenID, nil, nil)
+	return err
 }

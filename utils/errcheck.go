@@ -48,7 +48,7 @@ var (
 	ErrEntityNotFound               = fmt.Errorf("entity not found")
 	ErrEmailIsNotConfirmed          = fmt.Errorf("email is not confirmed")
 	ErrApplicationAlreadyRegistered = fmt.Errorf("error: application with given name already registered")
-	ErrAuthFailed     = fmt.Errorf("authorization failed: incorrect email or password")
+	ErrAuthFailed                   = fmt.Errorf("authorization failed: incorrect email or password")
 	ErrApiKeyAlreadyRegistered      = fmt.Errorf("error: api key with given name already registered")
 	ErrEmptyMFACode                 = fmt.Errorf("error: Multi factor authorization code is empty field")
 	ErrPasswordTooWeak              = fmt.Errorf("error: Password is too weak")
@@ -60,7 +60,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck == nil {
 		return "", nil
 	}
-	if errToCheck.StatusCode == http.StatusUnauthorized {
+	if errToCheck.StatusCode == http.StatusUnauthorized || errToCheck.Code == 40100 {
 		err = Login("", "", vcli)
 		if err != nil {
 			return
