@@ -66,7 +66,6 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 			if appID == "" {
 				return errors.New("Please, specify app_id (flag --app_id)")
 			}
-			fmt.Println(appID)
 
 			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter token name", "")
 

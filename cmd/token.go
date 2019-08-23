@@ -45,7 +45,7 @@ import (
 func Token(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:  "apptoken",
-		Usage: "Manage your applications",
+		Usage: "Manage your application tokens",
 		Subcommands: []*cli.Command{
 			token.Create(client),
 			token.List(client),

@@ -68,6 +68,12 @@ func main() {
 			EnvVars: []string{"DASHBOARD_URL"},
 			Hidden:  true,
 		}),
+		altsrc.NewStringFlag(&cli.StringFlag{
+			Name:    "api_gateway_url",
+			Usage:   "Api gateway URL",
+			EnvVars: []string{"API_URL"},
+			Hidden:  true,
+		}),
 	}
 
 	if commit != "none" {
@@ -89,12 +95,12 @@ func main() {
 		Flags:                 flags,
 		EnableShellCompletion: true,
 		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
+			cmd.Register(apiGatewayClient),
+			cmd.Login(apiGatewayClient),
+			cmd.Logout(apiGatewayClient),
+			cmd.Application(apiGatewayClient),
+			cmd.Key(apiGatewayClient),
+			cmd.UseApp(apiGatewayClient),
 			cmd.PureKit(),
 			cmd.Keygen(),
 			cmd.Key2Pub(),
@@ -104,12 +110,18 @@ func main() {
 			cmd.Verify(),
 			cmd.Cards(apiGatewayClient),
 			cmd.Token(vcli),
+			cmd.Wave(apiGatewayClient),
 		},
 		Before: func(c *cli.Context) error {
 
 			url := c.String("service_url")
 			if url != "" {
 				vcli.Address = url
+			}
+
+			apiUrl := c.String("api_gateway_url")
+			if apiUrl != "" {
+				apiGatewayClient.Address = apiUrl
 			}
 
 			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {

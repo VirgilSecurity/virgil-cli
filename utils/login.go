@@ -73,7 +73,7 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 		Password: password,
 	}
 
-	_, cookie, vErr := vcli.Send(http.MethodPost, "", "auth/login", req, nil)
+	_, cookie, vErr := vcli.Send(http.MethodPost, "", "user/login", req, nil)
 	if vErr != nil {
 		_, err = CheckRetry(vErr, vcli)
 		if err == ErrEmptyMFACode {
@@ -82,7 +82,7 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 				return err
 			}
 			req.Verification = &models.Verification{MFACode: string(code)}
-			_, cookie, vErr = vcli.Send(http.MethodPost, "", "auth/login", req, nil)
+			_, cookie, vErr = vcli.Send(http.MethodPost, "", "user/login", req, nil)
 			if vErr != nil {
 				return errors.New(fmt.Sprintf("Authorization failed.\n"))
 			}

@@ -34,65 +34,22 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package app
+package cmd
 
 import (
-	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
-	"net/http"
-
-	"github.com/VirgilSecurity/virgil-cli/models"
-
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/pkg/errors"
+	"github.com/VirgilSecurity/virgil-cli/cmd/wave"
 	"gopkg.in/urfave/cli.v2"
 )
 
-func Create(vcli *client.VirgilHttpClient) *cli.Command {
+func Wave(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:      "create",
-		Aliases:   []string{"c"},
-		ArgsUsage: "app_name",
-		Usage:     "Create a new app",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "type", Usage: "application type (e2ee or pure)"}},
-
-		Action: func(context *cli.Context) (err error) {
-
-			appType := utils.ReadFlagOrConsoleValue(context, "type", "Enter application type ( e2ee or pure )", "e2ee", "pure")
-			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter application name", "")
-			var appID string
-
-			appID, err = CreateFunc(name, appType, vcli)
-
-			if err != nil {
-				return err
-			}
-
-			fmt.Println("APP_ID:", appID)
-			fmt.Println("Application create ok.")
-			return nil
+		Name:  "wave",
+		Usage: "Manage your wave application",
+		Subcommands: []*cli.Command{
+			wave.Init(client),
+			wave.DeviceList(client),
+			wave.Dcm(client),
 		},
 	}
-}
-
-func CreateFunc(name, appType string, vcli *client.VirgilHttpClient) (appID string, err error) {
-
-	virgilAppType := "pki"
-	if appType == "pure" {
-		virgilAppType = "phe"
-	}
-	req := &models.CreateAppRequest{Name: name, Type: virgilAppType}
-	resp := &models.Application{}
-
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "application", req, resp)
-
-	if err != nil {
-		return
-	}
-
-	if resp != nil {
-		return resp.ID, nil
-	}
-
-	return "", errors.New("empty response")
 }

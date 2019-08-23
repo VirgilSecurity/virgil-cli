@@ -82,7 +82,7 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 
 	req := &models.CreateAccountRequest{Email: email, Password: string(pwd), Name: name}
 
-	_, _, vErr := utils.SendWithCheckRetry(vcli, http.MethodPost, "auth/register", req, nil)
+	_, _, vErr := utils.SendWithCheckRetry(vcli, http.MethodPost, "user/register", req, nil)
 
 	if vErr != nil {
 		return vErr
