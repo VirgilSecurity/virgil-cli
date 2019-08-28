@@ -1,6 +1,7 @@
 package dcm
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/VirgilSecurity/virgil-cli/utils"
 	"net/http"
@@ -41,8 +42,12 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 			if err != nil {
 				return err
 			}
+			serialized, err := json.Marshal(dcm)
+			if err != nil {
+				return err
+			}
 			fmt.Println("dcm : ")
-			fmt.Println(dcm)
+			fmt.Println(string(serialized))
 
 			return
 		},

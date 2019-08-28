@@ -41,7 +41,7 @@ func DcmList(vcli *client.VirgilHttpClient) *cli.Command {
 			fmt.Printf("|%25s|%20s\n", "-------------------------", "---------------------------------------")
 			for _, cert := range certs {
 
-				fmt.Printf("|%25s| %19s\n", cert.Name, cert.CreatedAt)
+				fmt.Printf("|%24s | %19s\n", cert.Name, cert.CreatedAt)
 			}
 			return nil
 		},

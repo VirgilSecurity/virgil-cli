@@ -42,10 +42,12 @@ import (
 	"github.com/pkg/errors"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
 	"github.com/howeyc/gopass"
+	"github.com/satori/go.uuid"
 )
 
 //Login obtains temporary account access token. Email and password may be empty
@@ -57,7 +59,7 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
 
-		email = scanner.Text()
+		email = strings.TrimSpace(scanner.Text())
 	}
 
 	if password == "" {
@@ -73,8 +75,11 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 		Password: password,
 	}
 
-	_, cookie, vErr := vcli.Send(http.MethodPost, "", "user/login", req, nil)
+	sessionToken := models.SessionToken{}
+
+	_, _, vErr := vcli.Send(http.MethodPost, "", "user/login", req, &sessionToken)
 	if vErr != nil {
+		fmt.Println(vErr)
 		_, err = CheckRetry(vErr, vcli)
 		if err == ErrEmptyMFACode {
 			code, err := gopass.GetPasswdPrompt("Enter 2-factor code:\r\n", true, os.Stdin, os.Stdout)
@@ -82,7 +87,8 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 				return err
 			}
 			req.Verification = &models.Verification{MFACode: string(code)}
-			_, cookie, vErr = vcli.Send(http.MethodPost, "", "user/login", req, nil)
+			_, _, vErr = vcli.Send(http.MethodPost, "", "user/login", req, &sessionToken)
+
 			if vErr != nil {
 				return errors.New(fmt.Sprintf("Authorization failed.\n"))
 			}
@@ -90,7 +96,16 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 			return err
 		}
 	}
-	return SaveAccessToken(cookie)
+
+	managementToken := models.ManagementTokenResponse{}
+	_, _, vErr = vcli.Send(http.MethodPost, "", "management-token",
+		models.ManagementTokenRequest{Name: strings.ReplaceAll(uuid.Must(uuid.NewV4()).String(), "-", "")},
+		&managementToken, sessionToken.Token)
+	if vErr != nil {
+		return errors.New(fmt.Sprintf("Authorization failed.\n"))
+	}
+
+	return SaveAccessToken(managementToken.Token)
 }
 
 func LoadAccessTokenOrLogin(vcli *client.VirgilHttpClient) (token string, err error) {

@@ -85,7 +85,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 				if app.Type == "phe" {
 					appType = "pure"
 				}
-				fmt.Printf("|%25s|%35s| %4s | %19s\n", appName, app.ID, appType, app.CreatedAt)
+				fmt.Printf("|%25s| %33s | %4s | %19s\n", appName, app.ID, appType, app.CreatedAt)
 			}
 			return nil
 		},

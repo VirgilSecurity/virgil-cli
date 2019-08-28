@@ -71,7 +71,7 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 
 func deleteApiKeyIDFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "access_keys/"+apiKeyID, nil, nil)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "apikey/"+apiKeyID, nil, nil)
 
 	return err
 }

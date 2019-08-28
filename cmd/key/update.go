@@ -94,7 +94,7 @@ func UpdateFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
 
 	req := &models.UpdateAccessKeyRequest{Name: name}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "access_keys/"+apiKeyID, req, nil)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "apikey/"+apiKeyID, req, nil)
 
 	return err
 }

@@ -79,12 +79,12 @@ func (vc *VirgilHttpClient) Send(method string, token string, urlPath string, pa
 	}
 
 	if len(extraOptions) > 0 {
-		appToken, ok := extraOptions[0].(string)
+		sessionToken, ok := extraOptions[0].(string)
 		if ok {
-			req.Header.Add("Authorization", "Virgil "+appToken)
+			req.Header.Add("SessionToken", sessionToken)
 		}
 	} else if token != "" {
-		req.AddCookie(&http.Cookie{Name: "gosession", Value: token})
+		req.Header.Add("ManagementToken", token)
 	}
 
 	client := vc.getHttpClient()

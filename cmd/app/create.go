@@ -58,11 +58,10 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 
 		Action: func(context *cli.Context) (err error) {
 
-			appType := utils.ReadFlagOrConsoleValue(context, "type", "Enter application type ( e2ee or pure )", "e2ee", "pure")
 			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter application name", "")
 			var appID string
 
-			appID, err = CreateFunc(name, appType, vcli)
+			appID, err = CreateFunc(name, vcli)
 
 			if err != nil {
 				return err
@@ -75,13 +74,10 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func CreateFunc(name, appType string, vcli *client.VirgilHttpClient) (appID string, err error) {
+func CreateFunc(name string, vcli *client.VirgilHttpClient) (appID string, err error) {
 
-	virgilAppType := "pki"
-	if appType == "pure" {
-		virgilAppType = "phe"
-	}
-	req := &models.CreateAppRequest{Name: name, Type: virgilAppType}
+
+	req := &models.CreateAppRequest{Name: name}
 	resp := &models.Application{}
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "application", req, resp)
