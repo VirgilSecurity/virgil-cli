@@ -97,7 +97,7 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 		}
 	}
 
-	tokenName, err:= uuid.NewV4()
+	tokenName := uuid.NewV4()
 	if err != nil {
 		return err
 	}

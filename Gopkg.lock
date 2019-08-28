@@ -73,6 +73,14 @@
   version = "v0.8.1"
 
 [[projects]]
+  digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
+
+[[projects]]
   branch = "master"
   digest = "1:8d37f6d96edbd5fa79a2054af6b63af21a05df1aa93f6455136ff9dbbfb355a3"
   name = "golang.org/x/crypto"
@@ -142,6 +150,7 @@
     "github.com/VirgilSecurity/virgil-purekit-go",
     "github.com/howeyc/gopass",
     "github.com/pkg/errors",
+    "github.com/satori/go.uuid",
     "gopkg.in/urfave/cli.v2",
     "gopkg.in/urfave/cli.v2/altsrc",
     "gopkg.in/virgil.v5/cryptoimpl",
