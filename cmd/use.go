@@ -94,14 +94,8 @@ func useFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 
 func listFunc(token string, vcli *client.VirgilHttpClient) (apps []*models.Application, err error) {
 
-	for err == nil {
-		_, _, vErr := vcli.Send(http.MethodGet, token, "applications", nil, &apps)
-		if err == nil {
-			break
-		}
 
-		token, err = utils.CheckRetry(vErr, vcli)
-	}
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, token, "applications", nil, &apps, )
 
 	if err != nil {
 		return apps, err

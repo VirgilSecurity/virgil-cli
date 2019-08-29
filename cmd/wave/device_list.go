@@ -15,6 +15,7 @@ func DeviceList(vcli *client.VirgilHttpClient) *cli.Command {
 		Name:    "list",
 		Aliases: []string{"l"},
 		Usage:   "List your devices",
+		Flags:   []cli.Flag{&cli.StringFlag{Name: "app-token", Usage: "application token"}},
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, err := utils.LoadDefaultApp()
@@ -23,14 +24,15 @@ func DeviceList(vcli *client.VirgilHttpClient) *cli.Command {
 				defaultAppID = defaultApp.ID
 			}
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			appToken := utils.ReadFlagOrConsoleValue(context, "app-token", "Enter app-token")
 
-			devices, err := deviceListFunc(appID, vcli)
+			devices, err := deviceListFunc(appID, appToken, vcli)
 			if err != nil {
 				return err
 			}
 
 			if len(devices) == 0 {
-				fmt.Println("There are no applications created for the account")
+				fmt.Println("There are no devices rgistered for the application")
 				return nil
 			}
 
@@ -44,9 +46,9 @@ func DeviceList(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func deviceListFunc(appID string, vcli *client.VirgilHttpClient) (devices []*models.Device, err error) {
+func deviceListFunc(appID, appToken string, vcli *client.VirgilHttpClient) (devices []*models.Device, err error) {
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "scms/"+appID+"/devices", nil, &devices)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "scms/"+appID+"/devices", nil, &devices, appToken)
 
 	if err != nil {
 		return

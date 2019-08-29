@@ -21,6 +21,7 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 		Usage:     "Create new dcm certificate",
 		Flags: []cli.Flag{&cli.StringFlag{Name: "name", Usage: "dsm certificate name"},
 			&cli.StringFlag{Name: "encrypt-pub-key", Usage: "encrypt public key"},
+			&cli.StringFlag{Name: "app-token", Usage: "application token"},
 			&cli.StringFlag{Name: "verify-pub-key", Usage: "verify public key"}},
 
 		Action: func(context *cli.Context) (err error) {
@@ -28,6 +29,7 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 			name := utils.ReadFlagOrConsoleValue(context, "name", "Enter dsm certificate name")
 			encryptPubKey := utils.ReadFlagOrConsoleValue(context, "encrypt-pub-key", "Enter encrypt public key")
 			verifyPubKey := utils.ReadFlagOrConsoleValue(context, "verify-pub-key", "Enter verify public key")
+			appToken := utils.ReadFlagOrConsoleValue(context, "app-token", "Enter app-token")
 
 			defaultApp, err := utils.LoadDefaultApp()
 			defaultAppID := ""
@@ -38,7 +40,7 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 			if appID == "" {
 				return errors.New("Please, specify app_id (flag --app_id)")
 			}
-			dcm, err := DsmCreateFunc(appID, name, encryptPubKey, verifyPubKey, vcli)
+			dcm, err := DsmCreateFunc(appID, name, encryptPubKey, verifyPubKey, appToken, vcli)
 			if err != nil {
 				return err
 			}
@@ -54,11 +56,11 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func DsmCreateFunc(appID, name, encryptPubKey, verifyPubKey string, vcli *client.VirgilHttpClient) (resp models.DcmCertificateCreateResponse, err error) {
+func DsmCreateFunc(appID, name, encryptPubKey, verifyPubKey, appToken string, vcli *client.VirgilHttpClient) (resp models.DcmCertificateCreateResponse, err error) {
 
 	req := &models.DcmCertificateCreateRequest{Name: name, EncryptPublicKey: encryptPubKey, VerifyPublicKey: verifyPubKey}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/scms/"+appID+"/dcm", req, &resp)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/scms/"+appID+"/dcm", req, &resp, appToken)
 	return
 }
 

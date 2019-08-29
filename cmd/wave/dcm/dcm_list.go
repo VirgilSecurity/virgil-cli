@@ -16,6 +16,8 @@ func DcmList(vcli *client.VirgilHttpClient) *cli.Command {
 		Name:    "list",
 		Aliases: []string{"l"},
 		Usage:   "List your dcm certificates",
+		Flags: []cli.Flag{&cli.StringFlag{Name: "app-token", Usage: "application token"}},
+
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, err := utils.LoadDefaultApp()
@@ -24,8 +26,9 @@ func DcmList(vcli *client.VirgilHttpClient) *cli.Command {
 				defaultAppID = defaultApp.ID
 			}
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			appToken := utils.ReadFlagOrConsoleValue(context, "app-token", "Enter app-token")
 
-			certs, err := dcmListFunc(appID, vcli)
+			certs, err := dcmListFunc(appID, appToken, vcli)
 			if err != nil {
 				return err
 			}
@@ -48,9 +51,9 @@ func DcmList(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func dcmListFunc(appID string, vcli *client.VirgilHttpClient) (apps []*models.DcmCertificateListItem, err error) {
+func dcmListFunc(appID, appToken string, vcli *client.VirgilHttpClient) (apps []*models.DcmCertificateListItem, err error) {
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "/scms/"+appID+"/dcm", nil, &apps)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "/scms/"+appID+"/dcm", nil, &apps, appToken)
 
 	if err != nil {
 		return
