@@ -46,8 +46,8 @@ import (
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/google/uuid"
 	"github.com/howeyc/gopass"
-	"github.com/satori/go.uuid"
 )
 
 //Login obtains temporary account access token. Email and password may be empty
@@ -97,7 +97,7 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 		}
 	}
 
-	tokenName := uuid.NewV4()
+	tokenName := uuid.New()
 	if err != nil {
 		return err
 	}

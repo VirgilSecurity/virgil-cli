@@ -92,7 +92,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 
 func listFunc(appID string, vcli *client.VirgilHttpClient) (apps []*models.ApplicationToken, err error) {
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications/"+appID+"/tokens", nil, &apps)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "application/"+appID+"/tokens", nil, &apps)
 
 	if err != nil {
 		return

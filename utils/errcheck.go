@@ -112,8 +112,5 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck.Code == 40300 {
 		return "", ErrEmailIsNotConfirmed
 	}
-	if errToCheck.Code == 0 {
-		return "", ErrEmailIsInvalid
-	}
 	return "", errToCheck
 }

@@ -93,6 +93,6 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 
 func deleteAppTokenFunc(appID, appTokenID string, vcli *client.VirgilHttpClient) (err error) {
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "applications/"+appID+"/tokens/"+appTokenID, nil, nil)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "application/"+appID+"/tokens/"+appTokenID, nil, nil)
 	return err
 }

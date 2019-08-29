@@ -86,7 +86,7 @@ func CreateFunc(appID, name string, vcli *client.VirgilHttpClient) (token string
 	req := &models.CreateAppTokenRequest{Name: name}
 	resp := &models.ApplicationToken{}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/applications/"+appID+"/tokens", req, resp)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/application/"+appID+"/tokens", req, resp)
 
 	if err != nil {
 		return "", err
