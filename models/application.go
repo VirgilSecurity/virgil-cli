@@ -49,7 +49,8 @@ type CreateAppResp struct {
 }
 
 type CreateAppTokenRequest struct {
-	Name string `json:"name"`
+	Name          string `json:"token_name"`
+	ApplicationID string `json:"application_id"`
 }
 
 type Application struct {
