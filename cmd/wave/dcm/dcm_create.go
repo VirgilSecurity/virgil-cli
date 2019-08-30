@@ -17,7 +17,6 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:      "create",
 		Aliases:   []string{"c"},
-		ArgsUsage: "app_name",
 		Usage:     "Create new dcm certificate",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "name", Usage: "dsm certificate name"},

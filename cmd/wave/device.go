@@ -8,7 +8,7 @@ import (
 
 func Device(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:  "dcm",
+		Name:  "devices",
 		Usage: "Manage your wave devices",
 		Subcommands: []*cli.Command{
 			device.DeviceList(client),
