@@ -19,7 +19,9 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 		Aliases:   []string{"c"},
 		ArgsUsage: "app_name",
 		Usage:     "Create new dcm certificate",
-		Flags: []cli.Flag{&cli.StringFlag{Name: "name", Usage: "dsm certificate name"},
+		Flags: []cli.Flag{
+			&cli.StringFlag{Name: "name", Usage: "dsm certificate name"},
+			&cli.StringFlag{Name: "app_id", Usage: "application id"},
 			&cli.StringFlag{Name: "encrypt-pub-key", Usage: "encrypt public key"},
 			&cli.StringFlag{Name: "app-token", Usage: "application token"},
 			&cli.StringFlag{Name: "verify-pub-key", Usage: "verify public key"}},
@@ -42,8 +44,8 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 				return errors.New("Please, specify app_id (flag --app_id)")
 			}
 			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
-			if appID == "" {
-				return errors.New("Please, specify app_id (flag --app_id)")
+			if appToken == "" {
+				return errors.New("Please, specify app-token (flag --app-token)")
 			}
 			dcm, err := DsmCreateFunc(appID, name, encryptPubKey, verifyPubKey, appToken, vcli)
 			if err != nil {

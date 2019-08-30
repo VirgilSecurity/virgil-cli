@@ -14,7 +14,7 @@ func Init(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:  "init",
 		Usage: "Init wave module in application",
-		Flags: []cli.Flag{&cli.StringFlag{Name: "type", Usage: "application type (e2ee or pure)"}},
+		Flags: []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "application id"}},
 
 		Action: func(context *cli.Context) (err error) {
 

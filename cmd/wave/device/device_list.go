@@ -15,7 +15,9 @@ func DeviceList(vcli *client.VirgilHttpClient) *cli.Command {
 		Name:    "list",
 		Aliases: []string{"l"},
 		Usage:   "List your devices",
-		Flags:   []cli.Flag{&cli.StringFlag{Name: "app-token", Usage: "application token"}},
+		Flags:   []cli.Flag{
+			&cli.StringFlag{Name: "app_id", Usage: "application id"},
+			&cli.StringFlag{Name: "app-token", Usage: "application token"}},
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, err := utils.LoadDefaultApp()
@@ -30,8 +32,8 @@ func DeviceList(vcli *client.VirgilHttpClient) *cli.Command {
 				return errors.New("Please, specify app_id (flag --app_id)")
 			}
 			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
-			if appID == "" {
-				return errors.New("Please, specify app_id (flag --app_id)")
+			if appToken == "" {
+				return errors.New("Please, specify app-token (flag --app-token)")
 			}
 
 			devices, err := deviceListFunc(appID, appToken, vcli)
