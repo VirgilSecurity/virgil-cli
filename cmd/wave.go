@@ -48,7 +48,7 @@ func Wave(client *client.VirgilHttpClient) *cli.Command {
 		Usage: "Manage your wave application",
 		Subcommands: []*cli.Command{
 			wave.Init(client),
-			wave.DeviceList(client),
+			wave.Device(client),
 			wave.Dcm(client),
 		},
 	}

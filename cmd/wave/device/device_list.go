@@ -1,4 +1,4 @@
-package wave
+package device
 
 import (
 	"fmt"
