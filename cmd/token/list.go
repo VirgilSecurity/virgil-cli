@@ -79,11 +79,10 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 			sort.Slice(tokens, func(i, j int) bool {
 				return tokens[i].CreatedAt.Before(tokens[j].CreatedAt)
 			})
-			fmt.Printf("|%25s|%20s\n", " Name  ", " Created On ")
-			fmt.Printf("|%25s|%20s\n", "-------------------------", "----------------------------------------")
+			fmt.Printf("|%50s|%20s\n", " Name  ", " Created On ")
+			fmt.Printf("|%50s|%20s\n", "--------------------------------------------------", "----------------------------------------")
 			for _, t := range tokens {
-
-				fmt.Printf("|%23s  |  %18s\n", t.Name, t.CreatedAt)
+				fmt.Printf("| %48s |  %18s\n", t.Name, t.CreatedAt)
 			}
 			return nil
 		},

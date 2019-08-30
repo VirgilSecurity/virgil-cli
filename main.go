@@ -80,10 +80,6 @@ func main() {
 		commit = commit[:8]
 	}
 
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
 	apiGatewayClient := &client.VirgilHttpClient{
 		Address: "https://api.virgilsecurity.com/",
 	}
@@ -113,11 +109,6 @@ func main() {
 			cmd.Wave(apiGatewayClient),
 		},
 		Before: func(c *cli.Context) error {
-
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
-			}
 
 			apiUrl := c.String("api_gateway_url")
 			if apiUrl != "" {

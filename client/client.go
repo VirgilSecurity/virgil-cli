@@ -114,7 +114,6 @@ func (vc *VirgilHttpClient) Send(method string, urlPath string, payload interfac
 	if err != nil {
 		return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: read response body").Error()}
 	}
-	fmt.Println(string(respBody))
 
 	if len(respBody) > 0 {
 		httpErr := &VirgilAPIError{}

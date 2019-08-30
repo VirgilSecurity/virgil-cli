@@ -20,11 +20,19 @@ func DeviceList(vcli *client.VirgilHttpClient) *cli.Command {
 
 			defaultApp, err := utils.LoadDefaultApp()
 			defaultAppID := ""
+			defaultAppToken := ""
 			if defaultApp != nil {
 				defaultAppID = defaultApp.ID
+				defaultAppToken = defaultApp.Token
 			}
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
-			appToken := utils.ReadFlagOrConsoleValue(context, "app-token", "Enter app-token")
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
+			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
 
 			devices, err := deviceListFunc(appID, appToken, vcli)
 			if err != nil {

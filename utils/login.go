@@ -97,15 +97,11 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 		}
 	}
 
-	tokenName := uuid.New()
-	if err != nil {
-		return err
-	}
 	header := http.Header{}
 	header.Set("SessionToken", sessionToken.Token)
 	managementToken := models.ManagementTokenResponse{}
 	_, _, vErr = vcli.Send(http.MethodPost, "management-token",
-		models.ManagementTokenRequest{Name: tokenName.String()},
+		models.ManagementTokenRequest{Name: uuid.New().String()},
 		&managementToken, header)
 	if vErr != nil {
 		return errors.New(fmt.Sprintf("Authorization failed.\n"))

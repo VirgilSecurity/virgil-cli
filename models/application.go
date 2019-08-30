@@ -56,10 +56,16 @@ type CreateAppTokenRequest struct {
 type Application struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`
-	Type      string    `json:"type"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type StoredApplication struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	Token     string    `json:"token"`
+	IsDefault bool      `json:"is_default"`
+}
 type ApplicationToken struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"token_name"`

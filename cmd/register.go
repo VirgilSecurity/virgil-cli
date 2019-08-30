@@ -91,6 +91,6 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 	fmt.Println("Account registered.")
 
 	utils.DeleteAccessToken()
-	utils.DeleteDefaultApp()
+	utils.DeleteAppFile()
 	return nil
 }

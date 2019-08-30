@@ -29,14 +29,19 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 			name := utils.ReadFlagOrConsoleValue(context, "name", "Enter dsm certificate name")
 			encryptPubKey := utils.ReadFlagOrConsoleValue(context, "encrypt-pub-key", "Enter encrypt public key")
 			verifyPubKey := utils.ReadFlagOrConsoleValue(context, "verify-pub-key", "Enter verify public key")
-			appToken := utils.ReadFlagOrConsoleValue(context, "app-token", "Enter app-token")
 
 			defaultApp, err := utils.LoadDefaultApp()
 			defaultAppID := ""
+			defaultAppToken := ""
 			if defaultApp != nil {
 				defaultAppID = defaultApp.ID
+				defaultAppToken = defaultApp.Token
 			}
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
+			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
 			if appID == "" {
 				return errors.New("Please, specify app_id (flag --app_id)")
 			}

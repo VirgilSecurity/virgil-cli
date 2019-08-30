@@ -67,14 +67,8 @@ func useFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 
 	appName := strings.Join(context.Args().Slice(), " ")
 
-	token, err := utils.LoadAccessTokenOrLogin(vcli)
-
-	if err != nil {
-		return err
-	}
-
 	var apps []*models.Application
-	apps, err = listFunc(token, vcli)
+	apps, err := listFunc(vcli)
 
 	if err != nil {
 		return err
@@ -82,7 +76,10 @@ func useFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 
 	for _, app := range apps {
 		if app.Name == appName {
-			utils.SaveDefaultApp(app)
+			err := utils.SaveDefaultApp(vcli, app)
+			if err != nil {
+				return err
+			}
 			fmt.Println("Application context set ok")
 			fmt.Println("All future commands without specifying app_id will be applied to current app")
 			return nil
@@ -92,10 +89,9 @@ func useFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 	return errors.New("there is no app with name " + appName)
 }
 
-func listFunc(token string, vcli *client.VirgilHttpClient) (apps []*models.Application, err error) {
+func listFunc(vcli *client.VirgilHttpClient) (apps []*models.Application, err error) {
 
-
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, token, "applications", nil, &apps, )
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
 
 	if err != nil {
 		return apps, err
