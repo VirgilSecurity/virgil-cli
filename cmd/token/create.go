@@ -53,7 +53,8 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 		Name:      "new",
 		ArgsUsage: "token_name",
 		Usage:     "Create a new app token",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "app id"}},
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "app id"},
+			&cli.StringFlag{Name: "name", Usage: "app token name"}},
 
 		Action: func(context *cli.Context) (err error) {
 			defaultApp, err := utils.LoadDefaultApp()
@@ -66,9 +67,11 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 			if appID == "" {
 				return errors.New("Please, specify app_id (flag --app_id)")
 			}
-
-			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter token name", "")
-
+			name := utils.ReadFlagOrDefault(context, "name", "")
+			if appID == "" {
+				return errors.New("Please, specify token name (flag --name)")
+			}
+			
 			token, err := CreateFunc(appID, name, vcli)
 
 			if err != nil {
