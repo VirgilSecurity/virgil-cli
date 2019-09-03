@@ -51,7 +51,7 @@ var (
 	ErrAuthFailed                   = fmt.Errorf("authorization failed: incorrect email or password")
 	ErrApiKeyAlreadyRegistered      = fmt.Errorf("error: api key with given name already registered")
 	ErrEmptyMFACode                 = fmt.Errorf("error: Multi factor authorization code is empty field")
-	ErrPasswordTooWeak              = fmt.Errorf("error: Password is too weak")
+	ErrPasswordTooWeak              = fmt.Errorf("error: Password is too weak: password must be at least 8 characters length")
 	ErrIncorrectAppToken            = fmt.Errorf("error: application token is incorrect")
 )
 
@@ -108,6 +108,9 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	}
 	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40098 {
 		return "", ErrEmptyMFACode
+	}
+	if errToCheck.Code == 40020  {
+		return "", ErrPasswordTooWeak
 	}
 	if errToCheck.Code == 40300 {
 		return "", ErrEmailIsNotConfirmed

@@ -116,6 +116,7 @@ func (vc *VirgilHttpClient) Send(method string, urlPath string, payload interfac
 	}
 
 	if len(respBody) > 0 {
+		fmt.Println("error from server : " + string(respBody))
 		httpErr := &VirgilAPIError{}
 		err = json.Unmarshal(respBody, httpErr)
 		if err == nil {
