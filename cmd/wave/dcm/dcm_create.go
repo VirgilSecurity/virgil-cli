@@ -20,7 +20,6 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 		Usage:   "Create new dcm certificate",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "name", Usage: "dsm certificate name"},
-			&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"},
 			&cli.StringFlag{Name: "encrypt-pub-key", Usage: "encrypt public key"},
 			&cli.StringFlag{Name: "app-token", Usage: "application token"},
 			&cli.StringFlag{Name: "verify-pub-key", Usage: "verify public key"}},
@@ -32,21 +31,16 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 			verifyPubKey := utils.ReadFlagOrConsoleValue(context, "verify-pub-key", "Enter verify public key")
 
 			defaultApp, err := utils.LoadDefaultApp()
-			defaultAppID := ""
 			defaultAppToken := ""
 			if defaultApp != nil {
-				defaultAppID = defaultApp.ID
 				defaultAppToken = defaultApp.Token
 			}
-			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
-			if appID == "" {
-				return errors.New("Please, specify app_id (flag --app_id)")
-			}
+
 			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
 			if appToken == "" {
 				return errors.New("Please, specify app-token (flag --app-token)")
 			}
-			dcm, err := DsmCreateFunc(appID, name, encryptPubKey, verifyPubKey, appToken, vcli)
+			dcm, err := DsmCreateFunc( name, encryptPubKey, verifyPubKey, appToken, vcli)
 			if err != nil {
 				return err
 			}
@@ -61,11 +55,11 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func DsmCreateFunc(appID, name, encryptPubKey, verifyPubKey, appToken string, vcli *client.VirgilHttpClient) (resp models.DcmCertificateCreateResponse, err error) {
+func DsmCreateFunc(name, encryptPubKey, verifyPubKey, appToken string, vcli *client.VirgilHttpClient) (resp models.DcmCertificateCreateResponse, err error) {
 
 	req := &models.DcmCertificateCreateRequest{Name: name, EncryptPublicKey: encryptPubKey, VerifyPublicKey: verifyPubKey}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/scms/"+appID+"/dcm", req, &resp, appToken)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/scms/dcm", req, &resp, appToken)
 	return
 }
 

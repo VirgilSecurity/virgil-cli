@@ -71,7 +71,7 @@ func main() {
 		altsrc.NewStringFlag(&cli.StringFlag{
 			Name:    "api_gateway_url",
 			Usage:   "Api gateway URL",
-			EnvVars: []string{"API_URL"},
+			EnvVars: []string{"VIRGIL_API_URL"},
 			Hidden:  true,
 		}),
 	}
