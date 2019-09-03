@@ -50,11 +50,10 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 			if err != nil {
 				return err
 			}
-			serialized, err := json.Marshal(dcm)
+			serialized, err := json.MarshalIndent(dcm,"","\t")
 			if err != nil {
 				return err
 			}
-			fmt.Println("dcm : ")
 			fmt.Println(string(serialized))
 
 			return
