@@ -52,7 +52,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 		Name:    "list",
 		Aliases: []string{"l"},
 		Usage:   "List your app tokens",
-		Flags:   []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "app id"}},
+		Flags:   []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "app id"}},
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, err := utils.LoadDefaultApp()

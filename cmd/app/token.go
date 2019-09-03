@@ -34,22 +34,22 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package cmd
+package app
 
 import (
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/VirgilSecurity/virgil-cli/cmd/wave"
+	"github.com/VirgilSecurity/virgil-cli/cmd/app/token"
 	"gopkg.in/urfave/cli.v2"
 )
 
-func Wave(client *client.VirgilHttpClient) *cli.Command {
+func Token(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:  "wave",
-		Usage: "Manage your wave application",
+		Name:  "token",
+		Usage: "Manage your application tokens",
 		Subcommands: []*cli.Command{
-			wave.Init(client),
-			wave.Device(client),
-			wave.Dcm(client),
+			token.Create(client),
+			token.List(client),
+			token.Delete(client),
 		},
 	}
 }

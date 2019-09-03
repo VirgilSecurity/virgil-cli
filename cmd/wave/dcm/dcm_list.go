@@ -17,7 +17,7 @@ func DcmList(vcli *client.VirgilHttpClient) *cli.Command {
 		Aliases: []string{"l"},
 		Usage:   "List your dcm certificates",
 		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "app_id", Usage: "application id"},
+			&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"},
 			&cli.StringFlag{Name: "app-token", Usage: "application token"}},
 
 		Action: func(context *cli.Context) (err error) {

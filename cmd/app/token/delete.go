@@ -53,7 +53,7 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 		Aliases:   []string{"d"},
 		ArgsUsage: "name",
 		Usage:     "Delete app token by name",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "app id"}},
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "app id"}},
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, _ := utils.LoadDefaultApp()

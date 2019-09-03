@@ -38,18 +38,18 @@ package cmd
 
 import (
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/VirgilSecurity/virgil-cli/cmd/token"
+	"github.com/VirgilSecurity/virgil-cli/cmd/wave"
 	"gopkg.in/urfave/cli.v2"
 )
 
-func Token(client *client.VirgilHttpClient) *cli.Command {
+func Wave(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:  "apptoken",
-		Usage: "Manage your application tokens",
+		Name:  "scms",
+		Usage: "Manage your scms application",
 		Subcommands: []*cli.Command{
-			token.Create(client),
-			token.List(client),
-			token.Delete(client),
+			wave.Init(client),
+			wave.Device(client),
+			wave.Dcm(client),
 		},
 	}
 }

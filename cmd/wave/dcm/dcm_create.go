@@ -15,12 +15,12 @@ import (
 
 func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:      "create",
-		Aliases:   []string{"c"},
-		Usage:     "Create new dcm certificate",
+		Name:    "create",
+		Aliases: []string{"c"},
+		Usage:   "Create new dcm certificate",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "name", Usage: "dsm certificate name"},
-			&cli.StringFlag{Name: "app_id", Usage: "application id"},
+			&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"},
 			&cli.StringFlag{Name: "encrypt-pub-key", Usage: "encrypt public key"},
 			&cli.StringFlag{Name: "app-token", Usage: "application token"},
 			&cli.StringFlag{Name: "verify-pub-key", Usage: "verify public key"}},

@@ -105,7 +105,6 @@ func main() {
 			cmd.Sign(),
 			cmd.Verify(),
 			cmd.Cards(apiGatewayClient),
-			cmd.Token(apiGatewayClient),
 			cmd.Wave(apiGatewayClient),
 		},
 		Before: func(c *cli.Context) error {
