@@ -41,6 +41,7 @@ import (
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/VirgilSecurity/virgil-cli/cmd"
 	"gopkg.in/urfave/cli.v2/altsrc"
@@ -74,7 +75,7 @@ func main() {
 	}
 
 	apiGatewayClient := &client.VirgilHttpClient{
-		Address: "https://api.virgilsecurity.com/",
+		Address: "https://api.virgilsecurity.com/management/v1/",
 	}
 
 	app := &cli.App{
@@ -103,7 +104,7 @@ func main() {
 		Before: func(c *cli.Context) error {
 
 			apiUrl := c.String("api_gateway_url")
-			if apiUrl != "" {
+			if strings.TrimSpace(apiUrl) != "" {
 				apiGatewayClient.Address = apiUrl
 			}
 
