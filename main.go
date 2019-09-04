@@ -50,7 +50,7 @@ import (
 )
 
 var (
-	version = "5.1.0-alpha8"
+	version = "5.1.0-alpha9"
 	commit  = "none"
 	date    = "unknown"
 )
