@@ -109,7 +109,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40098 {
 		return "", ErrEmptyMFACode
 	}
-	if errToCheck.Code == 40020  {
+	if errToCheck.Code == 40020 {
 		return "", ErrPasswordTooWeak
 	}
 	if errToCheck.Code == 40300 {
@@ -118,5 +118,6 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck.Code == 20303 || errToCheck.Code == 20308 {
 		return "", ErrIncorrectAppToken
 	}
+	fmt.Println("error sending request to " + vcli.Address)
 	return "", errToCheck
 }

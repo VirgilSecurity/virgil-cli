@@ -49,7 +49,7 @@ import (
 )
 
 var (
-	version = "5.1.0-alpha5"
+	version = "5.1.0-alpha8"
 	commit  = "none"
 	date    = "unknown"
 )
@@ -61,13 +61,6 @@ func main() {
 			Aliases: []string{"cfg"},
 			Usage:   "Yaml config file path",
 		},
-		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
-			Hidden:  true,
-		}),
 		altsrc.NewStringFlag(&cli.StringFlag{
 			Name:    "api_gateway_url",
 			Usage:   "Api gateway URL",

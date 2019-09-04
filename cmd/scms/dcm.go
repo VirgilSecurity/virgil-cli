@@ -1,8 +1,8 @@
-package wave
+package scms
 
 import (
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/VirgilSecurity/virgil-cli/cmd/wave/dcm"
+	"github.com/VirgilSecurity/virgil-cli/cmd/scms/dcm"
 	"gopkg.in/urfave/cli.v2"
 )
 

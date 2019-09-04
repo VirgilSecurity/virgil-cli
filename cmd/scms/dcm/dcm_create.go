@@ -63,7 +63,7 @@ func DsmCreateFunc(name, encryptPubKey, verifyPubKey, appToken string, vcli *cli
 	return
 }
 
-//CMD: virgil wave dcm create  --name "My first DCM certificate" --encrypt-pub-key BASE64 --verfiy-pub-key BASE64
+//CMD: virgil scms dcm create  --name "My first DCM certificate" --encrypt-pub-key BASE64 --verfiy-pub-key BASE64
 //URL    :  https://api.virgilsecurity.com/v1/scms/{APPLICATION_ID}/dcm
 //METHOD: POST
 //BODY: {"name":"My first DCM certificate","encrypt_public_key":"BASE64","verify_public_key":"BASE64"}

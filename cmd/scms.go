@@ -38,7 +38,7 @@ package cmd
 
 import (
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/VirgilSecurity/virgil-cli/cmd/wave"
+	"github.com/VirgilSecurity/virgil-cli/cmd/scms"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -47,9 +47,9 @@ func Wave(client *client.VirgilHttpClient) *cli.Command {
 		Name:  "scms",
 		Usage: "Manage your scms application",
 		Subcommands: []*cli.Command{
-			wave.Init(client),
-			wave.Device(client),
-			wave.Dcm(client),
+			scms.Init(client),
+			scms.Device(client),
+			scms.Dcm(client),
 		},
 	}
 }

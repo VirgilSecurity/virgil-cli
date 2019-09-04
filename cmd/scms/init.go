@@ -1,4 +1,4 @@
-package wave
+package scms
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ import (
 func Init(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:  "init",
-		Usage: "Init wave module in application",
+		Usage: "Init scms module in application",
 		Flags: []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"}},
 
 		Action: func(context *cli.Context) (err error) {
@@ -25,7 +25,7 @@ func Init(vcli *client.VirgilHttpClient) *cli.Command {
 			}
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
 			if appID == "" {
-				return errors.New("Please, specify app_id (flag --app_id)")
+				return errors.New("Please, specify app-id (flag --app-id)")
 			}
 
 			err = InitFunc(appID, vcli)
@@ -46,6 +46,6 @@ func InitFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
 	return err
 }
 
-//CMD: virgil wave  init
+//CMD: virgil scms  init
 //URL: https://api.virgilsecurity.com/management/v1/scms/{APPLICATION_ID}/init
 //METHOD: POST

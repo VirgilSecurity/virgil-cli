@@ -69,7 +69,7 @@ func dcmListFunc( appToken string, vcli *client.VirgilHttpClient) (apps []*model
 	return nil, errors.New("empty response")
 }
 
-//CMD: virgil wave dcm list
+//CMD: virgil scms dcm list
 //URL:  https://api.virgilsecurity.com/v1/scms/{APPLICATION_ID}/dcm
 //METHOD: GET
 //RESP BODY: [

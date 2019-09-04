@@ -64,7 +64,7 @@ func deviceListFunc(appToken string, vcli *client.VirgilHttpClient) (devices []*
 	return nil, errors.New("empty response")
 }
 
-//CMD: virgil wave device list
+//CMD: virgil scms device list
 //URL: https://api.virgilsecurity.com/v1/scms/{APPLICATION_ID}/devices
 //METHOD: GET
 //RESP BODY: [
