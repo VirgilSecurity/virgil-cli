@@ -50,9 +50,7 @@ import (
 )
 
 var (
-	version = "5.1.0-alpha9"
-	commit  = "none"
-	date    = "unknown"
+	version = "5.1.1"
 )
 
 func main() {
@@ -70,16 +68,12 @@ func main() {
 		}),
 	}
 
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
 	apiGatewayClient := &client.VirgilHttpClient{
 		Address: "https://api.virgilsecurity.com/management/v1/",
 	}
 
 	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
+		Version:               fmt.Sprintf("%v", version, ),
 		Name:                  "CLI",
 		Usage:                 "VirgilSecurity command line interface",
 		Flags:                 flags,
