@@ -57,7 +57,7 @@ type VirgilHttpClient struct {
 	Address string
 }
 
-func (vc *VirgilHttpClient) Send(method string, token string, urlPath string, payload interface{}, respObj interface{}, extraOptions ...interface{}) (headers http.Header, cookie string, virgilApiErr *VirgilAPIError) {
+func (vc *VirgilHttpClient) Send(method string, urlPath string, payload interface{}, respObj interface{}, header http.Header) (headers http.Header, cookie string, virgilApiErr *VirgilAPIError) {
 	var body []byte
 	if payload != nil {
 		var err error
@@ -78,14 +78,7 @@ func (vc *VirgilHttpClient) Send(method string, token string, urlPath string, pa
 		return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: new request").Error()}
 	}
 
-	if len(extraOptions) > 0 {
-		appToken, ok := extraOptions[0].(string)
-		if ok {
-			req.Header.Add("Authorization", "Virgil "+appToken)
-		}
-	} else if token != "" {
-		req.AddCookie(&http.Cookie{Name: "gosession", Value: token})
-	}
+	req.Header = header
 
 	client := vc.getHttpClient()
 

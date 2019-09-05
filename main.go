@@ -41,6 +41,7 @@ import (
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/VirgilSecurity/virgil-cli/cmd"
 	"gopkg.in/urfave/cli.v2/altsrc"
@@ -49,9 +50,7 @@ import (
 )
 
 var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
+	version = "5.1.1"
 )
 
 func main() {
@@ -62,40 +61,30 @@ func main() {
 			Usage:   "Yaml config file path",
 		},
 		altsrc.NewStringFlag(&cli.StringFlag{
-			Name:    "service_url",
-			Aliases: []string{"url"},
-			Usage:   "Dashboard service URL",
-			EnvVars: []string{"DASHBOARD_URL"},
+			Name:    "api_gateway_url",
+			Usage:   "Api gateway URL",
+			EnvVars: []string{"VIRGIL_API_URL"},
 			Hidden:  true,
 		}),
 	}
 
-	if commit != "none" {
-		commit = commit[:8]
-	}
-
-	vcli := &client.VirgilHttpClient{
-		Address: "https://dashboard.virgilsecurity.com/api/",
-	}
-
 	apiGatewayClient := &client.VirgilHttpClient{
-		Address: "https://api.virgilsecurity.com/",
+		Address: "https://api.virgilsecurity.com/management/v1/",
 	}
-
 
 	app := &cli.App{
-		Version:               fmt.Sprintf("%v, commit %v, built %v", version, commit, date),
+		Version:               fmt.Sprintf("%v", version, ),
 		Name:                  "CLI",
 		Usage:                 "VirgilSecurity command line interface",
 		Flags:                 flags,
 		EnableShellCompletion: true,
 		Commands: []*cli.Command{
-			cmd.Register(vcli),
-			cmd.Login(vcli),
-			cmd.Logout(vcli),
-			cmd.Application(vcli),
-			cmd.Key(vcli),
-			cmd.UseApp(vcli),
+			cmd.Register(apiGatewayClient),
+			cmd.Login(apiGatewayClient),
+			cmd.Logout(apiGatewayClient),
+			cmd.Application(apiGatewayClient),
+			cmd.Key(apiGatewayClient),
+			cmd.UseApp(apiGatewayClient),
 			cmd.PureKit(),
 			cmd.Keygen(),
 			cmd.Key2Pub(),
@@ -104,12 +93,13 @@ func main() {
 			cmd.Sign(),
 			cmd.Verify(),
 			cmd.Cards(apiGatewayClient),
+			cmd.Wave(apiGatewayClient),
 		},
 		Before: func(c *cli.Context) error {
 
-			url := c.String("service_url")
-			if url != "" {
-				vcli.Address = url
+			apiUrl := c.String("api_gateway_url")
+			if strings.TrimSpace(apiUrl) != "" {
+				apiGatewayClient.Address = apiUrl
 			}
 
 			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {

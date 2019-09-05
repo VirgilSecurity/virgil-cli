@@ -12,7 +12,7 @@ func Cards(client *client.VirgilHttpClient) *cli.Command {
 		Usage:   "Manage your cards",
 		Subcommands: []*cli.Command{
 			cards.Search(),
-			cards.Delete(client),
+			cards.Revoke(client),
 		},
 	}
 }

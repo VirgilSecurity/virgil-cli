@@ -74,7 +74,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 			fmt.Printf("|%25s|%35s|%64s|%20s\n", "-------------------------", "-----------------------------------", "----------------------------------------------------------------", "---------------------------------------")
 
 			for _, k := range keys {
-				fmt.Printf("|%25s|%35s|%63s |%20s\n", k.Name, k.ID, base64.StdEncoding.EncodeToString(k.PublicKey), k.CreatedAt)
+				fmt.Printf("| %23s | %33s | %62s |%20s\n", k.Name, k.ID, base64.StdEncoding.EncodeToString(k.PublicKey), k.CreatedAt)
 			}
 			return nil
 		},
@@ -83,7 +83,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 
 func listFunc(vcli *client.VirgilHttpClient) (keys []*models.AccessKey, err error) {
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "access_keys", nil, &keys)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "apikeys", nil, &keys)
 
 	if err != nil {
 		return

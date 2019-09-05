@@ -48,11 +48,29 @@ type CreateAppResp struct {
 	ID string `json:"id"`
 }
 
+type CreateAppTokenRequest struct {
+	Name          string `json:"token_name"`
+	ApplicationID string `json:"application_id"`
+}
+
 type Application struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`
-	Type      string    `json:"type"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type StoredApplication struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	Token     string    `json:"token"`
+	IsDefault bool      `json:"is_default"`
+}
+type ApplicationToken struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"token_name"`
+	CreatedAt time.Time `json:"created_at"`
+	Token     string    `json:"app_token"`
 }
 
 type UpdateAppRequest struct {

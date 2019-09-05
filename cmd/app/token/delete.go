@@ -34,67 +34,65 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package key
+package token
 
 import (
-	"bufio"
 	"fmt"
-	"net/http"
-	"os"
-
-	"github.com/VirgilSecurity/virgil-cli/utils"
-
 	"github.com/VirgilSecurity/virgil-cli/models"
+	"net/http"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
 )
 
-func Update(vcli *client.VirgilHttpClient) *cli.Command {
+func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:      "update",
-		Aliases:   []string{"u"},
-		ArgsUsage: "api_key_id",
-		Usage:     "Update existing api-key by id",
+		Name:      "delete",
+		Aliases:   []string{"d"},
+		ArgsUsage: "name",
+		Usage:     "Delete app token by name",
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "app id"}},
 		Action: func(context *cli.Context) (err error) {
 
-			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "api_key_id", "Enter api-key id", "")
+			defaultApp, _ := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
+			}
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter token name", "")
 
-			_, err = getKey(apiKeyID, vcli)
+			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
+
+			var tokens []*models.ApplicationToken
+			tokens, err = listFunc(appID, vcli)
+
 			if err != nil {
 				return err
 			}
+			for _, t := range tokens {
 
-			err = UpdateFunc(apiKeyID, vcli)
+				if t.Name == name {
+					err = deleteAppTokenFunc(appID, t.ID, vcli)
+					if err == nil {
+						fmt.Println("delete ok.")
+					}
+					return err
+				}
 
-			if err != nil {
-				return err
 			}
-
-			fmt.Println("Key successfully updated")
-			return nil
+			fmt.Println("token not found")
+			return err
 		},
 	}
 }
 
-func UpdateFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
+func deleteAppTokenFunc(appID, appTokenID string, vcli *client.VirgilHttpClient) (err error) {
 
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Println("Enter new api-key name:")
-	name := ""
-	for name == "" {
-		scanner.Scan()
-		name = scanner.Text()
-		if name == "" {
-			fmt.Printf("name can't be empty")
-			fmt.Println("Enter new api-key name:")
-		}
-	}
-
-	req := &models.UpdateAccessKeyRequest{Name: name}
-
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "apikey/"+apiKeyID, req, nil)
-
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "application/"+appID+"/tokens/"+appTokenID, nil, nil)
 	return err
 }

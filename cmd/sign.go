@@ -16,7 +16,7 @@ func Sign() *cli.Command {
 	return &cli.Command{
 		Name:      "sign",
 		ArgsUsage: "[pr_key]",
-		Usage:     "Decrypt data",
+		Usage:     "Sign data",
 		Flags: []cli.Flag{&cli.StringFlag{Name: "o", Usage: "destination file name"},
 			&cli.StringFlag{Name: "key", Usage: "private key file"},
 			&cli.StringFlag{Name: "p", Usage: "private key password"},

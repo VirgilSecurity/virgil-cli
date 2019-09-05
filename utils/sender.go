@@ -51,9 +51,22 @@ func SendWithCheckRetry(vcli *client.VirgilHttpClient, method string, urlPath st
 		}
 
 	}
+	header := http.Header{}
+
+	if len(extraOptions) > 0 {
+		t, ok := extraOptions[0].(string)
+		if ok && t[:2] == "MT" {
+			header.Add("SessionToken", t)
+		} else {
+			header.Add("AppToken", t)
+		}
+	} else if token != "" {
+		header.Add("ManagementToken", token)
+	}
+
 	var vErr *client.VirgilAPIError
 	for vErr == nil {
-		headers, cookie, vErr = vcli.Send(method, token, urlPath, payload, respObj, extraOptions...)
+		headers, cookie, vErr = vcli.Send(method, urlPath, payload, respObj, header)
 		if vErr == nil {
 			break
 		}

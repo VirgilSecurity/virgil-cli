@@ -34,67 +34,69 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package key
+package token
 
 import (
-	"bufio"
 	"fmt"
-	"net/http"
-	"os"
-
 	"github.com/VirgilSecurity/virgil-cli/utils"
+	"net/http"
 
 	"github.com/VirgilSecurity/virgil-cli/models"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
 )
 
-func Update(vcli *client.VirgilHttpClient) *cli.Command {
+func Create(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:      "update",
-		Aliases:   []string{"u"},
-		ArgsUsage: "api_key_id",
-		Usage:     "Update existing api-key by id",
+		Name:      "create",
+		ArgsUsage: "token_name",
+		Usage:     "Create a new app token",
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases:[]string{"app-id"}, Usage: "app id"},
+			&cli.StringFlag{Name: "name", Usage: "app token name"}},
+
 		Action: func(context *cli.Context) (err error) {
+			defaultApp, err := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
+			}
 
-			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "api_key_id", "Enter api-key id", "")
+			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
+			name := utils.ReadFlagOrDefault(context, "name", "")
+			if name == "" {
+				return errors.New("Please, specify token name (flag --name)")
+			}
 
-			_, err = getKey(apiKeyID, vcli)
+			token, err := CreateFunc(appID, name, vcli)
+
 			if err != nil {
 				return err
 			}
 
-			err = UpdateFunc(apiKeyID, vcli)
-
-			if err != nil {
-				return err
-			}
-
-			fmt.Println("Key successfully updated")
+			fmt.Println("token: ", token)
 			return nil
 		},
 	}
 }
 
-func UpdateFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
+func CreateFunc(appID, name string, vcli *client.VirgilHttpClient) (token string, err error) {
 
-	scanner := bufio.NewScanner(os.Stdin)
+	req := &models.CreateAppTokenRequest{Name: name, ApplicationID: appID}
+	resp := &models.ApplicationToken{}
 
-	fmt.Println("Enter new api-key name:")
-	name := ""
-	for name == "" {
-		scanner.Scan()
-		name = scanner.Text()
-		if name == "" {
-			fmt.Printf("name can't be empty")
-			fmt.Println("Enter new api-key name:")
-		}
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/application/"+appID+"/tokens", req, resp)
+
+	if err != nil {
+		return "", err
+	}
+	if resp != nil {
+		return resp.Token, nil
 	}
 
-	req := &models.UpdateAccessKeyRequest{Name: name}
-
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "apikey/"+apiKeyID, req, nil)
-
-	return err
+	return "", errors.New("empty response")
 }

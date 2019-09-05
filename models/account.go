@@ -51,3 +51,15 @@ type LoginRequest struct {
 type Verification struct {
 	MFACode string `json:"mfa_code"`
 }
+
+type SessionToken struct {
+	Token string `json:"session_token"`
+}
+
+type ManagementTokenResponse struct {
+	Token string `json:"management_token"`
+}
+
+type ManagementTokenRequest struct {
+	Name string `json:"token_name"`
+}

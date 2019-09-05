@@ -73,19 +73,15 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 			sort.Slice(apps, func(i, j int) bool {
 				return apps[i].CreatedAt.Before(apps[j].CreatedAt)
 			})
-			fmt.Printf("|%25s|%35s|%6s|%20s\n", "Application name   ", "APP_ID   ", " type ", " created_at ")
-			fmt.Printf("|%25s|%35s|%6s|%20s\n", "-------------------------", "-----------------------------------", "------", "---------------------------------------")
+			fmt.Printf("|%25s|%35s|%20s\n", "Application name   ", "APP_ID   ", " created_at ")
+			fmt.Printf("|%25s|%35s|%20s\n", "-------------------------", "-----------------------------------", "---------------------------------------")
 			for _, app := range apps {
 
 				appName := app.Name
 				if app.ID == defaultAppID {
 					appName += " (default)"
 				}
-				appType := "e2ee"
-				if app.Type == "phe" {
-					appType = "pure"
-				}
-				fmt.Printf("|%25s|%35s| %4s | %19s\n", appName, app.ID, appType, app.CreatedAt)
+				fmt.Printf("| %23s | %33s | %19s\n", appName, app.ID, app.CreatedAt)
 			}
 			return nil
 		},
