@@ -78,11 +78,9 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 		return err
 	}
 
-	name := utils.ReadConsoleValue("name", "Enter account name")
+	req := &models.CreateAccountRequest{Email: email, Password: string(pwd)}
 
-	req := &models.CreateAccountRequest{Email: email, Password: string(pwd), Name: name}
-
-	_, _, vErr := utils.SendWithCheckRetry(vcli, http.MethodPost, "auth/register", req, nil)
+	_, _, vErr := vcli.Send( http.MethodPost, "user/register", req, nil, nil)
 
 	if vErr != nil {
 		return vErr
@@ -91,6 +89,6 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 	fmt.Println("Account registered.")
 
 	utils.DeleteAccessToken()
-	utils.DeleteDefaultApp()
+	utils.DeleteAppFile()
 	return nil
 }

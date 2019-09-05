@@ -73,13 +73,9 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 
 			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter api-key name", "")
 
-			app, err := getApp(appID, vcli)
+			_, err = getApp(appID, vcli)
 			if err != nil {
 				return err
-			}
-			if app.Type != "pki" {
-				return errors.New("Key creation available only for e2ee applications")
-
 			}
 
 			var apiKeyID string
@@ -118,7 +114,7 @@ func CreateFunc(name string, vcli *client.VirgilHttpClient) (apiKeyID string, er
 	req := &models.CreateAccessKeyRequest{Name: name, PublicKey: pubKey, Signature: sign}
 	resp := &models.AccessKey{}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "access_keys", req, resp)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "apikey", req, resp)
 
 	if err != nil {
 		return

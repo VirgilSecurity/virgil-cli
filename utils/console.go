@@ -83,7 +83,11 @@ func ReadFileFlagOrParamOrFromConsole(context *cli.Context, flag, paramName, par
 func ReadParamOrDefaultOrFromConsole(context *cli.Context, paramName, paramDescription, defaultValue string) string {
 	value := strings.Join(context.Args().Slice(), " ")
 	if value != "" {
-		return value
+		if len(value) < 3 {
+			fmt.Printf("%s length can't be less than 3\n", paramName)
+		} else {
+			return value
+		}
 	}
 	if defaultValue != "" {
 		return defaultValue

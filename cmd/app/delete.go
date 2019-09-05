@@ -88,7 +88,7 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 
 func deleteAppFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "applications/"+appID, nil, nil)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "application/"+appID, nil, nil)
 	return err
 }
 
