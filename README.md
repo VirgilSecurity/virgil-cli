@@ -15,30 +15,38 @@
   - [Register new Account](#register-new-account)
   - [Login into Account](#login-into-account)
   - [Logout from Account](#logout-from-acccount)
-- [Manage PURE application](#manage-pure-application)
-  - [Update keys](#update-keys)
-  - [Generate a secret key](#generate-a-secret-key)
-- [Manage E2EE application](#manage-pure-application)
-  - [Create new application](#create-new-e2ee-application)
+- [Manage Applications](#manage-applications)
+  - [Create new application](#create-new-application)
   - [Delete application](#delete-application)
-  - [Get list of E2EE applications](#list-applications)
+  - [Get list of applications](#list-applications)
   - [Update application](#update-application)
   - [Set up default Application](#use-application)
   - [Create new API Key](#create-new-api-key)
   - [Delete API Key](#delete-api-key)
-  - [Get list of API Keys](#list-api-key)
+  - [Get list of API Keys](#list-api-keys)
   - [Update API Key](#update-api-key)
-- [Manage application cards](#manage-application-cards)
+  - [Create App Token](#create-app-token)
+  - [Delete App Token](#delete-app-token)
+  - [Get list of App Tokens](#list-app-tokens)
+- [Manage PURE Application](#manage-pure-application)
+  - [Update keys](#update-keys)
+  - [Generate a secret key](#generate-a-secret-key)
+- [Manage Application Cards](#manage-application-cards)
   - [Config file](#config-file)
   - [Search cards](#search-cards)
   - [Delete card](#delete-card)
-- [Cryptographic operations](#cryptographic-operations)
+- [Cryptographic Operations](#cryptographic-operations)
   - [Generate private key](#generate-private-key)
   - [Extract public key](#extract-public-key)
   - [Encrypt](#encrypt)
   - [Decrypt](#decrypt)
   - [Sign](#sign)
   - [Verify signature](#verify-signature)
+- [SCMS Commands](#scms-commands)
+  - [Init SCMS module in application](#init-scms-module-in-application)
+  - [Create DCM certificate](#create-dcm-certificate)
+  - [Get DCM certificates list](#get-dcm-certificates-list)
+  - [Get SCMS devices](#get-scms-devices)
 - [License](#license)
 - [Support](#support)
 
@@ -98,40 +106,17 @@ This command is used to close the current session for account:
 virgil logout
 ```
 
-## Manage PURE application
 
-### Update keys
-This command is used to update the `app_secret_key` and `service_public_key` of a Pure application
+## Manage Applications
 
-```bash
-# FreeBSD / Linux / Mac OS
-./virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
-
-# Windows OS
-virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
-```
-
-### Generate a secret key
-This command is used to generate a new `app_secret_key` for a Pure application:
-```bash
-# FreeBSD / Linux / Mac OS
-./virgil pure keygen
-
-# Windows OS
-virgil pure keygen
-```
-
-
-## Manage E2EE application
-
-### Create new E2EE application
+### Create new application
 This command is used to create new application:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil app create --type e2ee <application name>
+./virgil app create <application name>
 
 # Windows OS
-virgil app create --type e2ee <application name>
+virgil app create <application name>
 ```
 > Note! You have to verify your email in order to be able to create more than one application
 
@@ -220,7 +205,60 @@ This command is used to update name of api-key:
 virgil apikey update <api_key_id>
 ```
 
-## Manage application cards
+### Create App Token
+This command is used to create an App Token:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app token create --app-id <app-id> --name <name>
+
+# Windows OS
+virgil app token create --app-id <app-id> --name <name>
+```
+
+### Delete App Token
+This command is used to delete an App Token:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app token delete --app-id <app-id> --name <name>
+
+# Windows OS
+virgil app token delete --app-id <app-id> --name <name>
+```
+
+### List App Tokens
+This command is used to get App Tokens list:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil app token list --app-id <app-id>
+
+# Windows OS
+virgil app token list --app-id <app-id>
+```
+
+## Manage PURE application
+
+### Update keys
+This command is used to update the `app_secret_key` and `service_public_key` of a Pure application
+
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
+
+# Windows OS
+virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
+```
+
+### Generate a secret key
+This command is used to generate a new `app_secret_key` for a Pure application:
+```bash
+# FreeBSD / Linux / Mac OS
+./virgil pure keygen
+
+# Windows OS
+virgil pure keygen
+```
+
+## Manage Application Cards
 
 ### Config file
 
@@ -367,6 +405,56 @@ flags :
 -i  - File with data which necessary to verify.
 -s  - Digest sign.
 -key  - Public key file.  If omitted, stdin is used. 
+```
+
+## SCMS Commands
+
+### Init SCMS module in application
+
+This command inits SCMS services for application:
+
+```
+# FreeBSD / Linux / Mac OS
+./virgil scms init --app-id <app-id> 
+
+# Windows OS
+virgil scms init --app-id <app-id> 
+```
+
+### Create DCM certificate
+
+Generates DCM certificate for application:
+
+```
+# FreeBSD / Linux / Mac OS
+./virgil scms dcm create --name <dcm_name> --encrypt-pub-key <base64_key> --verify-pub-key <base64_key> --app-token <app_token> 
+
+# Windows OS
+virgil scms dcm create --name <dcm_name> --encrypt-pub-key <base64_key> --verify-pub-key <base64_key> --app-token <app_token> 
+```
+
+### Get DCM certificates list
+
+Gets DCM certificates for application:
+
+```
+# FreeBSD / Linux / Mac OS
+./virgil scms dcm list --app-token <app_token> 
+
+# Windows OS
+virgil scms dcm list --app-token <app_token> 
+```
+
+### Get SCMS devices
+
+Gets list of SCMS devices:
+
+```
+# FreeBSD / Linux / Mac OS
+./virgil scms devices list --app-token <app_token> 
+
+# Windows OS
+virgil scms devices list --app-token <app_token> 
 ```
 
 
