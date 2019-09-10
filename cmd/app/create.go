@@ -67,8 +67,8 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 				return err
 			}
 
-			fmt.Println("APP_ID:", appID)
-			fmt.Println("Application create ok.")
+			fmt.Println("App ID:", appID)
+			fmt.Println("Application has been successfully created.")
 			return nil
 		},
 	}

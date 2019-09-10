@@ -34,24 +34,44 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package cmd
+package key
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/VirgilSecurity/virgil-cli/cmd/key"
+	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
 )
 
-func Key(client *client.VirgilHttpClient) *cli.Command {
+func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:    "apikey",
-		Aliases: []string{"key"},
-		Usage:   "Manage your api keys",
-		Subcommands: []*cli.Command{
-			key.Create(client),
-			key.Delete(client),
-			key.List(client),
-			key.Update(client),
+		Name:      "delete",
+		Aliases:   []string{"d"},
+		ArgsUsage: "app-key_id",
+		Usage:     "Delete App Key by id",
+		Action: func(context *cli.Context) (err error) {
+
+			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "Enter App Key ID", "")
+
+			err = deleteApiKeyIDFunc(apiKeyID, vcli)
+
+			if err == nil {
+				fmt.Println("App Key has been successfully deleted.")
+			} else if err == utils.ErrEntityNotFound {
+				return errors.New(fmt.Sprintf("Api key with id %s not found.\n", apiKeyID))
+			}
+
+			return err
 		},
 	}
+}
+
+func deleteApiKeyIDFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
+
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "apikey/"+apiKeyID, nil, nil)
+
+	return err
 }

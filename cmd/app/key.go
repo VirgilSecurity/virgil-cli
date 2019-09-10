@@ -34,67 +34,24 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package key
+package app
 
 import (
-	"bufio"
-	"fmt"
-	"net/http"
-	"os"
-
-	"github.com/VirgilSecurity/virgil-cli/utils"
-
-	"github.com/VirgilSecurity/virgil-cli/models"
-
 	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/cmd/app/key"
 	"gopkg.in/urfave/cli.v2"
 )
 
-func Update(vcli *client.VirgilHttpClient) *cli.Command {
+func Key(client *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
-		Name:      "update",
-		Aliases:   []string{"u"},
-		ArgsUsage: "api_key_id",
-		Usage:     "Update existing api-key by id",
-		Action: func(context *cli.Context) (err error) {
-
-			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "api_key_id", "Enter api-key id", "")
-
-			_, err = getKey(apiKeyID, vcli)
-			if err != nil {
-				return err
-			}
-
-			err = UpdateFunc(apiKeyID, vcli)
-
-			if err != nil {
-				return err
-			}
-
-			fmt.Println("Key successfully updated")
-			return nil
+		Name:    "key",
+		Aliases: []string{"key"},
+		Usage:   "Manage your app keys",
+		Subcommands: []*cli.Command{
+			key.Create(client),
+			key.Delete(client),
+			key.List(client),
+			key.Update(client),
 		},
 	}
-}
-
-func UpdateFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
-
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Println("Enter new api-key name:")
-	name := ""
-	for name == "" {
-		scanner.Scan()
-		name = scanner.Text()
-		if name == "" {
-			fmt.Printf("name can't be empty")
-			fmt.Println("Enter new api-key name:")
-		}
-	}
-
-	req := &models.UpdateAccessKeyRequest{Name: name}
-
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "apikey/"+apiKeyID, req, nil)
-
-	return err
 }
