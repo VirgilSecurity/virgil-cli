@@ -53,7 +53,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:    "list",
 		Aliases: []string{"l"},
-		Usage:   "List your api-keys",
+		Usage:   "List your App Keys",
 		Action: func(context *cli.Context) (err error) {
 
 			var keys []*models.AccessKey
@@ -64,17 +64,17 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 			}
 
 			if len(keys) == 0 {
-				fmt.Println("There are no api keys created for application")
+				fmt.Println("There are no app keys created for application")
 				return nil
 			}
 			sort.Slice(keys, func(i, j int) bool {
 				return keys[i].CreatedAt.Before(keys[j].CreatedAt)
 			})
-			fmt.Printf("|%25s|%35s|%63s |%20s\n", "Api key name   ", "API_KEY_ID   ", " PublicKey ", " created_at ")
+			fmt.Printf("|%25s|%35s|%63s |%20s\n", "App key name   ", "App Key ID   ", " PublicKey ", " Created at ")
 			fmt.Printf("|%25s|%35s|%64s|%20s\n", "-------------------------", "-----------------------------------", "----------------------------------------------------------------", "---------------------------------------")
 
 			for _, k := range keys {
-				fmt.Printf("| %23s | %33s | %62s |%20s\n", k.Name, k.ID, base64.StdEncoding.EncodeToString(k.PublicKey), k.CreatedAt)
+				fmt.Printf("| %23s | %33s | %62s | %20s\n", k.Name, k.ID, base64.StdEncoding.EncodeToString(k.PublicKey), k.CreatedAt)
 			}
 			return nil
 		},

@@ -52,6 +52,7 @@ func Application(client *client.VirgilHttpClient) *cli.Command {
 			app.Delete(client),
 			app.Update(client),
 			app.Token(client),
+			app.Key(client),
 		},
 	}
 }
