@@ -72,7 +72,7 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 			}
 			err = deleteAppFunc(appID, vcli)
 			if err == nil {
-				fmt.Println("Application delete ok.")
+				fmt.Println("Application has been successfully deleted.")
 			} else if err == utils.ErrEntityNotFound {
 				return errors.New(fmt.Sprintf("Application with id %s not found.\n", appID))
 			}

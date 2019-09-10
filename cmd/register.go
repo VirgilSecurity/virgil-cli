@@ -47,6 +47,7 @@ import (
 	"gopkg.in/urfave/cli.v2"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func Register(client *client.VirgilHttpClient) *cli.Command {
@@ -62,9 +63,12 @@ func Register(client *client.VirgilHttpClient) *cli.Command {
 
 func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 
-	email := utils.ReadParamOrDefaultOrFromConsole(context, "email", "Enter email", "")
+	utils.DeleteAccessToken()
+	utils.DeleteAppFile()
 
-	pwd, err := gopass.GetPasswdPrompt("Enter account password:\r\n", false, os.Stdin, os.Stdout)
+	email := strings.TrimSpace(utils.ReadParamOrDefaultOrFromConsole(context, "email", "Enter email", ""))
+
+	pwd, err := gopass.GetPasswdPrompt("Enter the account password:\r\n", false, os.Stdin, os.Stdout)
 	if err != nil {
 		return err
 	}
@@ -80,15 +84,18 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 
 	req := &models.CreateAccountRequest{Email: email, Password: string(pwd)}
 
-	_, _, vErr := vcli.Send( http.MethodPost, "user/register", req, nil, nil)
+	_, _, vErr := vcli.Send(http.MethodPost, "user/register", req, nil, nil)
 
 	if vErr != nil {
 		return vErr
 	}
+	err = utils.Login(email, string(pwd), vcli)
 
-	fmt.Println("Account registered.")
+	if err != nil {
+		return err
+	}
 
-	utils.DeleteAccessToken()
-	utils.DeleteAppFile()
+	fmt.Println("Account has been successfully registered.")
+
 	return nil
 }

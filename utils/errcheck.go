@@ -46,13 +46,15 @@ import (
 
 var (
 	ErrEntityNotFound               = fmt.Errorf("entity not found")
-	ErrEmailIsNotConfirmed          = fmt.Errorf("email is not confirmed")
+	ErrEmailIsNotConfirmed          = fmt.Errorf("user email has not been confirmed")
 	ErrApplicationAlreadyRegistered = fmt.Errorf("error: application with given name already registered")
 	ErrAuthFailed                   = fmt.Errorf("authorization failed: incorrect email or password")
 	ErrApiKeyAlreadyRegistered      = fmt.Errorf("error: api key with given name already registered")
 	ErrEmptyMFACode                 = fmt.Errorf("error: Multi factor authorization code is empty field")
 	ErrPasswordTooWeak              = fmt.Errorf("error: Password is too weak: password must be at least 8 characters length")
 	ErrIncorrectAppToken            = fmt.Errorf("error: application token is incorrect")
+	ErrInvalidConfirmationCode      = fmt.Errorf("error: confirmation code is invalid")
+	ErrEmailAlreadyRegistered       = fmt.Errorf("error: account with this email has been already registered")
 )
 
 func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient) (token string, err error) {
@@ -112,11 +114,20 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck.Code == 40020 {
 		return "", ErrPasswordTooWeak
 	}
-	if errToCheck.Code == 40300 {
+	if errToCheck.Code == 40033 {
 		return "", ErrEmailIsNotConfirmed
+	}
+	if errToCheck.Code == 40027 || errToCheck.Code == 40019 {
+		return "", ErrAuthFailed
 	}
 	if errToCheck.Code == 20303 || errToCheck.Code == 20308 {
 		return "", ErrIncorrectAppToken
+	}
+	if errToCheck.Code == 40026 {
+		return "", ErrInvalidConfirmationCode
+	}
+	if errToCheck.Code == 40052 {
+		return "", ErrEmailAlreadyRegistered
 	}
 	fmt.Println("error sending request to " + vcli.Address)
 	return "", errToCheck
