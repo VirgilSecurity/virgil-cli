@@ -108,7 +108,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 		strings.Contains(errToCheck.Errors[0].Message, "Access Key already registered with given name") {
 		return "", ErrApiKeyAlreadyRegistered
 	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40098 {
+	if errToCheck.Code == 40029 {
 		return "", ErrEmptyMFACode
 	}
 	if errToCheck.Code == 40020 {
