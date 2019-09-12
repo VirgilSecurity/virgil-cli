@@ -45,6 +45,7 @@ import (
 	"github.com/VirgilSecurity/virgil-cli/utils"
 
 	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/pkg/errors"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"gopkg.in/urfave/cli.v2"
@@ -56,16 +57,28 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 		Aliases:   []string{"u"},
 		ArgsUsage: "app_key_id",
 		Usage:     "Update existing app-key by id",
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
+
+			defaultApp, _ := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
+			}
+
+			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
 
 			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "app_key_id", "Enter App Key ID", "")
 
-			_, err = getKey(apiKeyID, vcli)
+			_, err = getKey(appID, apiKeyID, vcli)
 			if err != nil {
 				return err
 			}
 
-			err = UpdateFunc(apiKeyID, vcli)
+			err = UpdateFunc(appID, apiKeyID, vcli)
 
 			if err != nil {
 				return err
@@ -77,7 +90,7 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func UpdateFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
+func UpdateFunc(appID, apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
@@ -94,7 +107,7 @@ func UpdateFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
 
 	req := &models.UpdateAccessKeyRequest{Name: name}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "apikey/"+apiKeyID, req, nil)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "application/"+appID+"/apikey/"+apiKeyID, req, nil)
 
 	return err
 }
