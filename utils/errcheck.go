@@ -62,7 +62,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck == nil {
 		return "", nil
 	}
-	if errToCheck.StatusCode == http.StatusUnauthorized || errToCheck.Code == 40100 {
+	if errToCheck.StatusCode == http.StatusUnauthorized || errToCheck.Code == 40100 || errToCheck.Code == 20311{
 		err = Login("", "", vcli)
 		if err != nil {
 			return
@@ -117,7 +117,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck.Code == 40033 {
 		return "", ErrEmailIsNotConfirmed
 	}
-	if errToCheck.Code == 40027 || errToCheck.Code == 40019 {
+	if errToCheck.Code == 40027 || errToCheck.Code == 40019  {
 		return "", ErrAuthFailed
 	}
 	if errToCheck.Code == 20303 || errToCheck.Code == 20308 {

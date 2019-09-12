@@ -86,9 +86,8 @@ func UpdateFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
 	name := utils.ReadConsoleValue("name", "Enter new app name")
 
 	req := &models.UpdateAppRequest{Name: name}
-	resp := &models.Application{}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "application/"+appID, req, resp)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "application/"+appID, req, nil)
 
 	return err
 }
