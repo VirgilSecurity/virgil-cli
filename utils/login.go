@@ -121,7 +121,7 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 		return errors.New(fmt.Sprintf("Authorization failed.\n"))
 	}
 
-	_, _, vErr = vcli.Send(http.MethodDelete, "user/logout", nil, nil, header)
+	_, _, vErr = vcli.Send(http.MethodPost, "user/logout", nil, nil, header)
 	if vErr != nil {
 		return errors.New(fmt.Sprintf("Authorization failed.\n"))
 	}

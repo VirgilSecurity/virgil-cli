@@ -129,6 +129,10 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck.Code == 40052 {
 		return "", ErrEmailAlreadyRegistered
 	}
+	// user account is already activated
+	if errToCheck.Code == 40024 {
+		return "", nil
+	}
 	fmt.Println("error sending request to " + vcli.Address)
 	return "", errToCheck
 }
