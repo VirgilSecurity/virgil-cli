@@ -39,6 +39,7 @@ package pure
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/VirgilSecurity/virgil-cli/cmd/pure/keygen"
 
 	"github.com/VirgilSecurity/virgil-phe-go"
 	"gopkg.in/urfave/cli.v2"
@@ -54,6 +55,12 @@ func Keygen() *cli.Command {
 			key := phe.GenerateClientKey()
 			fmt.Println("SK.1." + base64.StdEncoding.EncodeToString(key))
 			return nil
+		},
+		Subcommands: []*cli.Command{
+			keygen.Auth(),
+			keygen.Backup(),
+			keygen.HashesKey(),
+			keygen.VirgilStorage(),
 		},
 	}
 }
