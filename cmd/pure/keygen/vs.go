@@ -10,25 +10,29 @@ import (
 //Generates a new Virgil Storage key pair
 func VirgilStorage() *cli.Command {
 	return &cli.Command{
-		Name:    "vskp",
+		Name:    "signing",
 		Aliases: []string{"vs"},
 		Usage:   "Generates a new Virgil Storage key pair",
 		Action: func(context *cli.Context) error {
-
-			keyPair, err := cryptoimpl.NewKeypair()
-
-			if err != nil {
-				return err
-			}
-
-			prKey, err := keyPair.PrivateKey().Encode([]byte(""))
-			if err != nil {
-				return err
-			}
-
-			fmt.Println("VS." + base64.StdEncoding.EncodeToString(prKey))
-
-			return nil
+			
+			return PrintSigningKey()
 		},
 	}
+}
+
+func PrintSigningKey() error {
+	keyPair, err := cryptoimpl.NewKeypair()
+
+	if err != nil {
+		return err
+	}
+
+	prKey, err := keyPair.PrivateKey().Encode([]byte(""))
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("VS." + base64.StdEncoding.EncodeToString(prKey))
+
+	return nil
 }
