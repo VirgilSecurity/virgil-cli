@@ -81,7 +81,7 @@ func main() {
 		Commands: []*cli.Command{
 			cmd.Register(apiGatewayClient),
 			cmd.Login(apiGatewayClient),
-			cmd.Logout(apiGatewayClient),
+			cmd.Logout(),
 			cmd.Application(apiGatewayClient),
 			cmd.UseApp(apiGatewayClient),
 			cmd.PureKit(),

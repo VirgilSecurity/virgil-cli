@@ -57,7 +57,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 		Aliases:   []string{"c"},
 		ArgsUsage: "app-key name",
 		Usage:     "Create a new App Key",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "application id"}},
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id",Aliases:[]string{"app-id"},  Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, _ := utils.LoadDefaultApp()
@@ -79,7 +79,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 			}
 
 			var apiKeyID string
-			apiKeyID, err = CreateFunc(name, vcli)
+			apiKeyID, err = CreateFunc(name, appID, vcli)
 
 			if err != nil {
 				return err
@@ -91,7 +91,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func CreateFunc(name string, vcli *client.VirgilHttpClient) (apiKeyID string, err error) {
+func CreateFunc(name, appID string, vcli *client.VirgilHttpClient) (apiKeyID string, err error) {
 
 	keyPair, err := cryptoimpl.NewKeypair()
 
@@ -114,7 +114,7 @@ func CreateFunc(name string, vcli *client.VirgilHttpClient) (apiKeyID string, er
 	req := &models.CreateAccessKeyRequest{Name: name, PublicKey: pubKey, Signature: sign}
 	resp := &models.AccessKey{}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "apikey", req, resp)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "application/"+appID+"/apikey", req, resp)
 
 	if err != nil {
 		return

@@ -52,11 +52,23 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 		Aliases:   []string{"d"},
 		ArgsUsage: "app-key_id",
 		Usage:     "Delete App Key by id",
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id",Aliases:[]string{"app-id"},  Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
+
+			defaultApp, _ := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
+			}
+
+			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
 
 			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "Enter App Key ID", "")
 
-			err = deleteApiKeyIDFunc(apiKeyID, vcli)
+			err = deleteApiKeyIDFunc(apiKeyID, appID, vcli)
 
 			if err == nil {
 				fmt.Println("App Key has been successfully deleted.")
@@ -69,9 +81,9 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func deleteApiKeyIDFunc(apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
+func deleteApiKeyIDFunc(apiKeyID, appID string, vcli *client.VirgilHttpClient) (err error) {
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "apikey/"+apiKeyID, nil, nil)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "application/"+appID+"/apikey/"+apiKeyID, nil, nil)
 
 	return err
 }
