@@ -50,7 +50,7 @@ import (
 )
 
 var (
-	version = "5.1.2"
+	version = "5.1.4"
 )
 
 func main() {
