@@ -12,7 +12,7 @@ func Secret() *cli.Command {
 	return &cli.Command{
 		Name:    "secret",
 		Aliases: []string{"sk"},
-		Usage:   "Generate a new Auth key",
+		Usage:   "Generate a new Secret key",
 		Action: func(context *cli.Context) error {
 			return PrintSecretKey()
 		},

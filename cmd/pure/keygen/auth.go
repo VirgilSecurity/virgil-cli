@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/VirgilSecurity/virgil-phe-go"
+	"crypto/rand"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -21,7 +21,11 @@ func Auth() *cli.Command {
 }
 
 func PrintAuthKey() error {
-	key := phe.GenerateClientKey()
+	key := make([]byte, 32)
+	_, err := rand.Read(key)
+	if err != nil {
+		return err
+	}
 	fmt.Println("AK." + base64.StdEncoding.EncodeToString(key))
 	return nil
 }
