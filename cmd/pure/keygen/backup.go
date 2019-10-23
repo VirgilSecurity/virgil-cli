@@ -27,7 +27,7 @@ func PrintBackupKey() error {
 		return err
 	}
 
-	prKey, err := keyPair.PrivateKey().Encode([]byte(""))
+	prKey, err := keyPair.PrivateKey().Encode(nil)
 	if err != nil {
 		return err
 	}
