@@ -3,6 +3,7 @@ package keygen
 import (
 	"encoding/base64"
 	"fmt"
+
 	"gopkg.in/urfave/cli.v2"
 	"gopkg.in/virgil.v5/cryptoimpl"
 )
@@ -14,13 +15,13 @@ func VirgilStorage() *cli.Command {
 		Aliases: []string{"vs"},
 		Usage:   "Generates a new Virgil Storage key pair",
 		Action: func(context *cli.Context) error {
-			
-			return PrintSigningKey()
+
+			return printSigningKey()
 		},
 	}
 }
 
-func PrintSigningKey() error {
+func printSigningKey() error {
 	keyPair, err := cryptoimpl.NewKeypair()
 
 	if err != nil {

@@ -40,8 +40,8 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/VirgilSecurity/virgil-phe-go"
-	"github.com/VirgilSecurity/virgil-purekit-go"
+	phe "github.com/VirgilSecurity/virgil-phe-go"
+	purekit "github.com/VirgilSecurity/virgil-purekit-go"
 	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
 )

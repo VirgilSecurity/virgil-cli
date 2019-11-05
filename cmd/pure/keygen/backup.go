@@ -3,6 +3,7 @@ package keygen
 import (
 	"encoding/base64"
 	"fmt"
+
 	"gopkg.in/urfave/cli.v2"
 	"gopkg.in/virgil.v5/cryptoimpl"
 )
@@ -15,12 +16,12 @@ func Backup() *cli.Command {
 		Usage:   "Generates a new  Backup keypair ",
 		Action: func(context *cli.Context) error {
 
-			return PrintBackupKey()
+			return printBackupKey()
 		},
 	}
 }
 
-func PrintBackupKey() error {
+func printBackupKey() error {
 	keyPair, err := cryptoimpl.NewKeypair()
 
 	if err != nil {
