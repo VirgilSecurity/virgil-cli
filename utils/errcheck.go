@@ -62,7 +62,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck == nil {
 		return "", nil
 	}
-	if errToCheck.StatusCode == http.StatusUnauthorized || errToCheck.Code == 40100 {
+	if errToCheck.StatusCode == http.StatusUnauthorized || errToCheck.Code == 40100 || errToCheck.Code == 20311{
 		err = Login("", "", vcli)
 		if err != nil {
 			return
@@ -108,7 +108,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 		strings.Contains(errToCheck.Errors[0].Message, "Access Key already registered with given name") {
 		return "", ErrApiKeyAlreadyRegistered
 	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40098 {
+	if errToCheck.Code == 40029 {
 		return "", ErrEmptyMFACode
 	}
 	if errToCheck.Code == 40020 {
@@ -117,7 +117,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck.Code == 40033 {
 		return "", ErrEmailIsNotConfirmed
 	}
-	if errToCheck.Code == 40027 || errToCheck.Code == 40019 {
+	if errToCheck.Code == 40027 || errToCheck.Code == 40019  {
 		return "", ErrAuthFailed
 	}
 	if errToCheck.Code == 20303 || errToCheck.Code == 20308 {
@@ -128,6 +128,10 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	}
 	if errToCheck.Code == 40052 {
 		return "", ErrEmailAlreadyRegistered
+	}
+	// user account is already activated
+	if errToCheck.Code == 40024 {
+		return "", nil
 	}
 	fmt.Println("error sending request to " + vcli.Address)
 	return "", errToCheck

@@ -38,39 +38,20 @@ package cmd
 
 import (
 	"fmt"
-	"net/http"
-
 	"github.com/VirgilSecurity/virgil-cli/utils"
 
-	"github.com/VirgilSecurity/virgil-cli/client"
 	"gopkg.in/urfave/cli.v2"
 )
 
-func Logout(vcli *client.VirgilHttpClient) *cli.Command {
+func Logout() *cli.Command {
 	return &cli.Command{
 		Name:  "logout",
 		Usage: "Close user session",
 		Action: func(context *cli.Context) error {
-
-			token, err := utils.LoadAccessToken()
-			if token == "" {
-				fmt.Println("Logout ok.")
-				return nil
-			}
-
-			_, _, vErr := vcli.Send(http.MethodDelete, token, "user/logout", nil, nil)
-
-			if vErr == nil || vErr.StatusCode == http.StatusUnauthorized {
-				utils.DeleteAppFile()
-				err = utils.DeleteAccessToken()
-				if err == nil {
-					fmt.Println("Logout ok.")
-					return nil
-				} else {
-					return err
-				}
-			}
-			return vErr
+			utils.DeleteAppFile()
+			utils.DeleteAccessToken()
+			fmt.Println("Logout ok.")
+			return nil
 		},
 	}
 }

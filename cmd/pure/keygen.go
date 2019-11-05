@@ -40,7 +40,10 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/VirgilSecurity/virgil-phe-go"
+	"github.com/VirgilSecurity/virgil-cli/cmd/pure/keygen"
+	"github.com/pkg/errors"
+
+	phe "github.com/VirgilSecurity/virgil-phe-go"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -51,9 +54,21 @@ func Keygen() *cli.Command {
 		Aliases: []string{"kg"},
 		Usage:   "Generate a new Passw0rd app secret key",
 		Action: func(context *cli.Context) error {
+			if context.Args().First() != "" {
+				return errors.New("incorrect key type")
+			}
 			key := phe.GenerateClientKey()
 			fmt.Println("SK.1." + base64.StdEncoding.EncodeToString(key))
 			return nil
+		},
+		Subcommands: []*cli.Command{
+			keygen.Secret(),
+			keygen.Auth(),
+			keygen.Backup(),
+			keygen.HashesKey(),
+			keygen.VirgilStorage(),
+			keygen.OwnSigningKey(),
+			keygen.All(),
 		},
 	}
 }
