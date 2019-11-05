@@ -25,7 +25,6 @@ func Encrypt() *cli.Command {
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
-
 			dataToEncrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", "Enter data to encrypt")
 			if err != nil {
 				return err
@@ -77,7 +76,6 @@ func Encrypt() *cli.Command {
 }
 
 func EncryptFunc(data []byte, publicKeysStrings []string) (publicKey []byte, err error) {
-
 	pkk := make([]interface {
 		IsPublic() bool
 		Identifier() []byte

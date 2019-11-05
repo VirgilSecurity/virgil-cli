@@ -56,7 +56,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 		Usage:   "List your app tokens",
 		Flags:   []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "app id"}},
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -92,7 +91,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func listFunc(appID string, vcli *client.VirgilHTTPClient) (apps []*models.ApplicationToken, err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "application/"+appID+"/tokens", nil, &apps)
 
 	if err != nil {

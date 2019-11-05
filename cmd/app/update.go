@@ -56,7 +56,6 @@ func Update(vcli *client.VirgilHTTPClient) *cli.Command {
 		ArgsUsage: "app_id",
 		Usage:     "Update app by id",
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -83,7 +82,6 @@ func Update(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func UpdateFunc(appID string, vcli *client.VirgilHTTPClient) (err error) {
-
 	name := utils.ReadConsoleValue("name", "Enter new app name")
 
 	req := &models.UpdateAppRequest{Name: name}

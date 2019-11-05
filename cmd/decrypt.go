@@ -25,7 +25,6 @@ func Decrypt() *cli.Command {
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
-
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
 			if keyFileName == "" {
@@ -76,7 +75,6 @@ func Decrypt() *cli.Command {
 }
 
 func DecryptFunc(privateKeyString, password string, data []byte) (publicKey []byte, err error) {
-
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {

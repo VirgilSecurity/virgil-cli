@@ -25,7 +25,6 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 			&cli.StringFlag{Name: "verify-pub-key", Usage: "verify public key"}},
 
 		Action: func(context *cli.Context) (err error) {
-
 			name := utils.ReadFlagOrConsoleValue(context, "name", "Enter dsm certificate name")
 			encryptPubKey := utils.ReadFlagOrConsoleValue(context, "encrypt-pub-key", "Enter encrypt public key")
 			verifyPubKey := utils.ReadFlagOrConsoleValue(context, "verify-pub-key", "Enter verify public key")

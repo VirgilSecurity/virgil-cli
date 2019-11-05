@@ -56,7 +56,6 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 		Usage:     "Delete app token by name",
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "app id"}},
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -76,7 +75,6 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 				return err
 			}
 			for _, t := range tokens {
-
 				if t.Name == name {
 					err = deleteAppTokenFunc(appID, t.ID, vcli)
 					if err == nil {
@@ -84,7 +82,6 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 					}
 					return err
 				}
-
 			}
 			fmt.Println("token not found")
 			return err
@@ -93,7 +90,6 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func deleteAppTokenFunc(appID, appTokenID string, vcli *client.VirgilHTTPClient) (err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "application/"+appID+"/tokens/"+appTokenID, nil, nil)
 	return err
 }

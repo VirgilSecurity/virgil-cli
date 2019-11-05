@@ -95,7 +95,6 @@ func main() {
 			cmd.Wave(apiGatewayClient),
 		},
 		Before: func(c *cli.Context) error {
-
 			apiURL := c.String("api_gateway_url")
 			if strings.TrimSpace(apiURL) != "" {
 				apiGatewayClient.Address = apiURL

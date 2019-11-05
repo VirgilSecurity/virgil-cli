@@ -29,7 +29,6 @@ func Search() *cli.Command {
 		},
 		Usage: "search cards by identity",
 		Action: func(context *cli.Context) error {
-
 			identity := utils.ReadParamOrDefaultOrFromConsole(context, "identity", "Enter card identity", "")
 			cardVerifier, err := sdk.NewVirgilCardVerifier(cardCrypto, true, true)
 			if err != nil {

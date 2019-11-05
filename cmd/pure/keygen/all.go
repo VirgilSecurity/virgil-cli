@@ -12,7 +12,6 @@ func All() *cli.Command {
 		Name:  "all",
 		Usage: "Generates all pure key pairs",
 		Action: func(context *cli.Context) error {
-
 			fmt.Println("----------------------------------------------------------------------------------")
 			if err := PrintAuthKey(); err != nil {
 				return err

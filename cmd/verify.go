@@ -23,7 +23,6 @@ func Verify() *cli.Command {
 			&cli.StringFlag{Name: "s", Usage: "signature file"},
 		},
 		Action: func(context *cli.Context) error {
-
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
 			if keyFileName == "" {
 				return errors.New("key file isn't specified (use -key)")
@@ -64,7 +63,6 @@ func Verify() *cli.Command {
 }
 
 func VerifyFunc(publicKeyString string, data, signature []byte) (err error) {
-
 	pk, err := cryptoimpl.DecodePublicKey([]byte(publicKeyString))
 
 	if err != nil {

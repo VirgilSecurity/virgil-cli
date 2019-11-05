@@ -85,7 +85,6 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func CreateFunc(appID, name string, vcli *client.VirgilHTTPClient) (token string, err error) {
-
 	req := &models.CreateAppTokenRequest{Name: name, ApplicationID: appID}
 	resp := &models.ApplicationToken{}
 

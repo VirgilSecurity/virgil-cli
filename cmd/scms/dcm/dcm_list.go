@@ -22,7 +22,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 			&cli.StringFlag{Name: "app-token", Usage: "application token"}},
 
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppToken := ""
 			if defaultApp != nil {
@@ -48,7 +47,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 			fmt.Printf("|%25s|%20s\n", "Certificate name   ", " created_at ")
 			fmt.Printf("|%25s|%20s\n", "-------------------------", "---------------------------------------")
 			for _, cert := range certs {
-
 				fmt.Printf("|%24s | %19s\n", cert.Name, cert.CreatedAt)
 			}
 			return nil
@@ -57,7 +55,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func dcmListFunc(appToken string, vcli *client.VirgilHTTPClient) (apps []*models.DcmCertificateListItem, err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "/scms/dcm", nil, &apps, appToken)
 
 	if err != nil {

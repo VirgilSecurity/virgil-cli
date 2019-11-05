@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"gopkg.in/urfave/cli.v2"
-	"gopkg.in/virgil.v5/cryptoimpl"
 )
 
 // VirgilStorage generates a new Virgil Storage key pair
@@ -15,25 +14,18 @@ func VirgilStorage() *cli.Command {
 		Aliases: []string{"vs"},
 		Usage:   "Generates a new Virgil Storage key pair",
 		Action: func(context *cli.Context) error {
-
 			return PrintSigningKey()
 		},
 	}
 }
 
 func PrintSigningKey() error {
-	keyPair, err := cryptoimpl.NewKeypair()
-
+	sk, _, err := generateKeypairEncoded()
 	if err != nil {
 		return err
 	}
 
-	prKey, err := keyPair.PrivateKey().Encode(nil)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println("VS." + base64.StdEncoding.EncodeToString(prKey))
+	fmt.Println("VS." + base64.StdEncoding.EncodeToString(sk))
 
 	return nil
 }

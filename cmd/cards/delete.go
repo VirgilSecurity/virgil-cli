@@ -24,7 +24,6 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 		},
 		Usage: "delete cards by id",
 		Action: func(context *cli.Context) error {
-
 			cardID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "Enter card id", "")
 
 			configFileName := utils.ReadFlagOrDefault(context, "c", "")
@@ -77,7 +76,6 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func deleteCardFunc(cardID, authorization string, vcli *client.VirgilHTTPClient) (err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "card/v5/actions/revoke/"+cardID, nil, nil, authorization)
 	return err
 }

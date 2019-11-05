@@ -55,7 +55,6 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 		Usage:     "Delete App Key by id",
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -83,7 +82,6 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func deleteAPIKeyIDFunc(apiKeyID, appID string, vcli *client.VirgilHTTPClient) (err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "application/"+appID+"/apikey/"+apiKeyID, nil, nil)
 
 	return err

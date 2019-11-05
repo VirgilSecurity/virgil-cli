@@ -62,7 +62,6 @@ func UseApp(client *client.VirgilHTTPClient) *cli.Command {
 }
 
 func useFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
-
 	if context.NArg() < 1 {
 		return errors.New("Invalid number of arguments. Please, specify application name")
 	}
@@ -92,7 +91,6 @@ func useFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
 }
 
 func listFunc(vcli *client.VirgilHTTPClient) (apps []*models.Application, err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
 
 	if err != nil {

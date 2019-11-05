@@ -71,7 +71,6 @@ func ReadKeyStringFromFile(context *cli.Context, fileName string) (string, error
 }
 
 func ReadFileFlagOrParamOrFromConsole(context *cli.Context, flag, paramName, paramDescription string) ([]byte, error) {
-
 	inputFileName := ReadFlagOrDefault(context, flag, "")
 	if inputFileName == "" {
 		return []byte(ReadParamOrDefaultOrFromConsole(context, paramName, paramDescription, "")), nil
@@ -95,7 +94,6 @@ func ReadParamOrDefaultOrFromConsole(context *cli.Context, paramName, paramDescr
 }
 
 func ReadConsoleValue(paramName, paramDescription string, options ...string) string {
-
 	fmt.Printf("%s:\n", paramDescription)
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -150,7 +148,6 @@ func ReadFlagOrConsoleValue(context *cli.Context, flagName, paramDescription str
 			return value
 		}
 		fmt.Printf("incorrect flag %s value\n", flagName)
-
 	}
 	return ReadConsoleValue(flagName, paramDescription, options...)
 }

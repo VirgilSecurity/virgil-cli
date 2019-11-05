@@ -20,7 +20,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "app-token", Usage: "application token"}},
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppToken := ""
 			if defaultApp != nil {
@@ -57,7 +56,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func deviceListFunc(appToken string, vcli *client.VirgilHTTPClient) (devices []*models.Device, err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "scms/devices", nil, &devices, appToken)
 
 	if err != nil {

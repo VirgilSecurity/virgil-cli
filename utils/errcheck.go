@@ -58,81 +58,96 @@ var (
 )
 
 func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHTTPClient) (token string, err error) {
-
 	if errToCheck == nil {
 		return "", nil
 	}
-	if errToCheck.StatusCode == http.StatusUnauthorized || errToCheck.Code == 40100 || errToCheck.Code == 20311 {
-		err = Login("", "", vcli)
-		if err != nil {
-			return
+
+	if isUnauthorized(errToCheck) {
+		if err = Login("", "", vcli); err != nil {
+			return "", err
 		}
 		return LoadAccessToken()
 	}
-
-	if errToCheck.StatusCode == http.StatusNotFound ||
-		errToCheck.Code == 40015 ||
-		errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40400 ||
-		strings.Contains(errToCheck.Error(), "Entity was not found ") {
+	if isEntityNotFound(errToCheck) {
 		return "", ErrEntityNotFound
 	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40001 &&
-		strings.Contains(errToCheck.Errors[0].Message, "Invalid email or password") {
+	if isAuthFailed(errToCheck) {
 		return "", ErrAuthFailed
 	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40002 &&
-		strings.Contains(errToCheck.Errors[0].Message, "Application with given name already registered") {
-		return "", ErrApplicationAlreadyRegistered
-	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40002 &&
-		strings.Contains(errToCheck.Errors[0].Message, "Email is not valid") {
-		return "", ErrAuthFailed
-	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40002 &&
-		strings.Contains(errToCheck.Errors[0].Message, "Email is empty") {
-		return "", ErrAuthFailed
-	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40003 &&
-		strings.Contains(errToCheck.Errors[0].Message, "Password is invalid") {
-		return "", ErrAuthFailed
-	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40004 &&
-		strings.Contains(errToCheck.Errors[0].Message, "Password is invalid") {
+
+	switch errToCheck.Code {
+	case 40000:
+		return "", checkCode40000(errToCheck, vcli.Address)
+	case 40020:
 		return "", ErrPasswordTooWeak
-	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40003 &&
-		strings.Contains(errToCheck.Errors[0].Message, "Password is empty") {
-		return "", ErrAuthFailed
-	}
-	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40003 &&
-		strings.Contains(errToCheck.Errors[0].Message, "Access Key already registered with given name") {
-		return "", ErrAPIKeyAlreadyRegistered
-	}
-	if errToCheck.Code == 40029 {
+	case 40024: // user account is already activated
+		return "", nil
+	case 40026:
+		return "", ErrInvalidConfirmationCode
+	case 40029:
 		return "", ErrEmptyMFACode
-	}
-	if errToCheck.Code == 40020 {
-		return "", ErrPasswordTooWeak
-	}
-	if errToCheck.Code == 40033 {
+	case 40033:
 		return "", ErrEmailIsNotConfirmed
-	}
-	if errToCheck.Code == 40027 || errToCheck.Code == 40019 {
-		return "", ErrAuthFailed
-	}
-	if errToCheck.Code == 20303 || errToCheck.Code == 20308 {
+	case 40052:
+		return "", ErrEmailAlreadyRegistered
+	case 20303:
+		return "", ErrIncorrectAppToken
+	case 20308:
 		return "", ErrIncorrectAppToken
 	}
-	if errToCheck.Code == 40026 {
-		return "", ErrInvalidConfirmationCode
-	}
-	if errToCheck.Code == 40052 {
-		return "", ErrEmailAlreadyRegistered
-	}
-	// user account is already activated
-	if errToCheck.Code == 40024 {
-		return "", nil
-	}
+
 	fmt.Println("error sending request to " + vcli.Address)
 	return "", errToCheck
+}
+
+func isUnauthorized(err *client.VirgilAPIError) bool {
+	return err.StatusCode == http.StatusUnauthorized ||
+		err.Code == 40100 ||
+		err.Code == 20311
+}
+
+func isEntityNotFound(err *client.VirgilAPIError) bool {
+	result := err.StatusCode == http.StatusNotFound ||
+		err.Code == 40015 ||
+		strings.Contains(err.Error(), "Entity was not found")
+
+	if len(err.Errors) != 0 {
+		result = result || err.Errors[0].Code == 40400
+	}
+	return result
+}
+
+func isAuthFailed(err *client.VirgilAPIError) bool {
+	result := err.Code == 40019 || err.Code == 40027
+	if len(err.Errors) != 0 {
+		errField := err.Errors[0]
+
+		result = result || errField.Code == 40001 && strings.Contains(errField.Message, "Invalid email or password")
+		result = result || errField.Code == 40002 && strings.Contains(errField.Message, "Email is not valid")
+		result = result || errField.Code == 40002 && strings.Contains(errField.Message, "Email is empty")
+		result = result || errField.Code == 40003 && strings.Contains(errField.Message, "Password is invalid")
+		result = result || errField.Code == 40003 && strings.Contains(errField.Message, "Password is empty")
+	}
+	return result
+}
+
+func checkCode40000(err *client.VirgilAPIError, addr string) error {
+	if len(err.Errors) == 0 {
+		fmt.Println("error sending request to " + addr)
+		return err
+	}
+
+	errField := err.Errors[0]
+	if errField.Code == 40002 && strings.Contains(errField.Message, "Application with given name already registered") {
+		return ErrApplicationAlreadyRegistered
+	}
+	if errField.Code == 40003 && strings.Contains(errField.Message, "Access Key already registered with given name") {
+		return ErrAPIKeyAlreadyRegistered
+	}
+	if errField.Code == 40004 && strings.Contains(errField.Message, "Password is invalid") {
+		return ErrPasswordTooWeak
+	}
+
+	fmt.Println("error sending request to " + addr)
+	return err
 }

@@ -51,7 +51,6 @@ func Login(client *client.VirgilHTTPClient) *cli.Command {
 		ArgsUsage: "[email]",
 		Usage:     "Open user session",
 		Action: func(context *cli.Context) error {
-
 			_ = utils.DeleteAccessToken()
 			_ = utils.DeleteAppFile()
 

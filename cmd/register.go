@@ -64,7 +64,6 @@ func Register(client *client.VirgilHTTPClient) *cli.Command {
 }
 
 func registerFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
-
 	_ = utils.DeleteAccessToken()
 	_ = utils.DeleteAppFile()
 
