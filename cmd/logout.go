@@ -38,9 +38,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
 
 	"gopkg.in/urfave/cli.v2"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 func Logout() *cli.Command {
@@ -48,8 +49,8 @@ func Logout() *cli.Command {
 		Name:  "logout",
 		Usage: "Close user session",
 		Action: func(context *cli.Context) error {
-			utils.DeleteAppFile()
-			utils.DeleteAccessToken()
+			_ = utils.DeleteAppFile()
+			_ = utils.DeleteAccessToken()
 			fmt.Println("Logout ok.")
 			return nil
 		},

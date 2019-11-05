@@ -2,18 +2,19 @@ package cards
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
+	"io/ioutil"
 	"net/http"
+	"time"
+
+	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
+	"gopkg.in/virgil.v5/sdk"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/utils"
-	"gopkg.in/urfave/cli.v2"
-	"gopkg.in/virgil.v5/sdk"
-	"io/ioutil"
-	"time"
 )
 
-func Revoke(vcli *client.VirgilHttpClient) *cli.Command {
+func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "revoke",
 		ArgsUsage: "[id]",
@@ -43,14 +44,14 @@ func Revoke(vcli *client.VirgilHttpClient) *cli.Command {
 				fmt.Print(err)
 			}
 
-			privateKey, err := crypto.ImportPrivateKey(conf.ApiKey, "")
+			privateKey, err := crypto.ImportPrivateKey(conf.APIKey, "")
 			if err != nil {
 				return err
 			}
 
 			ttl := time.Minute
 
-			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.ApiKeyID, tokenSigner, conf.AppID, ttl)
+			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APIKeyID, tokenSigner, conf.AppID, ttl)
 
 			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("Are you sure, that you want to delete card (y/n) ?"), "y", "n")
 			if yesOrNo == "n" {
@@ -75,7 +76,7 @@ func Revoke(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func deleteCardFunc(cardID, authorization string, vcli *client.VirgilHttpClient) (err error) {
+func deleteCardFunc(cardID, authorization string, vcli *client.VirgilHTTPClient) (err error) {
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "card/v5/actions/revoke/"+cardID, nil, nil, authorization)
 	return err

@@ -39,25 +39,24 @@ package key
 import (
 	"encoding/base64"
 	"fmt"
-	"gopkg.in/virgil.v5/cryptoimpl"
 	"net/http"
 
-	"github.com/VirgilSecurity/virgil-cli/utils"
-
-	"github.com/VirgilSecurity/virgil-cli/models"
-
-	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
+	"gopkg.in/virgil.v5/cryptoimpl"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func Create(vcli *client.VirgilHttpClient) *cli.Command {
+func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "create",
 		Aliases:   []string{"c"},
 		ArgsUsage: "app-key name",
 		Usage:     "Create a new App Key",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id",Aliases:[]string{"app-id"},  Usage: "application id"}},
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, _ := utils.LoadDefaultApp()
@@ -91,7 +90,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func CreateFunc(name, appID string, vcli *client.VirgilHttpClient) (apiKeyID string, err error) {
+func CreateFunc(name, appID string, vcli *client.VirgilHTTPClient) (apiKeyID string, err error) {
 
 	keyPair, err := cryptoimpl.NewKeypair()
 
@@ -131,7 +130,7 @@ func CreateFunc(name, appID string, vcli *client.VirgilHttpClient) (apiKeyID str
 	return "", errors.New("empty response")
 }
 
-func getApp(appID string, vcli *client.VirgilHttpClient) (app *models.Application, err error) {
+func getApp(appID string, vcli *client.VirgilHTTPClient) (app *models.Application, err error) {
 
 	var apps []*models.Application
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)

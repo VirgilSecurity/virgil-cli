@@ -3,14 +3,15 @@ package scms
 import (
 	"errors"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
 	"net/http"
 
-	"github.com/VirgilSecurity/virgil-cli/client"
 	"gopkg.in/urfave/cli.v2"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func Init(vcli *client.VirgilHttpClient) *cli.Command {
+func Init(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:  "init",
 		Usage: "Init scms module in application",
@@ -18,14 +19,14 @@ func Init(vcli *client.VirgilHttpClient) *cli.Command {
 
 		Action: func(context *cli.Context) (err error) {
 
-			defaultApp, err := utils.LoadDefaultApp()
+			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
 				defaultAppID = defaultApp.ID
 			}
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
 			if appID == "" {
-				return errors.New("Please, specify app-id (flag --app-id)")
+				return errors.New("please, specify app-id (flag --app-id)")
 			}
 
 			err = InitFunc(appID, vcli)
@@ -40,7 +41,7 @@ func Init(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func InitFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
+func InitFunc(appID string, vcli *client.VirgilHTTPClient) (err error) {
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "scms/"+appID+"/init", nil, nil)
 	return err

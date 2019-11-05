@@ -39,18 +39,20 @@ package cmd
 import (
 	"crypto/subtle"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/VirgilSecurity/virgil-cli/models"
-	"github.com/VirgilSecurity/virgil-cli/utils"
-	"github.com/howeyc/gopass"
-	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/howeyc/gopass"
+	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func Register(client *client.VirgilHttpClient) *cli.Command {
+func Register(client *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "register",
 		ArgsUsage: "email",
@@ -61,10 +63,10 @@ func Register(client *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func registerFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
+func registerFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
 
-	utils.DeleteAccessToken()
-	utils.DeleteAppFile()
+	_ = utils.DeleteAccessToken()
+	_ = utils.DeleteAppFile()
 
 	email := strings.TrimSpace(utils.ReadParamOrDefaultOrFromConsole(context, "email", "Enter email", ""))
 

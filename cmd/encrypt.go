@@ -4,12 +4,13 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
-	"gopkg.in/virgil.v5/cryptoimpl"
 	"io"
 	"os"
 
 	"gopkg.in/urfave/cli.v2"
+	"gopkg.in/virgil.v5/cryptoimpl"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 var crypto = cryptoimpl.NewVirgilCrypto()
@@ -25,7 +26,6 @@ func Encrypt() *cli.Command {
 		},
 		Action: func(context *cli.Context) error {
 
-			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
 			dataToEncrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", "Enter data to encrypt")
 			if err != nil {
 				return err
@@ -43,22 +43,20 @@ func Encrypt() *cli.Command {
 					return err
 				}
 			}
-
-			var writer io.Writer
-			if destinationFileName != "" {
-				file, err := os.Create(destinationFileName)
+			var writer io.Writer = os.Stdout
+			if destinationFileName := utils.ReadFlagOrDefault(context, "o", ""); destinationFileName != "" {
+				var file *os.File
+				file, err = os.Create(destinationFileName)
 				if err != nil {
 					return err
 				}
-				writer = file
 				defer func() {
-					if err := file.Close(); err != nil {
-						panic(err)
+					if ferr := file.Close(); ferr != nil {
+						panic(ferr)
 					}
 				}()
 
-			} else {
-				writer = os.Stdout
+				writer = file
 			}
 
 			encData, err := EncryptFunc(dataToEncrypt, pubKeyStrings)

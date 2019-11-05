@@ -8,7 +8,7 @@ import (
 	"gopkg.in/urfave/cli.v2"
 )
 
-//Keygen generates Secret key
+// Secret generates secret key
 func Secret() *cli.Command {
 	return &cli.Command{
 		Name:    "secret",

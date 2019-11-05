@@ -8,7 +8,7 @@ import (
 	"gopkg.in/virgil.v5/cryptoimpl"
 )
 
-//Generates a new Virgil Storage key pair
+// VirgilStorage generates a new Virgil Storage key pair
 func VirgilStorage() *cli.Command {
 	return &cli.Command{
 		Name:    "signing",
@@ -16,12 +16,12 @@ func VirgilStorage() *cli.Command {
 		Usage:   "Generates a new Virgil Storage key pair",
 		Action: func(context *cli.Context) error {
 
-			return printSigningKey()
+			return PrintSigningKey()
 		},
 	}
 }
 
-func printSigningKey() error {
+func PrintSigningKey() error {
 	keyPair, err := cryptoimpl.NewKeypair()
 
 	if err != nil {

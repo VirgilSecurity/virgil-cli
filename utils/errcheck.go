@@ -49,7 +49,7 @@ var (
 	ErrEmailIsNotConfirmed          = fmt.Errorf("user email has not been confirmed")
 	ErrApplicationAlreadyRegistered = fmt.Errorf("error: application with given name already registered")
 	ErrAuthFailed                   = fmt.Errorf("authorization failed: incorrect email or password")
-	ErrApiKeyAlreadyRegistered      = fmt.Errorf("error: api key with given name already registered")
+	ErrAPIKeyAlreadyRegistered      = fmt.Errorf("error: api key with given name already registered")
 	ErrEmptyMFACode                 = fmt.Errorf("error: Multi factor authorization code is empty field")
 	ErrPasswordTooWeak              = fmt.Errorf("error: Password is too weak: password must be at least 8 characters length")
 	ErrIncorrectAppToken            = fmt.Errorf("error: application token is incorrect")
@@ -57,12 +57,12 @@ var (
 	ErrEmailAlreadyRegistered       = fmt.Errorf("error: account with this email has been already registered")
 )
 
-func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient) (token string, err error) {
+func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHTTPClient) (token string, err error) {
 
 	if errToCheck == nil {
 		return "", nil
 	}
-	if errToCheck.StatusCode == http.StatusUnauthorized || errToCheck.Code == 40100 || errToCheck.Code == 20311{
+	if errToCheck.StatusCode == http.StatusUnauthorized || errToCheck.Code == 40100 || errToCheck.Code == 20311 {
 		err = Login("", "", vcli)
 		if err != nil {
 			return
@@ -106,7 +106,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	}
 	if errToCheck.Code == 40000 && len(errToCheck.Errors) >= 1 && errToCheck.Errors[0].Code == 40003 &&
 		strings.Contains(errToCheck.Errors[0].Message, "Access Key already registered with given name") {
-		return "", ErrApiKeyAlreadyRegistered
+		return "", ErrAPIKeyAlreadyRegistered
 	}
 	if errToCheck.Code == 40029 {
 		return "", ErrEmptyMFACode
@@ -117,7 +117,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHttpClient
 	if errToCheck.Code == 40033 {
 		return "", ErrEmailIsNotConfirmed
 	}
-	if errToCheck.Code == 40027 || errToCheck.Code == 40019  {
+	if errToCheck.Code == 40027 || errToCheck.Code == 40019 {
 		return "", ErrAuthFailed
 	}
 	if errToCheck.Code == 20303 || errToCheck.Code == 20308 {

@@ -48,16 +48,23 @@ import (
 	"github.com/pkg/errors"
 )
 
-type HttpClient interface {
+type HTTPClient interface {
 	Do(*http.Request) (*http.Response, error)
 }
 
-type VirgilHttpClient struct {
-	Client  HttpClient
+type VirgilHTTPClient struct {
+	Client  HTTPClient
 	Address string
 }
 
-func (vc *VirgilHttpClient) Send(method string, urlPath string, payload interface{}, respObj interface{}, header http.Header) (headers http.Header, cookie string, virgilApiErr *VirgilAPIError) {
+func (vc *VirgilHTTPClient) Send(
+	method string,
+	urlPath string,
+	payload interface{},
+	respObj interface{},
+	header http.Header,
+) (headers http.Header, cookie string, virgilAPIErr *VirgilAPIError) {
+
 	var body []byte
 	if payload != nil {
 		var err error
@@ -80,7 +87,7 @@ func (vc *VirgilHttpClient) Send(method string, urlPath string, payload interfac
 
 	req.Header = header
 
-	client := vc.getHttpClient()
+	client := vc.getHTTPClient()
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -91,7 +98,7 @@ func (vc *VirgilHttpClient) Send(method string, urlPath string, payload interfac
 	if resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices {
 		if respObj != nil {
 
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err = ioutil.ReadAll(resp.Body)
 			if err != nil {
 				return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: read body").Error()}
 			}
@@ -147,7 +154,7 @@ func (err ErrorField) String() string {
 	return fmt.Sprintf("Virgil Error field {code: %v message: %v field: %v}", err.Code, err.Message, err.Field)
 }
 
-func (vc *VirgilHttpClient) getHttpClient() HttpClient {
+func (vc *VirgilHTTPClient) getHTTPClient() HTTPClient {
 	if vc.Client != nil {
 		return vc.Client
 	}
