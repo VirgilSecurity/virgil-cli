@@ -18,7 +18,6 @@ func Init(vcli *client.VirgilHTTPClient) *cli.Command {
 		Flags: []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"}},
 
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -42,7 +41,6 @@ func Init(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func InitFunc(appID string, vcli *client.VirgilHTTPClient) (err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "scms/"+appID+"/init", nil, nil)
 	return err
 }

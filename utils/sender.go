@@ -58,7 +58,6 @@ func SendWithCheckRetry(
 		if err != nil {
 			return nil, "", err
 		}
-
 	}
 	header := http.Header{}
 

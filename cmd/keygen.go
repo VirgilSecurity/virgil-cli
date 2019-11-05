@@ -19,7 +19,6 @@ func Keygen() *cli.Command {
 		Flags: []cli.Flag{&cli.StringFlag{Name: "o", Usage: "destination file name"},
 			&cli.StringFlag{Name: "p", Usage: "password"}},
 		Action: func(context *cli.Context) error {
-
 			pass := utils.ReadFlagOrDefault(context, "p", "")
 			key, err := KeygenFunc(pass)
 			if err != nil {
@@ -66,7 +65,6 @@ func Keygen() *cli.Command {
 }
 
 func KeygenFunc(password string) (privateKey []byte, err error) {
-
 	keyPair, err := cryptoimpl.NewKeypair()
 
 	if err != nil {

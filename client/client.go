@@ -44,8 +44,6 @@ import (
 	"net/http"
 	"net/url"
 	"path"
-
-	"github.com/pkg/errors"
 )
 
 type HTTPClient interface {
@@ -70,67 +68,66 @@ func (vc *VirgilHTTPClient) Send(
 		var err error
 		body, err = json.Marshal(payload)
 		if err != nil {
-			return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: marshal payload").Error()}
+			return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.Send: marshal payload: %v", err)}
 		}
 	}
 
 	u, err := url.Parse(vc.Address)
 	if err != nil {
-		return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: URL parse").Error()}
+		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.Send: URL parse: %v", err)}
 	}
 
 	u.Path = path.Join(u.Path, urlPath)
 	req, err := http.NewRequest(method, u.String(), bytes.NewReader(body))
 	if err != nil {
-		return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: new request").Error()}
+		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.Send: new request: %v", err)}
 	}
 
-	req.Header = header
+	if len(header) != 0 {
+		req.Header = header
+	}
 
 	client := vc.getHTTPClient()
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: send request").Error()}
+		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.Send: send request: %v", err)}
 	}
+	// nolint: errcheck
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices {
-		if respObj != nil {
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.Send: read body: %v", err)}
+	}
 
-			body, err = ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: read body").Error()}
-			}
-
-			err = json.Unmarshal(body, respObj)
-			if err != nil {
-				return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: unmarshal response object").Error()}
-			}
+	for _, c := range resp.Cookies() {
+		if c.Name == "gosession" {
+			cookie = c.Value
 		}
-		for _, c := range resp.Cookies() {
-			if c.Name == "gosession" {
-				cookie = c.Value
-			}
-		}
+	}
 
+	if resp.StatusCode/100 == 2 {
+		if respObj == nil {
+			return resp.Header, cookie, nil
+		}
+		if err = json.Unmarshal(body, respObj); err != nil {
+			return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.Send: unmarshal response object: %v", err)}
+		}
 		return resp.Header, cookie, nil
 	}
 
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, cookie, &VirgilAPIError{Message: errors.Wrap(err, "VirgilHTTPClient.Send: read response body").Error()}
+	if len(body) == 0 {
+		return nil, cookie, &VirgilAPIError{StatusCode: resp.StatusCode}
 	}
 
-	if len(respBody) > 0 {
-		httpErr := &VirgilAPIError{}
-		err = json.Unmarshal(respBody, httpErr)
-		if err == nil {
-			return nil, cookie, httpErr
-		}
+	var httpErr *VirgilAPIError
+	err = json.Unmarshal(body, httpErr)
+	if err == nil {
+		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.Send: unmarshal response object: %v", err)}
 	}
 
-	return nil, cookie, &VirgilAPIError{StatusCode: resp.StatusCode, Message: string(respBody)}
+	return nil, cookie, httpErr
 }
 
 type VirgilAPIError struct {

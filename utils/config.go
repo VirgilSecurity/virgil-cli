@@ -48,7 +48,6 @@ import (
 )
 
 func SaveConfig(token string) error {
-
 	u, err := user.Current()
 	if err != nil {
 		return err

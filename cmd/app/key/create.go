@@ -58,7 +58,6 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 		Usage:     "Create a new App Key",
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -91,7 +90,6 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func CreateFunc(name, appID string, vcli *client.VirgilHTTPClient) (apiKeyID string, err error) {
-
 	keyPair, err := cryptoimpl.NewKeypair()
 
 	if err != nil {
@@ -120,7 +118,6 @@ func CreateFunc(name, appID string, vcli *client.VirgilHTTPClient) (apiKeyID str
 	}
 
 	if resp != nil {
-
 		fmt.Println("This secret is only shown ONCE. Make note of it and store it in a safe, secure location.")
 		fmt.Println("App Key:", base64.StdEncoding.EncodeToString(prKey))
 
@@ -131,7 +128,6 @@ func CreateFunc(name, appID string, vcli *client.VirgilHTTPClient) (apiKeyID str
 }
 
 func getApp(appID string, vcli *client.VirgilHTTPClient) (app *models.Application, err error) {
-
 	var apps []*models.Application
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
 

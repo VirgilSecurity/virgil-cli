@@ -57,7 +57,6 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "type", Usage: "application type (e2ee or pure)"}},
 
 		Action: func(context *cli.Context) (err error) {
-
 			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter application name", "")
 			var appID string
 
@@ -75,7 +74,6 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func CreateFunc(name string, vcli *client.VirgilHTTPClient) (appID string, err error) {
-
 	req := &models.CreateAppRequest{Name: name, Type: "pki"}
 	resp := &models.Application{}
 

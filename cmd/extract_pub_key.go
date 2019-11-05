@@ -24,7 +24,6 @@ func Key2Pub() *cli.Command {
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
-
 			pass := utils.ReadFlagOrDefault(context, "p", "")
 
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
@@ -32,7 +31,6 @@ func Key2Pub() *cli.Command {
 
 			privateKeyString := ""
 			if inputFileName != "" {
-
 				f, err := os.Open(inputFileName)
 				if err != nil {
 					return err
@@ -52,7 +50,6 @@ func Key2Pub() *cli.Command {
 					privateKeyString = t
 					break
 				}
-
 			} else {
 				privateKeyString = utils.ReadParamOrDefaultOrFromConsole(context, "prKey", "private key", "")
 			}
@@ -69,7 +66,6 @@ func Key2Pub() *cli.Command {
 						panic(err)
 					}
 				}()
-
 			} else {
 				writer = os.Stdout
 			}
@@ -98,7 +94,6 @@ func Key2Pub() *cli.Command {
 }
 
 func Key2PubFunc(privateKeyString, password string) (publicKey []byte, err error) {
-
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {

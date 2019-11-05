@@ -55,7 +55,6 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 		ArgsUsage: "app_id",
 		Usage:     "Delete app by id",
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -89,13 +88,11 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func deleteAppFunc(appID string, vcli *client.VirgilHTTPClient) (err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "application/"+appID, nil, nil)
 	return err
 }
 
 func getApp(appID string, vcli *client.VirgilHTTPClient) (app *models.Application, err error) {
-
 	var apps []*models.Application
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
 

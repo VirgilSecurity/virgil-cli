@@ -24,7 +24,6 @@ func Sign() *cli.Command {
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
-
 			pass := utils.ReadFlagOrDefault(context, "p", "")
 
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
@@ -72,7 +71,6 @@ func Sign() *cli.Command {
 }
 
 func SignFunc(privateKeyString, password string, data []byte) (publicKey []byte, err error) {
-
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {

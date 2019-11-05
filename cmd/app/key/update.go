@@ -58,7 +58,6 @@ func Update(vcli *client.VirgilHTTPClient) *cli.Command {
 		Usage:     "Update existing app-key by id",
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -90,7 +89,6 @@ func Update(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func UpdateFunc(appID, apiKeyID string, vcli *client.VirgilHTTPClient) (err error) {
-
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Println("Enter new App Key name:")

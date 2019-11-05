@@ -55,7 +55,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 		Aliases: []string{"l"},
 		Usage:   "List your apps",
 		Action: func(context *cli.Context) (err error) {
-
 			var apps []*models.Application
 			apps, err = listFunc(vcli)
 
@@ -82,7 +81,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 				"---------------------------------------",
 			)
 			for _, app := range apps {
-
 				appName := app.Name
 				if app.ID == defaultAppID {
 					appName += " (default)"
@@ -95,7 +93,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func listFunc(vcli *client.VirgilHTTPClient) (apps []*models.Application, err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
 
 	if err != nil {

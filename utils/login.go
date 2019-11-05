@@ -54,7 +54,6 @@ import (
 
 //Login obtains temporary account access token. Email and password may be empty
 func Login(email, password string, vcli *client.VirgilHTTPClient) error {
-
 	if email == "" {
 		fmt.Println("Enter your email:")
 

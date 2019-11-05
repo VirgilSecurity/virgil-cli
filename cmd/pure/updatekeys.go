@@ -57,7 +57,6 @@ func UpdateKeys() *cli.Command {
 	}
 }
 func updateFunc(context *cli.Context) error {
-
 	if context.NArg() < 3 {
 		return errors.New("invalid number of arguments")
 	}

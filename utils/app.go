@@ -53,7 +53,6 @@ import (
 )
 
 func SaveDefaultApp(vcli *client.VirgilHTTPClient, app *models.Application) error {
-
 	u, err := user.Current()
 	if err != nil {
 		return err
@@ -193,7 +192,6 @@ func DeleteDefaultApp() error {
 }
 
 func createFunc(appID, name string, vcli *client.VirgilHTTPClient) (token string, err error) {
-
 	req := &models.CreateAppTokenRequest{Name: name, ApplicationID: appID}
 	resp := &models.ApplicationToken{}
 

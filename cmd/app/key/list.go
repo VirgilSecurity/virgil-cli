@@ -57,7 +57,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 		Usage:   "List your App Keys",
 		Flags:   []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -100,7 +99,6 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func listFunc(appID string, vcli *client.VirgilHTTPClient) (keys []*models.AccessKey, err error) {
-
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "application/"+appID+"/apikeys", nil, &keys)
 
 	if err != nil {
@@ -115,7 +113,6 @@ func listFunc(appID string, vcli *client.VirgilHTTPClient) (keys []*models.Acces
 }
 
 func getKey(appID string, keyID string, vcli *client.VirgilHTTPClient) (app *models.AccessKey, err error) {
-
 	kk, err := listFunc(appID, vcli)
 	if err != nil {
 		return
