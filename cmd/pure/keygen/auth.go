@@ -15,12 +15,12 @@ func Auth() *cli.Command {
 		Aliases: []string{"ak"},
 		Usage:   "Generate a new Auth key",
 		Action: func(context *cli.Context) error {
-			return PrintAuthKey()
+			return printAuthKey()
 		},
 	}
 }
 
-func PrintAuthKey() error {
+func printAuthKey() error {
 	key := make([]byte, 32)
 	_, err := rand.Read(key)
 	if err != nil {

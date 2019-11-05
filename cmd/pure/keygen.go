@@ -67,6 +67,7 @@ func Keygen() *cli.Command {
 			keygen.Backup(),
 			keygen.HashesKey(),
 			keygen.VirgilStorage(),
+			keygen.OwnSigningKey(),
 			keygen.All(),
 		},
 	}

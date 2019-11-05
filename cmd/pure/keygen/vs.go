@@ -14,12 +14,12 @@ func VirgilStorage() *cli.Command {
 		Aliases: []string{"vs"},
 		Usage:   "Generates a new Virgil Storage key pair",
 		Action: func(context *cli.Context) error {
-			return PrintSigningKey()
+			return printSigningKey()
 		},
 	}
 }
 
-func PrintSigningKey() error {
+func printSigningKey() error {
 	sk, _, err := generateKeypairEncoded()
 	if err != nil {
 		return err

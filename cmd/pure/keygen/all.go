@@ -13,31 +13,37 @@ func All() *cli.Command {
 		Usage: "Generates all pure key pairs",
 		Action: func(context *cli.Context) error {
 			fmt.Println("----------------------------------------------------------------------------------")
-			if err := PrintAuthKey(); err != nil {
+			if err := printAuthKey(); err != nil {
 				return err
 			}
 
 			fmt.Println("==================================================================================")
 
-			if err := PrintBackupKey(); err != nil {
+			if err := printBackupKey(); err != nil {
 				return err
 			}
 
 			fmt.Println("==================================================================================")
 
-			if err := PrintHBKey(); err != nil {
+			if err := printHBKey(); err != nil {
 				return err
 			}
 
 			fmt.Println("==================================================================================")
 
-			if err := PrintSecretKey(); err != nil {
+			if err := printSecretKey(); err != nil {
 				return err
 			}
 
 			fmt.Println("==================================================================================")
 
-			if err := PrintSigningKey(); err != nil {
+			if err := printSigningKey(); err != nil {
+				return err
+			}
+
+			fmt.Println("==================================================================================")
+
+			if err := printOwnSigningKey(); err != nil {
 				return err
 			}
 			fmt.Println("----------------------------------------------------------------------------------")
