@@ -44,7 +44,7 @@ func All() *cli.Command {
 
 			fmt.Println("==================================================================================")
 
-			if err := PrintSigningKey(); err != nil {
+			if err := printOwnSigningKey(); err != nil {
 				return err
 			}
 			fmt.Println("----------------------------------------------------------------------------------")
