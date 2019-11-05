@@ -37,15 +37,16 @@
 package cmd
 
 import (
+	"gopkg.in/urfave/cli.v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/cmd/app"
-	"gopkg.in/urfave/cli.v2"
 )
 
-func Application(client *client.VirgilHttpClient) *cli.Command {
+func Application(client *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
-		Name:    "app",
-		Usage:   "Manage your applications",
+		Name:  "app",
+		Usage: "Manage your applications",
 		Subcommands: []*cli.Command{
 			app.Create(client),
 			app.List(client),

@@ -38,16 +38,18 @@ package token
 
 import (
 	"fmt"
+	"net/http"
+	"sort"
+
+	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
 	"github.com/VirgilSecurity/virgil-cli/utils"
-	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
-	"net/http"
-	"sort"
 )
 
-func List(vcli *client.VirgilHttpClient) *cli.Command {
+func List(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:    "list",
 		Aliases: []string{"l"},
@@ -55,7 +57,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:   []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "app id"}},
 		Action: func(context *cli.Context) (err error) {
 
-			defaultApp, err := utils.LoadDefaultApp()
+			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
 				defaultAppID = defaultApp.ID
@@ -89,7 +91,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func listFunc(appID string, vcli *client.VirgilHttpClient) (apps []*models.ApplicationToken, err error) {
+func listFunc(appID string, vcli *client.VirgilHTTPClient) (apps []*models.ApplicationToken, err error) {
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "application/"+appID+"/tokens", nil, &apps)
 

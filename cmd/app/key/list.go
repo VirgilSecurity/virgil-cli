@@ -42,19 +42,20 @@ import (
 	"net/http"
 	"sort"
 
+	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
 	"github.com/VirgilSecurity/virgil-cli/utils"
-	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
 )
 
-func List(vcli *client.VirgilHttpClient) *cli.Command {
+func List(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:    "list",
 		Aliases: []string{"l"},
 		Usage:   "List your App Keys",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id",Aliases:[]string{"app-id"},  Usage: "application id"}},
+		Flags:   []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, _ := utils.LoadDefaultApp()
@@ -83,7 +84,12 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 				return keys[i].CreatedAt.Before(keys[j].CreatedAt)
 			})
 			fmt.Printf("|%25s|%35s|%63s |%20s\n", "App key name   ", "App Key ID   ", " PublicKey ", " Created at ")
-			fmt.Printf("|%25s|%35s|%64s|%20s\n", "-------------------------", "-----------------------------------", "----------------------------------------------------------------", "---------------------------------------")
+			fmt.Printf("|%25s|%35s|%64s|%20s\n",
+				"-------------------------",
+				"-----------------------------------",
+				"----------------------------------------------------------------",
+				"---------------------------------------",
+			)
 
 			for _, k := range keys {
 				fmt.Printf("| %23s | %33s | %62s | %20s\n", k.Name, k.ID, base64.StdEncoding.EncodeToString(k.PublicKey), k.CreatedAt)
@@ -93,7 +99,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func listFunc(appID string, vcli *client.VirgilHttpClient) (keys []*models.AccessKey, err error) {
+func listFunc(appID string, vcli *client.VirgilHTTPClient) (keys []*models.AccessKey, err error) {
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "application/"+appID+"/apikeys", nil, &keys)
 
@@ -108,7 +114,7 @@ func listFunc(appID string, vcli *client.VirgilHttpClient) (keys []*models.Acces
 	return nil, errors.New("empty response")
 }
 
-func getKey(appID string,keyID string, vcli *client.VirgilHttpClient) (app *models.AccessKey, err error) {
+func getKey(appID string, keyID string, vcli *client.VirgilHTTPClient) (app *models.AccessKey, err error) {
 
 	kk, err := listFunc(appID, vcli)
 	if err != nil {

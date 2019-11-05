@@ -3,12 +3,12 @@ package keygen
 import (
 	"encoding/base64"
 	"fmt"
+
 	"gopkg.in/urfave/cli.v2"
 	"gopkg.in/virgil.v5/cryptoimpl"
 )
 
-
-//Generates a new Hashes key pair
+// HashesKey generates a new Hashes key pair
 func HashesKey() *cli.Command {
 	return &cli.Command{
 		Name:    "hashes",
@@ -34,6 +34,9 @@ func PrintHBKey() error {
 	}
 
 	pubKey, err := keyPair.PublicKey().Encode()
+	if err != nil {
+		return err
+	}
 	fmt.Println("HB." + base64.StdEncoding.EncodeToString(pubKey))
 	fmt.Println("private key: " + base64.StdEncoding.EncodeToString(prKey))
 

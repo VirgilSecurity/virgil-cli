@@ -39,11 +39,12 @@ package pure
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/cmd/pure/keygen"
-	"github.com/pkg/errors"
 
-	"github.com/VirgilSecurity/virgil-phe-go"
+	phe "github.com/VirgilSecurity/virgil-phe-go"
+	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
+
+	"github.com/VirgilSecurity/virgil-cli/cmd/pure/keygen"
 )
 
 //Keygen generates PureKit private key

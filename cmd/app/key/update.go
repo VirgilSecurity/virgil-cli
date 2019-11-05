@@ -42,16 +42,15 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/VirgilSecurity/virgil-cli/utils"
-
-	"github.com/VirgilSecurity/virgil-cli/models"
 	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func Update(vcli *client.VirgilHttpClient) *cli.Command {
+func Update(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "update",
 		Aliases:   []string{"u"},
@@ -90,7 +89,7 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func UpdateFunc(appID, apiKeyID string, vcli *client.VirgilHttpClient) (err error) {
+func UpdateFunc(appID, apiKeyID string, vcli *client.VirgilHTTPClient) (err error) {
 
 	scanner := bufio.NewScanner(os.Stdin)
 

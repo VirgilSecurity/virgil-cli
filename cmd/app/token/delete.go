@@ -38,16 +38,17 @@ package token
 
 import (
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/models"
 	"net/http"
 
-	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/VirgilSecurity/virgil-cli/utils"
 	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func Delete(vcli *client.VirgilHttpClient) *cli.Command {
+func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "delete",
 		Aliases:   []string{"d"},
@@ -91,7 +92,7 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func deleteAppTokenFunc(appID, appTokenID string, vcli *client.VirgilHttpClient) (err error) {
+func deleteAppTokenFunc(appID, appTokenID string, vcli *client.VirgilHTTPClient) (err error) {
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "application/"+appID+"/tokens/"+appTokenID, nil, nil)
 	return err

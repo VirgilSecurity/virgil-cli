@@ -38,15 +38,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/client"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/VirgilSecurity/virgil-cli/cmd"
+	"gopkg.in/urfave/cli.v2"
 	"gopkg.in/urfave/cli.v2/altsrc"
 
-	"gopkg.in/urfave/cli.v2"
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/cmd"
 )
 
 var (
@@ -68,12 +68,12 @@ func main() {
 		}),
 	}
 
-	apiGatewayClient := &client.VirgilHttpClient{
+	apiGatewayClient := &client.VirgilHTTPClient{
 		Address: "https://api.virgilsecurity.com/management/v1/",
 	}
 
 	app := &cli.App{
-		Version:               fmt.Sprintf("%v", version, ),
+		Version:               fmt.Sprintf("%v", version),
 		Name:                  "CLI",
 		Usage:                 "VirgilSecurity command line interface",
 		Flags:                 flags,
@@ -96,9 +96,9 @@ func main() {
 		},
 		Before: func(c *cli.Context) error {
 
-			apiUrl := c.String("api_gateway_url")
-			if strings.TrimSpace(apiUrl) != "" {
-				apiGatewayClient.Address = apiUrl
+			apiURL := c.String("api_gateway_url")
+			if strings.TrimSpace(apiURL) != "" {
+				apiGatewayClient.Address = apiURL
 			}
 
 			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {

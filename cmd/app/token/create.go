@@ -38,26 +38,26 @@ package token
 
 import (
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
 	"net/http"
 
-	"github.com/VirgilSecurity/virgil-cli/models"
-
-	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func Create(vcli *client.VirgilHttpClient) *cli.Command {
+func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "create",
 		ArgsUsage: "token_name",
 		Usage:     "Create a new app token",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases:[]string{"app-id"}, Usage: "app id"},
+		Flags: []cli.Flag{&cli.StringFlag{Name: "app_id", Aliases: []string{"app-id"}, Usage: "app id"},
 			&cli.StringFlag{Name: "name", Usage: "app token name"}},
 
 		Action: func(context *cli.Context) (err error) {
-			defaultApp, err := utils.LoadDefaultApp()
+			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
 				defaultAppID = defaultApp.ID
@@ -84,7 +84,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func CreateFunc(appID, name string, vcli *client.VirgilHttpClient) (token string, err error) {
+func CreateFunc(appID, name string, vcli *client.VirgilHTTPClient) (token string, err error) {
 
 	req := &models.CreateAppTokenRequest{Name: name, ApplicationID: appID}
 	resp := &models.ApplicationToken{}

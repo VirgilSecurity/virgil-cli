@@ -39,21 +39,21 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/VirgilSecurity/virgil-cli/utils"
+	"gopkg.in/urfave/cli.v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func Login(client *client.VirgilHttpClient) *cli.Command {
+func Login(client *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "login",
 		ArgsUsage: "[email]",
 		Usage:     "Open user session",
 		Action: func(context *cli.Context) error {
 
-			utils.DeleteAccessToken()
-			utils.DeleteAppFile()
+			_ = utils.DeleteAccessToken()
+			_ = utils.DeleteAppFile()
 
 			err := utils.Login(context.Args().First(), "", client)
 

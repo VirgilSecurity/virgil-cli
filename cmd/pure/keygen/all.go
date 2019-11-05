@@ -2,10 +2,11 @@ package keygen
 
 import (
 	"fmt"
+
 	"gopkg.in/urfave/cli.v2"
 )
 
-//Generates all pure key pairs
+// All generates all pure key pairs
 func All() *cli.Command {
 	return &cli.Command{
 		Name:  "all",

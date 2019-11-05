@@ -4,14 +4,14 @@ import (
 	"bufio"
 	"encoding/base64"
 	"fmt"
-	"gopkg.in/virgil.v5/cryptoimpl"
 	"io"
 	"os"
 	"strings"
 
-	"github.com/VirgilSecurity/virgil-cli/utils"
-
 	"gopkg.in/urfave/cli.v2"
+	"gopkg.in/virgil.v5/cryptoimpl"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 func Key2Pub() *cli.Command {

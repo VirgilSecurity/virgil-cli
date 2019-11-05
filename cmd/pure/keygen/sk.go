@@ -3,11 +3,12 @@ package keygen
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-phe-go"
+
+	phe "github.com/VirgilSecurity/virgil-phe-go"
 	"gopkg.in/urfave/cli.v2"
 )
 
-//Keygen generates Secret key
+// Secret generates secret key
 func Secret() *cli.Command {
 	return &cli.Command{
 		Name:    "secret",

@@ -79,6 +79,6 @@ type UpdateAppRequest struct {
 
 type AppConfig struct {
 	AppID    string `json:"APP_ID"`
-	ApiKeyID string `json:"API_KEY_ID"`
-	ApiKey   []byte `json:"API_KEY"`
+	APIKeyID string `json:"API_KEY_ID"`
+	APIKey   []byte `json:"API_KEY"`
 }

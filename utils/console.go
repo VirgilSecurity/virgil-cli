@@ -39,13 +39,12 @@ package utils
 import (
 	"bufio"
 	"fmt"
-	"gopkg.in/urfave/cli.v2"
 	"io/ioutil"
 	"os"
 	"strings"
-)
 
-var scanner = bufio.NewScanner(os.Stdin)
+	"gopkg.in/urfave/cli.v2"
+)
 
 func ReadKeyStringFromFile(context *cli.Context, fileName string) (string, error) {
 	value := ""
@@ -99,6 +98,7 @@ func ReadConsoleValue(paramName, paramDescription string, options ...string) str
 
 	fmt.Printf("%s:\n", paramDescription)
 
+	scanner := bufio.NewScanner(os.Stdin)
 	value := ""
 	valueSet := false
 	for !valueSet {
