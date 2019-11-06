@@ -21,10 +21,10 @@
   - [Get list of applications](#list-applications)
   - [Update application](#update-application)
   - [Set up default Application](#use-application)
-  - [Create new API Key](#create-new-api-key)
-  - [Delete API Key](#delete-api-key)
-  - [Get list of API Keys](#list-api-keys)
-  - [Update API Key](#update-api-key)
+  - [Create new App Key](#create-new-app-key)
+  - [Delete App Key](#delete-app-key)
+  - [Get list of App Keys](#list-app-keys)
+  - [Update App Key](#update-app-key)
   - [Create App Token](#create-app-token)
   - [Delete App Token](#delete-app-token)
   - [Get list of App Tokens](#list-app-tokens)
@@ -34,7 +34,7 @@
 - [Manage Application Cards](#manage-application-cards)
   - [Config file](#config-file)
   - [Search cards](#search-cards)
-  - [Delete card](#delete-card)
+  - [Revoke card](#revoke-card)
 - [Cryptographic Operations](#cryptographic-operations)
   - [Generate private key](#generate-private-key)
   - [Extract public key](#extract-public-key)
@@ -113,10 +113,10 @@ virgil logout
 This command is used to create new application:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil app create <application name>
+./virgil app create <app_name>
 
 # Windows OS
-virgil app create <application name>
+virgil app create <app_name>
 ```
 > Note! You have to verify your email in order to be able to create more than one application
 
@@ -124,10 +124,10 @@ virgil app create <application name>
 This command is used to delete application:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil app delete <application_id>
+./virgil app delete <app_id>
 
 # Windows OS
-virgil app delete <application_id>
+virgil app delete <app_id>
 ```
 
 ### List applications
@@ -140,15 +140,14 @@ This command is used to print list of all user applications:
 virgil app list
 ```
 
-
 ### Update application
 This command is used to update name of application:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil app update <application_id>
+./virgil app update <app_id>
 
 # Windows OS
-virgil app update <application_id>
+virgil app update <app_id>
 ```
 
 ### Use application
@@ -162,47 +161,44 @@ This command allows you to specify the application that will be used by default.
 virgil use <app_name>
 ```
 
-
-### Create new api-key
-This command is used to create new api-key for current application:
+### Create new App Key
+This command is used to create new App Key for current application:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil apikey create --app_id <app_id> <api-key name>
+./virgil app key create --app_id <app_id> <app-key_name>
 
 # Windows OS
-virgil apikey create --app_id <app_id> <api-key name>
+virgil app key create --app_id <app_id> <app-key_name>
 ```
 
-
-### Delete api-key
-This command is used to delete api-key:
+### Delete App Key
+This command is used to delete App Key:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil apikey delete <api_key_id>
+./virgil app key delete --app_id <app_id> <app-key_id>
 
 # Windows OS
-virgil apikey delete <api_key_id>
+virgil app key delete --app_id <app_id> <app-key_id>
 ```
 
-### List api-keys
-This command is used to print list of all users api-keys:
+### List App Keys
+This command is used to print list of App Keys of the specified application:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil apikey list
+./virgil app key list --app_id <app_id> 
 
 # Windows OS
-virgil apikey list
+virgil app key list --app_id <app_id> 
 ```
 
-
-### Update api-key
-This command is used to update name of api-key:
+### Update App Key
+This command is used to update name of App Key:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil apikey update <api_key_id>
+./virgil apikey update --app_id <app_id> <app-key_id>
 
 # Windows OS
-virgil apikey update <api_key_id>
+virgil apikey update --app_id <app_id> <app-key_id>
 ```
 
 ### Create App Token
@@ -219,10 +215,10 @@ virgil app token create --app-id <app-id> --name <name>
 This command is used to delete an App Token:
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil app token delete --app-id <app-id> --name <name>
+./virgil app token delete --app-id <app-id> <name>
 
 # Windows OS
-virgil app token delete --app-id <app-id> --name <name>
+virgil app token delete --app-id <app-id> <name>
 ```
 
 ### List App Tokens
@@ -242,10 +238,10 @@ This command is used to update the `app_secret_key` and `service_public_key` of 
 
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
+./virgil pure update-keys <public_key> <service_secret_key> <update_token>
 
 # Windows OS
-virgil pure update-keys <service_public_key> <app_secret_key> <update_token>
+virgil pure update-keys <public_key> <service_secret_key> <update_token>
 ```
 
 ### Generate a secret key
@@ -289,7 +285,7 @@ flags :
 -c  - Config file name.
 ```
 
-### Delete card
+### Revoke card
 This command deletes Virgil Card by it's id
 ```bash
 # FreeBSD / Linux / Mac OS
@@ -343,7 +339,7 @@ flags :
 This command encrypts any data for the specified public key(s):
 ```bash
 # FreeBSD / Linux / Mac OS
-./virgil encrypt  -i <file> -o <file>  -key <public_key_file_1> -key <public_key_file_2> ...,
+./virgil encrypt  -i <file> -o <file> -key <public_key_file_1> -key <public_key_file_2> ...,
 
 # Windows OS
 virgil encrypt  -i <file> -o <file> -key <public_key_file_1> -key <public_key_file_2> ...,
