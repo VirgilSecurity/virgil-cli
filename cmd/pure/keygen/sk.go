@@ -3,7 +3,8 @@ package keygen
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-phe-go"
+
+	phe "github.com/VirgilSecurity/virgil-phe-go"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -14,12 +15,12 @@ func Secret() *cli.Command {
 		Aliases: []string{"sk"},
 		Usage:   "Generate a new Secret key",
 		Action: func(context *cli.Context) error {
-			return PrintSecretKey()
+			return printSecretKey()
 		},
 	}
 }
 
-func PrintSecretKey() error {
+func printSecretKey() error {
 	key := phe.GenerateClientKey()
 	fmt.Println("SK.1." + base64.StdEncoding.EncodeToString(key))
 	return nil
