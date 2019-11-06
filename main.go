@@ -38,19 +38,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/client"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/VirgilSecurity/virgil-cli/cmd"
+	"gopkg.in/urfave/cli.v2"
 	"gopkg.in/urfave/cli.v2/altsrc"
 
-	"gopkg.in/urfave/cli.v2"
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/cmd"
 )
 
 var (
-	version = "5.1.4"
+	version = "5.1.6"
 )
 
 func main() {
@@ -73,7 +73,7 @@ func main() {
 	}
 
 	app := &cli.App{
-		Version:               fmt.Sprintf("%v", version, ),
+		Version:               fmt.Sprintf("%v", version),
 		Name:                  "CLI",
 		Usage:                 "VirgilSecurity command line interface",
 		Flags:                 flags,
