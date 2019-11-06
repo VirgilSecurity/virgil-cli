@@ -28,7 +28,7 @@
   - [Create App Token](#create-app-token)
   - [Delete App Token](#delete-app-token)
   - [Get list of App Tokens](#list-app-tokens)
-- [Manage PURE Application](#manage-pure-application)
+- [PureKit Commands](#purekit-commands)
   - [Update keys](#update-keys)
   - [Generate a secret key](#generate-a-secret-key)
 - [Manage Application Cards](#manage-application-cards)
@@ -231,7 +231,7 @@ This command is used to get App Tokens list:
 virgil app token list --app-id <app-id>
 ```
 
-## Manage PURE application
+## PureKit Commands
 
 ### Update keys
 This command is used to update the `app_secret_key` and `service_public_key` of a Pure application
