@@ -50,7 +50,7 @@ import (
 )
 
 var (
-	version = "5.1.1"
+	version = "5.1.4"
 )
 
 func main() {
@@ -81,9 +81,8 @@ func main() {
 		Commands: []*cli.Command{
 			cmd.Register(apiGatewayClient),
 			cmd.Login(apiGatewayClient),
-			cmd.Logout(apiGatewayClient),
+			cmd.Logout(),
 			cmd.Application(apiGatewayClient),
-			cmd.Key(apiGatewayClient),
 			cmd.UseApp(apiGatewayClient),
 			cmd.PureKit(),
 			cmd.Keygen(),

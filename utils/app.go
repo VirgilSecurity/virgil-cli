@@ -233,7 +233,6 @@ func createFunc(appID, name string, vcli *client.VirgilHttpClient) (token string
 
 	_, _, err = SendWithCheckRetry(vcli, http.MethodPost, "/application/"+appID+"/tokens", req, resp)
 
-	fmt.Println("here")
 	if err != nil {
 		return "", err
 	}

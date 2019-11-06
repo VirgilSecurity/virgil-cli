@@ -53,37 +53,49 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:    "list",
 		Aliases: []string{"l"},
-		Usage:   "List your api-keys",
+		Usage:   "List your App Keys",
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id",Aliases:[]string{"app-id"},  Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
 
+			defaultApp, _ := utils.LoadDefaultApp()
+			defaultAppID := ""
+			if defaultApp != nil {
+				defaultAppID = defaultApp.ID
+			}
+
+			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
+			if appID == "" {
+				return errors.New("Please, specify app_id (flag --app_id)")
+			}
+
 			var keys []*models.AccessKey
-			keys, err = listFunc(vcli)
+			keys, err = listFunc(appID, vcli)
 
 			if err != nil {
 				return err
 			}
 
 			if len(keys) == 0 {
-				fmt.Println("There are no api keys created for application")
+				fmt.Println("There are no app keys created for application")
 				return nil
 			}
 			sort.Slice(keys, func(i, j int) bool {
 				return keys[i].CreatedAt.Before(keys[j].CreatedAt)
 			})
-			fmt.Printf("|%25s|%35s|%63s |%20s\n", "Api key name   ", "API_KEY_ID   ", " PublicKey ", " created_at ")
+			fmt.Printf("|%25s|%35s|%63s |%20s\n", "App key name   ", "App Key ID   ", " PublicKey ", " Created at ")
 			fmt.Printf("|%25s|%35s|%64s|%20s\n", "-------------------------", "-----------------------------------", "----------------------------------------------------------------", "---------------------------------------")
 
 			for _, k := range keys {
-				fmt.Printf("| %23s | %33s | %62s |%20s\n", k.Name, k.ID, base64.StdEncoding.EncodeToString(k.PublicKey), k.CreatedAt)
+				fmt.Printf("| %23s | %33s | %62s | %20s\n", k.Name, k.ID, base64.StdEncoding.EncodeToString(k.PublicKey), k.CreatedAt)
 			}
 			return nil
 		},
 	}
 }
 
-func listFunc(vcli *client.VirgilHttpClient) (keys []*models.AccessKey, err error) {
+func listFunc(appID string, vcli *client.VirgilHttpClient) (keys []*models.AccessKey, err error) {
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "apikeys", nil, &keys)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "application/"+appID+"/apikeys", nil, &keys)
 
 	if err != nil {
 		return
@@ -96,9 +108,9 @@ func listFunc(vcli *client.VirgilHttpClient) (keys []*models.AccessKey, err erro
 	return nil, errors.New("empty response")
 }
 
-func getKey(keyID string, vcli *client.VirgilHttpClient) (app *models.AccessKey, err error) {
+func getKey(appID string,keyID string, vcli *client.VirgilHttpClient) (app *models.AccessKey, err error) {
 
-	kk, err := listFunc(vcli)
+	kk, err := listFunc(appID, vcli)
 	if err != nil {
 		return
 	}

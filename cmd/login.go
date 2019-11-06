@@ -52,6 +52,9 @@ func Login(client *client.VirgilHttpClient) *cli.Command {
 		Usage:     "Open user session",
 		Action: func(context *cli.Context) error {
 
+			utils.DeleteAccessToken()
+			utils.DeleteAppFile()
+
 			err := utils.Login(context.Args().First(), "", client)
 
 			if err == nil {

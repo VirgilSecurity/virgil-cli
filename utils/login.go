@@ -79,7 +79,6 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 
 	_, _, vErr := vcli.Send(http.MethodPost, "user/login", req, &sessionToken, nil)
 	if vErr != nil {
-		fmt.Println(vErr)
 		_, err = CheckRetry(vErr, vcli)
 		if err == ErrEmptyMFACode {
 			code, err := gopass.GetPasswdPrompt("Enter 2-factor code:\r\n", true, os.Stdin, os.Stdout)
@@ -92,6 +91,21 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 			if vErr != nil {
 				return errors.New(fmt.Sprintf("Authorization failed.\n"))
 			}
+		} else if err == ErrEmailIsNotConfirmed {
+			code := ReadConsoleValue("confirmation_code", "Please, enter the confirmation code from your email")
+
+			_, _, vErr = vcli.Send(http.MethodGet, "user/register/confirm/"+code, req, nil, nil)
+			_, err = CheckRetry(vErr, vcli)
+
+			if err != nil {
+				return err
+			} else {
+				_, _, vErr = vcli.Send(http.MethodPost, "user/login", req, &sessionToken, nil)
+				if vErr != nil {
+					return errors.New(fmt.Sprintf("Authorization failed.\n"))
+				}
+			}
+
 		} else if err != nil {
 			return err
 		}
@@ -103,6 +117,11 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 	_, _, vErr = vcli.Send(http.MethodPost, "management-token",
 		models.ManagementTokenRequest{Name: uuid.New().String()},
 		&managementToken, header)
+	if vErr != nil {
+		return errors.New(fmt.Sprintf("Authorization failed.\n"))
+	}
+
+	_, _, vErr = vcli.Send(http.MethodPost, "user/logout", nil, nil, header)
 	if vErr != nil {
 		return errors.New(fmt.Sprintf("Authorization failed.\n"))
 	}

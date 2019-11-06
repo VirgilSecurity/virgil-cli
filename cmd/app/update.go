@@ -71,7 +71,7 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 			err = UpdateFunc(appID, vcli)
 
 			if err == nil {
-				fmt.Println("Application update ok.")
+				fmt.Println("Application has been successfully updated.")
 			} else if err == utils.ErrEntityNotFound {
 				return errors.New(fmt.Sprintf("Application with id %s not found.\n", appID))
 			}
@@ -86,9 +86,8 @@ func UpdateFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
 	name := utils.ReadConsoleValue("name", "Enter new app name")
 
 	req := &models.UpdateAppRequest{Name: name}
-	resp := &models.Application{}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "application/"+appID, req, resp)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "application/"+appID, req, nil)
 
 	return err
 }

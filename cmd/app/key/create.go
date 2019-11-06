@@ -55,9 +55,9 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 	return &cli.Command{
 		Name:      "create",
 		Aliases:   []string{"c"},
-		ArgsUsage: "api-key name",
-		Usage:     "Create a new api-key",
-		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id", Usage: "application id"}},
+		ArgsUsage: "app-key name",
+		Usage:     "Create a new App Key",
+		Flags:     []cli.Flag{&cli.StringFlag{Name: "app_id",Aliases:[]string{"app-id"},  Usage: "application id"}},
 		Action: func(context *cli.Context) (err error) {
 
 			defaultApp, _ := utils.LoadDefaultApp()
@@ -71,7 +71,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 				return errors.New("Please, specify app_id (flag --app_id)")
 			}
 
-			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter api-key name", "")
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter App Key name", "")
 
 			_, err = getApp(appID, vcli)
 			if err != nil {
@@ -79,19 +79,19 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 			}
 
 			var apiKeyID string
-			apiKeyID, err = CreateFunc(name, vcli)
+			apiKeyID, err = CreateFunc(name, appID, vcli)
 
 			if err != nil {
 				return err
 			}
 
-			fmt.Println("API_KEY_ID:", apiKeyID)
+			fmt.Println("App Key ID:", apiKeyID)
 			return nil
 		},
 	}
 }
 
-func CreateFunc(name string, vcli *client.VirgilHttpClient) (apiKeyID string, err error) {
+func CreateFunc(name, appID string, vcli *client.VirgilHttpClient) (apiKeyID string, err error) {
 
 	keyPair, err := cryptoimpl.NewKeypair()
 
@@ -99,7 +99,7 @@ func CreateFunc(name string, vcli *client.VirgilHttpClient) (apiKeyID string, er
 		return "", err
 	}
 
-	prKey, err := keyPair.PrivateKey().Encode([]byte{})
+	prKey, err := keyPair.PrivateKey().Encode(nil)
 	if err != nil {
 		return "", err
 	}
@@ -114,7 +114,7 @@ func CreateFunc(name string, vcli *client.VirgilHttpClient) (apiKeyID string, er
 	req := &models.CreateAccessKeyRequest{Name: name, PublicKey: pubKey, Signature: sign}
 	resp := &models.AccessKey{}
 
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "apikey", req, resp)
+	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "application/"+appID+"/apikey", req, resp)
 
 	if err != nil {
 		return
@@ -123,7 +123,7 @@ func CreateFunc(name string, vcli *client.VirgilHttpClient) (apiKeyID string, er
 	if resp != nil {
 
 		fmt.Println("This secret is only shown ONCE. Make note of it and store it in a safe, secure location.")
-		fmt.Println("API_KEY:", base64.StdEncoding.EncodeToString(prKey))
+		fmt.Println("App Key:", base64.StdEncoding.EncodeToString(prKey))
 
 		return resp.ID, nil
 	}
