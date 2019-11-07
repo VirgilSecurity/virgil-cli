@@ -52,19 +52,69 @@
 
 
 ## Installation
-The Virgil CLI is provided as a binary file, and it is available for Mac OS, FreeBSD,  Linux OS and Windows OS. Download the latest CLI package here: https://github.com/VirgilSecurity/virgil-cli/releases.
+
+### Mac OS
+
+#### Install using Homebrew
+
+You can install the Virgil CLI with [Homebrew](http://brew.sh/) using the following command:
+
+```bash
+$ brew update
+$ brew install virgil
+```
+
+#### Install using the package
+
+Download the latest CLI package here: https://github.com/VirgilSecurity/virgil-cli/releases.
+
+Once you've downloaded the latest `.tar.gz` Virgil CLI file, double click to unzip it. Rename the unzipped folder to `virgil_<latest-version>` (`virgil_5.0.3` for example) and move it to any folder of your choice. 
+
+Launch Terminal and type the following command:
+
+```shell
+ln -s ~/<full-path-to-virgil-file> /usr/local/bin/virgil
+```
+
+Now you will be able to launch the Virgil CLI using Terminal.
+
+### Linux
+
+In order to download and install the CLI using Linux, use the following commands:
+
+```bash
+# navigate to the folder which you want to download the archive to
+cd <folder-name>
+
+# download the latest version of the Virgil CLI using its link from the releases page https://github.com/VirgilSecurity/virgil-cli/releases
+wget https://github.com/VirgilSecurity/virgil-cli/releases/download/v<latest-version>/virgil_<latest-version>_Linux_x86_64.tar.gz
+
+# unzip the downloaded archive specifying its name
+tar xvfz <downloaded-file>
+
+# move cli to /usr/local/bin
+mv virgil /usr/local/bin
+```
+
+Now you will be able to launch the Virgil CLI.
+
+### Windows
+
+Download the latest CLI package here: https://github.com/VirgilSecurity/virgil-cli/releases.
+
+Once you've downloaded the latest `.zip` Virgil CLI file, unzip it and rename the unzipped folder to `virgil_<latest-version>` (`virgil_5.0.3` for example). Move the renamed folder to `C:\ProgramFiles` and copy the full path to the folder.
+
+Edit the system environmental variables:
+1. In `Search`, search for and then select: `System` (`Control Panel`)
+2. Click the `Advanced system settings` link.
+3. Click `Environment Variables`. In the section `System Variables`, find the `PATH` environment variable and select it. Click Edit. If the PATH environment variable does not exist, click New.
+4. In the `Edit System Variable` (or `New System Variable`) window, specify the value of the PATH environment variable (paste the copied full path to Virgil CLI folder). Click OK. Close all remaining windows by clicking OK.
+
+Now you will be able to launch Virgil CLI using Command prompt.
 
 
 ## Launching Virgil CLI
 
-#### FreeBSD / Linux / Mac OS
-Run the CLI with the following command:
-```bash
-./virgil
-```
-> or use `sudo ./virgil` when you need to run the command as an administrator
-
-#### Windows OS
 Run the CLI with the following command:
 ```bash
 virgil.exe
@@ -79,156 +129,95 @@ To get more information, run the Virgil CLI or its command with the `--help` or 
 ### Register new account
 This command is used to create a new account:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil register <email>
-
-# Windows OS
-virgil register <email>
+$ virgil register <email>
 ```
 
 ### Login into account
 This command is used to open session for account:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil login
-
-# Windows OS
-virgil login
+$ virgil login
 ```
 
 ### Logout from account
 This command is used to close the current session for account:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil logout
-
-# Windows OS
-virgil logout
+$ virgil logout
 ```
-
 
 ## Manage Applications
 
 ### Create new application
 This command is used to create new application:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil app create <app_name>
-
-# Windows OS
-virgil app create <app_name>
+$ virgil app create <app_name>
 ```
 > Note! You have to verify your email in order to be able to create more than one application
 
 ### Delete application
 This command is used to delete application:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil app delete <app_id>
-
-# Windows OS
-virgil app delete <app_id>
+$ virgil app delete <app_id>
 ```
 
 ### List applications
 This command is used to print list of all user applications:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil app list
-
-# Windows OS
-virgil app list
+$ virgil app list
 ```
 
 ### Update application
 This command is used to update name of application:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil app update <app_id>
-
-# Windows OS
-virgil app update <app_id>
+$ virgil app update <app_id>
 ```
 
 ### Use application
 This command allows you to specify the application that will be used by default. In this way, you'll be able you to use CLI commands without specifying `app_id` where it's needed. 
 
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil use <app_name>
-
-# Windows OS
-virgil use <app_name>
+$ virgil use <app_name>
 ```
 
 ### Create new App Key
 This command is used to create new App Key for current application:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil app key create --app_id <app_id> <app-key_name>
-
-# Windows OS
-virgil app key create --app_id <app_id> <app-key_name>
+$ virgil app key create --app_id <app_id> <app-key_name>
 ```
 
 ### Delete App Key
 This command is used to delete App Key:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil app key delete --app_id <app_id> <app-key_id>
-
-# Windows OS
-virgil app key delete --app_id <app_id> <app-key_id>
+$ virgil app key delete --app_id <app_id> <app-key_id>
 ```
 
 ### List App Keys
 This command is used to print list of App Keys of the specified application:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil app key list --app_id <app_id> 
-
-# Windows OS
-virgil app key list --app_id <app_id> 
+$ virgil app key list --app_id <app_id> 
 ```
 
 ### Update App Key
 This command is used to update name of App Key:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil apikey update --app_id <app_id> <app-key_id>
-
-# Windows OS
-virgil apikey update --app_id <app_id> <app-key_id>
+$ virgil apikey update --app_id <app_id> <app-key_id>
 ```
 
 ### Create App Token
 This command is used to create an App Token:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil app token create --app-id <app-id> --name <name>
-
-# Windows OS
-virgil app token create --app-id <app-id> --name <name>
+$ virgil app token create --app-id <app-id> --name <name>
 ```
 
 ### Delete App Token
 This command is used to delete an App Token:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil app token delete --app-id <app-id> <name>
-
-# Windows OS
-virgil app token delete --app-id <app-id> <name>
+$ virgil app token delete --app-id <app-id> <name>
 ```
 
 ### List App Tokens
 This command is used to get App Tokens list:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil app token list --app-id <app-id>
-
-# Windows OS
-virgil app token list --app-id <app-id>
+$ virgil app token list --app-id <app-id>
 ```
 
 ## PureKit Commands
@@ -237,21 +226,13 @@ virgil app token list --app-id <app-id>
 This command is used to update the `app_secret_key` and `service_public_key` of a Pure application
 
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil pure update-keys <public_key> <service_secret_key> <update_token>
-
-# Windows OS
-virgil pure update-keys <public_key> <service_secret_key> <update_token>
+$ virgil pure update-keys <public_key> <service_secret_key> <update_token>
 ```
 
 ### Generate a secret key
 This command is used to generate a new `app_secret_key` for a Pure application:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil pure keygen
-
-# Windows OS
-virgil pure keygen
+$ virgil pure keygen
 ```
 
 ## Manage Application Cards
@@ -274,11 +255,7 @@ config file example :
 ### Search cards
 This command searches for any Virgil Card by its identity:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil cards search -c <file> <identity>,
-
-# Windows OS
-virgil cards search -c <file> <identity>,
+$ virgil cards search -c <file> <identity>,
 ```
 ```
 flags :
@@ -288,11 +265,7 @@ flags :
 ### Revoke card
 This command deletes Virgil Card by it's id
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil cards delete -c <file> -i <identity> <card_id>,
-
-# Windows OS
-virgil cards delete -c <file> -i <identity> <card_id>,
+$ virgil cards delete -c <file> -i <identity> <card_id>,
 ```
 ```
 flags :
@@ -307,11 +280,7 @@ flags :
 ### Generate private key
 This command generates a User's Private Key:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil keygen -o <file>  -p <password>,
-
-# Windows OS
-virgil keygen -o <file> -p <password>,
+$ virgil keygen -o <file> -p <password>,
 ```
 ```
 flags :
@@ -322,11 +291,7 @@ flags :
 ### Extract public key
 This command extracts a Public Key from a Private Key:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil key2pub -i <file> -o <file>  -p <password>,
-
-# Windows OS
-virgil key2pub  -i <file> -o <file> -p <password>,
+$ virgil key2pub  -i <file> -o <file> -p <password>,
 ```
 ```
 flags :
@@ -338,11 +303,7 @@ flags :
 ### Encrypt
 This command encrypts any data for the specified public key(s):
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil encrypt  -i <file> -o <file> -key <public_key_file_1> -key <public_key_file_2> ...,
-
-# Windows OS
-virgil encrypt  -i <file> -o <file> -key <public_key_file_1> -key <public_key_file_2> ...,
+$ virgil encrypt  -i <file> -o <file> -key <public_key_file_1> -key <public_key_file_2> ...,
 ```
 
 ```
@@ -355,11 +316,7 @@ flags :
 ### Decrypt
 This command decrypts the encrypted data with a a Private Key:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil decrypt  -i <file> -o <file>  -key <private_key_file> -p <password>,
-
-# Windows OS
-virgil decrypt  -i <file> -o <file> -key <private_key_file>  -p <password>,
+$ virgil decrypt  -i <file> -o <file> -key <private_key_file>  -p <password>,
 ```
 ```
 flags :
@@ -372,11 +329,7 @@ flags :
 ### Sign
 This command signs data with a provided User’s Private Key:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil sign  -i <file> -o <file>  -key <private_key_file> -p <password>,
-
-# Windows OS
-virgil sign  -i <file> -o <file> -key <private_key_file>  -p <password>,
+$ virgil sign  -i <file> -o <file> -key <private_key_file>  -p <password>,
 ```
 ```
 flags :
@@ -390,11 +343,7 @@ flags :
 ### Verify signature
 This command signs data with a provided User’s Private Key:
 ```bash
-# FreeBSD / Linux / Mac OS
-./virgil verify  -i <file> -s <file>  -key <public_key_file> ,
-
-# Windows OS
-virgil verify  -i <file> -s <file> -key <public_key_file> ,
+$ virgil verify  -i <file> -s <file> -key <public_key_file> ,
 ```
 ```
 flags :
@@ -409,48 +358,32 @@ flags :
 
 This command inits SCMS services for application:
 
-```
-# FreeBSD / Linux / Mac OS
-./virgil scms init --app-id <app-id> 
-
-# Windows OS
-virgil scms init --app-id <app-id> 
+```bash
+$ virgil scms init --app-id <app-id> 
 ```
 
 ### Create DCM certificate
 
 Generates DCM certificate for application:
 
-```
-# FreeBSD / Linux / Mac OS
-./virgil scms dcm create --name <dcm_name> --encrypt-pub-key <base64_key> --verify-pub-key <base64_key> --app-token <app_token> 
-
-# Windows OS
-virgil scms dcm create --name <dcm_name> --encrypt-pub-key <base64_key> --verify-pub-key <base64_key> --app-token <app_token> 
+```bash
+$ virgil scms dcm create --name <dcm_name> --encrypt-pub-key <base64_key> --verify-pub-key <base64_key> --app-token <app_token> 
 ```
 
 ### Get DCM certificates list
 
 Gets DCM certificates for application:
 
-```
-# FreeBSD / Linux / Mac OS
-./virgil scms dcm list --app-token <app_token> 
-
-# Windows OS
-virgil scms dcm list --app-token <app_token> 
+```bash
+$ virgil scms dcm list --app-token <app_token> 
 ```
 
 ### Get SCMS devices
 
 Gets list of SCMS devices:
 
-```
-# FreeBSD / Linux / Mac OS
-./virgil scms devices list --app-token <app_token> 
-
-# Windows OS
-virgil scms devices list --app-token <app_token> 
+```bash
+$ virgil scms devices list --app-token <app_token> 
 ```
 
 
