@@ -199,7 +199,7 @@ $ virgil app key list --app_id <app_id>
 ### Update App Key
 This command is used to update name of App Key:
 ```bash
-$ virgil apikey update --app_id <app_id> <app-key_id>
+$ virgil app key update --app_id <app_id> <app-key_id>
 ```
 
 ### Create App Token
@@ -239,15 +239,15 @@ $ virgil pure keygen
 
 ### Config file
 
-Config file is a json, with contains API_KEY, API_KEY_ID, APP_ID
+Config file is a json, with contains APP_KEY, APP_KEY_ID, APP_ID
 
 It could be generated on dashboard or by hands
 
 config file example : 
 ```$xslt
 {
-  "API_KEY": "1234567890",
-  "API_KEY_ID": "12345678901234567890",
+  "APP_KEY": "1234567890",
+  "APP_KEY_ID": "12345678901234567890",
   "APP_ID": "12345678901234567890"
 }
 ```
