@@ -15,12 +15,12 @@ func Backup() *cli.Command {
 		Usage:   "Generates a new  Backup keypair ",
 		Action: func(context *cli.Context) error {
 
-			return PrintBackupKey()
+			return printBackupKey()
 		},
 	}
 }
 
-func PrintBackupKey() error {
+func printBackupKey() error {
 	sk, pk, err := generateKeypairEncoded()
 	if err != nil {
 		return err

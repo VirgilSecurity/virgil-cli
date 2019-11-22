@@ -14,12 +14,12 @@ func HashesKey() *cli.Command {
 		Aliases: []string{"hb"},
 		Usage:   "Generates a new Hashes key pair",
 		Action: func(context *cli.Context) error {
-			return PrintHBKey()
+			return printHBKey()
 		},
 	}
 }
 
-func PrintHBKey() error {
+func printHBKey() error {
 	sk, pk, err := generateKeypairEncoded()
 	if err != nil {
 		return err
