@@ -14,24 +14,14 @@ func Backup() *cli.Command {
 		Aliases: []string{"bu"},
 		Usage:   "Generates a new  Backup keypair ",
 		Action: func(context *cli.Context) error {
-<<<<<<< HEAD
 
-			return printBackupKey()
-=======
 			return PrintBackupKey()
->>>>>>> finish add golinter
 		},
 	}
 }
 
-<<<<<<< HEAD
-func printBackupKey() error {
-	keyPair, err := cryptoimpl.NewKeypair()
-
-=======
 func PrintBackupKey() error {
 	sk, pk, err := generateKeypairEncoded()
->>>>>>> finish add golinter
 	if err != nil {
 		return err
 	}
