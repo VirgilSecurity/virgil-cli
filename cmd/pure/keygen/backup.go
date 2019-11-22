@@ -14,7 +14,6 @@ func Backup() *cli.Command {
 		Aliases: []string{"bu"},
 		Usage:   "Generates a new  Backup keypair ",
 		Action: func(context *cli.Context) error {
-
 			return printBackupKey()
 		},
 	}
