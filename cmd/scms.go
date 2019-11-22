@@ -37,12 +37,13 @@
 package cmd
 
 import (
+	"gopkg.in/urfave/cli.v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/cmd/scms"
-	"gopkg.in/urfave/cli.v2"
 )
 
-func Wave(client *client.VirgilHttpClient) *cli.Command {
+func Wave(client *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:  "scms",
 		Usage: "Manage your scms application",

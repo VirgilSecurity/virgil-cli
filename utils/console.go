@@ -39,13 +39,12 @@ package utils
 import (
 	"bufio"
 	"fmt"
-	"gopkg.in/urfave/cli.v2"
 	"io/ioutil"
 	"os"
 	"strings"
-)
 
-var scanner = bufio.NewScanner(os.Stdin)
+	"gopkg.in/urfave/cli.v2"
+)
 
 func ReadKeyStringFromFile(context *cli.Context, fileName string) (string, error) {
 	value := ""
@@ -72,7 +71,6 @@ func ReadKeyStringFromFile(context *cli.Context, fileName string) (string, error
 }
 
 func ReadFileFlagOrParamOrFromConsole(context *cli.Context, flag, paramName, paramDescription string) ([]byte, error) {
-
 	inputFileName := ReadFlagOrDefault(context, flag, "")
 	if inputFileName == "" {
 		return []byte(ReadParamOrDefaultOrFromConsole(context, paramName, paramDescription, "")), nil
@@ -96,9 +94,9 @@ func ReadParamOrDefaultOrFromConsole(context *cli.Context, paramName, paramDescr
 }
 
 func ReadConsoleValue(paramName, paramDescription string, options ...string) string {
-
 	fmt.Printf("%s:\n", paramDescription)
 
+	scanner := bufio.NewScanner(os.Stdin)
 	value := ""
 	valueSet := false
 	for !valueSet {
@@ -150,7 +148,6 @@ func ReadFlagOrConsoleValue(context *cli.Context, flagName, paramDescription str
 			return value
 		}
 		fmt.Printf("incorrect flag %s value\n", flagName)
-
 	}
 	return ReadConsoleValue(flagName, paramDescription, options...)
 }

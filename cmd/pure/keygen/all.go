@@ -6,13 +6,12 @@ import (
 	"gopkg.in/urfave/cli.v2"
 )
 
-//Generates all pure key pairs
+// All generates all pure key pairs
 func All() *cli.Command {
 	return &cli.Command{
 		Name:  "all",
 		Usage: "Generates all pure key pairs",
 		Action: func(context *cli.Context) error {
-
 			fmt.Println("----------------------------------------------------------------------------------")
 			if err := printAuthKey(); err != nil {
 				return err

@@ -39,15 +39,15 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"github.com/VirgilSecurity/virgil-cli/models"
 	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
+
+	"github.com/VirgilSecurity/virgil-cli/models"
 )
 
 func SaveConfig(token string) error {
-
 	u, err := user.Current()
 	if err != nil {
 		return err
@@ -55,7 +55,7 @@ func SaveConfig(token string) error {
 
 	tokenPath := filepath.Join(u.HomeDir, ".virgil-conf")
 
-	if _, err := os.Stat(tokenPath); os.IsNotExist(err) {
+	if _, err = os.Stat(tokenPath); os.IsNotExist(err) {
 		if err = os.Mkdir(tokenPath, 0700); err != nil {
 			return err
 		}
@@ -74,7 +74,7 @@ func ParseAppConfig(data []byte) (config models.AppConfig, err error) {
 	if err != nil {
 		return config, errors.New("error parsing config: " + err.Error())
 	}
-	if config.AppID == "" || config.ApiKeyID == "" || len(config.ApiKey) == 0 {
+	if config.AppID == "" || config.APIKeyID == "" || len(config.APIKey) == 0 {
 		return config, errors.New("error parsing config: all APP_ID, API_KEY, API_KEY_ID must be specified")
 	}
 	return

@@ -37,11 +37,20 @@
 package utils
 
 import (
-	"github.com/VirgilSecurity/virgil-cli/client"
 	"net/http"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
 )
 
-func SendWithCheckRetry(vcli *client.VirgilHttpClient, method string, urlPath string, payload interface{}, respObj interface{}, extraOptions ...interface{}) (headers http.Header, cookie string, err error) {
+func SendWithCheckRetry(
+	vcli *client.VirgilHTTPClient,
+	method string,
+	urlPath string,
+	payload interface{},
+	respObj interface{},
+	extraOptions ...interface{},
+) (headers http.Header, cookie string, err error) {
+
 	token := ""
 	if len(extraOptions) == 0 {
 		token, err = LoadAccessTokenOrLogin(vcli)
@@ -49,7 +58,6 @@ func SendWithCheckRetry(vcli *client.VirgilHttpClient, method string, urlPath st
 		if err != nil {
 			return nil, "", err
 		}
-
 	}
 	header := http.Header{}
 
@@ -66,13 +74,13 @@ func SendWithCheckRetry(vcli *client.VirgilHttpClient, method string, urlPath st
 
 	var vErr *client.VirgilAPIError
 	for vErr == nil {
-		headers, cookie, vErr = vcli.Send(method, urlPath, payload, respObj, header)
+		_, _, vErr = vcli.Send(method, urlPath, payload, respObj, header)
 		if vErr == nil {
 			break
 		}
 
-		token, err = CheckRetry(vErr, vcli)
+		_, err = CheckRetry(vErr, vcli)
 	}
 
-	return
+	return nil, "", err
 }

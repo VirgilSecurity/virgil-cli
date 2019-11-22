@@ -4,12 +4,13 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
-	"gopkg.in/virgil.v5/cryptoimpl"
 	"io"
 	"os"
 
 	"gopkg.in/urfave/cli.v2"
+	"gopkg.in/virgil.v5/cryptoimpl"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 func Decrypt() *cli.Command {
@@ -24,7 +25,6 @@ func Decrypt() *cli.Command {
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
-
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
 			if keyFileName == "" {
@@ -42,25 +42,23 @@ func Decrypt() *cli.Command {
 				return err
 			}
 
-			var writer io.Writer
+			var writer io.Writer = os.Stdout
 			if destinationFileName != "" {
-				file, err := os.Create(destinationFileName)
+				var file *os.File
+				file, err = os.Create(destinationFileName)
 				if err != nil {
 					return err
 				}
-				writer = file
 				defer func() {
-					if err := file.Close(); err != nil {
-						panic(err)
+					if ferr := file.Close(); ferr != nil {
+						panic(ferr)
 					}
 				}()
 
-			} else {
-				writer = os.Stdout
+				writer = file
 			}
 
 			key, err := DecryptFunc(privateKeyString, pass, dataToDecrypt)
-
 			if err != nil {
 				return err
 			}
@@ -71,13 +69,12 @@ func Decrypt() *cli.Command {
 			}
 			fmt.Println()
 
-			return err
+			return nil
 		},
 	}
 }
 
 func DecryptFunc(privateKeyString, password string, data []byte) (publicKey []byte, err error) {
-
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {

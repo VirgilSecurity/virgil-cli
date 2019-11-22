@@ -2,15 +2,17 @@ package device
 
 import (
 	"fmt"
+	"net/http"
+
+	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
 	"github.com/VirgilSecurity/virgil-cli/utils"
-	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
-	"net/http"
 )
 
-func DeviceList(vcli *client.VirgilHttpClient) *cli.Command {
+func List(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:    "list",
 		Aliases: []string{"l"},
@@ -18,8 +20,7 @@ func DeviceList(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "app-token", Usage: "application token"}},
 		Action: func(context *cli.Context) (err error) {
-
-			defaultApp, err := utils.LoadDefaultApp()
+			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppToken := ""
 			if defaultApp != nil {
 				defaultAppToken = defaultApp.Token
@@ -40,7 +41,12 @@ func DeviceList(vcli *client.VirgilHttpClient) *cli.Command {
 			}
 
 			fmt.Printf("|%25s|%35s|%20s|%20s\n", "Device id    ", "dcm id   ", " valid_from ", " valid_to ")
-			fmt.Printf("|%25s|%35s|%20s|%20s\n", "-------------------------", "-----------------------------------", "---------------------------------------", "---------------------------------------")
+			fmt.Printf("|%25s|%35s|%20s|%20s\n",
+				"-------------------------",
+				"-----------------------------------",
+				"---------------------------------------",
+				"---------------------------------------",
+			)
 			for _, d := range devices {
 				fmt.Printf("|%25s|%35s| %19s | %19s\n", d.ID, d.DcmID, d.ValidFrom, d.ValidTo)
 			}
@@ -49,8 +55,7 @@ func DeviceList(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func deviceListFunc(appToken string, vcli *client.VirgilHttpClient) (devices []*models.Device, err error) {
-
+func deviceListFunc(appToken string, vcli *client.VirgilHTTPClient) (devices []*models.Device, err error) {
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "scms/devices", nil, &devices, appToken)
 
 	if err != nil {

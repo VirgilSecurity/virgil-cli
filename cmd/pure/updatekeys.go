@@ -53,13 +53,10 @@ func UpdateKeys() *cli.Command {
 		Aliases:   []string{"u"},
 		ArgsUsage: "public_key service_secret_key update_token",
 		Usage:     "update secret key and public key using update token",
-		Action: func(context *cli.Context) error {
-			return updateFunc(context)
-		},
+		Action:    updateFunc,
 	}
 }
 func updateFunc(context *cli.Context) error {
-
 	if context.NArg() < 3 {
 		return errors.New("invalid number of arguments")
 	}
@@ -91,7 +88,10 @@ func updateFunc(context *cli.Context) error {
 		return err
 	}
 
-	fmt.Printf("New server public key:\nPK.%d.%s\nNew client private key:\nSK.%d.%s\n", tokenVersion, base64.StdEncoding.EncodeToString(newPk), tokenVersion, base64.StdEncoding.EncodeToString(newSk))
+	fmt.Printf("New server public key:\nPK.%d.%s\nNew client private key:\nSK.%d.%s\n",
+		tokenVersion, base64.StdEncoding.EncodeToString(newPk),
+		tokenVersion, base64.StdEncoding.EncodeToString(newSk),
+	)
 
 	return nil
 }

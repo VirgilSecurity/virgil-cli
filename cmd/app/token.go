@@ -37,12 +37,13 @@
 package app
 
 import (
+	"gopkg.in/urfave/cli.v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/cmd/app/token"
-	"gopkg.in/urfave/cli.v2"
 )
 
-func Token(client *client.VirgilHttpClient) *cli.Command {
+func Token(client *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:  "token",
 		Usage: "Manage your application tokens",

@@ -38,25 +38,25 @@ package app
 
 import (
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
-	"github.com/pkg/errors"
 	"net/http"
 
-	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/pkg/errors"
+
+	"gopkg.in/urfave/cli.v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func Update(vcli *client.VirgilHttpClient) *cli.Command {
+func Update(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "update",
 		Aliases:   []string{"u"},
 		ArgsUsage: "app_id",
 		Usage:     "Update app by id",
 		Action: func(context *cli.Context) (err error) {
-
-			defaultApp, err := utils.LoadDefaultApp()
+			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
 				defaultAppID = defaultApp.ID
@@ -81,8 +81,7 @@ func Update(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func UpdateFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
-
+func UpdateFunc(appID string, vcli *client.VirgilHTTPClient) (err error) {
 	name := utils.ReadConsoleValue("name", "Enter new app name")
 
 	req := &models.UpdateAppRequest{Name: name}

@@ -3,17 +3,17 @@ package dcm
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
 	"net/http"
 
-	"github.com/VirgilSecurity/virgil-cli/models"
-
-	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
+func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:    "create",
 		Aliases: []string{"c"},
@@ -25,12 +25,11 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 			&cli.StringFlag{Name: "verify-pub-key", Usage: "verify public key"}},
 
 		Action: func(context *cli.Context) (err error) {
-
 			name := utils.ReadFlagOrConsoleValue(context, "name", "Enter dsm certificate name")
 			encryptPubKey := utils.ReadFlagOrConsoleValue(context, "encrypt-pub-key", "Enter encrypt public key")
 			verifyPubKey := utils.ReadFlagOrConsoleValue(context, "verify-pub-key", "Enter verify public key")
 
-			defaultApp, err := utils.LoadDefaultApp()
+			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppToken := ""
 			if defaultApp != nil {
 				defaultAppToken = defaultApp.Token
@@ -40,11 +39,11 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 			if appToken == "" {
 				return errors.New("Please, specify app-token (flag --app-token)")
 			}
-			dcm, err := DsmCreateFunc( name, encryptPubKey, verifyPubKey, appToken, vcli)
+			dcm, err := DsmCreateFunc(name, encryptPubKey, verifyPubKey, appToken, vcli)
 			if err != nil {
 				return err
 			}
-			serialized, err := json.MarshalIndent(dcm,"","\t")
+			serialized, err := json.MarshalIndent(dcm, "", "\t")
 			if err != nil {
 				return err
 			}
@@ -55,9 +54,19 @@ func DsmCreate(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func DsmCreateFunc(name, encryptPubKey, verifyPubKey, appToken string, vcli *client.VirgilHttpClient) (resp models.DcmCertificateCreateResponse, err error) {
+func DsmCreateFunc(
+	name string,
+	encryptPubKey string,
+	verifyPubKey string,
+	appToken string,
+	vcli *client.VirgilHTTPClient,
+) (resp models.DcmCertificateCreateResponse, err error) {
 
-	req := &models.DcmCertificateCreateRequest{Name: name, EncryptPublicKey: encryptPubKey, VerifyPublicKey: verifyPubKey}
+	req := &models.DcmCertificateCreateRequest{
+		Name:             name,
+		EncryptPublicKey: encryptPubKey,
+		VerifyPublicKey:  verifyPubKey,
+	}
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/scms/dcm", req, &resp, appToken)
 	return

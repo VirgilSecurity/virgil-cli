@@ -4,12 +4,13 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
-	"gopkg.in/virgil.v5/cryptoimpl"
 	"io"
 	"os"
 
 	"gopkg.in/urfave/cli.v2"
+	"gopkg.in/virgil.v5/cryptoimpl"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 func Sign() *cli.Command {
@@ -23,7 +24,6 @@ func Sign() *cli.Command {
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
-
 			pass := utils.ReadFlagOrDefault(context, "p", "")
 
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
@@ -37,21 +37,20 @@ func Sign() *cli.Command {
 				return err
 			}
 
-			var writer io.Writer
+			var writer io.Writer = os.Stdout
 			if destinationFileName != "" {
-				file, err := os.Create(destinationFileName)
+				var file *os.File
+				file, err = os.Create(destinationFileName)
 				if err != nil {
 					return err
 				}
-				writer = file
 				defer func() {
-					if err := file.Close(); err != nil {
-						panic(err)
+					if ferr := file.Close(); ferr != nil {
+						panic(ferr)
 					}
 				}()
 
-			} else {
-				writer = os.Stdout
+				writer = file
 			}
 
 			signature, err := SignFunc(privateKeyString, pass, dataToSign)
@@ -72,7 +71,6 @@ func Sign() *cli.Command {
 }
 
 func SignFunc(privateKeyString, password string, data []byte) (publicKey []byte, err error) {
-
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {

@@ -39,20 +39,21 @@ package utils
 import (
 	"bufio"
 	"fmt"
-	"github.com/pkg/errors"
 	"net/http"
 	"os"
 	"strings"
 
-	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/pkg/errors"
+
 	"github.com/google/uuid"
 	"github.com/howeyc/gopass"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/models"
 )
 
 //Login obtains temporary account access token. Email and password may be empty
-func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
-
+func Login(email, password string, vcli *client.VirgilHTTPClient) error {
 	if email == "" {
 		fmt.Println("Enter your email:")
 
@@ -77,44 +78,32 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 
 	sessionToken := models.SessionToken{}
 
-	_, _, vErr := vcli.Send(http.MethodPost, "user/login", req, &sessionToken, nil)
-	if vErr != nil {
-		_, err = CheckRetry(vErr, vcli)
+	for {
+		_, _, vErr := vcli.Send(http.MethodPost, "user/login", req, &sessionToken, nil)
+		if vErr == nil {
+			break
+		}
+		_, err := CheckRetry(vErr, vcli)
 		if err == ErrEmptyMFACode {
-			code, err := gopass.GetPasswdPrompt("Enter 2-factor code:\r\n", true, os.Stdin, os.Stdout)
-			if err != nil {
-				return err
-			}
+			var code []byte
+			code, err = gopass.GetPasswdPrompt("Enter 2-factor code:\r\n", true, os.Stdin, os.Stdout)
 			req.Verification = &models.Verification{MFACode: string(code)}
-			_, _, vErr = vcli.Send(http.MethodPost, "user/login", req, &sessionToken, nil)
-
-			if vErr != nil {
-				return errors.New(fmt.Sprintf("Authorization failed.\n"))
-			}
-		} else if err == ErrEmailIsNotConfirmed {
+		}
+		if err == ErrEmailIsNotConfirmed {
 			code := ReadConsoleValue("confirmation_code", "Please, enter the confirmation code from your email")
 
 			_, _, vErr = vcli.Send(http.MethodGet, "user/register/confirm/"+code, req, nil, nil)
 			_, err = CheckRetry(vErr, vcli)
-
-			if err != nil {
-				return err
-			} else {
-				_, _, vErr = vcli.Send(http.MethodPost, "user/login", req, &sessionToken, nil)
-				if vErr != nil {
-					return errors.New(fmt.Sprintf("Authorization failed.\n"))
-				}
-			}
-
-		} else if err != nil {
-			return err
+		}
+		if err != nil {
+			return fmt.Errorf("authorization failed: %v", err)
 		}
 	}
 
 	header := http.Header{}
 	header.Set("SessionToken", sessionToken.Token)
 	managementToken := models.ManagementTokenResponse{}
-	_, _, vErr = vcli.Send(http.MethodPost, "management-token",
+	_, _, vErr := vcli.Send(http.MethodPost, "management-token",
 		models.ManagementTokenRequest{Name: uuid.New().String()},
 		&managementToken, header)
 	if vErr != nil {
@@ -129,7 +118,7 @@ func Login(email, password string, vcli *client.VirgilHttpClient) (err error) {
 	return SaveAccessToken(managementToken.Token)
 }
 
-func LoadAccessTokenOrLogin(vcli *client.VirgilHttpClient) (token string, err error) {
+func LoadAccessTokenOrLogin(vcli *client.VirgilHTTPClient) (token string, err error) {
 	token, err = LoadAccessToken()
 	if err != nil {
 		err = Login("", "", vcli)
