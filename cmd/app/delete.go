@@ -38,23 +38,23 @@ package app
 
 import (
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/models"
 	"net/http"
 
-	"github.com/VirgilSecurity/virgil-cli/client"
-	"github.com/VirgilSecurity/virgil-cli/utils"
 	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func Delete(vcli *client.VirgilHttpClient) *cli.Command {
+func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "delete",
 		Aliases:   []string{"d"},
 		ArgsUsage: "app_id",
 		Usage:     "Delete app by id",
 		Action: func(context *cli.Context) (err error) {
-
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
@@ -66,7 +66,8 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 			if err != nil {
 				return err
 			}
-			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("Are you sure, that you want to delete application %s (y/n) ?", app.Name), "y", "n")
+			msg := fmt.Sprintf("Are you sure, that you want to delete application %s (y/n) ?", app.Name)
+			yesOrNo := utils.ReadConsoleValue("y or n", msg, "y", "n")
 			if yesOrNo == "n" {
 				return
 			}
@@ -78,7 +79,7 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 			}
 
 			if defaultAppID == appID {
-				utils.DeleteDefaultApp()
+				_ = utils.DeleteDefaultApp()
 			}
 
 			return err
@@ -86,14 +87,12 @@ func Delete(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func deleteAppFunc(appID string, vcli *client.VirgilHttpClient) (err error) {
-
+func deleteAppFunc(appID string, vcli *client.VirgilHTTPClient) (err error) {
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodDelete, "application/"+appID, nil, nil)
 	return err
 }
 
-func getApp(appID string, vcli *client.VirgilHttpClient) (app *models.Application, err error) {
-
+func getApp(appID string, vcli *client.VirgilHTTPClient) (app *models.Application, err error) {
 	var apps []*models.Application
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
 

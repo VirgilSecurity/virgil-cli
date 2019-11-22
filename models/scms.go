@@ -28,4 +28,3 @@ type Device struct {
 	ValidFrom time.Time `json:"valid_from"`
 	ValidTo   time.Time `json:"valid_to"`
 }
-

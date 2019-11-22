@@ -50,7 +50,7 @@ import (
 )
 
 var (
-	version = "5.1.6"
+	version = "5.1.7"
 )
 
 func main() {
@@ -68,7 +68,7 @@ func main() {
 		}),
 	}
 
-	apiGatewayClient := &client.VirgilHttpClient{
+	apiGatewayClient := &client.VirgilHTTPClient{
 		Address: "https://api.virgilsecurity.com/management/v1/",
 	}
 
@@ -95,10 +95,9 @@ func main() {
 			cmd.Wave(apiGatewayClient),
 		},
 		Before: func(c *cli.Context) error {
-
-			apiUrl := c.String("api_gateway_url")
-			if strings.TrimSpace(apiUrl) != "" {
-				apiGatewayClient.Address = apiUrl
+			apiURL := c.String("api_gateway_url")
+			if strings.TrimSpace(apiURL) != "" {
+				apiGatewayClient.Address = apiURL
 			}
 
 			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {

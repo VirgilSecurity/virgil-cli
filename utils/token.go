@@ -46,7 +46,6 @@ import (
 )
 
 func SaveAccessToken(token string) error {
-
 	u, err := user.Current()
 	if err != nil {
 		return err
@@ -54,7 +53,7 @@ func SaveAccessToken(token string) error {
 
 	tokenPath := filepath.Join(u.HomeDir, ".virgil")
 
-	if _, err := os.Stat(tokenPath); os.IsNotExist(err) {
+	if _, err = os.Stat(tokenPath); os.IsNotExist(err) {
 		if err = os.Mkdir(tokenPath, 0700); err != nil {
 			return err
 		}
@@ -76,17 +75,17 @@ func LoadAccessToken() (token string, err error) {
 
 	tokenPath := filepath.Join(u.HomeDir, ".virgil")
 
-	if _, err := os.Stat(tokenPath); os.IsNotExist(err) {
+	if _, err = os.Stat(tokenPath); os.IsNotExist(err) {
 		return "", errors.New("access token folder does not exist")
 	}
 
 	tokenPath = filepath.Join(tokenPath, "token")
 
-	if token, err := ioutil.ReadFile(tokenPath); err != nil {
+	tokenRaw, err := ioutil.ReadFile(tokenPath)
+	if err != nil {
 		return "", err
-	} else {
-		return string(token), nil
 	}
+	return string(tokenRaw), nil
 }
 
 func DeleteAccessToken() error {

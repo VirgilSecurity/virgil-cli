@@ -37,8 +37,9 @@
 package cmd
 
 import (
-	"github.com/VirgilSecurity/virgil-cli/cmd/pure"
 	"gopkg.in/urfave/cli.v2"
+
+	"github.com/VirgilSecurity/virgil-cli/cmd/pure"
 )
 
 //PureKit manages virgil PHE service implementation

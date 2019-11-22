@@ -38,16 +38,18 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+
+	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
 	"github.com/VirgilSecurity/virgil-cli/utils"
-	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
-	"net/http"
-	"strings"
 )
 
-func UseApp(client *client.VirgilHttpClient) *cli.Command {
+func UseApp(client *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "use",
 		Aliases:   []string{"use-default-app"},
@@ -59,8 +61,7 @@ func UseApp(client *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func useFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
-
+func useFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
 	if context.NArg() < 1 {
 		return errors.New("Invalid number of arguments. Please, specify application name")
 	}
@@ -89,8 +90,7 @@ func useFunc(context *cli.Context, vcli *client.VirgilHttpClient) error {
 	return errors.New("there is no app with name " + appName)
 }
 
-func listFunc(vcli *client.VirgilHttpClient) (apps []*models.Application, err error) {
-
+func listFunc(vcli *client.VirgilHTTPClient) (apps []*models.Application, err error) {
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
 
 	if err != nil {

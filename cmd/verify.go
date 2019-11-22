@@ -4,11 +4,12 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
-	"gopkg.in/virgil.v5/cryptoimpl"
 	"io/ioutil"
 
 	"gopkg.in/urfave/cli.v2"
+	"gopkg.in/virgil.v5/cryptoimpl"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 func Verify() *cli.Command {
@@ -22,7 +23,6 @@ func Verify() *cli.Command {
 			&cli.StringFlag{Name: "s", Usage: "signature file"},
 		},
 		Action: func(context *cli.Context) error {
-
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
 			if keyFileName == "" {
 				return errors.New("key file isn't specified (use -key)")
@@ -63,7 +63,6 @@ func Verify() *cli.Command {
 }
 
 func VerifyFunc(publicKeyString string, data, signature []byte) (err error) {
-
 	pk, err := cryptoimpl.DecodePublicKey([]byte(publicKeyString))
 
 	if err != nil {

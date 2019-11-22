@@ -4,12 +4,14 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
+	"io/ioutil"
+	"time"
+
 	"gopkg.in/urfave/cli.v2"
 	"gopkg.in/virgil.v5/cryptoimpl"
 	"gopkg.in/virgil.v5/sdk"
-	"io/ioutil"
-	"time"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 var (
@@ -27,7 +29,6 @@ func Search() *cli.Command {
 		},
 		Usage: "search cards by identity",
 		Action: func(context *cli.Context) error {
-
 			identity := utils.ReadParamOrDefaultOrFromConsole(context, "identity", "Enter card identity", "")
 			cardVerifier, err := sdk.NewVirgilCardVerifier(cardCrypto, true, true)
 			if err != nil {
@@ -49,14 +50,14 @@ func Search() *cli.Command {
 				return err
 			}
 
-			privateKey, err := crypto.ImportPrivateKey(conf.ApiKey, "")
+			privateKey, err := crypto.ImportPrivateKey(conf.APIKey, "")
 			if err != nil {
 				return err
 			}
 
 			ttl := time.Minute
 
-			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.ApiKeyID, tokenSigner, conf.AppID, ttl)
+			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APIKeyID, tokenSigner, conf.AppID, ttl)
 
 			mgrParams := &sdk.CardManagerParams{
 				Crypto:              cardCrypto,
@@ -65,9 +66,11 @@ func Search() *cli.Command {
 			}
 
 			cardManager, err := sdk.NewCardManager(mgrParams)
+			if err != nil {
+				return err
+			}
 
 			cards, err := cardManager.SearchCards(identity)
-
 			if err != nil {
 				return err
 			}
@@ -78,7 +81,11 @@ func Search() *cli.Command {
 			}
 
 			fmt.Printf("|%64s |%63s |%20s\n", " Card Id   ", "Public key   ", " created_at ")
-			fmt.Printf("|%64s|%64s|%20s\n", "-----------------------------------------------------------------", "----------------------------------------------------------------", "---------------------------------------")
+			fmt.Printf("|%64s|%64s|%20s\n",
+				"-----------------------------------------------------------------",
+				"----------------------------------------------------------------",
+				"---------------------------------------",
+			)
 			for _, c := range cards {
 				pk, err := crypto.ExportPublicKey(c.PublicKey)
 				if err != nil {

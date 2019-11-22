@@ -1,15 +1,14 @@
 package keygen
 
 import (
+	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-
-	"crypto/rand"
 
 	"gopkg.in/urfave/cli.v2"
 )
 
-//Keygen generates Auth key
+// Auth generates Auth key
 func Auth() *cli.Command {
 	return &cli.Command{
 		Name:    "auth",

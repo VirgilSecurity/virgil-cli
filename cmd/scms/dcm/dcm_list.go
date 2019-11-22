@@ -2,16 +2,18 @@ package dcm
 
 import (
 	"fmt"
+	"net/http"
+	"sort"
+
+	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
 	"github.com/VirgilSecurity/virgil-cli/utils"
-	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
-	"net/http"
-	"sort"
 )
 
-func DcmList(vcli *client.VirgilHttpClient) *cli.Command {
+func List(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:    "list",
 		Aliases: []string{"l"},
@@ -20,8 +22,7 @@ func DcmList(vcli *client.VirgilHttpClient) *cli.Command {
 			&cli.StringFlag{Name: "app-token", Usage: "application token"}},
 
 		Action: func(context *cli.Context) (err error) {
-
-			defaultApp, err := utils.LoadDefaultApp()
+			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppToken := ""
 			if defaultApp != nil {
 				defaultAppToken = defaultApp.Token
@@ -31,7 +32,7 @@ func DcmList(vcli *client.VirgilHttpClient) *cli.Command {
 				return errors.New("Please, specify app-token (flag --app_token)")
 			}
 
-			certs, err := dcmListFunc( appToken, vcli)
+			certs, err := dcmListFunc(appToken, vcli)
 			if err != nil {
 				return err
 			}
@@ -46,7 +47,6 @@ func DcmList(vcli *client.VirgilHttpClient) *cli.Command {
 			fmt.Printf("|%25s|%20s\n", "Certificate name   ", " created_at ")
 			fmt.Printf("|%25s|%20s\n", "-------------------------", "---------------------------------------")
 			for _, cert := range certs {
-
 				fmt.Printf("|%24s | %19s\n", cert.Name, cert.CreatedAt)
 			}
 			return nil
@@ -54,8 +54,7 @@ func DcmList(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func dcmListFunc( appToken string, vcli *client.VirgilHttpClient) (apps []*models.DcmCertificateListItem, err error) {
-
+func dcmListFunc(appToken string, vcli *client.VirgilHTTPClient) (apps []*models.DcmCertificateListItem, err error) {
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "/scms/dcm", nil, &apps, appToken)
 
 	if err != nil {

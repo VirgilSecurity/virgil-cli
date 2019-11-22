@@ -37,12 +37,13 @@
 package app
 
 import (
+	"gopkg.in/urfave/cli.v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/cmd/app/key"
-	"gopkg.in/urfave/cli.v2"
 )
 
-func Key(client *client.VirgilHttpClient) *cli.Command {
+func Key(client *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:    "key",
 		Aliases: []string{"key"},

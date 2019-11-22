@@ -38,22 +38,23 @@ package app
 
 import (
 	"fmt"
+	"net/http"
+	"sort"
+
+	"github.com/pkg/errors"
+	"gopkg.in/urfave/cli.v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
 	"github.com/VirgilSecurity/virgil-cli/utils"
-	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
-	"net/http"
-	"sort"
 )
 
-func List(vcli *client.VirgilHttpClient) *cli.Command {
+func List(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:    "list",
 		Aliases: []string{"l"},
 		Usage:   "List your apps",
 		Action: func(context *cli.Context) (err error) {
-
 			var apps []*models.Application
 			apps, err = listFunc(vcli)
 
@@ -61,7 +62,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 				return err
 			}
 
-			defaultApp, err := utils.LoadDefaultApp()
+			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppID := ""
 			if defaultApp != nil {
 				defaultAppID = defaultApp.ID
@@ -74,9 +75,12 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 				return apps[i].CreatedAt.Before(apps[j].CreatedAt)
 			})
 			fmt.Printf("|%25s|%35s|%20s\n", "Application name   ", "APP_ID   ", " created_at ")
-			fmt.Printf("|%25s|%35s|%20s\n", "-------------------------", "-----------------------------------", "---------------------------------------")
+			fmt.Printf("|%25s|%35s|%20s\n",
+				"-------------------------",
+				"-----------------------------------",
+				"---------------------------------------",
+			)
 			for _, app := range apps {
-
 				appName := app.Name
 				if app.ID == defaultAppID {
 					appName += " (default)"
@@ -88,8 +92,7 @@ func List(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func listFunc(vcli *client.VirgilHttpClient) (apps []*models.Application, err error) {
-
+func listFunc(vcli *client.VirgilHTTPClient) (apps []*models.Application, err error) {
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodGet, "applications", nil, &apps)
 
 	if err != nil {

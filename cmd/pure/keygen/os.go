@@ -8,7 +8,7 @@ import (
 	"gopkg.in/virgil.v5/cryptoimpl"
 )
 
-//Generates a new own signing key
+// OwnSigningKey is generates a new own signing key
 func OwnSigningKey() *cli.Command {
 	return &cli.Command{
 		Name:        "own",
@@ -16,7 +16,6 @@ func OwnSigningKey() *cli.Command {
 		Usage:       "Generates a new own signing key",
 		Description: "Own signing key is used to sign data that is encrypted",
 		Action: func(context *cli.Context) error {
-
 			return printOwnSigningKey()
 		},
 	}

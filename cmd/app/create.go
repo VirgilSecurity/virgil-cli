@@ -38,17 +38,17 @@ package app
 
 import (
 	"fmt"
-	"github.com/VirgilSecurity/virgil-cli/utils"
 	"net/http"
 
-	"github.com/VirgilSecurity/virgil-cli/models"
-
-	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/pkg/errors"
 	"gopkg.in/urfave/cli.v2"
+
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/models"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-func Create(vcli *client.VirgilHttpClient) *cli.Command {
+func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "create",
 		Aliases:   []string{"c"},
@@ -57,7 +57,6 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "type", Usage: "application type (e2ee or pure)"}},
 
 		Action: func(context *cli.Context) (err error) {
-
 			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter application name", "")
 			var appID string
 
@@ -74,8 +73,7 @@ func Create(vcli *client.VirgilHttpClient) *cli.Command {
 	}
 }
 
-func CreateFunc(name string, vcli *client.VirgilHttpClient) (appID string, err error) {
-
+func CreateFunc(name string, vcli *client.VirgilHTTPClient) (appID string, err error) {
 	req := &models.CreateAppRequest{Name: name, Type: "pki"}
 	resp := &models.Application{}
 
