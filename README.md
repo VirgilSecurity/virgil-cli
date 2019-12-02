@@ -30,7 +30,13 @@
   - [Get list of App Tokens](#list-app-tokens)
 - [PureKit Commands](#purekit-commands)
   - [Update keys](#update-keys)
-  - [Generate a secret key](#generate-a-secret-key)
+  - [Generate a Secret Key](#generate-a-secret-key)
+  - [Generate an Auth Key](#generate-an-auth-key)
+  - [Generate a Backup key pair](#generate-a-backup-key-pair)
+  - [Generate a Hashes key pair](#generate-a-hashes-key-pair)
+  - [Generate a Virgil Storage key pair](#generate-a-virgil-storage-key-pair)
+  - [Generate own Signing Key](#generate-own-signing-key)
+  - [Generate all Pure key pairs](#generate-all-pure-key-pairs)
 - [Manage Application Cards](#manage-application-cards)
   - [Config file](#config-file)
   - [Search cards](#search-cards)
@@ -223,16 +229,52 @@ $ virgil app token list --app-id <app-id>
 ## PureKit Commands
 
 ### Update keys
-This command is used to update the `app_secret_key` and `service_public_key` of a Pure application
+This command is used to update the App Secret Key and Service Public Key of a Pure application
 
 ```bash
 $ virgil pure update-keys <public_key> <service_secret_key> <update_token>
 ```
 
-### Generate a secret key
-This command is used to generate a new `app_secret_key` for a Pure application:
+### Generate a Secret Key
+This command is used to generate a new App Secret Key for a Pure application:
 ```bash
-$ virgil pure keygen
+$ virgil pure keygen secret
+```
+
+### Generate an Auth Key
+This command is used to generate a new Auth Key for a Pure application:
+```bash
+$ virgil pure keygen auth
+```
+
+### Generate a Backup key pair
+This command is used to generate a Backup key pair for a Pure application:
+```bash
+$ virgil pure keygen backup
+```
+
+### Generate a Hashes key pair
+This command is used to generate a Hashes key pair for a Pure application:
+```bash
+$ virgil pure keygen hashes
+```
+
+### Generate a Virgil Storage key pair
+This command is used to generate a Virgil Storage key pair for a Pure application:
+```bash
+$ virgil pure keygen signing
+```
+
+### Generate own Signing Key
+This command is used to generate own Signing Key for a Pure application:
+```bash
+$ virgil pure keygen own
+```
+
+### Generate all Pure key pairs
+This command is used to generate all Pure key pairs for a Pure application:
+```bash
+$ virgil pure keygen all
 ```
 
 ## Manage Application Cards
