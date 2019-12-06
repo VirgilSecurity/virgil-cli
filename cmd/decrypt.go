@@ -81,15 +81,13 @@ func DecryptFunc(privateKeyString, password string, data []byte) (publicKey []by
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {
-		if err != nil {
-			return nil, errors.New("can't import private key")
-		}
+		return nil, errors.New("can't import private key")
 	}
 
 	dd, err := base64.StdEncoding.DecodeString(string(data))
 
 	if err != nil {
-		return nil, err
+		dd = data // it's OK for old data to be not in base64
 	}
 
 	return crypto.Decrypt(dd, pk)
