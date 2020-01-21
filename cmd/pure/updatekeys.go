@@ -43,7 +43,7 @@ import (
 	phe "github.com/VirgilSecurity/virgil-phe-go"
 	purekit "github.com/VirgilSecurity/virgil-purekit-go"
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 )
 
 // UpdateKeys updates secret key and public key using update token

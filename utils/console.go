@@ -43,7 +43,7 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 )
 
 func ReadKeyStringFromFile(context *cli.Context, fileName string) (string, error) {

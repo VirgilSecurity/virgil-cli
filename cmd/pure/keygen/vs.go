@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 )
 
 // VirgilStorage generates a new Virgil Storage key pair

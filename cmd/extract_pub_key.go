@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-cli/utils"

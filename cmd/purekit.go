@@ -37,7 +37,7 @@
 package cmd
 
 import (
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/cmd/pure"
 )

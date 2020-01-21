@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	phe "github.com/VirgilSecurity/virgil-phe-go"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 )
 
 // Secret generates secret key

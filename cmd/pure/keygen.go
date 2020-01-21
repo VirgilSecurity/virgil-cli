@@ -42,7 +42,7 @@ import (
 
 	phe "github.com/VirgilSecurity/virgil-phe-go"
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/cmd/pure/keygen"
 )

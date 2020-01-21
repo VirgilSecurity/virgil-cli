@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 	"gopkg.in/virgil.v5/sdk"
 
 	"github.com/VirgilSecurity/virgil-cli/client"

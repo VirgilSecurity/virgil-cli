@@ -3,7 +3,7 @@ package keygen
 import (
 	"fmt"
 
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 )
 
 // All generates all pure key pairs

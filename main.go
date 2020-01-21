@@ -42,8 +42,8 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/urfave/cli.v2"
-	"gopkg.in/urfave/cli.v2/altsrc"
+	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2/altsrc"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/cmd"
@@ -73,11 +73,11 @@ func main() {
 	}
 
 	app := &cli.App{
-		Version:               fmt.Sprintf("%v", version),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
+		Version:              fmt.Sprintf("%v", version),
+		Name:                 "CLI",
+		Usage:                "VirgilSecurity command line interface",
+		Flags:                flags,
+		EnableBashCompletion: true,
 		Commands: []*cli.Command{
 			cmd.Register(apiGatewayClient),
 			cmd.Login(apiGatewayClient),

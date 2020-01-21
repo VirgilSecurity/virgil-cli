@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 )
 
 // Auth generates Auth key

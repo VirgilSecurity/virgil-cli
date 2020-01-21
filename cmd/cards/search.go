@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"time"
 
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 	"gopkg.in/virgil.v5/cryptoimpl"
 	"gopkg.in/virgil.v5/sdk"
 
