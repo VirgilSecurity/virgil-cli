@@ -72,6 +72,10 @@ func main() {
 		Address: "https://api.virgilsecurity.com/management/v1/",
 	}
 
+	kmsClient := &client.VirgilHTTPClient{
+		Address: "https://api.virgilsecurity.com/",
+	}
+
 	app := &cli.App{
 		Version:              fmt.Sprintf("%v", version),
 		Name:                 "CLI",
@@ -93,11 +97,13 @@ func main() {
 			cmd.Verify(),
 			cmd.Cards(apiGatewayClient),
 			cmd.Wave(apiGatewayClient),
+			cmd.KMS(kmsClient),
 		},
 		Before: func(c *cli.Context) error {
 			apiURL := c.String("api_gateway_url")
 			if strings.TrimSpace(apiURL) != "" {
 				apiGatewayClient.Address = apiURL
+				kmsClient.Address = strings.TrimSuffix(apiURL, "management/v1/")
 			}
 
 			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {

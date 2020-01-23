@@ -34,96 +34,22 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-package utils
+package cmd
 
 import (
-	"net/http"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/cmd/kms"
 )
 
-func SendWithCheckRetry(
-	vcli *client.VirgilHTTPClient,
-	method string,
-	urlPath string,
-	payload interface{},
-	respObj interface{},
-	extraOptions ...interface{},
-) (headers http.Header, cookie string, err error) {
-
-	token := ""
-	if len(extraOptions) == 0 {
-		token, err = LoadAccessTokenOrLogin(vcli)
-
-		if err != nil {
-			return nil, "", err
-		}
+func KMS(client *client.VirgilHTTPClient) *cli.Command {
+	return &cli.Command{
+		Name:  "kms",
+		Usage: "Manage your Key Management System",
+		Subcommands: []*cli.Command{
+			kms.Create(client),
+			kms.List(client),
+		},
 	}
-	header := http.Header{}
-
-	if len(extraOptions) > 0 {
-		t, ok := extraOptions[0].(string)
-		if ok && t[:2] == "MT" {
-			header.Add("SessionToken", t)
-		} else {
-			header.Add("AppToken", t)
-		}
-	} else if token != "" {
-		header.Add("ManagementToken", token)
-	}
-
-	var vErr *client.VirgilAPIError
-	for vErr == nil {
-		_, _, vErr = vcli.Send(method, urlPath, payload, respObj, header)
-		if vErr == nil {
-			break
-		}
-
-		_, err = CheckRetry(vErr, vcli)
-	}
-
-	return nil, "", err
-}
-
-func SendProtoWithCheckRetry(
-	vcli *client.VirgilHTTPClient,
-	method string,
-	urlPath string,
-	body []byte,
-	respObj *[]byte,
-	extraOptions ...interface{},
-) (headers http.Header, cookie string, err error) {
-
-	token := ""
-	if len(extraOptions) == 0 {
-		token, err = LoadAccessTokenOrLogin(vcli)
-
-		if err != nil {
-			return nil, "", err
-		}
-	}
-	header := http.Header{}
-
-	if len(extraOptions) > 0 {
-		t, ok := extraOptions[0].(string)
-		if ok && t[:2] == "MT" {
-			header.Add("SessionToken", t)
-		} else {
-			header.Add("AppToken", t)
-		}
-	} else if token != "" {
-		header.Add("ManagementToken", token)
-	}
-
-	var vErr *client.VirgilAPIError
-	for vErr == nil {
-		_, _, vErr = vcli.SendProto(method, urlPath, body, respObj, header)
-		if vErr == nil {
-			break
-		}
-
-		_, err = CheckRetry(vErr, vcli)
-	}
-
-	return nil, "", err
 }

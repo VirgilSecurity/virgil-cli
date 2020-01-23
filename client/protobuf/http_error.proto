@@ -1,0 +1,7 @@
+syntax = "proto3";
+package protobuf;
+
+message HttpError {
+	uint32 code = 1;
+	string message = 2;
+}

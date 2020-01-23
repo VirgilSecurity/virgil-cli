@@ -44,6 +44,10 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+
+	"github.com/golang/protobuf/proto"
+
+	"github.com/VirgilSecurity/virgil-cli/client/protobuf"
 )
 
 type HTTPClient interface {
@@ -111,7 +115,7 @@ func (vc *VirgilHTTPClient) Send(
 		if respObj == nil {
 			return resp.Header, cookie, nil
 		}
-		if err = json.Unmarshal(body, respObj); err != nil {
+		if err = json.Unmarshal(body, &respObj); err != nil {
 			return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.Send: unmarshal response object: %v", err)}
 		}
 		return resp.Header, cookie, nil
@@ -123,9 +127,73 @@ func (vc *VirgilHTTPClient) Send(
 
 	var httpErr *VirgilAPIError
 	err = json.Unmarshal(body, httpErr)
-	if err == nil {
+	if err != nil {
 		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.Send: unmarshal response object: %v", err)}
 	}
+
+	return nil, cookie, httpErr
+}
+
+func (vc *VirgilHTTPClient) SendProto(
+	method string,
+	urlPath string,
+	body []byte,
+	respObj *[]byte,
+	header http.Header,
+) (headers http.Header, cookie string, virgilAPIErr *VirgilAPIError) {
+
+	u, err := url.Parse(vc.Address)
+	if err != nil {
+		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.SendProto: URL parse: %v", err)}
+	}
+
+	u.Path = path.Join(u.Path, urlPath)
+	req, err := http.NewRequest(method, u.String(), bytes.NewReader(body))
+	if err != nil {
+		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.SendProto: new request: %v", err)}
+	}
+
+	if len(header) != 0 {
+		req.Header = header
+	}
+
+	client := vc.getHTTPClient()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.SendProto: send request: %v", err)}
+	}
+	// nolint: errcheck
+	defer resp.Body.Close()
+
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.SendProto: read body: %v", err)}
+	}
+
+	for _, c := range resp.Cookies() {
+		if c.Name == "gosession" {
+			cookie = c.Value
+		}
+	}
+
+	if resp.StatusCode/100 == 2 {
+		if respObj == nil {
+			return resp.Header, cookie, nil
+		}
+		*respObj = body
+		return resp.Header, cookie, nil
+	}
+
+	if len(body) == 0 {
+		return nil, cookie, &VirgilAPIError{StatusCode: resp.StatusCode}
+	}
+
+	protoHttpErr := &protobuf.HttpError{}
+	if err := proto.Unmarshal(body, protoHttpErr); err != nil {
+		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.SendProto: unmarshal protobuf response object: %v", err)}
+	}
+	httpErr := &VirgilAPIError{Code: int(protoHttpErr.Code), Message: protoHttpErr.Message}
 
 	return nil, cookie, httpErr
 }
