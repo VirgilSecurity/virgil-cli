@@ -5,7 +5,7 @@ go 1.13
 require (
 	github.com/VirgilSecurity/virgil-phe-go v1.0.3
 	github.com/VirgilSecurity/virgil-purekit-go v2.0.0+incompatible
-	github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.1 // indirect
+	github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.1
 	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/google/uuid v1.1.1

@@ -37,7 +37,6 @@
 package kms
 
 import (
-	"encoding/base64"
 	"fmt"
 	"net/http"
 
@@ -76,7 +75,7 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 					"| %23s | %33d | %19s\n",
 					keyPair.Alias,
 					int(keyPair.KeyVersion),
-					base64.StdEncoding.EncodeToString(keyPair.PublicKey),
+					recoveryKeyChecker(keyPair),
 				)
 			}
 			return nil

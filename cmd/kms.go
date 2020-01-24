@@ -50,6 +50,9 @@ func KMS(client *client.VirgilHTTPClient) *cli.Command {
 		Subcommands: []*cli.Command{
 			kms.Create(client),
 			kms.List(client),
+			kms.GetUpdateToken(client),
+			kms.RotateKeys(),
+			kms.DeleteUpdateToken(client),
 		},
 	}
 }

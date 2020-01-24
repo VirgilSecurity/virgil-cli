@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2019 Virgil Security Inc.
+ * Copyright (C) 2015-2020 Virgil Security Inc.
  *
  * All rights reserved.
  *
@@ -33,43 +33,40 @@
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
-
-package pure
+package keygen
 
 import (
 	"encoding/base64"
 	"fmt"
 
-	phe "github.com/VirgilSecurity/virgil-phe-go"
-	"github.com/pkg/errors"
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/phe"
 	"github.com/urfave/cli/v2"
-
-	"github.com/VirgilSecurity/virgil-cli/cmd/pure/keygen"
 )
 
-//Keygen generates PureKit private key
-func Keygen() *cli.Command {
+//
+// KMSPrivateKey generates KMS Private Key
+//
+func KMSPrivateKey() *cli.Command {
 	return &cli.Command{
-		Name:    "keygen",
-		Aliases: []string{"kg"},
-		Usage:   "Generate a new Passw0rd app secret key",
+		Name:    "kms-client-private",
+		Aliases: []string{"pk"},
+		Usage:   "Generate a new KMS Client Private key",
 		Action: func(context *cli.Context) error {
-			if context.Args().First() != "" {
-				return errors.New("incorrect key type")
-			}
-			key := phe.GenerateClientKey()
-			fmt.Println("SK.1." + base64.StdEncoding.EncodeToString(key))
-			return nil
-		},
-		Subcommands: []*cli.Command{
-			keygen.Secret(),
-			keygen.Auth(),
-			keygen.Backup(),
-			keygen.HashesKey(),
-			keygen.VirgilStorage(),
-			keygen.OwnSigningKey(),
-			keygen.KMSPrivateKey(),
-			keygen.All(),
+			return printKMSPrivateKey()
 		},
 	}
+}
+
+func printKMSPrivateKey() error {
+	kmsClient := phe.NewUokmsClient()
+	if err := kmsClient.SetupDefaults(); err != nil {
+		return err
+	}
+
+	key, err := kmsClient.GenerateClientPrivateKey()
+	if err != nil {
+		return err
+	}
+	fmt.Println("KS." + base64.StdEncoding.EncodeToString(key))
+	return nil
 }

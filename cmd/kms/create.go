@@ -49,6 +49,12 @@ import (
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
+const (
+	RecoveryPasswordAlias     = "RECOVERY_PASSWORD"
+	RecoveryPasswordKeyPrefix = "KP."
+)
+
+// Create KMS Public key
 func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "create",
@@ -79,8 +85,8 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 			fmt.Printf(
 				"KMS Key alias: %s version: %d public key: %s\n",
 				keyPair.Alias,
-				keyPair.KeyVersion,
-				base64.StdEncoding.EncodeToString(keyPair.PublicKey),
+				int(keyPair.KeyVersion),
+				recoveryKeyChecker(keyPair),
 			)
 			fmt.Println("KMS Key Pair has been successfully created.")
 			return nil
@@ -110,4 +116,11 @@ func CreateFunc(name, appToken string, vcli *client.VirgilHTTPClient) (keyPair *
 	}
 
 	return keyPair, nil
+}
+
+func recoveryKeyChecker(keyPair *decryptor.Keypair) string {
+	if keyPair.Alias == RecoveryPasswordAlias {
+		return RecoveryPasswordKeyPrefix + base64.StdEncoding.EncodeToString(keyPair.PublicKey)
+	}
+	return base64.StdEncoding.EncodeToString(keyPair.PublicKey)
 }

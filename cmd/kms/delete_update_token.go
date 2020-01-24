@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2019 Virgil Security Inc.
+ * Copyright (C) 2015-2020 Virgil Security Inc.
  *
  * All rights reserved.
  *
@@ -33,43 +33,61 @@
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
-
-package pure
+package kms
 
 import (
-	"encoding/base64"
+	"errors"
 	"fmt"
+	"net/http"
 
-	phe "github.com/VirgilSecurity/virgil-phe-go"
-	"github.com/pkg/errors"
+	"github.com/golang/protobuf/proto"
 	"github.com/urfave/cli/v2"
 
-	"github.com/VirgilSecurity/virgil-cli/cmd/pure/keygen"
+	"github.com/VirgilSecurity/virgil-cli/client"
+	"github.com/VirgilSecurity/virgil-cli/cmd/kms/protobuf/decryptor"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-//Keygen generates PureKit private key
-func Keygen() *cli.Command {
+func DeleteUpdateToken(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
-		Name:    "keygen",
-		Aliases: []string{"kg"},
-		Usage:   "Generate a new Passw0rd app secret key",
-		Action: func(context *cli.Context) error {
-			if context.Args().First() != "" {
-				return errors.New("incorrect key type")
+		Name:      "delete-update-token",
+		Aliases:   []string{"dut"},
+		ArgsUsage: "kms_key_alias",
+		Usage:     "Delete KMS update token",
+		Action: func(context *cli.Context) (err error) {
+			aliasKMSKey := context.Args().First()
+
+			defaultApp, _ := utils.LoadDefaultApp()
+			defaultAppToken := ""
+			if defaultApp != nil {
+				defaultAppToken = defaultApp.Token
 			}
-			key := phe.GenerateClientKey()
-			fmt.Println("SK.1." + base64.StdEncoding.EncodeToString(key))
+
+			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
+			if appToken == "" {
+				return errors.New("Please, specify app-token (flag --app-token)")
+			}
+
+			if err := deleteUpdateToken(appToken, aliasKMSKey, vcli); err != nil {
+				return err
+			}
 			return nil
 		},
-		Subcommands: []*cli.Command{
-			keygen.Secret(),
-			keygen.Auth(),
-			keygen.Backup(),
-			keygen.HashesKey(),
-			keygen.VirgilStorage(),
-			keygen.OwnSigningKey(),
-			keygen.KMSPrivateKey(),
-			keygen.All(),
-		},
 	}
+}
+
+func deleteUpdateToken(appToken string, keyAlias string, vcli *client.VirgilHTTPClient) (err error) {
+	reqPayload, err := proto.Marshal(&decryptor.KeypairRequest{Alias: keyAlias})
+	if err != nil {
+		return err
+	}
+
+	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "/kms/delete-update-token", reqPayload, nil, appToken)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Update token successfully deleted.")
+	return nil
 }
