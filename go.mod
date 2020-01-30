@@ -11,6 +11,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c
 	github.com/pkg/errors v0.8.1
+	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli/v2 v2.1.1
 	golang.org/x/crypto v0.0.0-20200117160349-530e935923ad // indirect
 	gopkg.in/virgil.v5 v5.2.0

@@ -85,7 +85,7 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 
 func listFunc(appToken string, vcli *client.VirgilHTTPClient) (keyPairs []*decryptor.Keypair, err error) {
 	var resp []byte
-	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "kms/search-keypairs", nil, &resp, appToken)
+	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "kms/v1/search-keypairs", nil, &resp, appToken)
 
 	protoKeyPairs := &decryptor.Keypairs{}
 	if err := proto.Unmarshal(resp, protoKeyPairs); err != nil {

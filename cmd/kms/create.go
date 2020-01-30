@@ -100,7 +100,7 @@ func CreateFunc(name, appToken string, vcli *client.VirgilHTTPClient) (keyPair *
 		return nil, err
 	}
 	var rawResp []byte
-	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "kms/keypair", reqPayload, &rawResp, appToken)
+	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "kms/v1/keypair", reqPayload, &rawResp, appToken)
 
 	if err != nil {
 		return nil, err

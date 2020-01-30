@@ -85,7 +85,7 @@ func printUpdateToken(appToken string, keyAlias string, vcli *client.VirgilHTTPC
 
 	var resp []byte
 
-	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "/kms/fetch-update-token", reqPayload, &resp, appToken)
+	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "kms/v1/create-update-token", reqPayload, &resp, appToken)
 
 	protoUpdateToken := &decryptor.UpdateTokenResponse{}
 	if err := proto.Unmarshal(resp, protoUpdateToken); err != nil {

@@ -82,7 +82,7 @@ func deleteUpdateToken(appToken string, keyAlias string, vcli *client.VirgilHTTP
 		return err
 	}
 
-	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "/kms/delete-update-token", reqPayload, nil, appToken)
+	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "kms/v1/delete-update-token", reqPayload, nil, appToken)
 
 	if err != nil {
 		return err
