@@ -40,13 +40,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/cmd/kms/protobuf/decryptor"
 	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 )
 
 func List(vcli *client.VirgilHTTPClient) *cli.Command {
@@ -67,9 +67,13 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 			}
 
 			keyPairs, err := listFunc(appToken, vcli)
+			if err != nil {
+				return err
+			}
 
 			fmt.Printf("|%25s|%35s|%20s\n", "Keypair alias   ", "Keypair version   ", " Public Key ")
-			fmt.Printf("|%25s|%35s|%20s\n", "-------------------------", "-----------------------------------", "---------------------------------------")
+			fmt.Printf("|%25s|%35s|%20s\n", "-------------------------",
+				"-----------------------------------", "---------------------------------------")
 			for _, keyPair := range keyPairs {
 				fmt.Printf(
 					"| %23s | %33d | %19s\n",
@@ -86,9 +90,11 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 func listFunc(appToken string, vcli *client.VirgilHTTPClient) (keyPairs []*decryptor.Keypair, err error) {
 	var resp []byte
 	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "kms/v1/search-keypairs", nil, &resp, appToken)
-
+	if err != nil {
+		return nil, err
+	}
 	protoKeyPairs := &decryptor.Keypairs{}
-	if err := proto.Unmarshal(resp, protoKeyPairs); err != nil {
+	if err = proto.Unmarshal(resp, protoKeyPairs); err != nil {
 		return nil, err
 	}
 

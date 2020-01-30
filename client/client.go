@@ -189,11 +189,11 @@ func (vc *VirgilHTTPClient) SendProto(
 		return nil, cookie, &VirgilAPIError{StatusCode: resp.StatusCode}
 	}
 
-	protoHttpErr := &protobuf.HttpError{}
-	if err := proto.Unmarshal(body, protoHttpErr); err != nil {
+	protoHTTPErr := &protobuf.HttpError{}
+	if err := proto.Unmarshal(body, protoHTTPErr); err != nil {
 		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.SendProto: unmarshal protobuf response object: %v", err)}
 	}
-	httpErr := &VirgilAPIError{Code: int(protoHttpErr.Code), Message: protoHttpErr.Message}
+	httpErr := &VirgilAPIError{Code: int(protoHTTPErr.Code), Message: protoHTTPErr.Message}
 
 	return nil, cookie, httpErr
 }
