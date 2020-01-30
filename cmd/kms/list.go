@@ -40,13 +40,13 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/cmd/kms/protobuf/decryptor"
 	"github.com/VirgilSecurity/virgil-cli/utils"
-	"github.com/golang/protobuf/proto"
-	"github.com/pkg/errors"
 )
 
 func List(vcli *client.VirgilHTTPClient) *cli.Command {

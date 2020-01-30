@@ -9,7 +9,6 @@ before_install:
   - GO111MODULE=on go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
 script:
-  - golangci-lint run
   - go test ./...
 
 deploy:
