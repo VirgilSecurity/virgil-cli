@@ -15,7 +15,7 @@ builds:
     - goos: windows
       goarch: 386
   binary: virgil
-archive:
+archives:
   replacements:
     darwin: macOS
     linux: Linux
