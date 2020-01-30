@@ -4,9 +4,7 @@ go: stable
 cmake: 3.15
 
 before_install:
-  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
   - go get ./...
-  - GO111MODULE=on go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
 script:
   - go test ./...
