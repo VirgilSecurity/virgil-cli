@@ -37,6 +37,13 @@
   - [Generate a Virgil Storage Key](#generate-a-virgil-storage-key)
   - [Generate Own Signing Key](#generate-own-signing-key)
   - [Generate all Pure keys at once](#generate-all-pure-keys-at-once)
+- [KMS Commands](#kms-commands)
+  - [Create a KMS Public Key](#create-a-kms-public-key)
+  - [Create a KMS Private Key](#create-a-kms-private-key)
+  - [List KMS Public Keys](#list-kms-public-keys)
+  - [Get KMS Update Token](#get-kms-update-token)
+  - [Rotate KMS Keys](#rotate-kms-keys)
+  - [Delete KMS Update Token](#delete-kms-update-token)
 - [Manage Application Cards](#manage-application-cards)
   - [Config file](#config-file)
   - [Search cards](#search-cards)
@@ -275,6 +282,44 @@ $ virgil pure keygen own
 This command is used to generate all Pure keys at once for a Pure application:
 ```bash
 $ virgil pure keygen all
+```
+
+## KMS Commands
+
+### Create a KMS Public Key
+This command is used to create new KMS Server Public Keys
+```bash
+$ virgil kms create <key_alias>
+```
+
+### Create a KMS Private Key
+This command is used to Generate new KMS Client Private Key
+```bash
+$ virgil kms client-private
+```
+
+### List KMS Public Keys
+This command is used to list all KMS Public keys for Pure Application
+```bash
+$ virgil kms list
+```
+
+### Get KMS Update Token
+This command is used to getting Update Token from service
+```bash
+$ virgil kms get-update-token <key_alias>
+```
+
+### Rotate KMS Keys
+This command is used to rotate KMS Server Public Keys KMS Client Private Key
+```bash
+$ virgil kms rotate <client_private_key> <server_public_key> <update_token>
+```
+
+### Delete KMS Update Token
+This command is used to finish the rotation process and delete KMS Update Token
+```bash
+$ virgil kms delete-update-token <key_alias>
 ```
 
 ## Manage Application Cards

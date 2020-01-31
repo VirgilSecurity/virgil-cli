@@ -13,7 +13,7 @@ import (
 //
 func KMSPrivateKey() *cli.Command {
 	return &cli.Command{
-		Name:    "kms-client-private",
+		Name:    "client-private",
 		Aliases: []string{"pk"},
 		Usage:   "Generate a new KMS Client Private key",
 		Action: func(context *cli.Context) error {
