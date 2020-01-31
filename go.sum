@@ -1,9 +1,5 @@
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/VirgilSecurity/virgil-phe-go v1.0.3 h1:JgZWQqB4aVXVGgqvmLGXTZyEqAe6HLrkedR1oBoxeck=
-github.com/VirgilSecurity/virgil-phe-go v1.0.3/go.mod h1:7I3eKI45XVRjmG3ifSgwmTuMZlFVThEw8bhVFG9YaPU=
-github.com/VirgilSecurity/virgil-purekit-go v2.0.0+incompatible h1:PaUoDTg74eqqcTZy+4PUkYuYpBXX/EsIfxpM+J8gpLU=
-github.com/VirgilSecurity/virgil-purekit-go v2.0.0+incompatible/go.mod h1:Qq/tT9mu/KgwQ6FOLaVNJ27LKxRJYDqc4bWXzGfROc0=
 github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.1 h1:jzRtQrJ63e5Filyn3PqVfmuPtI2LZZgtlZ178F1tYZQ=
 github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.1/go.mod h1:cZDgeYNFgh3IJaGutv6NbFvh0sKpBszwk/ZVft6NGVg=
 github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412 h1:w1UutsfOrms1J05zt7ISrnJIXKzwaspym5BTKGx93EI=

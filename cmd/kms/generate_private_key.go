@@ -1,4 +1,4 @@
-package keygen
+package kms
 
 import (
 	"encoding/base64"
@@ -22,16 +22,20 @@ func KMSPrivateKey() *cli.Command {
 	}
 }
 
-func printKMSPrivateKey() error {
+func GenerateKMSPrivateKey() ([]byte, error) {
 	kmsClient := phe.NewUokmsClient()
 	if err := kmsClient.SetupDefaults(); err != nil {
-		return err
+		return []byte{}, err
 	}
 
-	key, err := kmsClient.GenerateClientPrivateKey()
+	return kmsClient.GenerateClientPrivateKey()
+}
+
+func printKMSPrivateKey() error {
+	key, err := GenerateKMSPrivateKey()
 	if err != nil {
 		return err
 	}
-	fmt.Println("KS." + base64.StdEncoding.EncodeToString(key))
+	fmt.Println(base64.StdEncoding.EncodeToString(key))
 	return nil
 }

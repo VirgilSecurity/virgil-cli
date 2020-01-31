@@ -2,6 +2,7 @@ package kms
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -18,11 +19,15 @@ func RotateKeys() *cli.Command {
 		Aliases:   []string{"r"},
 		ArgsUsage: "client_private_key server_public_key update_token",
 		Usage:     "rotate KMS Recovery Password Key",
-		Action:    rotateKMSKeys,
+		Action:    rotateKMSKeysCommand,
 	}
 }
 
-func rotateKMSKeys(context *cli.Context) (err error) {
+func rotateKMSKeysCommand(context *cli.Context) (err error) {
+	if context.NArg() < 3 {
+		return errors.New("invalid number of arguments")
+	}
+
 	b64ClientPrivateKey := context.Args().First()
 	b64ServerPublicKey := context.Args().Get(1)
 	b64UpdateToken := context.Args().Get(2)
@@ -45,32 +50,35 @@ func rotateKMSKeys(context *cli.Context) (err error) {
 		return err
 	}
 
-	kmsClient := phe.NewUokmsClient()
-	if err = kmsClient.SetKeys(clientPrivateKey, serverPublicKey); err != nil {
-		return err
-	}
-	if err = kmsClient.SetupDefaults(); err != nil {
-		return err
-	}
-
-	newClientPrivateKey, newServerPublicKey, err := kmsClient.RotateKeys(updateToken)
-	if err != nil {
-		return err
-	}
-
+	newClientPrivateKey, newServerPublicKey, err := RotateKMSKeys(clientPrivateKey, serverPublicKey, updateToken)
 	var n64NewServerPublicKey string
 	if prefixedServerPublicKey {
 		n64NewServerPublicKey = RecoveryPasswordKeyPrefix + base64.StdEncoding.EncodeToString(newServerPublicKey)
 	} else {
 		n64NewServerPublicKey = base64.StdEncoding.EncodeToString(newServerPublicKey)
 	}
-
 	fmt.Printf(
 		"New server public key:\n%s\nNew client private key:\nKS.%s\n",
 		n64NewServerPublicKey,
 		base64.StdEncoding.EncodeToString(newClientPrivateKey),
 	)
 	return nil
+}
+
+func RotateKMSKeys(kmsPrivateKey, kmsPublicKey, updateToken []byte) (newKMSPrivateKey, newKMSPublicKey []byte, err error) {
+	kmsClient := phe.NewUokmsClient()
+	if err = kmsClient.SetKeys(kmsPrivateKey, kmsPublicKey); err != nil {
+		return nil, nil, err
+	}
+	if err = kmsClient.SetupDefaults(); err != nil {
+		return nil, nil, err
+	}
+
+	newKMSPrivateKey, newKMSPublicKey, err = kmsClient.RotateKeys(updateToken)
+	if err != nil {
+		return nil, nil, err
+	}
+	return
 }
 
 func trimPrefix(prefixedString *string) bool {

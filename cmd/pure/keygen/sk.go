@@ -4,8 +4,10 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	phe "github.com/VirgilSecurity/virgil-phe-go"
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/phe"
 	"github.com/urfave/cli/v2"
+
+	"github.com/VirgilSecurity/virgil-cli/cmd/kms"
 )
 
 // Secret generates secret key
@@ -21,7 +23,23 @@ func Secret() *cli.Command {
 }
 
 func printSecretKey() error {
-	key := phe.GenerateClientKey()
-	fmt.Println("SK.1." + base64.StdEncoding.EncodeToString(key))
+	pheClient := phe.NewPheClient()
+	if err := pheClient.SetupDefaults(); err != nil {
+		return err
+	}
+
+	pheKey, err := pheClient.GenerateClientPrivateKey()
+	if err != nil {
+		return err
+	}
+	kmsKey, err := kms.GenerateKMSPrivateKey()
+	if err != nil {
+		return err
+	}
+	fmt.Printf(
+		"SK.1.%s.%s\n",
+		base64.StdEncoding.EncodeToString(pheKey),
+		base64.StdEncoding.EncodeToString(kmsKey),
+	)
 	return nil
 }

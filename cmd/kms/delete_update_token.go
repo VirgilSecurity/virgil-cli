@@ -20,6 +20,9 @@ func DeleteUpdateToken(vcli *client.VirgilHTTPClient) *cli.Command {
 		ArgsUsage: "kms_key_alias",
 		Usage:     "Delete KMS update token",
 		Action: func(context *cli.Context) (err error) {
+			if context.Args().First() == "" {
+				return errors.New("invalid kms key pair alias")
+			}
 			aliasKMSKey := context.Args().First()
 
 			defaultApp, _ := utils.LoadDefaultApp()
@@ -47,7 +50,7 @@ func deleteUpdateToken(appToken string, keyAlias string, vcli *client.VirgilHTTP
 		return err
 	}
 
-	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "kms/v1/delete-update-token", reqPayload, nil, appToken)
+	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, PrefixKMSApi+"/delete-update-token", reqPayload, nil, appToken)
 
 	if err != nil {
 		return err

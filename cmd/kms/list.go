@@ -89,7 +89,7 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 
 func listFunc(appToken string, vcli *client.VirgilHTTPClient) (keyPairs []*decryptor.Keypair, err error) {
 	var resp []byte
-	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, "kms/v1/search-keypairs", nil, &resp, appToken)
+	_, _, err = utils.SendProtoWithCheckRetry(vcli, http.MethodPost, PrefixKMSApi+"/search-keypairs", nil, &resp, appToken)
 	if err != nil {
 		return nil, err
 	}
@@ -99,10 +99,6 @@ func listFunc(appToken string, vcli *client.VirgilHTTPClient) (keyPairs []*decry
 	}
 
 	keyPairs = protoKeyPairs.Keypairs
-
-	if err != nil {
-		return
-	}
 
 	if keyPairs != nil {
 		return keyPairs, nil

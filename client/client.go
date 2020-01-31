@@ -126,7 +126,7 @@ func (vc *VirgilHTTPClient) Send(
 	}
 
 	var httpErr *VirgilAPIError
-	err = json.Unmarshal(body, httpErr)
+	err = json.Unmarshal(body, &httpErr)
 	if err != nil {
 		return nil, cookie, &VirgilAPIError{Message: fmt.Sprintf("VirgilHTTPClient.Send: unmarshal response object: %v", err)}
 	}

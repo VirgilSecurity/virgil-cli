@@ -49,6 +49,7 @@ func KMS(client *client.VirgilHTTPClient) *cli.Command {
 		Usage: "Manage your Key Management System",
 		Subcommands: []*cli.Command{
 			kms.Create(client),
+			kms.KMSPrivateKey(),
 			kms.List(client),
 			kms.GetUpdateToken(client),
 			kms.RotateKeys(),
