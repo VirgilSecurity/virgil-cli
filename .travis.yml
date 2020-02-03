@@ -33,7 +33,9 @@ jobs:
     - <<: *builds
       os: linux
     - stage: deploy
-      script: skip
+      script:
+        - ls -l
+        - ls -l artifacts
       deploy:
         - provider: releases
           skip_cleanup: true
