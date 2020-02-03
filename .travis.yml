@@ -9,13 +9,14 @@ env:
   global:
     - GO111MODULE=on
 
-before_install:
+install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install make zip; fi
   - go get ./...
 
 script:
   - echo ">>> Run build"
   - go env GOOS
+  - go env GOARCH
   - make build
   - make pack_artifacts
 
@@ -31,10 +32,12 @@ jobs:
       os: windows
     - <<: *builds
       os: windows
-      env: GOARCH=386
+      env:
+        - GOARCH="386"
     - <<: *builds
       os: linux
-      env: GOARCH=386
+      env:
+        - GOARCH="386"
     - <<: *builds
       os: linux
     - stage: deploy

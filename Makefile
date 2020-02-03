@@ -25,11 +25,11 @@ ifeq ($(shell go env GOOS),windows)
 endif
 
 ifeq ($(shell go env GOARCH), 386)
-	ARCH = i386
+	ARCH=i386
 endif
 
 ifeq ($(shell go env GOARCH), amd64)
-	ARCH = x86_64
+	ARCH=x86_64
 endif
 
 VERSION=$(shell cat VERSION)
