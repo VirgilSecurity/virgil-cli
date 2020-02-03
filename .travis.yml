@@ -10,7 +10,7 @@ env:
     - GO111MODULE=on
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then; choco install make; fi
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then choco install make; fi
   - go get ./...
 
 script:
