@@ -18,6 +18,6 @@ builds: &builds
 jobs:
   include:
     - <<: *builds
-        os: osx
+      os: osx
     - <<: *builds
-        os: windows
+      os: windows
