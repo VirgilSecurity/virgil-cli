@@ -21,7 +21,7 @@ ifneq ($(shell go env GOOS),darwin)
 endif
 
 ifeq ($(shell go env GOOS),windows)
-	BINARY+=.exe
+	BINARY=$(BINARY).exe
 endif
 
 ifeq ($(shell go env GOARCH), 386)
@@ -31,6 +31,9 @@ endif
 ifeq ($(shell go env GOARCH), amd64)
 	ARCH = x86_64
 endif
+
+VERSION=$(shell cat VERSION)
+OS=$(shell go env GOOS)
 
 
 
@@ -45,7 +48,7 @@ build: go_test_unit go_build
 
 go_build:
 	@echo ">>> Building go binary."
-	go build $(GO_BUILD_FLAGS) $(BINARY)
+	go build $(GO_BUILD_FLAGS) -o $(BINARY)
 
 go_test_unit:
 	@echo ">>> Running unit tests."
@@ -54,8 +57,8 @@ go_test_unit:
 pack_artifacts:
 	@echo ">>> Archiving artifact"
 	mkdir -p artifacts
-	if [ "$(go env GOOS)" == "windows" ]; then \
-  		zip artifacts/Virgil_$(cat VERSION)_$(go env GOOS)_$(ARCH).zip $(BINARY); \
+	if [ "$(OS)" == "windows" ]; then \
+  		zip artifacts/Virgil_$(VERSION)_$(OS)_$(ARCH).zip $(BINARY); \
   	else \
-  		tar cvfz artifacts/Virgil_$(cat VERSION)_$(go env GOOS)_$(ARCH).tar.gz $(BINARY); \
+  		tar cvfz artifacts/Virgil_$(VERSION)_$(OS)_$(ARCH).tar.gz $(BINARY); \
   	fi

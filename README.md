@@ -1,5 +1,5 @@
 # Virgil CLI
-[![Build Status](https://travis-ci.org/VirgilSecurity/virgil-cli.png?branch=v5)](https://travis-ci.org/VirgilSecurity/virgil-cli)
+[![Build Status](https://travis-ci.com/VirgilSecurity/virgil-cli.png?branch=master)](https://travis-ci.com/VirgilSecurity/virgil-cli)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://github.com/VirgilSecurity/virgil/blob/master/LICENSE)
 
 
