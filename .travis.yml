@@ -31,14 +31,6 @@ jobs:
     - <<: *builds
       os: windows
     - <<: *builds
-      os: windows
-      env:
-        - GOARCH="386"
-    - <<: *builds
-      os: linux
-      env:
-        - GOARCH="386"
-    - <<: *builds
       os: linux
     - stage: deploy
       script: skip
