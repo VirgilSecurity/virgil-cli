@@ -5,7 +5,7 @@
 # Project-specific variables
 #
 # Binary name
-BINARY=virgil
+BINARY:=virgil
 
 #
 # General variables
@@ -21,7 +21,7 @@ ifneq ($(shell go env GOOS),darwin)
 endif
 
 ifeq ($(shell go env GOOS),windows)
-	BINARY=$(BINARY).exe
+	BINARY:=$(BINARY).exe
 endif
 
 ifeq ($(shell go env GOARCH), 386)
