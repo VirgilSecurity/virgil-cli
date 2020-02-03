@@ -4,10 +4,8 @@
 
 # Project-specific variables
 #
-# Service name. Used for binary name, docker-compose service name, etc...
+# Binary name
 BINARY=virgil
-# Path to service entry point.
-GO_PATH_CLI_MAIN=./
 
 #
 # General variables
@@ -32,8 +30,8 @@ GO_BUILD_FLAGS=-v --ldflags "$(GO_BUILD_LDFLAGS)" -a -installsuffix cgo
 build: go_test_unit go_build
 
 go_build:
-	@echo '>>> Building go binary.'
-	go build $(GO_BUILD_FLAGS) -a -o $(BINARY) $(GO_PATH_CLI_MAIN);
+	@echo ">>> Building go binary."
+	go build $(GO_BUILD_FLAGS) -o $(BINARY)
 
 go_test_unit:
 	@echo ">>> Running unit tests."
