@@ -2,7 +2,13 @@ os: linux
 
 language: go
 
-go: master
+go:
+  - 1.13.x
+
+env:
+  global:
+    - GO111MODULE=on
+
 cmake: 3.15
 
 before_install:
@@ -10,6 +16,7 @@ before_install:
 
 script:
   - echo ">>> Run build"
+  - go env GOOS
   - make build
 
 builds: &builds
@@ -21,3 +28,5 @@ jobs:
       os: osx
     - <<: *builds
       os: windows
+    - <<: *builds
+      os: linux
