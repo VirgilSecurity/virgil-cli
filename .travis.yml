@@ -10,13 +10,14 @@ env:
     - GO111MODULE=on
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then choco install make; fi
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then choco install make zip; fi
   - go get ./...
 
 script:
   - echo ">>> Run build"
   - go env GOOS
   - make build
+  - make pack_artifacts
 
 builds: &builds
   stage: build
@@ -30,3 +31,14 @@ jobs:
       os: windows
     - <<: *builds
       os: linux
+    - stage: deploy
+      script: skip
+      deploy:
+        - provider: releases
+          skip_cleanup: true
+          github-token: $GITHUB_TOKEN
+          file_glob: true
+          file: artifacts/**
+          on:
+            tags: true
+            condition: $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+
