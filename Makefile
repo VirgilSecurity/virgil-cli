@@ -57,8 +57,8 @@ go_test_unit:
 pack_artifacts:
 	@echo ">>> Archiving artifact"
 	mkdir -p artifacts
-	if [ "$(OS)" == "windows" ]; then \
+	if [ "$(OS)" = "windows" ]; then \
   		zip artifacts/Virgil_$(VERSION)_$(OS)_$(ARCH).zip $(BINARY); \
   	else \
-  		tar cvfz artifacts/Virgil_$(VERSION)_$(OS)_$(ARCH).tar.gz $(BINARY); \
+  		tar cvzf artifacts/Virgil_$(VERSION)_$(OS)_$(ARCH).tar.gz $(BINARY); \
   	fi
