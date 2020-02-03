@@ -26,6 +26,7 @@ jobs:
   include:
     - <<: *builds
       os: osx
+      osx_image: xcode11.3
     - <<: *builds
       os: windows
     - <<: *builds
