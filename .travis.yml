@@ -23,24 +23,25 @@ script:
 builds: &builds
   stage: build
 
+deploys: &deploys
+  deploy:
+    - provider: releases
+      skip_cleanup: true
+      api_key: $GITHUB_TOKEN
+      file_glob: true
+      file: artifacts/**
+      on:
+        tags: true
+
 jobs:
   include:
     - <<: *builds
       os: osx
       osx_image: xcode11.3
+      <<: *deploys
     - <<: *builds
       os: windows
+      <<: *deploys
     - <<: *builds
       os: linux
-    - stage: deploy
-      script:
-        - ls -l
-        - ls -l artifacts
-      deploy:
-        - provider: releases
-          skip_cleanup: true
-          api_key: $GITHUB_TOKEN
-          file_glob: true
-          file: artifacts/**
-          on:
-            tags: true
+      <<: *deploys
