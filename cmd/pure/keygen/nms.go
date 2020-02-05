@@ -39,29 +39,36 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/foundation"
 	"github.com/urfave/cli/v2"
 )
 
-// Backup generates a new  Backup keypair
-func Backup() *cli.Command {
+// Secret generates secret key
+func NonRotatableMasterSecret() *cli.Command {
 	return &cli.Command{
-		Name:    "backup",
-		Aliases: []string{"bu"},
-		Usage:   "Generates a new  Backup keypair ",
+		Name:    "nonrotable-master",
+		Aliases: []string{"nm"},
+		Usage:   "Generate a new Non Rotatable Master Secret key",
 		Action: func(context *cli.Context) error {
-			return printBackupKeys()
+			return printNonRotatableMasterSecretKey()
 		},
 	}
 }
 
-func printBackupKeys() error {
-	sk, pk, err := generateKeypairEncoded()
+func printNonRotatableMasterSecretKey() error {
+	random := foundation.NewCtrDrbg()
+	if err := random.SetupDefaults(); err != nil {
+		return err
+	}
+
+	nmsBytes, err := random.Random(32)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("BUPPK." + base64.StdEncoding.EncodeToString(pk))
-	fmt.Println("BUPSK." + base64.StdEncoding.EncodeToString(sk))
-
+	fmt.Printf(
+		"NM.%s\n",
+		base64.StdEncoding.EncodeToString(nmsBytes),
+	)
 	return nil
 }

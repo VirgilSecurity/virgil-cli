@@ -72,10 +72,10 @@ func Keygen() *cli.Command {
 			keygen.Secret(),
 			keygen.Auth(),
 			keygen.Backup(),
-			keygen.HashesKey(),
 			keygen.VirgilStorage(),
 			keygen.OwnSigningKey(),
 			keygen.All(),
+			keygen.NonRotatableMasterSecret(),
 		},
 	}
 }

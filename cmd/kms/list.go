@@ -54,6 +54,7 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 		Name:    "list",
 		Aliases: []string{"l"},
 		Usage:   "List your KMS keys",
+		Flags:   []cli.Flag{&cli.StringFlag{Name: "app-token", Usage: "application token"}},
 		Action: func(context *cli.Context) (err error) {
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppToken := ""

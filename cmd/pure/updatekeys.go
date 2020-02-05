@@ -90,16 +90,16 @@ func isNewKeysVersion(pkStr, skStr, tokenStr string) bool {
 func oldRotate(pkStr, skStr, tokenStr string) error {
 	pkVersion, pk, err := utils.ParseVersionAndContent("PK", pkStr)
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "parse public key failed: ")
 	}
 	skVersion, sk, err := utils.ParseVersionAndContent("SK", skStr)
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "parse private key failed: ")
 	}
 	tokenVersion, updateToken, err := utils.ParseVersionAndContent("UT", tokenStr)
 
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "parse update token failed: ")
 	}
 
 	if (pkVersion+1) != tokenVersion || (skVersion+1) != tokenVersion {
