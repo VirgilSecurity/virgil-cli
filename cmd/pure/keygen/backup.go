@@ -59,9 +59,9 @@ func printBackupKeys() error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("BUPPK." + base64.StdEncoding.EncodeToString(pk))
-	fmt.Println("BUPSK." + base64.StdEncoding.EncodeToString(sk))
+	fmt.Println("Backup keypair (optional) - keypair used to decrypt any data in case of some failure")
+	fmt.Println("BU." + base64.StdEncoding.EncodeToString(pk))
+	fmt.Println("Backup Private key (Must be placed in some cold storage (HSM or safe)): " + base64.StdEncoding.EncodeToString(sk))
 
 	return nil
 }

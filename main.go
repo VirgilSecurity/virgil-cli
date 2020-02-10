@@ -47,10 +47,7 @@ import (
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/cmd"
-)
-
-var (
-	version = "5.2.0"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 func main() {
@@ -77,7 +74,7 @@ func main() {
 	}
 
 	app := &cli.App{
-		Version:              fmt.Sprintf("%v", version),
+		Version:              fmt.Sprintf("%v", utils.Version),
 		Name:                 "CLI",
 		Usage:                "VirgilSecurity command line interface",
 		Flags:                flags,

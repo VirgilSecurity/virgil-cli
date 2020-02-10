@@ -71,10 +71,15 @@ func printSecretKey() error {
 	if err != nil {
 		return err
 	}
+	authKey, err := GenerateAuthKey()
+	if err != nil {
+		return err
+	}
 	fmt.Printf(
-		"SK.1.%s.%s\n",
+		"SK.1.%s.%s.%s\n",
 		base64.StdEncoding.EncodeToString(pheKey),
 		base64.StdEncoding.EncodeToString(kmsKey),
+		base64.StdEncoding.EncodeToString(authKey),
 	)
 	return nil
 }

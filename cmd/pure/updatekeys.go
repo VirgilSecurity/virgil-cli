@@ -126,15 +126,15 @@ func oldRotate(pkStr, skStr, tokenStr string) error {
 }
 
 func rotate(pkStr, skStr, tokenStr string) error {
-	pkVersion, pkPhe, pkKMS, err := utils.ParseCombinedEntities("PK", pkStr)
+	pkVersion, pkPhe, pkKMS, _, err := utils.ParseCombinedEntities("PK", pkStr)
 	if err != nil {
 		return errors.Wrapf(err, "parse public key failed: ")
 	}
-	skVersion, skPhe, skKMS, err := utils.ParseCombinedEntities("SK", skStr)
+	skVersion, skPhe, skKMS, skAuth, err := utils.ParseCombinedEntities("SK", skStr)
 	if err != nil {
 		return errors.Wrapf(err, "parse private key failed: ")
 	}
-	tokenVersion, updateTokenPhe, updateTokenKMS, err := utils.ParseCombinedEntities("UT", tokenStr)
+	tokenVersion, updateTokenPhe, updateTokenKMS, updateTokenAuth, err := utils.ParseCombinedEntities("UT", tokenStr)
 
 	if err != nil {
 		return errors.Wrapf(err, "parse update token failed: ")
@@ -161,13 +161,23 @@ func rotate(pkStr, skStr, tokenStr string) error {
 		return err
 	}
 
-	fmt.Printf("New server public key:\nPK.%d.%s.%s\nNew client private key:\nSK.%d.%s.%s\n",
+	uokmsClient := phe.NewUokmsClient()
+	if err := uokmsClient.SetKeysOneparty(skAuth); err != nil {
+		return err
+	}
+	newSkAuth, err := uokmsClient.RotateKeysOneparty(updateTokenAuth)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("New server public key:\nPK.%d.%s.%s\nNew client private key:\nSK.%d.%s.%s.%s\n",
 		tokenVersion,
 		base64.StdEncoding.EncodeToString(newPhePk),
 		base64.StdEncoding.EncodeToString(newKMSPk),
 		tokenVersion,
 		base64.StdEncoding.EncodeToString(newPheSk),
 		base64.StdEncoding.EncodeToString(newKMSSk),
+		base64.StdEncoding.EncodeToString(newSkAuth),
 	)
 	return nil
 }

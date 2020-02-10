@@ -115,7 +115,7 @@ func Search() *cli.Command {
 				return nil
 			}
 
-			fmt.Printf("|%64s |%63s |%20s\n", " Card Id   ", "Public key   ", " created_at ")
+			fmt.Printf("|%64s |%63s |%20s\n", " Card ID   ", "Public key   ", " created_at ")
 			fmt.Printf("|%64s|%64s|%20s\n",
 				"-----------------------------------------------------------------",
 				"----------------------------------------------------------------",

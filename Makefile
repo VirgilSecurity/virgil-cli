@@ -44,15 +44,24 @@ GO_BUILD_FLAGS=-v --ldflags "$(GO_BUILD_LDFLAGS)" -a -installsuffix cgo
 # Build targets
 #
 
-build: go_test_unit go_build
+build: go_get go_build
+tests: go_test_functional
 
 go_build:
 	@echo ">>> Building go binary."
 	go build $(GO_BUILD_FLAGS) -o $(BINARY)
 
+go_get:
+	@echo ">>> Getting dependencies."
+	go get ./...
+
 go_test_unit:
 	@echo ">>> Running unit tests."
 	@go test -cover $(GO_UNIT_TESTED_PACKAGES)
+
+go_test_functional:
+	@echo ">>> Running functional tests."
+	@go test -v -tags="functional" ./test/functional
 
 pack_artifacts:
 	@echo ">>> Archiving artifact"

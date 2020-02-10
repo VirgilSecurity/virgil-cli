@@ -72,34 +72,44 @@ func ParseVersionAndContent(prefix, str string) (version uint32, content []byte,
 }
 
 // ParseCombinedEntities splits string into 4 parts: Prefix, version and decoded base64 content Phe and Kms keys
-func ParseCombinedEntities(prefix, combinedEntity string) (version uint32, pheKeyContent, kmsKeyContent []byte, err error) {
+func ParseCombinedEntities(prefix, combinedEntity string) (version uint32, pheKeyContent, kmsKeyContent, authKeyContent []byte, err error) {
 	parts := strings.Split(combinedEntity, ".")
-	if len(parts) != 4 {
-		return 0, nil, nil, errors.New("invalid string: wrong number of blocks")
+	switch {
+	case len(parts) != 5 && prefix != "PK":
+		return 0, nil, nil, nil, errors.New("invalid string: wrong number of blocks")
+	case len(parts) != 4 && prefix == "PK":
+		return 0, nil, nil, nil, errors.New("invalid string: wrong number of blocks")
 	}
 
 	if parts[0] != prefix {
-		return 0, nil, nil, errors.New("invalid string: wrong prefix")
+		return 0, nil, nil, nil, errors.New("invalid string: wrong prefix")
 	}
 
 	nVersion, err := strconv.Atoi(parts[1])
 	if err != nil {
-		return 0, nil, nil, errors.Wrap(err, "invalid string: malformed version part")
+		return 0, nil, nil, nil, errors.Wrap(err, "invalid string: malformed version part")
 	}
 
 	if nVersion < 1 {
-		return 0, nil, nil, errors.Wrap(err, "invalid version")
+		return 0, nil, nil, nil, errors.Wrap(err, "invalid version")
 	}
 	version = uint32(nVersion)
 
 	pheKeyContent, err = base64.StdEncoding.DecodeString(parts[2])
 	if err != nil {
-		return 0, nil, nil, errors.Wrap(err, "invalid string: malformed first data part")
+		return 0, nil, nil, nil, errors.Wrap(err, "invalid string: malformed first data part")
 	}
 
 	kmsKeyContent, err = base64.StdEncoding.DecodeString(parts[3])
 	if err != nil {
-		return 0, nil, nil, errors.Wrap(err, "invalid string: malformed second data part")
+		return 0, nil, nil, nil, errors.Wrap(err, "invalid string: malformed second data part")
+	}
+
+	if prefix != "PK" {
+		authKeyContent, err = base64.StdEncoding.DecodeString(parts[4])
+		if err != nil {
+			return 0, nil, nil, nil, errors.Wrap(err, "invalid string: malformed third data part")
+		}
 	}
 	return
 }

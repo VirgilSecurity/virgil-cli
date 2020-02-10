@@ -36,10 +36,10 @@
 package keygen
 
 import (
-	"crypto/rand"
 	"encoding/base64"
 	"fmt"
 
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/phe"
 	"github.com/urfave/cli/v2"
 )
 
@@ -55,12 +55,21 @@ func Auth() *cli.Command {
 	}
 }
 
+func GenerateAuthKey() (key []byte, err error) {
+	uokmsClient := phe.NewUokmsClient()
+	err = uokmsClient.SetupDefaults()
+	if err != nil {
+		return nil, err
+	}
+	key, err = uokmsClient.GenerateClientPrivateKey()
+	return key, nil
+}
+
 func printAuthKey() error {
-	key := make([]byte, 32)
-	_, err := rand.Read(key)
+	key, err := GenerateAuthKey()
 	if err != nil {
 		return err
 	}
-	fmt.Println("AK." + base64.StdEncoding.EncodeToString(key))
+	fmt.Println(base64.StdEncoding.EncodeToString(key))
 	return nil
 }

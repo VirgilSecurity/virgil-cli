@@ -1,7 +1,7 @@
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.1 h1:jzRtQrJ63e5Filyn3PqVfmuPtI2LZZgtlZ178F1tYZQ=
-github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.1/go.mod h1:cZDgeYNFgh3IJaGutv6NbFvh0sKpBszwk/ZVft6NGVg=
+github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.2-0.20200207141558-b9c05dab9bdf h1:Xn6gxe9dgZeOWqo4koXr58Q6bHpmsTU33GZXy/+OulM=
+github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.2-0.20200207141558-b9c05dab9bdf/go.mod h1:cZDgeYNFgh3IJaGutv6NbFvh0sKpBszwk/ZVft6NGVg=
 github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412 h1:w1UutsfOrms1J05zt7ISrnJIXKzwaspym5BTKGx93EI=
 github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412/go.mod h1:WPjqKcmVOxf0XSf3YxCJs6N6AOSrOx3obionmG7T0y0=
 github.com/cenkalti/backoff/v4 v4.0.0/go.mod h1:eEew/i+1Q6OrCDZh3WiXYv3+nJwBASZ8Bog/87DQnVg=
