@@ -162,6 +162,10 @@ func rotate(pkStr, skStr, tokenStr string) error {
 	}
 
 	uokmsClient := phe.NewUokmsClient()
+	err = uokmsClient.SetupDefaults()
+	if err != nil {
+		return err
+	}
 	if err := uokmsClient.SetKeysOneparty(skAuth); err != nil {
 		return err
 	}
