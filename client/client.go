@@ -44,10 +44,16 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"runtime"
 
 	"github.com/golang/protobuf/proto"
 
 	"github.com/VirgilSecurity/virgil-cli/client/protobuf"
+	"github.com/VirgilSecurity/virgil-cli/utils"
+)
+
+var (
+	virgilAgent = fmt.Sprintf("cli;;%s;%s", runtime.GOOS, utils.Version)
 )
 
 type HTTPClient interface {
@@ -90,6 +96,7 @@ func (vc *VirgilHTTPClient) Send(
 	if len(header) != 0 {
 		req.Header = header
 	}
+	req.Header.Set("Virgil-Agent", virgilAgent)
 
 	client := vc.getHTTPClient()
 
