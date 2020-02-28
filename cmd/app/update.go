@@ -62,18 +62,18 @@ func Update(vcli *client.VirgilHTTPClient) *cli.Command {
 				defaultAppID = defaultApp.ID
 			}
 
-			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", "Enter application id", defaultAppID)
+			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", utils.ApplicationIDPrompt, defaultAppID)
 
 			_, err = getApp(appID, vcli)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			err = UpdateFunc(appID, vcli)
 
 			if err == nil {
-				fmt.Println("Application has been successfully updated.")
+				fmt.Println(utils.ApplicationUpdateSuccess)
 			} else if err == utils.ErrEntityNotFound {
-				return errors.New(fmt.Sprintf("Application with id %s not found.\n", appID))
+				return errors.New(fmt.Sprintf("%s %s\n", utils.ApplicationNotFound, appID))
 			}
 
 			return err
@@ -82,7 +82,7 @@ func Update(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func UpdateFunc(appID string, vcli *client.VirgilHTTPClient) (err error) {
-	name := utils.ReadConsoleValue("name", "Enter new app name")
+	name := utils.ReadConsoleValue("name", utils.ApplicationNamePrompt)
 
 	req := &models.UpdateAppRequest{Name: name}
 

@@ -40,6 +40,8 @@ import (
 	"fmt"
 
 	"github.com/urfave/cli/v2"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 // VirgilStorage generates a new Virgil Storage key pair
@@ -57,7 +59,7 @@ func VirgilStorage() *cli.Command {
 func printSigningKey() error {
 	sk, pk, err := generateKeypairEncoded()
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 
 	fmt.Println("VSSK." + base64.StdEncoding.EncodeToString(sk))

@@ -60,22 +60,22 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 			if defaultApp != nil {
 				defaultAppID = defaultApp.ID
 			}
-			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", "Enter application id", defaultAppID)
+			appID := utils.ReadParamOrDefaultOrFromConsole(context, "appID", utils.ApplicationIDPrompt, defaultAppID)
 
 			app, err := getApp(appID, vcli)
 			if err != nil {
 				return err
 			}
-			msg := fmt.Sprintf("Are you sure, that you want to delete application %s (y/n) ?", app.Name)
+			msg := fmt.Sprintf("%s %s (y/n) ?", utils.ApplicationDeletePrompt, app.Name)
 			yesOrNo := utils.ReadConsoleValue("y or n", msg, "y", "n")
 			if yesOrNo == "n" {
 				return
 			}
 			err = deleteAppFunc(appID, vcli)
 			if err == nil {
-				fmt.Println("Application has been successfully deleted.")
+				fmt.Println(utils.ApplicationDeleteSuccess)
 			} else if err == utils.ErrEntityNotFound {
-				return errors.New(fmt.Sprintf("Application with id %s not found.\n", appID))
+				return utils.CliExit(errors.New(fmt.Sprintf("%s %s \n", utils.ApplicationNotFound, appID)))
 			}
 
 			if defaultAppID == appID {
@@ -106,7 +106,7 @@ func getApp(appID string, vcli *client.VirgilHTTPClient) (app *models.Applicatio
 				return a, nil
 			}
 		}
-		return nil, errors.New(fmt.Sprintf("application with id %s not found", appID))
+		return nil, errors.New(fmt.Sprintf("%s %s \n", utils.ApplicationNotFound, appID))
 	}
 
 	return nil, errors.New("empty response")

@@ -57,7 +57,7 @@ func Keygen() *cli.Command {
 			pass := utils.ReadFlagOrDefault(context, "p", "")
 			key, err := KeygenFunc(pass)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			var writer io.Writer = os.Stdout
@@ -65,7 +65,7 @@ func Keygen() *cli.Command {
 				var file *os.File
 				file, err = os.Create(fileName)
 				if err != nil {
-					return err
+					return utils.CliExit(err)
 				}
 				defer func() {
 					if ferr := file.Close(); ferr != nil {
@@ -83,15 +83,15 @@ func Keygen() *cli.Command {
 
 			_, err = fmt.Fprintf(writer, "-----BEGIN%sPRIVATE KEY-----\n", encrypted)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			_, err = fmt.Fprintln(writer, base64.StdEncoding.EncodeToString(key))
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			_, err = fmt.Fprintf(writer, "-----END%sPRIVATE KEY-----\n", encrypted)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			return err

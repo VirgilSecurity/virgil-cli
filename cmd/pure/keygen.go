@@ -47,7 +47,7 @@ import (
 	"github.com/VirgilSecurity/virgil-cli/cmd/pure/keygen"
 )
 
-//Keygen generates PureKit private key
+// Keygen generates PureKit private key
 func Keygen() *cli.Command {
 	return &cli.Command{
 		Name:    "keygen",

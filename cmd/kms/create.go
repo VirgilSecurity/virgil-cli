@@ -65,7 +65,7 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app-token", Usage: "application token"}},
 
 		Action: func(context *cli.Context) (err error) {
-			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter key name", "")
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", utils.KMSKeyNamePrompt, "")
 
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppToken := ""
@@ -75,13 +75,13 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
 			if appToken == "" {
-				return errors.New("please, specify app-token (flag --app-token)")
+				return utils.CliExit(errors.New(utils.SpecifyAppTokenFlag))
 			}
 
 			keyPair, err := CreateFunc(name, appToken, vcli)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			fmt.Printf(
@@ -90,7 +90,7 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 				int(keyPair.KeyVersion),
 				recoveryKeyChecker(keyPair),
 			)
-			fmt.Println("KMS Key Pair has been successfully created.")
+			fmt.Println(utils.KMSKeyCreateSuccess)
 			return nil
 		},
 	}

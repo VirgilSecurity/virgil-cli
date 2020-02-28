@@ -63,18 +63,18 @@ func Decrypt() *cli.Command {
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
 			if keyFileName == "" {
-				return errors.New("key file isn't specified (use -key)")
+				return utils.CliExit(errors.New(utils.KeyFileNotSpecified))
 			}
 			pass := utils.ReadFlagOrDefault(context, "p", "")
 
-			dataToDecrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", "Enter data to decrypt")
+			dataToDecrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", utils.DecryptDataPrompt)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			privateKeyString, err := utils.ReadKeyStringFromFile(context, keyFileName)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			var writer io.Writer = os.Stdout
@@ -82,7 +82,7 @@ func Decrypt() *cli.Command {
 				var file *os.File
 				file, err = os.Create(destinationFileName)
 				if err != nil {
-					return err
+					return utils.CliExit(err)
 				}
 				defer func() {
 					if ferr := file.Close(); ferr != nil {
@@ -95,12 +95,12 @@ func Decrypt() *cli.Command {
 
 			key, err := DecryptFunc(privateKeyString, pass, dataToDecrypt)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			_, err = fmt.Fprint(writer, string(key))
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			fmt.Println()
 
@@ -113,9 +113,7 @@ func DecryptFunc(privateKeyString, password string, data []byte) (publicKey []by
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {
-		if err != nil {
-			return nil, errors.New("can't import private key")
-		}
+		return nil, errors.New(utils.CantImportPrivateKey)
 	}
 
 	dd, err := base64.StdEncoding.DecodeString(string(data))

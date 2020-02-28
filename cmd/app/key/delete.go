@@ -63,17 +63,17 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
 			if appID == "" {
-				return errors.New("Please, specify app_id (flag --app_id)")
+				return utils.CliExit(errors.New(utils.SpecifyAppIDFlag))
 			}
 
-			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "Enter App Key ID", "")
+			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "id", utils.AppKeyIDPrompt, "")
 
 			err = deleteAPIKeyIDFunc(apiKeyID, appID, vcli)
 
 			if err == nil {
-				fmt.Println("App Key has been successfully deleted.")
+				fmt.Println(utils.AppKeyDeleteSuccess)
 			} else if err == utils.ErrEntityNotFound {
-				return errors.New(fmt.Sprintf("Api key with id %s not found.\n", apiKeyID))
+				return utils.CliExit(errors.New(fmt.Sprintf("%s %s \n", utils.ApiKeyNotFound, apiKeyID)))
 			}
 
 			return err

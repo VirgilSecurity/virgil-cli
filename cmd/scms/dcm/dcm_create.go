@@ -60,9 +60,9 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 			&cli.StringFlag{Name: "verify-pub-key", Usage: "verify public key"}},
 
 		Action: func(context *cli.Context) (err error) {
-			name := utils.ReadFlagOrConsoleValue(context, "name", "Enter dsm certificate name")
-			encryptPubKey := utils.ReadFlagOrConsoleValue(context, "encrypt-pub-key", "Enter encrypt public key")
-			verifyPubKey := utils.ReadFlagOrConsoleValue(context, "verify-pub-key", "Enter verify public key")
+			name := utils.ReadFlagOrConsoleValue(context, "name", utils.SCMSDCMCertificateNamePrompt)
+			encryptPubKey := utils.ReadFlagOrConsoleValue(context, "encrypt-pub-key", utils.SCMSDCMPublicKeyPrompt)
+			verifyPubKey := utils.ReadFlagOrConsoleValue(context, "verify-pub-key", utils.SCMSDCMPublicKeyVerifyPrompt)
 
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppToken := ""
@@ -72,15 +72,15 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
 			if appToken == "" {
-				return errors.New("Please, specify app-token (flag --app-token)")
+				return utils.CliExit(errors.New(utils.SpecifyAppTokenFlag))
 			}
 			dcm, err := DsmCreateFunc(name, encryptPubKey, verifyPubKey, appToken, vcli)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			serialized, err := json.MarshalIndent(dcm, "", "\t")
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			fmt.Println(string(serialized))
 
@@ -106,16 +106,3 @@ func DsmCreateFunc(
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/scms/dcm", req, &resp, appToken)
 	return
 }
-
-//CMD: virgil scms dcm create  --name "My first DCM certificate" --encrypt-pub-key BASE64 --verfiy-pub-key BASE64
-//URL    :  https://api.virgilsecurity.com/v1/scms/{APPLICATION_ID}/dcm
-//METHOD: POST
-//BODY: {"name":"My first DCM certificate","encrypt_public_key":"BASE64","verify_public_key":"BASE64"}
-//RESP BODY: {
-//    "name": "human name for DCM certificate",
-//    "certificate": "BASE64",
-//    "eca_address": "https://api.virgilsecurity.com/scms/v1",
-//    "eca_certificate": "BASE64",
-//    "ra_address": "https://api.virgilsecurity.com/scms/v1",
-//    "lccf": "BASE64",
-//}

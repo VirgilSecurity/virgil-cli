@@ -64,30 +64,30 @@ func Search() *cli.Command {
 		},
 		Usage: "search cards by identity",
 		Action: func(context *cli.Context) error {
-			identity := utils.ReadParamOrDefaultOrFromConsole(context, "identity", "Enter card identity", "")
+			identity := utils.ReadParamOrDefaultOrFromConsole(context, "identity", utils.CardIdentityPrompt, "")
 			cardVerifier, err := sdk.NewVirgilCardVerifier(cardCrypto, true, true)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			configFileName := utils.ReadFlagOrDefault(context, "c", "")
 			if configFileName == "" {
-				return errors.New("configuration file isn't specified (use -c)")
+				return utils.CliExit(errors.New(utils.ConfigurationFileNotSpecified))
 			}
 
 			data, err := ioutil.ReadFile(configFileName)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			conf, err := utils.ParseAppConfig(data)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			privateKey, err := crypto.ImportPrivateKey(conf.APIKey, "")
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			ttl := time.Minute
@@ -102,16 +102,16 @@ func Search() *cli.Command {
 
 			cardManager, err := sdk.NewCardManager(mgrParams)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			cards, err := cardManager.SearchCards(identity)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			if len(cards) == 0 {
-				fmt.Println("there are no cards found for identity : " + identity)
+				fmt.Println(utils.CardForIdentityNotFound + identity)
 				return nil
 			}
 
@@ -124,7 +124,7 @@ func Search() *cli.Command {
 			for _, c := range cards {
 				pk, err := crypto.ExportPublicKey(c.PublicKey)
 				if err != nil {
-					return err
+					return utils.CliExit(err)
 				}
 				fmt.Printf("|%63s |%63s |%20s\n", c.Id, base64.StdEncoding.EncodeToString(pk), c.CreatedAt)
 			}

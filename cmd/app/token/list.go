@@ -64,17 +64,17 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
 			if appID == "" {
-				return errors.New("Please, specify app_id (flag --app_id)")
+				return utils.CliExit(errors.New(utils.SpecifyAppIDFlag))
 			}
 
 			var tokens []*models.ApplicationToken
 			tokens, err = listFunc(appID, vcli)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			if len(tokens) == 0 {
-				fmt.Println("There are no tokens created for the application")
+				fmt.Println(utils.AppTokensNotCreatedYet)
 				return nil
 			}
 			sort.Slice(tokens, func(i, j int) bool {

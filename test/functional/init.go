@@ -33,44 +33,20 @@
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
-package keygen
+package functional
 
 import (
-	"encoding/base64"
-	"fmt"
-
-	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/foundation"
-	"github.com/urfave/cli/v2"
-
-	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/VirgilSecurity/virgil-cli/test/helpers"
 )
 
-// Secret generates secret key
-func NonRotatableMasterSecret() *cli.Command {
-	return &cli.Command{
-		Name:    "nonrotable-master",
-		Aliases: []string{"nm"},
-		Usage:   "Generate a new Non Rotatable Master Secret key",
-		Action: func(context *cli.Context) error {
-			return printNonRotatableMasterSecretKey()
-		},
-	}
-}
+var (
+	UserEmail    string
+	UserPassword string
+)
 
-func printNonRotatableMasterSecretKey() error {
-	random := foundation.NewCtrDrbg()
-	if err := random.SetupDefaults(); err != nil {
-		return utils.CliExit(err)
-	}
+func init() {
+	UserEmail = helpers.GenerateEmail()
+	UserPassword = helpers.GeneratePassowrd()
 
-	nmsBytes, err := random.Random(32)
-	if err != nil {
-		return utils.CliExit(err)
-	}
-
-	fmt.Printf(
-		"NM.%s\n",
-		base64.StdEncoding.EncodeToString(nmsBytes),
-	)
-	return nil
+	helpers.RegisterUser(UserEmail, UserPassword)
 }

@@ -41,6 +41,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 	"gopkg.in/virgil.v5/cryptoimpl"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 // OwnSigningKey is generates a new own signing key
@@ -60,13 +62,13 @@ func printOwnSigningKeys() error {
 	keyPair, err := cryptoimpl.NewKeypair()
 
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 
 	prKey, err := keyPair.PrivateKey().Encode(nil)
 	pkKey, err := keyPair.PublicKey().Encode()
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 
 	fmt.Println("OSSK." + base64.StdEncoding.EncodeToString(prKey))

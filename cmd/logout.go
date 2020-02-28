@@ -49,9 +49,14 @@ func Logout() *cli.Command {
 		Name:  "logout",
 		Usage: "Close user session",
 		Action: func(context *cli.Context) error {
+			_, err := utils.LoadAccessToken()
+			if err != nil {
+				fmt.Println(utils.LogoutNotNeeded)
+				return nil
+			}
 			_ = utils.DeleteAppFile()
 			_ = utils.DeleteAccessToken()
-			fmt.Println("Logout ok.")
+			fmt.Println(utils.LogoutSuccess)
 			return nil
 		},
 	}

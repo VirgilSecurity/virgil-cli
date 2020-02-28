@@ -64,7 +64,7 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
 			if appToken == "" {
-				return errors.New("Please, specify app-token (flag --app-token)")
+				return utils.CliExit(errors.New(utils.SpecifyAppTokenFlag))
 			}
 
 			keyPairs, err := listFunc(appToken, vcli)

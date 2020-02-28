@@ -41,6 +41,8 @@ import (
 
 	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/phe"
 	"github.com/urfave/cli/v2"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 // Auth generates Auth key
@@ -68,7 +70,7 @@ func GenerateAuthKey() (key []byte, err error) {
 func printAuthKey() error {
 	key, err := GenerateAuthKey()
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 	fmt.Println(base64.StdEncoding.EncodeToString(key))
 	return nil

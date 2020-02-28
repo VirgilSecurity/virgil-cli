@@ -33,44 +33,33 @@
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
-package keygen
+package helpers
 
 import (
-	"encoding/base64"
+	"bufio"
 	"fmt"
+	"os"
+	"os/exec"
+	"path"
+	"strings"
 
-	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/foundation"
-	"github.com/urfave/cli/v2"
-
-	"github.com/VirgilSecurity/virgil-cli/utils"
+	"github.com/VirgilSecurity/virgil-cli/test/fixtures"
 )
 
-// Secret generates secret key
-func NonRotatableMasterSecret() *cli.Command {
-	return &cli.Command{
-		Name:    "nonrotable-master",
-		Aliases: []string{"nm"},
-		Usage:   "Generate a new Non Rotatable Master Secret key",
-		Action: func(context *cli.Context) error {
-			return printNonRotatableMasterSecretKey()
-		},
-	}
+func PrepareCmd(args ...string) *exec.Cmd {
+	projectRoot, _ := os.Getwd()
+	projectRoot = strings.Replace(projectRoot, "/test/functional", "", 1)
+	return exec.Command(path.Join(projectRoot, fixtures.BinaryName), args...)
 }
 
-func printNonRotatableMasterSecretKey() error {
-	random := foundation.NewCtrDrbg()
-	if err := random.SetupDefaults(); err != nil {
-		return utils.CliExit(err)
+func CmdKiller(cmd *exec.Cmd, scannerErr *bufio.Scanner) bool {
+	var cmdErrored bool
+	for scannerErr.Scan() {
+		cmdErrored = true
+		fmt.Printf("CmdErr: %s\n", scannerErr.Text())
 	}
-
-	nmsBytes, err := random.Random(32)
-	if err != nil {
-		return utils.CliExit(err)
+	if cmdErrored {
+		_ = cmd.Process.Kill()
 	}
-
-	fmt.Printf(
-		"NM.%s\n",
-		base64.StdEncoding.EncodeToString(nmsBytes),
-	)
-	return nil
+	return cmdErrored
 }

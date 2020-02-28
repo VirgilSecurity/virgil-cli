@@ -57,17 +57,17 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "type", Usage: "application type (e2ee or pure)"}},
 
 		Action: func(context *cli.Context) (err error) {
-			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter application name", "")
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", utils.ApplicationNamePrompt, "")
 			var appID string
 
 			appID, err = CreateFunc(name, vcli)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
-			fmt.Println("App ID:", appID)
-			fmt.Println("Application has been successfully created.")
+			fmt.Println(utils.ApplicationIDOutput, appID)
+			fmt.Println(utils.ApplicationCreateSuccess)
 			return nil
 		},
 	}

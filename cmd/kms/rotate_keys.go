@@ -43,6 +43,8 @@ import (
 
 	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/phe"
 	"github.com/urfave/cli/v2"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 var keyPrefixes = []string{"KS.", "KP."}
@@ -72,17 +74,17 @@ func rotateKMSKeysCommand(context *cli.Context) (err error) {
 
 	clientPrivateKey, err := base64.StdEncoding.DecodeString(b64ClientPrivateKey)
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 
 	serverPublicKey, err := base64.StdEncoding.DecodeString(b64ServerPublicKey)
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 
 	updateToken, err := base64.StdEncoding.DecodeString(b64UpdateToken)
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 
 	newClientPrivateKey, newServerPublicKey, err := RotateKMSKeys(clientPrivateKey, serverPublicKey, updateToken)

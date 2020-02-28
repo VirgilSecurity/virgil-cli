@@ -60,16 +60,16 @@ func Init(vcli *client.VirgilHTTPClient) *cli.Command {
 			}
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
 			if appID == "" {
-				return errors.New("please, specify app-id (flag --app-id)")
+				return utils.CliExit(errors.New(utils.SpecifyAppIDFlag))
 			}
 
 			err = InitFunc(appID, vcli)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
-			fmt.Println("Application init ok.")
+			fmt.Println(utils.SCMSApplicationInitSuccess)
 			return nil
 		},
 	}

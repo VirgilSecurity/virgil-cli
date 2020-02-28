@@ -64,16 +64,16 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 			}
 			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
 			if appToken == "" {
-				return errors.New("Please, specify app-token (flag --app_token)")
+				return utils.CliExit(errors.New(utils.SpecifyAppTokenFlag))
 			}
 
 			certs, err := dcmListFunc(appToken, vcli)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			if len(certs) == 0 {
-				fmt.Println("There are no certs created for the application")
+				fmt.Println(utils.SCMSDCMCertificatesNotCreatedYet)
 				return nil
 			}
 			sort.Slice(certs, func(i, j int) bool {
@@ -102,10 +102,3 @@ func dcmListFunc(appToken string, vcli *client.VirgilHTTPClient) (apps []*models
 
 	return nil, errors.New("empty response")
 }
-
-//CMD: virgil scms dcm list
-//URL:  https://api.virgilsecurity.com/v1/scms/{APPLICATION_ID}/dcm
-//METHOD: GET
-//RESP BODY: [
-//    {"name": "My first DCM certificate", "created_at": "2005-08-09T18:31:42-03"}
-//]

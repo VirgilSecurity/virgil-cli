@@ -40,6 +40,8 @@ import (
 	"fmt"
 
 	"github.com/urfave/cli/v2"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 // HashesKey generates a new Hashes key pair
@@ -57,7 +59,7 @@ func HashesKey() *cli.Command {
 func printHBKey() error {
 	sk, pk, err := generateKeypairEncoded()
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 
 	fmt.Println("HB." + base64.StdEncoding.EncodeToString(pk))

@@ -60,38 +60,38 @@ func Verify() *cli.Command {
 		Action: func(context *cli.Context) error {
 			keyFileName := utils.ReadFlagOrDefault(context, "key", "")
 			if keyFileName == "" {
-				return errors.New("key file isn't specified (use -key)")
+				return utils.CliExit(errors.New(utils.KeyFileNotSpecified))
 			}
 			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
 			if inputFileName == "" {
-				return errors.New("input file isn't specified (use -i)")
+				return utils.CliExit(errors.New(utils.InputFileNotSpecified))
 			}
 			signatureFileName := utils.ReadFlagOrDefault(context, "s", "")
 			if signatureFileName == "" {
-				return errors.New("signature file isn't specified (use -s)")
+				return errors.New(utils.SignatureFileNotSpecified)
 			}
 			publicKeyString, err := utils.ReadKeyStringFromFile(context, keyFileName)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			data, err := ioutil.ReadFile(inputFileName)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			signature, err := ioutil.ReadFile(signatureFileName)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			err = VerifyFunc(publicKeyString, data, signature)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
-			fmt.Println("Signature OK ")
+			fmt.Println(utils.VerifySuccess)
 			return nil
 		},
 	}
@@ -101,7 +101,7 @@ func VerifyFunc(publicKeyString string, data, signature []byte) (err error) {
 	pk, err := cryptoimpl.DecodePublicKey([]byte(publicKeyString))
 
 	if err != nil {
-		return errors.New("can't import public key")
+		return errors.New(utils.CantImportPublicKey)
 	}
 
 	ss, err := base64.StdEncoding.DecodeString(string(signature))
@@ -112,7 +112,7 @@ func VerifyFunc(publicKeyString string, data, signature []byte) (err error) {
 
 	err = crypto.VerifySignature(data, ss, pk)
 	if err != nil {
-		return errors.New("signature is invalid")
+		return errors.New(utils.VerifyFailed)
 	}
 
 	return nil

@@ -63,7 +63,7 @@ func UseApp(client *client.VirgilHTTPClient) *cli.Command {
 
 func useFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
 	if context.NArg() < 1 {
-		return errors.New("Invalid number of arguments. Please, specify application name")
+		return errors.New(utils.UseInvalidNumberArguments)
 	}
 
 	appName := strings.Join(context.Args().Slice(), " ")
@@ -72,22 +72,22 @@ func useFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
 	apps, err := listFunc(vcli)
 
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 
 	for _, app := range apps {
 		if app.Name == appName {
 			err := utils.SaveDefaultApp(vcli, app)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
-			fmt.Println("Application context set ok")
-			fmt.Println("All future commands without specifying app_id will be applied to current app")
+			fmt.Println(utils.ApplicationSetContextSuccess)
+			fmt.Println(utils.UseApplicationWarning)
 			return nil
 		}
 	}
 
-	return errors.New("there is no app with name " + appName)
+	return errors.New(utils.ApplicationWithNameNotFound + appName)
 }
 
 func listFunc(vcli *client.VirgilHTTPClient) (apps []*models.Application, err error) {

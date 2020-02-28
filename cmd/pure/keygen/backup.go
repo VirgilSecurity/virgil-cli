@@ -40,6 +40,8 @@ import (
 	"fmt"
 
 	"github.com/urfave/cli/v2"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 // Backup generates a new  Backup keypair
@@ -57,7 +59,7 @@ func Backup() *cli.Command {
 func printBackupKeys() error {
 	sk, pk, err := generateKeypairEncoded()
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 	fmt.Println("Backup keypair (optional) - keypair used to decrypt any data in case of some failure")
 	fmt.Println("BU." + base64.StdEncoding.EncodeToString(pk))

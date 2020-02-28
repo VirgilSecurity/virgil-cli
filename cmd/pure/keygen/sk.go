@@ -43,6 +43,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/cmd/kms"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 // Secret generates secret key
@@ -65,15 +66,15 @@ func printSecretKey() error {
 
 	pheKey, err := pheClient.GenerateClientPrivateKey()
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 	kmsKey, err := kms.GenerateKMSPrivateKey()
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 	authKey, err := GenerateAuthKey()
 	if err != nil {
-		return err
+		return utils.CliExit(err)
 	}
 	fmt.Printf(
 		"SK.1.%s.%s.%s\n",

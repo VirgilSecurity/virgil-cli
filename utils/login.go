@@ -43,19 +43,18 @@ import (
 	"os"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	"github.com/google/uuid"
 	"github.com/howeyc/gopass"
+	"github.com/pkg/errors"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
 )
 
-//Login obtains temporary account access token. Email and password may be empty
+// Login obtains temporary account access token. Email and password may be empty
 func Login(email, password string, vcli *client.VirgilHTTPClient) error {
 	if email == "" {
-		fmt.Println("Enter your email:")
+		fmt.Println(EmailPrompt)
 
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
@@ -64,7 +63,7 @@ func Login(email, password string, vcli *client.VirgilHTTPClient) error {
 	}
 
 	if password == "" {
-		pwd, err := gopass.GetPasswdPrompt("Enter account password:\r\n", false, os.Stdin, os.Stdout)
+		pwd, err := gopass.GetPasswdPrompt(PasswordPrompt+"\r\n", false, os.Stdin, os.Stdout)
 		if err != nil {
 			return err
 		}
@@ -86,17 +85,25 @@ func Login(email, password string, vcli *client.VirgilHTTPClient) error {
 		_, err := CheckRetry(vErr, vcli)
 		if err == ErrEmptyMFACode {
 			var code []byte
-			code, err = gopass.GetPasswdPrompt("Enter 2-factor code:\r\n", true, os.Stdin, os.Stdout)
+			fmt.Printf("%s\n", TwoFactorCodeDescription)
+			code, err = gopass.GetPasswdPrompt(TwoFactorCodePrompt+"\r\n", true, os.Stdin, os.Stdout)
 			req.Verification = &models.Verification{MFACode: string(code)}
 		}
 		if err == ErrEmailIsNotConfirmed {
-			code := ReadConsoleValue("confirmation_code", "Please, enter the confirmation code from your email")
+			fmt.Printf("%s\n", ConfirmationCodeDescription)
+			code := ReadConsoleValue(
+				"confirmation_code",
+				ConfirmationCodePrompt,
+			)
 
 			_, _, vErr = vcli.Send(http.MethodGet, "user/register/confirm/"+code, req, nil, nil)
 			_, err = CheckRetry(vErr, vcli)
 		}
 		if err != nil {
-			return fmt.Errorf("authorization failed: %v", err)
+			if err == vErr {
+				return CliExitVirgil(vErr)
+			}
+			return CliExit(err)
 		}
 	}
 
@@ -107,12 +114,12 @@ func Login(email, password string, vcli *client.VirgilHTTPClient) error {
 		models.ManagementTokenRequest{Name: uuid.New().String()},
 		&managementToken, header)
 	if vErr != nil {
-		return errors.New(fmt.Sprintf("Authorization failed.\n"))
+		return CliExit(errors.New(fmt.Sprintf("Authorization failed.\n")))
 	}
 
 	_, _, vErr = vcli.Send(http.MethodPost, "user/logout", nil, nil, header)
 	if vErr != nil {
-		return errors.New(fmt.Sprintf("Authorization failed.\n"))
+		return CliExit(errors.New(fmt.Sprintf("Authorization failed.\n")))
 	}
 
 	return SaveAccessToken(managementToken.Token)

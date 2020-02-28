@@ -61,30 +61,30 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 			if defaultApp != nil {
 				defaultAppID = defaultApp.ID
 			}
-			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter token name", "")
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", utils.AppTokenNamePrompt, "")
 
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
 			if appID == "" {
-				return errors.New("Please, specify app_id (flag --app_id)")
+				return utils.CliExit(errors.New(utils.SpecifyAppIDFlag))
 			}
 
 			var tokens []*models.ApplicationToken
 			tokens, err = listFunc(appID, vcli)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			for _, t := range tokens {
 				if t.Name == name {
 					err = deleteAppTokenFunc(appID, t.ID, vcli)
 					if err == nil {
-						fmt.Println("delete ok.")
+						fmt.Println(utils.AppTokenDeleteSuccess)
 					}
-					return err
+					return utils.CliExit(err)
 				}
 			}
-			fmt.Println("token not found")
-			return err
+			fmt.Println(utils.AppTokenNotFound)
+			return utils.CliExit(err)
 		},
 	}
 }

@@ -60,21 +60,21 @@ func Encrypt() *cli.Command {
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
-			dataToEncrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", "Enter data to encrypt")
+			dataToEncrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", utils.EncryptDataPrompt)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			keyFileNames := context.StringSlice("key")
 			if len(keyFileNames) == 0 {
-				return errors.New("key file isn't specified (use -key)")
+				return utils.CliExit(errors.New(utils.KeyFileNotSpecified))
 			}
 
 			pubKeyStrings := make([]string, len(keyFileNames))
 			for i, f := range keyFileNames {
 				pubKeyStrings[i], err = utils.ReadKeyStringFromFile(context, f)
 				if err != nil {
-					return err
+					return utils.CliExit(err)
 				}
 			}
 			var writer io.Writer = os.Stdout
@@ -82,7 +82,7 @@ func Encrypt() *cli.Command {
 				var file *os.File
 				file, err = os.Create(destinationFileName)
 				if err != nil {
-					return err
+					return utils.CliExit(err)
 				}
 				defer func() {
 					if ferr := file.Close(); ferr != nil {
@@ -96,12 +96,12 @@ func Encrypt() *cli.Command {
 			encData, err := EncryptFunc(dataToEncrypt, pubKeyStrings)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			_, err = fmt.Fprint(writer, base64.StdEncoding.EncodeToString(encData))
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			fmt.Println()
 
@@ -119,7 +119,7 @@ func EncryptFunc(data []byte, publicKeysStrings []string) (publicKey []byte, err
 	for i, s := range publicKeysStrings {
 		pkk[i], err = cryptoimpl.DecodePublicKey([]byte(s))
 		if err != nil {
-			return nil, errors.New("can't import public key")
+			return nil, errors.New(utils.CantImportPublicKey)
 		}
 	}
 

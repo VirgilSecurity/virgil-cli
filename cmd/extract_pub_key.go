@@ -68,7 +68,7 @@ func Key2Pub() *cli.Command {
 			if inputFileName != "" {
 				f, err := os.Open(inputFileName)
 				if err != nil {
-					return err
+					return utils.CliExit(err)
 				}
 				defer func() {
 					if err := f.Close(); err != nil {
@@ -93,7 +93,7 @@ func Key2Pub() *cli.Command {
 			if destinationFileName != "" {
 				file, err := os.Create(destinationFileName)
 				if err != nil {
-					return err
+					return utils.CliExit(err)
 				}
 				writer = file
 				defer func() {
@@ -107,20 +107,20 @@ func Key2Pub() *cli.Command {
 			key, err := Key2PubFunc(privateKeyString, pass)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			_, err = fmt.Fprintf(writer, "-----BEGIN PUBLIC KEY-----\n")
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			_, err = fmt.Fprintln(writer, base64.StdEncoding.EncodeToString(key))
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			_, err = fmt.Fprintf(writer, "-----END PUBLIC KEY-----\n")
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			return err
@@ -132,7 +132,7 @@ func Key2PubFunc(privateKeyString, password string) (publicKey []byte, err error
 	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
 
 	if err != nil {
-		return nil, fmt.Errorf("can't parse private key (may be key password required)")
+		return nil, fmt.Errorf(utils.ExtractPubKeyParseFailed)
 	}
 
 	pubKey, err := pk.ExtractPublicKey()

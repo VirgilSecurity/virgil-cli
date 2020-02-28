@@ -39,6 +39,8 @@ import (
 	"fmt"
 
 	"github.com/urfave/cli/v2"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 // All generates all pure key pairs
@@ -50,19 +52,19 @@ func All() *cli.Command {
 			fmt.Println("----------------------------------------------------------------------------------")
 
 			if err := printBackupKeys(); err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			fmt.Println("==================================================================================")
 
 			if err := printNonRotatableMasterSecretKey(); err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			fmt.Println("==================================================================================")
 
 			if err := printSecretKey(); err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			fmt.Println("----------------------------------------------------------------------------------")

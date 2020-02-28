@@ -59,14 +59,14 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 		},
 		Usage: "delete cards by id",
 		Action: func(context *cli.Context) error {
-			cardID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "Enter card id", "")
+			cardID := utils.ReadParamOrDefaultOrFromConsole(context, "id", utils.CardIDPrompt, "")
 
 			configFileName := utils.ReadFlagOrDefault(context, "c", "")
 			if configFileName == "" {
-				return errors.New("configuration file isn't specified (use -c)")
+				return utils.CliExit(errors.New(utils.ConfigurationFileNotSpecified))
 			}
 
-			identity := utils.ReadFlagOrConsoleValue(context, "i", "Enter card identity")
+			identity := utils.ReadFlagOrConsoleValue(context, "i", utils.CardIdentityPrompt)
 
 			data, err := ioutil.ReadFile(configFileName)
 			if err != nil {
@@ -80,30 +80,29 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			privateKey, err := crypto.ImportPrivateKey(conf.APIKey, "")
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			ttl := time.Minute
 
 			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APIKeyID, tokenSigner, conf.AppID, ttl)
 
-			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("Are you sure, that you want to delete card (y/n) ?"), "y", "n")
+			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("%s (y/n) ?"), utils.CardDeletePrompt, "y", "n")
 			if yesOrNo == "n" {
 				return nil
 			}
 			token, err := jwtGenerator.GenerateToken(identity, nil)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			err = deleteCardFunc(cardID, token.String(), vcli)
+			if err == utils.ErrEntityNotFound {
+				return utils.CliExit(errors.New(fmt.Sprintf("%s %s \n", utils.CardNotFound, cardID)))
+			}
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
-			if err == nil {
-				fmt.Println("Card delete ok.")
-			} else if err == utils.ErrEntityNotFound {
-				return errors.New(fmt.Sprintf("card with id %s not found.\n", cardID))
-			}
+			fmt.Println(utils.CardDeleteSuccess)
 
 			return nil
 		},

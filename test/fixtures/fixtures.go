@@ -33,44 +33,22 @@
  *
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
-package keygen
+package fixtures
 
-import (
-	"encoding/base64"
-	"fmt"
+const (
+	// Test Configs
+	BinaryName = "virgil"
 
-	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/foundation"
-	"github.com/urfave/cli/v2"
+	// Cli prompts
+	VersionPattern = "CLI version "
 
-	"github.com/VirgilSecurity/virgil-cli/utils"
+	KMSKeyInfoPatternShort    = "KMS Key alias: "
+	KMSKeyInfoPattern         = "KMS Key alias: %s version: 1 public key: " // place holder contains upper case key alias
+	KMSRotateServerPublicKey  = "New server public key:"
+	KMSRotateClientPrivateKey = "New client private key:"
 )
 
-// Secret generates secret key
-func NonRotatableMasterSecret() *cli.Command {
-	return &cli.Command{
-		Name:    "nonrotable-master",
-		Aliases: []string{"nm"},
-		Usage:   "Generate a new Non Rotatable Master Secret key",
-		Action: func(context *cli.Context) error {
-			return printNonRotatableMasterSecretKey()
-		},
-	}
-}
-
-func printNonRotatableMasterSecretKey() error {
-	random := foundation.NewCtrDrbg()
-	if err := random.SetupDefaults(); err != nil {
-		return utils.CliExit(err)
-	}
-
-	nmsBytes, err := random.Random(32)
-	if err != nil {
-		return utils.CliExit(err)
-	}
-
-	fmt.Printf(
-		"NM.%s\n",
-		base64.StdEncoding.EncodeToString(nmsBytes),
-	)
-	return nil
-}
+var (
+	AppListHeaders     = []string{"Application name", "APP_ID", "created_at"}
+	KMSKeysListHeaders = []string{"Keypair alias", "Keypair version", "Public Key"}
+)

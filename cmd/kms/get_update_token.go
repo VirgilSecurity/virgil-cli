@@ -58,7 +58,7 @@ func GetUpdateToken(vcli *client.VirgilHTTPClient) *cli.Command {
 		Flags:     []cli.Flag{&cli.StringFlag{Name: "app-token", Usage: "application token"}},
 		Action: func(context *cli.Context) (err error) {
 			if context.Args().First() == "" {
-				return errors.New("invalid kms key pair alias")
+				return utils.CliExit(errors.New(utils.KMSKeyAliasInvalid))
 			}
 			aliasKMSKey := context.Args().First()
 
@@ -70,11 +70,11 @@ func GetUpdateToken(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
 			if appToken == "" {
-				return errors.New("Please, specify app-token (flag --app-token)")
+				return utils.CliExit(errors.New(utils.SpecifyAppTokenFlag))
 			}
 
 			if err := printUpdateToken(appToken, aliasKMSKey, vcli); err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			return nil
 		},

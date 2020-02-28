@@ -66,20 +66,20 @@ func Update(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
 			if appID == "" {
-				return errors.New("Please, specify app_id (flag --app_id)")
+				return utils.CliExit(errors.New(utils.SpecifyAppIDFlag))
 			}
 
 			apiKeyID := utils.ReadParamOrDefaultOrFromConsole(context, "app_key_id", "Enter App Key ID", "")
 
 			_, err = getKey(appID, apiKeyID, vcli)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			err = UpdateFunc(appID, apiKeyID, vcli)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			fmt.Println("App Key has been successfully updated.")
