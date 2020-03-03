@@ -31,7 +31,7 @@
 - [PureKit Commands](#purekit-commands)
   - [Generate all PureKit keys](#generate-all-purekit-keys)
   - [Generate a Secret key](#generate-a-secret-key)
-  - [Generate a Backup key pair](#generate-a-backup-keypair)
+  - [Generate a Backup key pair](#generate-a-backup-key-pair)
   - [Generate a Virgil Storage key pair](#generate-a-virgil-storage-key-pair)
   - [Generate Own Signing key](#generate-own-signing-key)
   - [Generate Non-Rotatable Master Secret key](#generate-non-rotatable-master-secret-key)
