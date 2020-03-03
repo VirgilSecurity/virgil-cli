@@ -94,7 +94,7 @@ func main() {
 			cmd.Verify(),
 			cmd.Cards(apiGatewayClient),
 			cmd.Wave(apiGatewayClient),
-			cmd.KMS(kmsClient),
+			// cmd.KMS(kmsClient),
 		},
 		Before: func(c *cli.Context) error {
 			apiURL := c.String("api_gateway_url")
