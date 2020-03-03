@@ -29,14 +29,13 @@
   - [Delete App Token](#delete-app-token)
   - [Get list of App Tokens](#list-app-tokens)
 - [PureKit Commands](#purekit-commands)
+  - [Generate all PureKit keys](#generate-all-purekit-keys)
+  - [Generate a Secret key](#generate-a-secret-key)
+  - [Generate a Backup key pair](#generate-a-backup-keypair)
+  - [Generate a Virgil Storage key pair](#generate-a-virgil-storage-key-pair)
+  - [Generate Own Signing key](#generate-own-signing-key)
+  - [Generate Non-Rotatable Master Secret key](#generate-non--rotatable-master-secret-key)
   - [Update keys](#update-keys)
-  - [Generate a Secret Key](#generate-a-secret-key)
-  - [Generate an Auth Key](#generate-an-auth-key)
-  - [Generate a Backup Keypair](#generate-a-backup-keypair)
-  - [Generate a Hashes Keypair](#generate-a-hashes-keypair)
-  - [Generate a Virgil Storage Key](#generate-a-virgil-storage-key)
-  - [Generate Own Signing Key](#generate-own-signing-key)
-  - [Generate all Pure keys at once](#generate-all-pure-keys-at-once)
 - [Manage Application Cards](#manage-application-cards)
   - [Config file](#config-file)
   - [Search cards](#search-cards)
@@ -228,54 +227,72 @@ $ virgil app token list --app-id <app-id>
 
 ## PureKit Commands
 
-### Update keys
-This command is used to update the `App Secret Key` and `Service Public Key` of a Pure application
+## Generate all PureKit keys
+
+This command is used to generate all Pure key pairs for an application:
 
 ```bash
-$ virgil pure update-keys <public_key> <service_secret_key> <update_token>
+$ virgil purekit keygen all
 ```
 
-### Generate a Secret Key
-This command is used to generate a new `App Secret Key` for a Pure application:
+## Generate a secret key
+
+This command is used to generate a new Secret key for an application:
+
 ```bash
-$ virgil pure keygen secret
+virgil purekit keygen secret
 ```
 
-### Generate an Auth Key
-This command is used to generate a new `Auth Key` for a Pure application:
+## Generate an Auth key
+
+This command is used to generate a new Auth key for an application:
+
 ```bash
-$ virgil pure keygen auth
+$ virgil purekit keygen auth
 ```
 
-### Generate a Backup Keypair
-This command is used to generate a `Backup keypair` for a Pure application:
+## Generate a Backup key pair
+
+This command is used to generate a Backup key pair for an application:
+
 ```bash
-$ virgil pure keygen backup
+$ virgil purekit keygen backup
 ```
 
-### Generate a Hashes Keypair
-This command is used to generate a `Hashes keypair` for a Pure application:
+## Generate a Virgil Storage key pair
+
+This command is used to generate a Virgil Storage key pair for an application:
+
 ```bash
-$ virgil pure keygen hashes
+$ virgil purekit keygen signing
 ```
 
-### Generate a Virgil Storage Keypair
-This command is used to generate a `Virgil Storage key` for a Pure application:
+## Generate own Signing Key
+
+This command is used to generate Own Signing key for an application:
+
 ```bash
-$ virgil pure keygen signing
+$ virgil purekit keygen own
 ```
 
-### Generate Own Signing Key
-This command is used to generate `Own Signing Key` for a Pure application:
+## Generate Non-Rotatable Master Secret key
+
+This command is used to generate a new Non-Rotatable Master Secret key:
+
 ```bash
-$ virgil pure keygen own
+$ virgil pure keygen nonrotable-master
 ```
 
-### Generate all Pure keys at once
-This command is used to generate all Pure keys at once for a Pure application:
+## Update keys
+
+This command is used to update the Secret key and Service Public key of a Pure application if your database has been compromised or you need to carry out regular rotation of keys and records:
+
 ```bash
-$ virgil pure keygen all
+virgil purekit update-keys <Service Public Key> <Secret Key> <Update Token>
 ```
+
+> You can get your `Update Token` at [Virgil Dashboard](https://dashboard.virgilsecurity.com) by clicking `"BEGIN ROTATION PROCESS"` button at your application page.
+
 
 ## Manage Application Cards
 
