@@ -34,7 +34,7 @@
   - [Generate a Backup key pair](#generate-a-backup-keypair)
   - [Generate a Virgil Storage key pair](#generate-a-virgil-storage-key-pair)
   - [Generate Own Signing key](#generate-own-signing-key)
-  - [Generate Non-Rotatable Master Secret key](#generate-non--rotatable-master-secret-key)
+  - [Generate Non-Rotatable Master Secret key](#generate-non-rotatable-master-secret-key)
   - [Update keys](#update-keys)
 - [Manage Application Cards](#manage-application-cards)
   - [Config file](#config-file)
