@@ -69,7 +69,7 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			keyPairs, err := listFunc(appToken, vcli)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			fmt.Printf("|%25s|%35s|%20s\n", "Keypair alias   ", "Keypair version   ", " Public Key ")

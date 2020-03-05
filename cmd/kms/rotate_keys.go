@@ -55,7 +55,7 @@ func RotateKeys() *cli.Command {
 		Name:      "rotate",
 		Aliases:   []string{"r"},
 		ArgsUsage: "client_private_key server_public_key update_token",
-		Usage:     "rotate KMS Recovery Password Key",
+		Usage:     "Rotate KMS Recovery Password key",
 		Action:    rotateKMSKeysCommand,
 	}
 }

@@ -73,9 +73,12 @@ func Update(vcli *client.VirgilHTTPClient) *cli.Command {
 			if err == nil {
 				fmt.Println(utils.ApplicationUpdateSuccess)
 			} else if err == utils.ErrEntityNotFound {
-				return errors.New(fmt.Sprintf("%s %s\n", utils.ApplicationNotFound, appID))
+				return utils.CliExit(errors.New(fmt.Sprintf("%s %s\n", utils.ApplicationNotFound, appID)))
 			}
 
+			if err != nil {
+				return utils.CliExit(err)
+			}
 			return err
 		},
 	}

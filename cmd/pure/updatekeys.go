@@ -58,8 +58,8 @@ func UpdateKeys() *cli.Command {
 	return &cli.Command{
 		Name:      "update-keys",
 		Aliases:   []string{"u"},
-		ArgsUsage: "public_key service_secret_key update_token",
-		Usage:     "update secret key and public key using update token",
+		ArgsUsage: "phe_service_public_key secret_key update_token",
+		Usage:     "Update secret key and phe service public key using update token",
 		Action:    updateFunc,
 	}
 }
@@ -73,9 +73,17 @@ func updateFunc(context *cli.Context) error {
 	tokenStr := context.Args().Get(2)
 
 	if isNewKeysVersion(pkStr, skStr, tokenStr) {
-		return rotate(pkStr, skStr, tokenStr)
+		err := rotate(pkStr, skStr, tokenStr)
+		if err != nil {
+			return utils.CliExit(err)
+		}
+		return err
 	} else {
-		return oldRotate(pkStr, skStr, tokenStr)
+		err := oldRotate(pkStr, skStr, tokenStr)
+		if err != nil {
+			return utils.CliExit(err)
+		}
+		return err
 	}
 }
 
@@ -174,7 +182,8 @@ func rotate(pkStr, skStr, tokenStr string) error {
 		return err
 	}
 
-	fmt.Printf("New server public key:\nPK.%d.%s.%s\nNew client private key:\nSK.%d.%s.%s.%s\n",
+	fmt.Println(utils.PureKeysRotateSuccess)
+	fmt.Printf("New service public key:\nPK.%d.%s.%s\nNew secret key:\nSK.%d.%s.%s.%s\n",
 		tokenVersion,
 		base64.StdEncoding.EncodeToString(newPhePk),
 		base64.StdEncoding.EncodeToString(newKMSPk),

@@ -62,7 +62,11 @@ func Register(client *client.VirgilHTTPClient) *cli.Command {
 			&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Usage: "user password"},
 		},
 		Action: func(context *cli.Context) error {
-			return registerFunc(context, client)
+			err := registerFunc(context, client)
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }
@@ -81,16 +85,16 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHTTPClient) (err erro
 	if pwd == "" {
 		pwdBytes, err := gopass.GetPasswdPrompt(utils.PasswordPrompt+"\r\n", false, os.Stdin, os.Stdout)
 		if err != nil {
-			return utils.CliExit(err)
+			return err
 		}
 		pwdAgainBytes, err := gopass.GetPasswdPrompt(utils.PasswordConfirmPrompt+"\r\n", false, os.Stdin, os.Stdout)
 		if err != nil {
-			return utils.CliExit(err)
+			return err
 		}
 
 		if subtle.ConstantTimeCompare(pwdBytes, pwdAgainBytes) != 1 {
 			err = errors.New(utils.PasswordsDoesntMatch)
-			return utils.CliExit(err)
+			return err
 		}
 		pwd = string(pwdBytes)
 	}
@@ -100,12 +104,12 @@ func registerFunc(context *cli.Context, vcli *client.VirgilHTTPClient) (err erro
 	_, _, vErr := vcli.Send(http.MethodPost, "user/register", req, nil, nil)
 
 	if vErr != nil {
-		return utils.CliExitVirgil(vErr)
+		return vErr
 	}
 	err = utils.Login(email, pwd, vcli)
 
 	if err != nil {
-		return utils.CliExit(err)
+		return err
 	}
 
 	fmt.Println(utils.AccountSuccessfullyRegistered)

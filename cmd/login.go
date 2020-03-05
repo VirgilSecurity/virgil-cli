@@ -80,9 +80,10 @@ func Login(client *client.VirgilHTTPClient) *cli.Command {
 
 			if err == nil {
 				fmt.Printf("%s %s", utils.LoginSuccess, email)
+				return err
 			}
 
-			return err
+			return utils.CliExit(err)
 		},
 	}
 }

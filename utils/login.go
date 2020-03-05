@@ -100,10 +100,7 @@ func Login(email, password string, vcli *client.VirgilHTTPClient) error {
 			_, err = CheckRetry(vErr, vcli)
 		}
 		if err != nil {
-			if err == vErr {
-				return CliExitVirgil(vErr)
-			}
-			return CliExit(err)
+			return err
 		}
 	}
 
@@ -114,12 +111,12 @@ func Login(email, password string, vcli *client.VirgilHTTPClient) error {
 		models.ManagementTokenRequest{Name: uuid.New().String()},
 		&managementToken, header)
 	if vErr != nil {
-		return CliExit(errors.New(fmt.Sprintf("Authorization failed.\n")))
+		return errors.New(fmt.Sprintf("Authorization failed.\n"))
 	}
 
 	_, _, vErr = vcli.Send(http.MethodPost, "user/logout", nil, nil, header)
 	if vErr != nil {
-		return CliExit(errors.New(fmt.Sprintf("Authorization failed.\n")))
+		return errors.New(fmt.Sprintf("Authorization failed.\n"))
 	}
 
 	return SaveAccessToken(managementToken.Token)

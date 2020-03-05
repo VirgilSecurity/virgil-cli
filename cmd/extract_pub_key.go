@@ -119,6 +119,7 @@ func Key2Pub() *cli.Command {
 				return utils.CliExit(err)
 			}
 			_, err = fmt.Fprintf(writer, "-----END PUBLIC KEY-----\n")
+
 			if err != nil {
 				return utils.CliExit(err)
 			}

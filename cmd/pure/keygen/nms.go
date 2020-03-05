@@ -52,7 +52,11 @@ func NonRotatableMasterSecret() *cli.Command {
 		Aliases: []string{"nm"},
 		Usage:   "Generate a new Non Rotatable Master Secret key",
 		Action: func(context *cli.Context) error {
-			return printNonRotatableMasterSecretKey()
+			err := printNonRotatableMasterSecretKey()
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }
@@ -60,14 +64,15 @@ func NonRotatableMasterSecret() *cli.Command {
 func printNonRotatableMasterSecretKey() error {
 	random := foundation.NewCtrDrbg()
 	if err := random.SetupDefaults(); err != nil {
-		return utils.CliExit(err)
+		return err
 	}
 
 	nmsBytes, err := random.Random(32)
 	if err != nil {
-		return utils.CliExit(err)
+		return err
 	}
 
+	fmt.Println(utils.PureNMSKeyCreateSuccessTemplate)
 	fmt.Printf(
 		"NM.%s\n",
 		base64.StdEncoding.EncodeToString(nmsBytes),

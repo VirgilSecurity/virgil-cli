@@ -41,6 +41,8 @@ import (
 
 	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/phe"
 	"github.com/urfave/cli/v2"
+
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 //
@@ -52,7 +54,11 @@ func KMSPrivateKey() *cli.Command {
 		Aliases: []string{"pk"},
 		Usage:   "Generate a new KMS Client Private key",
 		Action: func(context *cli.Context) error {
-			return printKMSPrivateKey()
+			err := printKMSPrivateKey()
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }

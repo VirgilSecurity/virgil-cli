@@ -49,9 +49,13 @@ func Backup() *cli.Command {
 	return &cli.Command{
 		Name:    "backup",
 		Aliases: []string{"bu"},
-		Usage:   "Generates a new  Backup keypair ",
+		Usage:   "Generate a new  Backup keypair ",
 		Action: func(context *cli.Context) error {
-			return printBackupKeys()
+			err := printBackupKeys()
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }
@@ -59,11 +63,11 @@ func Backup() *cli.Command {
 func printBackupKeys() error {
 	sk, pk, err := generateKeypairEncoded()
 	if err != nil {
-		return utils.CliExit(err)
+		return err
 	}
-	fmt.Println("Backup keypair (optional) - keypair used to decrypt any data in case of some failure")
-	fmt.Println("BU." + base64.StdEncoding.EncodeToString(pk))
-	fmt.Println("Backup Private key (Must be placed in some cold storage (HSM or safe)): " + base64.StdEncoding.EncodeToString(sk))
+	fmt.Println(utils.PureBackupKeyCreateWarning)
+	fmt.Println(utils.PureBackupKeyPublicCreateSuccessTemplate + " BU." + base64.StdEncoding.EncodeToString(pk))
+	fmt.Println(utils.PureBackupKeyPrivateCreateSuccessTemplate + " " + base64.StdEncoding.EncodeToString(sk))
 
 	return nil
 }

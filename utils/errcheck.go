@@ -59,12 +59,18 @@ var (
 	ErrEmailAlreadyRegistered       = fmt.Errorf("account with this email has been already registered")
 )
 
-func CliExit(err error) error {
-	return cli.Exit(fmt.Sprintf("Error: %s", err), 1)
-}
+func CliExit(err interface{}) error {
+	verr, ok := err.(*client.VirgilAPIError)
+	if ok {
+		return cli.Exit(fmt.Sprintf("Error: %s", verr.Message), 1)
+	}
 
-func CliExitVirgil(err *client.VirgilAPIError) error {
-	return cli.Exit(fmt.Sprintf("Error: %s", err.Message), 1)
+	cerr, ok := err.(cli.ExitCoder)
+	if ok {
+		return cli.Exit(cerr.Error(), cerr.ExitCode())
+	}
+
+	return cli.Exit(fmt.Sprintf("Error: %s", err), 1)
 }
 
 func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHTTPClient) (token string, err error) {
@@ -106,7 +112,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHTTPClient
 		return "", ErrIncorrectAppToken
 	}
 
-	fmt.Println("error sending request to " + vcli.Address)
+	// fmt.Println("error sending request to " + vcli.Address)
 	return "", errToCheck
 }
 
@@ -143,7 +149,7 @@ func isAuthFailed(err *client.VirgilAPIError) bool {
 
 func checkCode40000(err *client.VirgilAPIError, addr string) error {
 	if len(err.Errors) == 0 {
-		fmt.Println("error sending request to " + addr)
+		// fmt.Println("error sending request to " + addr)
 		return err
 	}
 
@@ -158,6 +164,6 @@ func checkCode40000(err *client.VirgilAPIError, addr string) error {
 		return ErrPasswordTooWeak
 	}
 
-	fmt.Println("error sending request to " + addr)
+	// fmt.Println("error sending request to " + addr)
 	return err
 }

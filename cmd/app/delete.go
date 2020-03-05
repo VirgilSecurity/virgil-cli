@@ -64,7 +64,7 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			app, err := getApp(appID, vcli)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			msg := fmt.Sprintf("%s %s (y/n) ?", utils.ApplicationDeletePrompt, app.Name)
 			yesOrNo := utils.ReadConsoleValue("y or n", msg, "y", "n")
@@ -82,6 +82,9 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 				_ = utils.DeleteDefaultApp()
 			}
 
+			if err != nil {
+				return utils.CliExit(err)
+			}
 			return err
 		},
 	}

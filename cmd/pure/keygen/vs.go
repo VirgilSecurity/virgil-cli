@@ -49,9 +49,13 @@ func VirgilStorage() *cli.Command {
 	return &cli.Command{
 		Name:    "signing",
 		Aliases: []string{"vs"},
-		Usage:   "Generates a new Virgil Storage key pair",
+		Usage:   "Generate a new Virgil Storage key pair",
 		Action: func(context *cli.Context) error {
-			return printSigningKey()
+			err := printSigningKey()
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }
@@ -59,9 +63,9 @@ func VirgilStorage() *cli.Command {
 func printSigningKey() error {
 	sk, pk, err := generateKeypairEncoded()
 	if err != nil {
-		return utils.CliExit(err)
+		return err
 	}
-
+	fmt.Println(utils.PureStorageKeyPairCreateSuccessTemplate)
 	fmt.Println("VSSK." + base64.StdEncoding.EncodeToString(sk))
 	fmt.Println("VSPK." + base64.StdEncoding.EncodeToString(pk))
 

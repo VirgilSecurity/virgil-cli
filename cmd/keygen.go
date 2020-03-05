@@ -90,6 +90,7 @@ func Keygen() *cli.Command {
 				return utils.CliExit(err)
 			}
 			_, err = fmt.Fprintf(writer, "-----END%sPRIVATE KEY-----\n", encrypted)
+
 			if err != nil {
 				return utils.CliExit(err)
 			}

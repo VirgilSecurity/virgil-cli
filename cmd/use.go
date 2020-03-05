@@ -56,7 +56,11 @@ func UseApp(client *client.VirgilHTTPClient) *cli.Command {
 		ArgsUsage: "name",
 		Usage:     "Changes context to app with specified name. All future commands without specifying app_id will be applied to current app",
 		Action: func(context *cli.Context) error {
-			return useFunc(context, client)
+			err := useFunc(context, client)
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }
@@ -72,14 +76,14 @@ func useFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
 	apps, err := listFunc(vcli)
 
 	if err != nil {
-		return utils.CliExit(err)
+		return err
 	}
 
 	for _, app := range apps {
 		if app.Name == appName {
 			err := utils.SaveDefaultApp(vcli, app)
 			if err != nil {
-				return utils.CliExit(err)
+				return err
 			}
 			fmt.Println(utils.ApplicationSetContextSuccess)
 			fmt.Println(utils.UseApplicationWarning)

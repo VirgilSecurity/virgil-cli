@@ -79,6 +79,7 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 					err = deleteAppTokenFunc(appID, t.ID, vcli)
 					if err == nil {
 						fmt.Println(utils.AppTokenDeleteSuccess)
+						return nil
 					}
 					return utils.CliExit(err)
 				}

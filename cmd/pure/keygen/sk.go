@@ -53,7 +53,11 @@ func Secret() *cli.Command {
 		Aliases: []string{"sk"},
 		Usage:   "Generate a new Secret key",
 		Action: func(context *cli.Context) error {
-			return printSecretKey()
+			err := printSecretKey()
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }
@@ -66,16 +70,17 @@ func printSecretKey() error {
 
 	pheKey, err := pheClient.GenerateClientPrivateKey()
 	if err != nil {
-		return utils.CliExit(err)
+		return err
 	}
 	kmsKey, err := kms.GenerateKMSPrivateKey()
 	if err != nil {
-		return utils.CliExit(err)
+		return err
 	}
 	authKey, err := GenerateAuthKey()
 	if err != nil {
-		return utils.CliExit(err)
+		return err
 	}
+	fmt.Println(utils.PureSecretKeyCreateSuccess)
 	fmt.Printf(
 		"SK.1.%s.%s.%s\n",
 		base64.StdEncoding.EncodeToString(pheKey),

@@ -49,6 +49,7 @@ const (
 )
 
 var (
-	AppListHeaders     = []string{"Application name", "APP_ID", "created_at"}
-	KMSKeysListHeaders = []string{"Keypair alias", "Keypair version", "Public Key"}
+	AppListHeaders      = []string{"Application name", "APP_ID", "created_at"}
+	AppTokenListHeaders = []string{"Name", "Created On"}
+	KMSKeysListHeaders  = []string{"Keypair alias", "Keypair version", "Public Key"}
 )

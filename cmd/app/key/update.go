@@ -106,5 +106,8 @@ func UpdateFunc(appID, apiKeyID string, vcli *client.VirgilHTTPClient) (err erro
 
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPut, "application/"+appID+"/apikey/"+apiKeyID, req, nil)
 
+	if err != nil {
+		return err
+	}
 	return err
 }

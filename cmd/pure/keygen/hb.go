@@ -49,9 +49,13 @@ func HashesKey() *cli.Command {
 	return &cli.Command{
 		Name:    "hashes",
 		Aliases: []string{"hb"},
-		Usage:   "Generates a new Hashes key pair",
+		Usage:   "Generate a new Hashes key pair",
 		Action: func(context *cli.Context) error {
-			return printHBKey()
+			err := printHBKey()
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }
@@ -59,7 +63,7 @@ func HashesKey() *cli.Command {
 func printHBKey() error {
 	sk, pk, err := generateKeypairEncoded()
 	if err != nil {
-		return utils.CliExit(err)
+		return err
 	}
 
 	fmt.Println("HB." + base64.StdEncoding.EncodeToString(pk))

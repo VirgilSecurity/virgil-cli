@@ -76,6 +76,9 @@ func Delete(vcli *client.VirgilHTTPClient) *cli.Command {
 				return utils.CliExit(errors.New(fmt.Sprintf("%s %s \n", utils.ApiKeyNotFound, apiKeyID)))
 			}
 
+			if err != nil {
+				return utils.CliExit(err)
+			}
 			return err
 		},
 	}

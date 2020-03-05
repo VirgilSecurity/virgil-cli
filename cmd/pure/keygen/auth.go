@@ -52,7 +52,11 @@ func Auth() *cli.Command {
 		Aliases: []string{"ak"},
 		Usage:   "Generate a new Auth key",
 		Action: func(context *cli.Context) error {
-			return printAuthKey()
+			err := printAuthKey()
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }
@@ -70,8 +74,9 @@ func GenerateAuthKey() (key []byte, err error) {
 func printAuthKey() error {
 	key, err := GenerateAuthKey()
 	if err != nil {
-		return utils.CliExit(err)
+		return err
 	}
+	fmt.Println(utils.PureAuthKeyCreateSuccess)
 	fmt.Println(base64.StdEncoding.EncodeToString(key))
 	return nil
 }

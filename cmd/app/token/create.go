@@ -78,7 +78,7 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 				return utils.CliExit(err)
 			}
 
-			fmt.Println("token: ", token)
+			fmt.Println(utils.AppTokenSuccessTemplate + " " + token)
 			return nil
 		},
 	}

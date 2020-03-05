@@ -47,7 +47,7 @@ import (
 func All() *cli.Command {
 	return &cli.Command{
 		Name:  "all",
-		Usage: "Generates all pure key pairs",
+		Usage: "Generate all pure key pairs",
 		Action: func(context *cli.Context) error {
 			fmt.Println("----------------------------------------------------------------------------------")
 

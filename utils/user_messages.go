@@ -33,10 +33,11 @@ const (
 	SpecifyTokenNameFlag = "Please, specify token name (flag --name)"
 	SpecifyAppTokenFlag  = "Please, specify app-token (flag --app-token)"
 
-	AppTokenNamePrompt     = "Enter token name"
-	AppTokenNotFound       = "token not found"
-	AppTokenDeleteSuccess  = "delete ok."
-	AppTokensNotCreatedYet = "There are no app keys created for application"
+	AppTokenNamePrompt      = "Enter token name"
+	AppTokenNotFound        = "token not found"
+	AppTokenSuccessTemplate = "token:"
+	AppTokenDeleteSuccess   = "App Token successfully deleted"
+	AppTokensNotCreatedYet  = "There are no app keys created for application"
 
 	ApplicationNamePrompt        = "Enter application name"
 	ApplicationIDPrompt          = "Enter application id"
@@ -53,7 +54,7 @@ const (
 	CardIDPrompt            = "Enter card id"
 	CardIdentityPrompt      = "Enter card identity"
 	CardDeletePrompt        = "Are you sure, that you want to delete card"
-	CardDeleteSuccess       = "Card delete ok."
+	CardDeleteSuccess       = "Card successfully deleted"
 	CardNotFound            = "not found card with id"
 	CardForIdentityNotFound = "there are no cards found for identity: "
 
@@ -75,7 +76,7 @@ const (
 
 	SCMSDeviceNotYetRegistered = "There are no devices registered for the application"
 
-	SCMSApplicationInitSuccess = "Application init ok."
+	SCMSApplicationInitSuccess = "Application successfully inited"
 
 	DecryptDataPrompt = "Enter data to decrypt"
 
@@ -94,4 +95,14 @@ const (
 
 	CantImportPrivateKey = "can't import private key"
 	CantImportPublicKey  = "can't import public key"
+
+	PureSecretKeyCreateSuccess                = "App Secret Key successfully created:"
+	PureAuthKeyCreateSuccess                  = "Auth Key successfully created:"
+	PureBackupKeyCreateWarning                = "Warning! Backup keypair - is used to decrypt any data in case of some failure"
+	PureBackupKeyPublicCreateSuccessTemplate  = "Backup Public Key:"
+	PureBackupKeyPrivateCreateSuccessTemplate = "Backup Private key (must be placed in some cold storage (HSM or safe)):"
+	PureStorageKeyPairCreateSuccessTemplate   = "Storage Key pair successfully generated:"
+	PureOwnSigningKeyCreateSuccessTemplate    = "Own Signing Key successfully generated:"
+	PureNMSKeyCreateSuccessTemplate           = "Non-Rotatable Master Secret Key successfully generated:"
+	PureKeysRotateSuccess                     = "Keys successfully updated:"
 )

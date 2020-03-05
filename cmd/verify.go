@@ -68,7 +68,7 @@ func Verify() *cli.Command {
 			}
 			signatureFileName := utils.ReadFlagOrDefault(context, "s", "")
 			if signatureFileName == "" {
-				return errors.New(utils.SignatureFileNotSpecified)
+				return utils.CliExit(errors.New(utils.SignatureFileNotSpecified))
 			}
 			publicKeyString, err := utils.ReadKeyStringFromFile(context, keyFileName)
 			if err != nil {
