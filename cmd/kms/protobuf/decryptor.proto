@@ -1,0 +1,32 @@
+syntax = "proto3";
+package decryptor;
+
+message Keypair {
+	uint32 version = 1;
+	string alias = 2;
+    uint32 key_version = 3;
+	bytes public_key = 4;
+}
+
+message Keypairs {
+	repeated Keypair keypairs = 1;
+}
+
+message KeypairRequest {
+	string alias = 1;
+}
+
+message DecryptRequest {
+	uint32 version = 1;
+	string alias = 2;
+	bytes request = 3;
+}
+
+message DecryptResponse {
+	bytes response = 1;
+}
+
+message UpdateTokenResponse {
+	uint32 version = 1;
+	bytes update_token = 2;
+}

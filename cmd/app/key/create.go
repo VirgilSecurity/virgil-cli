@@ -42,7 +42,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
@@ -66,21 +66,21 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
 			if appID == "" {
-				return errors.New("Please, specify app_id (flag --app_id)")
+				return utils.CliExit(errors.New(utils.SpecifyAppIDFlag))
 			}
 
-			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", "Enter App Key name", "")
+			name := utils.ReadParamOrDefaultOrFromConsole(context, "name", utils.AppKeyNamePrompt, "")
 
 			_, err = getApp(appID, vcli)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			var apiKeyID string
 			apiKeyID, err = CreateFunc(name, appID, vcli)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			fmt.Println("App Key ID:", apiKeyID)
@@ -118,8 +118,9 @@ func CreateFunc(name, appID string, vcli *client.VirgilHTTPClient) (apiKeyID str
 	}
 
 	if resp != nil {
-		fmt.Println("This secret is only shown ONCE. Make note of it and store it in a safe, secure location.")
-		fmt.Println("App Key:", base64.StdEncoding.EncodeToString(prKey))
+		fmt.Println(utils.AppKeyCreateWarning)
+		fmt.Println(utils.AppKeyCreateSuccess)
+		fmt.Println(utils.AppKeyOutput, base64.StdEncoding.EncodeToString(prKey))
 
 		return resp.ID, nil
 	}
@@ -141,7 +142,7 @@ func getApp(appID string, vcli *client.VirgilHTTPClient) (app *models.Applicatio
 				return a, nil
 			}
 		}
-		return nil, errors.New(fmt.Sprintf("application with id %s not found", appID))
+		return nil, errors.New(fmt.Sprintf("%s %s \n", utils.ApplicationNotFound, appID))
 	}
 
 	return nil, errors.New("empty response")

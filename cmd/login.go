@@ -38,8 +38,11 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
-	"gopkg.in/urfave/cli.v2"
+	"github.com/howeyc/gopass"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/utils"
@@ -47,20 +50,40 @@ import (
 
 func Login(client *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
-		Name:      "login",
-		ArgsUsage: "[email]",
-		Usage:     "Open user session",
+		Name:  "login",
+		Usage: "Open user session",
+		Flags: []cli.Flag{
+			&cli.StringFlag{Name: "username", Aliases: []string{"u"}, Usage: "user email"},
+			&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Usage: "user password"},
+		},
 		Action: func(context *cli.Context) error {
 			_ = utils.DeleteAccessToken()
 			_ = utils.DeleteAppFile()
 
-			err := utils.Login(context.Args().First(), "", client)
+			email := utils.ReadFlagOrDefault(context, "username", "")
+			pwd := utils.ReadFlagOrDefault(context, "password", "")
 
-			if err == nil {
-				fmt.Println("Login ok.")
+			if email == "" {
+				email = strings.TrimSpace(utils.ReadParamOrDefaultOrFromConsole(context, "email", utils.EmailPrompt, ""))
 			}
 
-			return err
+			if pwd == "" {
+				pwdBytes, err := gopass.GetPasswdPrompt(utils.PasswordPrompt+"\r\n", false, os.Stdin, os.Stdout)
+				if err != nil {
+					return utils.CliExit(err)
+				}
+
+				pwd = string(pwdBytes)
+			}
+
+			err := utils.Login(email, pwd, client)
+
+			if err == nil {
+				fmt.Printf("%s %s", utils.LoginSuccess, email)
+				return err
+			}
+
+			return utils.CliExit(err)
 		},
 	}
 }

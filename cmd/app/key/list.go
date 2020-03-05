@@ -43,7 +43,7 @@ import (
 	"sort"
 
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
@@ -65,18 +65,18 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			appID := utils.ReadFlagOrDefault(context, "app_id", defaultAppID)
 			if appID == "" {
-				return errors.New("Please, specify app_id (flag --app_id)")
+				return utils.CliExit(errors.New(utils.SpecifyAppIDFlag))
 			}
 
 			var keys []*models.AccessKey
 			keys, err = listFunc(appID, vcli)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			if len(keys) == 0 {
-				fmt.Println("There are no app keys created for application")
+				fmt.Println(utils.AppKeysNotCreatedYet)
 				return nil
 			}
 			sort.Slice(keys, func(i, j int) bool {

@@ -41,21 +41,37 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/VirgilSecurity/virgil-cli/client"
 )
 
 var (
 	ErrEntityNotFound               = fmt.Errorf("entity not found")
 	ErrEmailIsNotConfirmed          = fmt.Errorf("user email has not been confirmed")
-	ErrApplicationAlreadyRegistered = fmt.Errorf("error: application with given name already registered")
-	ErrAuthFailed                   = fmt.Errorf("authorization failed: incorrect email or password")
-	ErrAPIKeyAlreadyRegistered      = fmt.Errorf("error: api key with given name already registered")
-	ErrEmptyMFACode                 = fmt.Errorf("error: Multi factor authorization code is empty field")
-	ErrPasswordTooWeak              = fmt.Errorf("error: Password is too weak: password must be at least 8 characters length")
-	ErrIncorrectAppToken            = fmt.Errorf("error: application token is incorrect")
-	ErrInvalidConfirmationCode      = fmt.Errorf("error: confirmation code is invalid")
-	ErrEmailAlreadyRegistered       = fmt.Errorf("error: account with this email has been already registered")
+	ErrApplicationAlreadyRegistered = fmt.Errorf("application with given name already registered")
+	ErrAuthFailed                   = fmt.Errorf("this email and password combination does not exist")
+	ErrAPIKeyAlreadyRegistered      = fmt.Errorf("api key with given name already registered")
+	ErrEmptyMFACode                 = fmt.Errorf("multi factor authorization code is empty field")
+	ErrPasswordTooWeak              = fmt.Errorf("password is too weak: password must be at least 8 characters length")
+	ErrIncorrectAppToken            = fmt.Errorf("application token is incorrect")
+	ErrInvalidConfirmationCode      = fmt.Errorf("confirmation code is invalid")
+	ErrEmailAlreadyRegistered       = fmt.Errorf("account with this email has been already registered")
 )
+
+func CliExit(err interface{}) error {
+	verr, ok := err.(*client.VirgilAPIError)
+	if ok {
+		return cli.Exit(fmt.Sprintf("Error: %s", verr.Message), 1)
+	}
+
+	cerr, ok := err.(cli.ExitCoder)
+	if ok {
+		return cli.Exit(cerr.Error(), cerr.ExitCode())
+	}
+
+	return cli.Exit(fmt.Sprintf("Error: %s", err), 1)
+}
 
 func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHTTPClient) (token string, err error) {
 	if errToCheck == nil {
@@ -96,7 +112,7 @@ func CheckRetry(errToCheck *client.VirgilAPIError, vcli *client.VirgilHTTPClient
 		return "", ErrIncorrectAppToken
 	}
 
-	fmt.Println("error sending request to " + vcli.Address)
+	// fmt.Println("error sending request to " + vcli.Address)
 	return "", errToCheck
 }
 
@@ -133,7 +149,7 @@ func isAuthFailed(err *client.VirgilAPIError) bool {
 
 func checkCode40000(err *client.VirgilAPIError, addr string) error {
 	if len(err.Errors) == 0 {
-		fmt.Println("error sending request to " + addr)
+		// fmt.Println("error sending request to " + addr)
 		return err
 	}
 
@@ -148,6 +164,6 @@ func checkCode40000(err *client.VirgilAPIError, addr string) error {
 		return ErrPasswordTooWeak
 	}
 
-	fmt.Println("error sending request to " + addr)
+	// fmt.Println("error sending request to " + addr)
 	return err
 }

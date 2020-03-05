@@ -1,3 +1,38 @@
+/*
+ * Copyright (C) 2015-2020 Virgil Security Inc.
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+ */
 package dcm
 
 import (
@@ -6,7 +41,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
@@ -25,9 +60,9 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 			&cli.StringFlag{Name: "verify-pub-key", Usage: "verify public key"}},
 
 		Action: func(context *cli.Context) (err error) {
-			name := utils.ReadFlagOrConsoleValue(context, "name", "Enter dsm certificate name")
-			encryptPubKey := utils.ReadFlagOrConsoleValue(context, "encrypt-pub-key", "Enter encrypt public key")
-			verifyPubKey := utils.ReadFlagOrConsoleValue(context, "verify-pub-key", "Enter verify public key")
+			name := utils.ReadFlagOrConsoleValue(context, "name", utils.SCMSDCMCertificateNamePrompt)
+			encryptPubKey := utils.ReadFlagOrConsoleValue(context, "encrypt-pub-key", utils.SCMSDCMPublicKeyPrompt)
+			verifyPubKey := utils.ReadFlagOrConsoleValue(context, "verify-pub-key", utils.SCMSDCMPublicKeyVerifyPrompt)
 
 			defaultApp, _ := utils.LoadDefaultApp()
 			defaultAppToken := ""
@@ -37,15 +72,15 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			appToken := utils.ReadFlagOrDefault(context, "app-token", defaultAppToken)
 			if appToken == "" {
-				return errors.New("Please, specify app-token (flag --app-token)")
+				return utils.CliExit(errors.New(utils.SpecifyAppTokenFlag))
 			}
 			dcm, err := DsmCreateFunc(name, encryptPubKey, verifyPubKey, appToken, vcli)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			serialized, err := json.MarshalIndent(dcm, "", "\t")
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			fmt.Println(string(serialized))
 
@@ -71,16 +106,3 @@ func DsmCreateFunc(
 	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "/scms/dcm", req, &resp, appToken)
 	return
 }
-
-//CMD: virgil scms dcm create  --name "My first DCM certificate" --encrypt-pub-key BASE64 --verfiy-pub-key BASE64
-//URL    :  https://api.virgilsecurity.com/v1/scms/{APPLICATION_ID}/dcm
-//METHOD: POST
-//BODY: {"name":"My first DCM certificate","encrypt_public_key":"BASE64","verify_public_key":"BASE64"}
-//RESP BODY: {
-//    "name": "human name for DCM certificate",
-//    "certificate": "BASE64",
-//    "eca_address": "https://api.virgilsecurity.com/scms/v1",
-//    "eca_certificate": "BASE64",
-//    "ra_address": "https://api.virgilsecurity.com/scms/v1",
-//    "lccf": "BASE64",
-//}

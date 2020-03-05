@@ -42,7 +42,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
@@ -56,14 +56,18 @@ func UseApp(client *client.VirgilHTTPClient) *cli.Command {
 		ArgsUsage: "name",
 		Usage:     "Changes context to app with specified name. All future commands without specifying app_id will be applied to current app",
 		Action: func(context *cli.Context) error {
-			return useFunc(context, client)
+			err := useFunc(context, client)
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }
 
 func useFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
 	if context.NArg() < 1 {
-		return errors.New("Invalid number of arguments. Please, specify application name")
+		return errors.New(utils.UseInvalidNumberArguments)
 	}
 
 	appName := strings.Join(context.Args().Slice(), " ")
@@ -81,13 +85,13 @@ func useFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
 			if err != nil {
 				return err
 			}
-			fmt.Println("Application context set ok")
-			fmt.Println("All future commands without specifying app_id will be applied to current app")
+			fmt.Println(utils.ApplicationSetContextSuccess)
+			fmt.Println(utils.UseApplicationWarning)
 			return nil
 		}
 	}
 
-	return errors.New("there is no app with name " + appName)
+	return errors.New(utils.ApplicationWithNameNotFound + appName)
 }
 
 func listFunc(vcli *client.VirgilHTTPClient) (apps []*models.Application, err error) {

@@ -1,3 +1,38 @@
+/*
+ * Copyright (C) 2015-2020 Virgil Security Inc.
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+ */
 package cards
 
 import (
@@ -7,7 +42,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 	"gopkg.in/virgil.v5/sdk"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
@@ -24,14 +59,14 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 		},
 		Usage: "delete cards by id",
 		Action: func(context *cli.Context) error {
-			cardID := utils.ReadParamOrDefaultOrFromConsole(context, "id", "Enter card id", "")
+			cardID := utils.ReadParamOrDefaultOrFromConsole(context, "id", utils.CardIDPrompt, "")
 
 			configFileName := utils.ReadFlagOrDefault(context, "c", "")
 			if configFileName == "" {
-				return errors.New("configuration file isn't specified (use -c)")
+				return utils.CliExit(errors.New(utils.ConfigurationFileNotSpecified))
 			}
 
-			identity := utils.ReadFlagOrConsoleValue(context, "i", "Enter card identity")
+			identity := utils.ReadFlagOrConsoleValue(context, "i", utils.CardIdentityPrompt)
 
 			data, err := ioutil.ReadFile(configFileName)
 			if err != nil {
@@ -45,30 +80,29 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			privateKey, err := crypto.ImportPrivateKey(conf.APIKey, "")
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			ttl := time.Minute
 
 			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APIKeyID, tokenSigner, conf.AppID, ttl)
 
-			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("Are you sure, that you want to delete card (y/n) ?"), "y", "n")
+			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("%s (y/n) ?"), utils.CardDeletePrompt, "y", "n")
 			if yesOrNo == "n" {
 				return nil
 			}
 			token, err := jwtGenerator.GenerateToken(identity, nil)
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 			err = deleteCardFunc(cardID, token.String(), vcli)
+			if err == utils.ErrEntityNotFound {
+				return utils.CliExit(errors.New(fmt.Sprintf("%s %s \n", utils.CardNotFound, cardID)))
+			}
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
-			if err == nil {
-				fmt.Println("Card delete ok.")
-			} else if err == utils.ErrEntityNotFound {
-				return errors.New(fmt.Sprintf("card with id %s not found.\n", cardID))
-			}
+			fmt.Println(utils.CardDeleteSuccess)
 
 			return nil
 		},

@@ -37,7 +37,7 @@
 package cmd
 
 import (
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/cmd/pure"
 )
@@ -45,9 +45,8 @@ import (
 //PureKit manages virgil PHE service implementation
 func PureKit() *cli.Command {
 	return &cli.Command{
-		Name:    "purekit",
-		Aliases: []string{"pure", "pwd"},
-		Usage:   "Manage your PureKit application keys",
+		Name:  "purekit",
+		Usage: "Manage your PureKit application keys",
 		Subcommands: []*cli.Command{
 			pure.Keygen(),
 			pure.UpdateKeys(),

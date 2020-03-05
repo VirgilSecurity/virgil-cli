@@ -42,7 +42,7 @@ import (
 	"sort"
 
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
@@ -59,7 +59,7 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 			apps, err = listFunc(vcli)
 
 			if err != nil {
-				return err
+				return utils.CliExit(err)
 			}
 
 			defaultApp, _ := utils.LoadDefaultApp()
@@ -68,7 +68,7 @@ func List(vcli *client.VirgilHTTPClient) *cli.Command {
 				defaultAppID = defaultApp.ID
 			}
 			if len(apps) == 0 {
-				fmt.Println("There are no applications created for the account")
+				fmt.Println(utils.ApplicationsNotCreateYet)
 				return nil
 			}
 			sort.Slice(apps, func(i, j int) bool {
