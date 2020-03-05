@@ -92,7 +92,7 @@ func appCreateToken(t *testing.T) string {
 	scannerOut.Scan()
 	tokenGeneratedSuccess := scannerOut.Text()
 
-	assert.True(t, strings.Contains(tokenGeneratedSuccess, utils.AppTokenSuccessTemplate))
+	assert.True(t, strings.Contains(tokenGeneratedSuccess, utils.AppTokenCreateSuccess))
 
 	helpers.CmdKiller(cmd, scannerErr)
 	assert.NoError(t, cmd.Wait())

@@ -119,6 +119,7 @@ func CreateFunc(name, appID string, vcli *client.VirgilHTTPClient) (apiKeyID str
 
 	if resp != nil {
 		fmt.Println(utils.AppKeyCreateWarning)
+		fmt.Println(utils.AppKeyCreateSuccess)
 		fmt.Println(utils.AppKeyOutput, base64.StdEncoding.EncodeToString(prKey))
 
 		return resp.ID, nil

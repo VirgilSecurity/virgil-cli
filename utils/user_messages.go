@@ -21,6 +21,7 @@ const (
 
 	AppKeyNamePrompt    = "Enter App Key name"
 	AppKeyCreateWarning = "This secret is only shown ONCE. Make note of it and store it in a safe, secure location."
+	AppKeyCreateSuccess = "App Key successfully created"
 	AppKeyOutput        = "App Key:"
 
 	AppKeyIDPrompt       = "Enter App Key ID"
@@ -35,6 +36,7 @@ const (
 
 	AppTokenNamePrompt      = "Enter token name"
 	AppTokenNotFound        = "token not found"
+	AppTokenCreateSuccess   = "App Token successfully created:"
 	AppTokenSuccessTemplate = "token:"
 	AppTokenDeleteSuccess   = "App Token successfully deleted"
 	AppTokensNotCreatedYet  = "There are no app keys created for application"
@@ -48,7 +50,7 @@ const (
 	ApplicationNotFound          = "not found Application with id"
 	ApplicationsNotCreateYet     = "There are no applications created for the account"
 	ApplicationUpdateSuccess     = "Application has been successfully updated."
-	ApplicationSetContextSuccess = "Application context set ok"
+	ApplicationSetContextSuccess = "Application context set successfully"
 	ApplicationWithNameNotFound  = "there is no app with name "
 
 	CardIDPrompt            = "Enter card id"
