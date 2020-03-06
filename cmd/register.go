@@ -45,7 +45,7 @@ import (
 
 	"github.com/howeyc/gopass"
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
@@ -57,46 +57,62 @@ func Register(client *client.VirgilHTTPClient) *cli.Command {
 		Name:      "register",
 		ArgsUsage: "email",
 		Usage:     "Register a new account",
+		Flags: []cli.Flag{
+			&cli.StringFlag{Name: "username", Aliases: []string{"u"}, Usage: "user email"},
+			&cli.StringFlag{Name: "password", Aliases: []string{"p"}, Usage: "user password"},
+		},
 		Action: func(context *cli.Context) error {
-			return registerFunc(context, client)
+			err := registerFunc(context, client)
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			return err
 		},
 	}
 }
 
-func registerFunc(context *cli.Context, vcli *client.VirgilHTTPClient) error {
+func registerFunc(context *cli.Context, vcli *client.VirgilHTTPClient) (err error) {
+	email := utils.ReadFlagOrDefault(context, "username", "")
+	pwd := utils.ReadFlagOrDefault(context, "password", "")
+
 	_ = utils.DeleteAccessToken()
 	_ = utils.DeleteAppFile()
 
-	email := strings.TrimSpace(utils.ReadParamOrDefaultOrFromConsole(context, "email", "Enter email", ""))
-
-	pwd, err := gopass.GetPasswdPrompt("Enter the account password:\r\n", false, os.Stdin, os.Stdout)
-	if err != nil {
-		return err
-	}
-	pwdAgain, err := gopass.GetPasswdPrompt("Again:\r\n", false, os.Stdin, os.Stdout)
-	if err != nil {
-		return err
+	if email == "" {
+		email = strings.TrimSpace(utils.ReadParamOrDefaultOrFromConsole(context, "email", utils.EmailPrompt, ""))
 	}
 
-	if subtle.ConstantTimeCompare(pwd, pwdAgain) != 1 {
-		err = errors.New("passwords do not match")
-		return err
+	if pwd == "" {
+		pwdBytes, err := gopass.GetPasswdPrompt(utils.PasswordPrompt+"\r\n", false, os.Stdin, os.Stdout)
+		if err != nil {
+			return err
+		}
+		pwdAgainBytes, err := gopass.GetPasswdPrompt(utils.PasswordConfirmPrompt+"\r\n", false, os.Stdin, os.Stdout)
+		if err != nil {
+			return err
+		}
+
+		if subtle.ConstantTimeCompare(pwdBytes, pwdAgainBytes) != 1 {
+			err = errors.New(utils.PasswordsDoesntMatch)
+			return err
+		}
+		pwd = string(pwdBytes)
 	}
 
-	req := &models.CreateAccountRequest{Email: email, Password: string(pwd)}
+	req := &models.CreateAccountRequest{Email: email, Password: pwd}
 
 	_, _, vErr := vcli.Send(http.MethodPost, "user/register", req, nil, nil)
 
 	if vErr != nil {
 		return vErr
 	}
-	err = utils.Login(email, string(pwd), vcli)
+	err = utils.Login(email, pwd, vcli)
 
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Account has been successfully registered.")
+	fmt.Println(utils.AccountSuccessfullyRegistered)
 
 	return nil
 }

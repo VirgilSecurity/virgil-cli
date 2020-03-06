@@ -1,0 +1,3 @@
+To generate source files run:
+
+$ protoc --go_out=. *.proto

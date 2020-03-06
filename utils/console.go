@@ -43,7 +43,7 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 )
 
 func ReadKeyStringFromFile(context *cli.Context, fileName string) (string, error) {
@@ -94,7 +94,7 @@ func ReadParamOrDefaultOrFromConsole(context *cli.Context, paramName, paramDescr
 }
 
 func ReadConsoleValue(paramName, paramDescription string, options ...string) string {
-	fmt.Printf("%s:\n", paramDescription)
+	fmt.Printf("%s\n", paramDescription)
 
 	scanner := bufio.NewScanner(os.Stdin)
 	value := ""
@@ -105,14 +105,14 @@ func ReadConsoleValue(paramName, paramDescription string, options ...string) str
 		if len(options) == 0 {
 			if len(value) < 3 {
 				fmt.Printf("%s length can't be less than 3\n", paramName)
-				fmt.Printf("%s:\n", paramDescription)
+				fmt.Printf("%s\n", paramDescription)
 			} else {
 				valueSet = true
 			}
 		} else {
 			if !contains(options, value) {
 				fmt.Printf("invalid %s value\n", paramName)
-				fmt.Printf("%s:\n", paramDescription)
+				fmt.Printf("%s\n", paramDescription)
 			} else {
 				valueSet = true
 			}

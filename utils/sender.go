@@ -84,3 +84,46 @@ func SendWithCheckRetry(
 
 	return nil, "", err
 }
+
+func SendProtoWithCheckRetry(
+	vcli *client.VirgilHTTPClient,
+	method string,
+	urlPath string,
+	body []byte,
+	respObj *[]byte,
+	extraOptions ...interface{},
+) (headers http.Header, cookie string, err error) {
+
+	token := ""
+	if len(extraOptions) == 0 {
+		token, err = LoadAccessTokenOrLogin(vcli)
+
+		if err != nil {
+			return nil, "", err
+		}
+	}
+	header := http.Header{}
+
+	if len(extraOptions) > 0 {
+		t, ok := extraOptions[0].(string)
+		if ok && t[:2] == "MT" {
+			header.Add("SessionToken", t)
+		} else {
+			header.Add("AppToken", t)
+		}
+	} else if token != "" {
+		header.Add("ManagementToken", token)
+	}
+
+	var vErr *client.VirgilAPIError
+	for vErr == nil {
+		_, _, vErr = vcli.SendProto(method, urlPath, body, respObj, header)
+		if vErr == nil {
+			break
+		}
+
+		_, err = CheckRetry(vErr, vcli)
+	}
+
+	return nil, "", err
+}

@@ -39,11 +39,18 @@ package pure
 import (
 	"encoding/base64"
 	"fmt"
+	"strings"
 
-	phe "github.com/VirgilSecurity/virgil-phe-go"
-	purekit "github.com/VirgilSecurity/virgil-purekit-go"
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/phe"
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
+
+	"github.com/VirgilSecurity/virgil-cli/cmd/kms"
+	"github.com/VirgilSecurity/virgil-cli/utils"
+)
+
+const (
+	OldKeyPartsCount = 3
 )
 
 // UpdateKeys updates secret key and public key using update token
@@ -51,13 +58,13 @@ func UpdateKeys() *cli.Command {
 	return &cli.Command{
 		Name:      "update-keys",
 		Aliases:   []string{"u"},
-		ArgsUsage: "public_key service_secret_key update_token",
-		Usage:     "update secret key and public key using update token",
+		ArgsUsage: "phe_service_public_key secret_key update_token",
+		Usage:     "Update secret key and phe service public key using update token",
 		Action:    updateFunc,
 	}
 }
 func updateFunc(context *cli.Context) error {
-	if context.NArg() < 3 {
+	if context.NArg() < OldKeyPartsCount {
 		return errors.New("invalid number of arguments")
 	}
 
@@ -65,25 +72,56 @@ func updateFunc(context *cli.Context) error {
 	skStr := context.Args().Get(1)
 	tokenStr := context.Args().Get(2)
 
-	pkVersion, pk, err := purekit.ParseVersionAndContent("PK", pkStr)
-	if err != nil {
+	if isNewKeysVersion(pkStr, skStr, tokenStr) {
+		err := rotate(pkStr, skStr, tokenStr)
+		if err != nil {
+			return utils.CliExit(err)
+		}
+		return err
+	} else {
+		err := oldRotate(pkStr, skStr, tokenStr)
+		if err != nil {
+			return utils.CliExit(err)
+		}
 		return err
 	}
-	skVersion, sk, err := purekit.ParseVersionAndContent("SK", skStr)
+}
+
+func isNewKeysVersion(pkStr, skStr, tokenStr string) bool {
+	pkPartsCount := len(strings.Split(pkStr, "."))
+	skPartsCount := len(strings.Split(skStr, "."))
+	tokenPartsCount := len(strings.Split(tokenStr, "."))
+
+	return pkPartsCount > OldKeyPartsCount && skPartsCount > OldKeyPartsCount && tokenPartsCount > OldKeyPartsCount
+}
+
+func oldRotate(pkStr, skStr, tokenStr string) error {
+	pkVersion, pk, err := utils.ParseVersionAndContent("PK", pkStr)
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "parse public key failed: ")
 	}
-	tokenVersion, updateToken, err := purekit.ParseVersionAndContent("UT", tokenStr)
+	skVersion, sk, err := utils.ParseVersionAndContent("SK", skStr)
+	if err != nil {
+		return errors.Wrapf(err, "parse private key failed: ")
+	}
+	tokenVersion, updateToken, err := utils.ParseVersionAndContent("UT", tokenStr)
 
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "parse update token failed: ")
 	}
 
 	if (pkVersion+1) != tokenVersion || (skVersion+1) != tokenVersion {
 		return errors.New("Key version must be 1 less than token version")
 	}
 
-	newSk, newPk, err := phe.RotateClientKeys(pk, sk, updateToken)
+	pheClient := phe.NewPheClient()
+	if err := pheClient.SetKeys(sk, pk); err != nil {
+		return err
+	}
+	if err := pheClient.SetupDefaults(); err != nil {
+		return err
+	}
+	newSk, newPk, err := pheClient.RotateKeys(updateToken)
 	if err != nil {
 		return err
 	}
@@ -92,6 +130,67 @@ func updateFunc(context *cli.Context) error {
 		tokenVersion, base64.StdEncoding.EncodeToString(newPk),
 		tokenVersion, base64.StdEncoding.EncodeToString(newSk),
 	)
+	return nil
+}
 
+func rotate(pkStr, skStr, tokenStr string) error {
+	pkVersion, pkPhe, pkKMS, _, err := utils.ParseCombinedEntities("PK", pkStr)
+	if err != nil {
+		return errors.Wrapf(err, "parse public key failed: ")
+	}
+	skVersion, skPhe, skKMS, skAuth, err := utils.ParseCombinedEntities("SK", skStr)
+	if err != nil {
+		return errors.Wrapf(err, "parse private key failed: ")
+	}
+	tokenVersion, updateTokenPhe, updateTokenKMS, updateTokenAuth, err := utils.ParseCombinedEntities("UT", tokenStr)
+
+	if err != nil {
+		return errors.Wrapf(err, "parse update token failed: ")
+	}
+
+	if (pkVersion+1) != tokenVersion || (skVersion+1) != tokenVersion {
+		return errors.New("Key version must be 1 less than token version")
+	}
+
+	pheClient := phe.NewPheClient()
+	if err := pheClient.SetKeys(skPhe, pkPhe); err != nil {
+		return err
+	}
+	if err := pheClient.SetupDefaults(); err != nil {
+		return err
+	}
+	newPheSk, newPhePk, err := pheClient.RotateKeys(updateTokenPhe)
+	if err != nil {
+		return err
+	}
+
+	newKMSSk, newKMSPk, err := kms.RotateKMSKeys(skKMS, pkKMS, updateTokenKMS)
+	if err != nil {
+		return err
+	}
+
+	uokmsClient := phe.NewUokmsClient()
+	err = uokmsClient.SetupDefaults()
+	if err != nil {
+		return err
+	}
+	if err := uokmsClient.SetKeysOneparty(skAuth); err != nil {
+		return err
+	}
+	newSkAuth, err := uokmsClient.RotateKeysOneparty(updateTokenAuth)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(utils.PureKeysRotateSuccess)
+	fmt.Printf("New service public key:\nPK.%d.%s.%s\nNew secret key:\nSK.%d.%s.%s.%s\n",
+		tokenVersion,
+		base64.StdEncoding.EncodeToString(newPhePk),
+		base64.StdEncoding.EncodeToString(newKMSPk),
+		tokenVersion,
+		base64.StdEncoding.EncodeToString(newPheSk),
+		base64.StdEncoding.EncodeToString(newKMSSk),
+		base64.StdEncoding.EncodeToString(newSkAuth),
+	)
 	return nil
 }

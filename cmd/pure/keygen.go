@@ -40,24 +40,32 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	phe "github.com/VirgilSecurity/virgil-phe-go"
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto/wrapper/phe"
 	"github.com/pkg/errors"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/VirgilSecurity/virgil-cli/cmd/pure/keygen"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-//Keygen generates PureKit private key
+// Keygen generates PureKit private key
 func Keygen() *cli.Command {
 	return &cli.Command{
 		Name:    "keygen",
 		Aliases: []string{"kg"},
-		Usage:   "Generate a new Passw0rd app secret key",
+		Usage:   "Generate a new Pure secret key",
 		Action: func(context *cli.Context) error {
 			if context.Args().First() != "" {
-				return errors.New("incorrect key type")
+				return utils.CliExit(errors.New("incorrect key type"))
 			}
-			key := phe.GenerateClientKey()
+			pheClient := phe.NewPheClient()
+			if err := pheClient.SetupDefaults(); err != nil {
+				return utils.CliExit(err)
+			}
+			key, err := pheClient.GenerateClientPrivateKey()
+			if err != nil {
+				return utils.CliExit(err)
+			}
 			fmt.Println("SK.1." + base64.StdEncoding.EncodeToString(key))
 			return nil
 		},
@@ -65,10 +73,10 @@ func Keygen() *cli.Command {
 			keygen.Secret(),
 			keygen.Auth(),
 			keygen.Backup(),
-			keygen.HashesKey(),
 			keygen.VirgilStorage(),
 			keygen.OwnSigningKey(),
 			keygen.All(),
+			keygen.NonRotatableMasterSecret(),
 		},
 	}
 }

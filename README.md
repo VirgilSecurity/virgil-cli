@@ -1,5 +1,5 @@
 # Virgil CLI
-[![Build Status](https://travis-ci.org/VirgilSecurity/virgil-cli.png?branch=v5)](https://travis-ci.org/VirgilSecurity/virgil-cli)
+[![Build Status](https://travis-ci.com/VirgilSecurity/virgil-cli.png?branch=master)](https://travis-ci.com/VirgilSecurity/virgil-cli)
 [![GitHub license](https://img.shields.io/badge/license-BSD%203--Clause-blue.svg)](https://github.com/VirgilSecurity/virgil/blob/master/LICENSE)
 
 
@@ -9,51 +9,59 @@
 
 
 ## Content
-- [Installation](#installation)
-- [Launching CLI](#launching-cli)
-- [Manage Virgil Account](#manage-virgil-account)
-  - [Register new Account](#register-new-account)
-  - [Login into Account](#login-into-account)
-  - [Logout from Account](#logout-from-acccount)
-- [Manage Applications](#manage-applications)
-  - [Create new application](#create-new-application)
-  - [Delete application](#delete-application)
-  - [Get list of applications](#list-applications)
-  - [Update application](#update-application)
-  - [Set up default Application](#use-application)
-  - [Create new App Key](#create-new-app-key)
-  - [Delete App Key](#delete-app-key)
-  - [Get list of App Keys](#list-app-keys)
-  - [Update App Key](#update-app-key)
-  - [Create App Token](#create-app-token)
-  - [Delete App Token](#delete-app-token)
-  - [Get list of App Tokens](#list-app-tokens)
-- [PureKit Commands](#purekit-commands)
-  - [Generate all PureKit keys](#generate-all-purekit-keys)
-  - [Generate a Secret key](#generate-a-secret-key)
-  - [Generate a Backup key pair](#generate-a-backup-key-pair)
-  - [Generate a Virgil Storage key pair](#generate-a-virgil-storage-key-pair)
-  - [Generate Own Signing key](#generate-own-signing-key)
-  - [Generate Non-Rotatable Master Secret key](#generate-non-rotatable-master-secret-key)
+- [Virgil CLI](#virgil-cli)
+  - [Content](#content)
+  - [Installation](#installation)
+    - [Mac OS](#mac-os)
+      - [Install using Homebrew](#install-using-homebrew)
+      - [Install using the package](#install-using-the-package)
+    - [Linux](#linux)
+    - [Windows](#windows)
+  - [Launching Virgil CLI](#launching-virgil-cli)
+  - [Manage Virgil Account](#manage-virgil-account)
+    - [Register new account](#register-new-account)
+    - [Login into account](#login-into-account)
+    - [Logout from account](#logout-from-account)
+  - [Manage Applications](#manage-applications)
+    - [Create new application](#create-new-application)
+    - [Delete application](#delete-application)
+    - [List applications](#list-applications)
+    - [Update application](#update-application)
+    - [Use application](#use-application)
+    - [Create new App Key](#create-new-app-key)
+    - [Delete App Key](#delete-app-key)
+    - [List App Keys](#list-app-keys)
+    - [Update App Key](#update-app-key)
+    - [Create App Token](#create-app-token)
+    - [Delete App Token](#delete-app-token)
+    - [List App Tokens](#list-app-tokens)
+  - [PureKit Commands](#purekit-commands)
+    - [Generate all PureKit keys](#generate-all-purekit-keys)
+    - [Generate a secret key](#generate-a-secret-key)
+    - [Generate an Auth key](#generate-an-auth-key)
+    - [Generate a Backup key pair](#generate-a-backup-key-pair)
+    - [Generate a Virgil Storage key pair](#generate-a-virgil-storage-key-pair)
+    - [Generate own Signing Key](#generate-own-signing-key)
+    - [Generate Non-Rotatable Master Secret key](#generate-non-rotatable-master-secret-key)
   - [Update keys](#update-keys)
-- [Manage Application Cards](#manage-application-cards)
-  - [Config file](#config-file)
-  - [Search cards](#search-cards)
-  - [Revoke card](#revoke-card)
-- [Cryptographic Operations](#cryptographic-operations)
-  - [Generate private key](#generate-private-key)
-  - [Extract public key](#extract-public-key)
-  - [Encrypt](#encrypt)
-  - [Decrypt](#decrypt)
-  - [Sign](#sign)
-  - [Verify signature](#verify-signature)
-- [SCMS Commands](#scms-commands)
-  - [Init SCMS module in application](#init-scms-module-in-application)
-  - [Create DCM certificate](#create-dcm-certificate)
-  - [Get DCM certificates list](#get-dcm-certificates-list)
-  - [Get SCMS devices](#get-scms-devices)
-- [License](#license)
-- [Support](#support)
+  - [Manage Application Cards](#manage-application-cards)
+    - [Config file](#config-file)
+    - [Search cards](#search-cards)
+    - [Revoke card](#revoke-card)
+  - [Cryptographic operations](#cryptographic-operations)
+    - [Generate private key](#generate-private-key)
+    - [Extract public key](#extract-public-key)
+    - [Encrypt](#encrypt)
+    - [Decrypt](#decrypt)
+    - [Sign](#sign)
+    - [Verify signature](#verify-signature)
+  - [SCMS Commands](#scms-commands)
+    - [Init SCMS module in application](#init-scms-module-in-application)
+    - [Create DCM certificate](#create-dcm-certificate)
+    - [Get DCM certificates list](#get-dcm-certificates-list)
+    - [Get SCMS devices](#get-scms-devices)
+  - [License](#license)
+  - [Support](#support)
 
 
 ## Installation
@@ -227,7 +235,7 @@ $ virgil app token list --app-id <app-id>
 
 ## PureKit Commands
 
-## Generate all PureKit keys
+### Generate all PureKit keys
 
 This command is used to generate all Pure key pairs for an application:
 
@@ -235,7 +243,7 @@ This command is used to generate all Pure key pairs for an application:
 $ virgil purekit keygen all
 ```
 
-## Generate a secret key
+### Generate a secret key
 
 This command is used to generate a new Secret key for an application:
 
@@ -243,7 +251,7 @@ This command is used to generate a new Secret key for an application:
 virgil purekit keygen secret
 ```
 
-## Generate an Auth key
+### Generate an Auth key
 
 This command is used to generate a new Auth key for an application:
 
@@ -251,7 +259,7 @@ This command is used to generate a new Auth key for an application:
 $ virgil purekit keygen auth
 ```
 
-## Generate a Backup key pair
+### Generate a Backup key pair
 
 This command is used to generate a Backup key pair for an application:
 
@@ -259,7 +267,7 @@ This command is used to generate a Backup key pair for an application:
 $ virgil purekit keygen backup
 ```
 
-## Generate a Virgil Storage key pair
+### Generate a Virgil Storage key pair
 
 This command is used to generate a Virgil Storage key pair for an application:
 
@@ -267,7 +275,7 @@ This command is used to generate a Virgil Storage key pair for an application:
 $ virgil purekit keygen signing
 ```
 
-## Generate own Signing Key
+### Generate own Signing Key
 
 This command is used to generate Own Signing key for an application:
 
@@ -275,7 +283,7 @@ This command is used to generate Own Signing key for an application:
 $ virgil purekit keygen own
 ```
 
-## Generate Non-Rotatable Master Secret key
+### Generate Non-Rotatable Master Secret key
 
 This command is used to generate a new Non-Rotatable Master Secret key:
 

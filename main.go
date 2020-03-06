@@ -42,15 +42,12 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/urfave/cli.v2"
-	"gopkg.in/urfave/cli.v2/altsrc"
+	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2/altsrc"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/cmd"
-)
-
-var (
-	version = "5.1.7"
+	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 func main() {
@@ -72,12 +69,16 @@ func main() {
 		Address: "https://api.virgilsecurity.com/management/v1/",
 	}
 
+	kmsClient := &client.VirgilHTTPClient{
+		Address: "https://api.virgilsecurity.com/",
+	}
+
 	app := &cli.App{
-		Version:               fmt.Sprintf("%v", version),
-		Name:                  "CLI",
-		Usage:                 "VirgilSecurity command line interface",
-		Flags:                 flags,
-		EnableShellCompletion: true,
+		Version:              fmt.Sprintf("%v", utils.Version),
+		Name:                 "CLI",
+		Usage:                "VirgilSecurity command line interface",
+		Flags:                flags,
+		EnableBashCompletion: true,
 		Commands: []*cli.Command{
 			cmd.Register(apiGatewayClient),
 			cmd.Login(apiGatewayClient),
@@ -93,11 +94,13 @@ func main() {
 			cmd.Verify(),
 			cmd.Cards(apiGatewayClient),
 			cmd.Wave(apiGatewayClient),
+			// cmd.KMS(kmsClient),
 		},
 		Before: func(c *cli.Context) error {
 			apiURL := c.String("api_gateway_url")
 			if strings.TrimSpace(apiURL) != "" {
 				apiGatewayClient.Address = apiURL
+				kmsClient.Address = strings.TrimSuffix(apiURL, "management/v1/")
 			}
 
 			if _, err := os.Stat(c.String("config")); os.IsNotExist(err) {
