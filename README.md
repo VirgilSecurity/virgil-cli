@@ -280,7 +280,7 @@ $ virgil purekit keygen own
 This command is used to generate a new Non-Rotatable Master Secret key:
 
 ```bash
-$ virgil pure keygen nonrotable-master
+$ virgil purekit keygen nonrotable-master
 ```
 
 ## Update keys
