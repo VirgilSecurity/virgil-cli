@@ -3,7 +3,7 @@ module github.com/VirgilSecurity/virgil-cli
 go 1.13
 
 require (
-	github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.8-0.20200311122452-65de2ce5821f
+	github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.8
 	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412 // indirect
 	github.com/golang/protobuf v1.3.3
 	github.com/google/uuid v1.1.1

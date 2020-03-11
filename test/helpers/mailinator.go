@@ -42,15 +42,18 @@ func GetConfirmCode(email string) string {
 	messageText, err := loadMailinatorMessage(email)
 	re := regexp.MustCompile(ConfirmCodePattern)
 	res := re.FindAllStringSubmatch(messageText, -1)
-	confCode := res[0][2]
 	if err != nil {
 		fmt.Printf("mailinator error: %+v", err)
 	}
+	confCode := res[0][2]
 	return confCode
 }
 
 func loadMailinatorMessage(email string) (msg string, err error) {
 	mailinatorToken := os.Getenv("MAILINATOR_TOKEN")
+	if mailinatorToken == "" {
+		fmt.Println("WARNING! Mailinator token not set!")
+	}
 
 	resp, err := http.Get(fmt.Sprintf(MailinatorApi+"inbox?token=%s&to=%s", mailinatorToken, email))
 	if err != nil {
