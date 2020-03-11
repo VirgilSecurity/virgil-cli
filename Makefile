@@ -25,11 +25,11 @@ ifeq ($(shell go env GOOS),windows)
 endif
 
 ifeq ($(shell go env GOARCH), 386)
-	ARCH=i386
+	VIRGIL_PACKAGE_ARCH=i386
 endif
 
 ifeq ($(shell go env GOARCH), amd64)
-	ARCH=x86_64
+	VIRGIL_PACKAGE_ARCH=x86_64
 endif
 
 VERSION=$(shell cat VERSION)
@@ -67,7 +67,7 @@ pack_artifacts:
 	@echo ">>> Archiving artifact"
 	mkdir -p artifacts
 	if [ "$(OS)" = "windows" ]; then \
-  		zip artifacts/Virgil_$(VERSION)_$(OS)_$(ARCH).zip $(BINARY); \
+  		zip artifacts/Virgil_$(VERSION)_$(OS)_$(VIRGIL_PACKAGE_ARCH).zip $(BINARY); \
   	else \
-  		tar cvzf artifacts/Virgil_$(VERSION)_$(OS)_$(ARCH).tar.gz $(BINARY); \
+  		tar cvzf artifacts/Virgil_$(VERSION)_$(OS)_$(VIRGIL_PACKAGE_ARCH).tar.gz $(BINARY); \
   	fi

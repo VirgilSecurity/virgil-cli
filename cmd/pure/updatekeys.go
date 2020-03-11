@@ -58,8 +58,8 @@ func UpdateKeys() *cli.Command {
 	return &cli.Command{
 		Name:      "update-keys",
 		Aliases:   []string{"u"},
-		ArgsUsage: "phe_service_public_key secret_key update_token",
-		Usage:     "Update secret key and phe service public key using update token",
+		ArgsUsage: "service_public_key secret_key update_token",
+		Usage:     "Update secret key and service public key using update token",
 		Action:    updateFunc,
 	}
 }
