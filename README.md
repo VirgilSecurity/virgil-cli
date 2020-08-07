@@ -313,8 +313,8 @@ It could be generated on dashboard or by hands
 config file example : 
 ```$xslt
 {
-  "APP_KEY": "1234567890",
-  "APP_KEY_ID": "12345678901234567890",
+  "API_KEY": "1234567890",
+  "API_KEY_ID": "12345678901234567890",
   "APP_ID": "12345678901234567890"
 }
 ```
