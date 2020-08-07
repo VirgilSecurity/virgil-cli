@@ -38,7 +38,6 @@ package cards
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"time"
 
 	"github.com/pkg/errors"
@@ -66,8 +65,6 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 				return utils.CliExit(errors.New(utils.ConfigurationFileNotSpecified))
 			}
 
-			identity := utils.ReadFlagOrConsoleValue(context, "i", utils.CardIdentityPrompt)
-
 			data, err := ioutil.ReadFile(configFileName)
 			if err != nil {
 				fmt.Print(err)
@@ -83,19 +80,32 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 				return utils.CliExit(err)
 			}
 
+			identity := utils.ReadFlagOrConsoleValue(context, "i", utils.CardIdentityPrompt)
+
 			ttl := time.Minute
 
 			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APIKeyID, tokenSigner, conf.AppID, ttl)
-
-			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("%s (y/n) ?"), utils.CardDeletePrompt, "y", "n")
-			if yesOrNo == "n" {
-				return nil
-			}
-			token, err := jwtGenerator.GenerateToken(identity, nil)
+			cardVerifier, err := sdk.NewVirgilCardVerifier(cardCrypto, true, true)
 			if err != nil {
 				return utils.CliExit(err)
 			}
-			err = deleteCardFunc(cardID, token.String(), vcli)
+			mgrParams := &sdk.CardManagerParams{
+				Crypto:              cardCrypto,
+				CardVerifier:        cardVerifier,
+				AccessTokenProvider: sdk.NewGeneratorJwtProvider(jwtGenerator, nil, identity),
+			}
+
+			cardManager, err := sdk.NewCardManager(mgrParams)
+			if err != nil {
+				return utils.CliExit(err)
+			}
+			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("%s (y/n) ?", utils.CardDeletePrompt), "y", "n")
+			if yesOrNo == "n" {
+				return nil
+			}
+
+			err = cardManager.RevokeCard(cardID)
+
 			if err == utils.ErrEntityNotFound {
 				return utils.CliExit(errors.New(fmt.Sprintf("%s %s \n", utils.CardNotFound, cardID)))
 			}
@@ -107,9 +117,4 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 			return nil
 		},
 	}
-}
-
-func deleteCardFunc(cardID, authorization string, vcli *client.VirgilHTTPClient) (err error) {
-	_, _, err = utils.SendWithCheckRetry(vcli, http.MethodPost, "card/v5/actions/revoke/"+cardID, nil, nil, authorization)
-	return err
 }
