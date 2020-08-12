@@ -1,5 +1,5 @@
 package utils
 
 var (
-	Version = "5.2.4"
+	Version = "5.2.6"
 )
