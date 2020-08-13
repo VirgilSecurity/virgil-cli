@@ -12,8 +12,7 @@ BINARY:=virgil
 #
 # Packages covered with unit tests.
 GO_UNIT_TESTED_PACKAGES=$(shell go list ./...)
-# Go modules mode
-GO111MODULE=on
+
 
 
 ifneq ($(shell go env GOOS),darwin)

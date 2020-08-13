@@ -75,7 +75,7 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 				fmt.Print(err)
 			}
 
-			privateKey, err := crypto.ImportPrivateKey(conf.APIKey, "")
+			privateKey, err := crypto.ImportPrivateKey(conf.APPKey, "")
 			if err != nil {
 				return utils.CliExit(err)
 			}
@@ -84,7 +84,7 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 
 			ttl := time.Minute
 
-			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APIKeyID, tokenSigner, conf.AppID, ttl)
+			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APPKeyID, tokenSigner, conf.AppID, ttl)
 			cardVerifier, err := sdk.NewVirgilCardVerifier(cardCrypto, true, true)
 			if err != nil {
 				return utils.CliExit(err)
