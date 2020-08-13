@@ -85,14 +85,14 @@ func Search() *cli.Command {
 				return utils.CliExit(err)
 			}
 
-			privateKey, err := crypto.ImportPrivateKey(conf.APIKey, "")
+			privateKey, err := crypto.ImportPrivateKey(conf.APPKey, "")
 			if err != nil {
 				return utils.CliExit(err)
 			}
 
 			ttl := time.Minute
 
-			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APIKeyID, tokenSigner, conf.AppID, ttl)
+			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APPKeyID, tokenSigner, conf.AppID, ttl)
 
 			mgrParams := &sdk.CardManagerParams{
 				Crypto:              cardCrypto,

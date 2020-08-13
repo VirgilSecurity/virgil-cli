@@ -74,8 +74,8 @@ func ParseAppConfig(data []byte) (config models.AppConfig, err error) {
 	if err != nil {
 		return config, errors.New("error parsing config: " + err.Error())
 	}
-	if config.AppID == "" || config.APIKeyID == "" || len(config.APIKey) == 0 {
-		return config, errors.New("error parsing config: all APP_ID, API_KEY, API_KEY_ID must be specified")
+	if config.AppID == "" || config.APPKeyID == "" || len(config.APPKey) == 0 {
+		return config, errors.New("error parsing config: all APP_ID, APP_KEY, APP_KEY_ID must be specified")
 	}
 	return
 }
