@@ -44,7 +44,6 @@ import (
 	"strings"
 
 	"github.com/urfave/cli/v2"
-	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
@@ -55,11 +54,9 @@ func Key2Pub() *cli.Command {
 		ArgsUsage: "[prKey]",
 		Usage:     "Extract public key",
 		Flags: []cli.Flag{&cli.StringFlag{Name: "o", Usage: "destination file name"},
-			&cli.StringFlag{Name: "p", Usage: "password"},
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
-			pass := utils.ReadFlagOrDefault(context, "p", "")
 
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
 			inputFileName := utils.ReadFlagOrDefault(context, "i", "")
@@ -104,7 +101,7 @@ func Key2Pub() *cli.Command {
 			} else {
 				writer = os.Stdout
 			}
-			key, err := Key2PubFunc(privateKeyString, pass)
+			key, err := Key2PubFunc(privateKeyString)
 
 			if err != nil {
 				return utils.CliExit(err)
@@ -129,17 +126,12 @@ func Key2Pub() *cli.Command {
 	}
 }
 
-func Key2PubFunc(privateKeyString, password string) (publicKey []byte, err error) {
-	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
+func Key2PubFunc(privateKeyString string) (publicKey []byte, err error) {
+	sk, err := crypt.ImportPrivateKey([]byte(privateKeyString))
 
 	if err != nil {
 		return nil, fmt.Errorf(utils.ExtractPubKeyParseFailed)
 	}
 
-	pubKey, err := pk.ExtractPublicKey()
-	if err != nil {
-		return nil, err
-	}
-
-	return pubKey.Encode()
+	return crypt.ExportPublicKey(sk.PublicKey())
 }
