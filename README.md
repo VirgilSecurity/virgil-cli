@@ -347,24 +347,22 @@ flags :
 ### Generate private key
 This command generates a User's Private Key:
 ```bash
-$ virgil keygen -o <file> -p <password>,
+$ virgil keygen -o <file>,
 ```
 ```
 flags :
 -o  - Key file name. If omitted, stdout is used.
--p  - Use password to encrypt Private Key. If omitted (not recommended), private key will be generated without password
 ```
 
 ### Extract public key
 This command extracts a Public Key from a Private Key:
 ```bash
-$ virgil key2pub  -i <file> -o <file> -p <password>,
+$ virgil key2pub  -i <file> -o <file>
 ```
 ```
 flags :
 -i  - Key's File Name. If omitted, stdin is used.
 -o  - Public key's file name. If omitted, stdout is used.
--p  - Use password to decrypt Private Key. 
 ```
 
 ### Encrypt
@@ -381,29 +379,27 @@ flags :
 ```
 
 ### Decrypt
-This command decrypts the encrypted data with a a Private Key:
+This command decrypts the encrypted data with a Private Key:
 ```bash
-$ virgil decrypt  -i <file> -o <file> -key <private_key_file>  -p <password>,
+$ virgil decrypt  -i <file> -o <file> -key <private_key_file>
 ```
 ```
 flags :
 -i  - Data to be decrypted - If omitted, stdin is used.
 -o  - Decrypted data. If omitted, stdout is used.
 -key  - Private key file. 
--p  - Use password to decrypt Private Key. 
 ```
 
 ### Sign
 This command signs data with a provided User’s Private Key:
 ```bash
-$ virgil sign  -i <file> -o <file> -key <private_key_file>  -p <password>,
+$ virgil sign  -i <file> -o <file> -key <private_key_file>
 ```
 ```
 flags :
 -i  - Data to be signed - If omitted, stdin is used.
 -o  - The signed data. If omitted, stdout is used.
 -key  - Private key file. 
--p  - Use password to decrypt Private Key. 
 ```
 
 
