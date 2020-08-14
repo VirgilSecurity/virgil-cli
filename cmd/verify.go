@@ -42,7 +42,6 @@ import (
 	"io/ioutil"
 
 	"github.com/urfave/cli/v2"
-	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
@@ -98,7 +97,7 @@ func Verify() *cli.Command {
 }
 
 func VerifyFunc(publicKeyString string, data, signature []byte) (err error) {
-	pk, err := cryptoimpl.DecodePublicKey([]byte(publicKeyString))
+	pk, err := crypt.ImportPublicKey([]byte(publicKeyString))
 
 	if err != nil {
 		return errors.New(utils.CantImportPublicKey)
@@ -110,7 +109,7 @@ func VerifyFunc(publicKeyString string, data, signature []byte) (err error) {
 		return err
 	}
 
-	err = crypto.VerifySignature(data, ss, pk)
+	err = crypt.VerifySignature(data, ss, pk)
 	if err != nil {
 		return errors.New(utils.VerifyFailed)
 	}

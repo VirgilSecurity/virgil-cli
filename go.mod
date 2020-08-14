@@ -1,6 +1,6 @@
 module github.com/VirgilSecurity/virgil-cli
 
-go 1.13
+go 1.15
 
 require (
 	github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.15
@@ -12,8 +12,7 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/urfave/cli/v2 v2.2.0
 	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
-	golang.org/x/sys v0.0.0-20200810151505-1b9f1253b3ed // indirect
+	golang.org/x/sys v0.0.0-20200812155832-6a926be9bd1d // indirect
 	google.golang.org/protobuf v1.25.0
-	gopkg.in/virgil.v5 v5.2.1
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

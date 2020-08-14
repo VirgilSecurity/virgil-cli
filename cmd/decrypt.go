@@ -43,7 +43,6 @@ import (
 	"os"
 
 	"github.com/urfave/cli/v2"
-	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
@@ -56,7 +55,6 @@ func Decrypt() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "o", Usage: "destination file name"},
 			&cli.StringFlag{Name: "key", Usage: "private key file"},
-			&cli.StringFlag{Name: "p", Usage: "private key password"},
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
@@ -65,7 +63,6 @@ func Decrypt() *cli.Command {
 			if keyFileName == "" {
 				return utils.CliExit(errors.New(utils.KeyFileNotSpecified))
 			}
-			pass := utils.ReadFlagOrDefault(context, "p", "")
 
 			dataToDecrypt, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "inp", utils.DecryptDataPrompt)
 			if err != nil {
@@ -93,7 +90,7 @@ func Decrypt() *cli.Command {
 				writer = file
 			}
 
-			key, err := DecryptFunc(privateKeyString, pass, dataToDecrypt)
+			key, err := DecryptFunc(privateKeyString, dataToDecrypt)
 			if err != nil {
 				return utils.CliExit(err)
 			}
@@ -109,8 +106,8 @@ func Decrypt() *cli.Command {
 	}
 }
 
-func DecryptFunc(privateKeyString, password string, data []byte) (publicKey []byte, err error) {
-	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
+func DecryptFunc(privateKeyString string, data []byte) (publicKey []byte, err error) {
+	pk, err := crypt.ImportPrivateKey([]byte(privateKeyString))
 
 	if err != nil {
 		return nil, errors.New(utils.CantImportPrivateKey)
@@ -122,5 +119,5 @@ func DecryptFunc(privateKeyString, password string, data []byte) (publicKey []by
 		return nil, err
 	}
 
-	return crypto.Decrypt(dd, pk)
+	return crypt.Decrypt(dd, pk)
 }

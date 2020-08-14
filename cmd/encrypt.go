@@ -42,13 +42,13 @@ import (
 	"io"
 	"os"
 
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto"
 	"github.com/urfave/cli/v2"
-	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
-var crypto = cryptoimpl.NewVirgilCrypto()
+var crypt = &crypto.Crypto{}
 
 func Encrypt() *cli.Command {
 	return &cli.Command{
@@ -111,17 +111,14 @@ func Encrypt() *cli.Command {
 }
 
 func EncryptFunc(data []byte, publicKeysStrings []string) (publicKey []byte, err error) {
-	pkk := make([]interface {
-		IsPublic() bool
-		Identifier() []byte
-	}, len(publicKeysStrings))
+	pkk := make([]crypto.PublicKey, len(publicKeysStrings))
 
 	for i, s := range publicKeysStrings {
-		pkk[i], err = cryptoimpl.DecodePublicKey([]byte(s))
+		pkk[i], err = crypt.ImportPublicKey([]byte(s))
 		if err != nil {
 			return nil, errors.New(utils.CantImportPublicKey)
 		}
 	}
 
-	return crypto.Encrypt(data, pkk...)
+	return crypt.Encrypt(data, pkk...)
 }

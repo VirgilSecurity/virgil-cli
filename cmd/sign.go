@@ -43,7 +43,6 @@ import (
 	"os"
 
 	"github.com/urfave/cli/v2"
-	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
@@ -55,12 +54,9 @@ func Sign() *cli.Command {
 		Usage:     "Sign data",
 		Flags: []cli.Flag{&cli.StringFlag{Name: "o", Usage: "destination file name"},
 			&cli.StringFlag{Name: "key", Usage: "private key file"},
-			&cli.StringFlag{Name: "p", Usage: "private key password"},
 			&cli.StringFlag{Name: "i", Usage: "input file"},
 		},
 		Action: func(context *cli.Context) error {
-			pass := utils.ReadFlagOrDefault(context, "p", "")
-
 			destinationFileName := utils.ReadFlagOrDefault(context, "o", "")
 			dataToSign, err := utils.ReadFileFlagOrParamOrFromConsole(context, "i", "data", utils.SignDataPrompt)
 			if err != nil {
@@ -88,7 +84,7 @@ func Sign() *cli.Command {
 				writer = file
 			}
 
-			signature, err := SignFunc(privateKeyString, pass, dataToSign)
+			signature, err := SignFunc(privateKeyString, dataToSign)
 
 			if err != nil {
 				return utils.CliExit(err)
@@ -105,12 +101,12 @@ func Sign() *cli.Command {
 	}
 }
 
-func SignFunc(privateKeyString, password string, data []byte) (publicKey []byte, err error) {
-	pk, err := cryptoimpl.DecodePrivateKey([]byte(privateKeyString), []byte(password))
+func SignFunc(privateKeyString string, data []byte) (publicKey []byte, err error) {
+	pk, err := crypt.ImportPrivateKey([]byte(privateKeyString))
 
 	if err != nil {
 		return nil, errors.New(utils.SignCantParsePrivateKey)
 	}
 
-	return crypto.Sign(data, pk)
+	return crypt.Sign(data, pk)
 }

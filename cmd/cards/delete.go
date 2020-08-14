@@ -40,20 +40,23 @@ import (
 	"io/ioutil"
 	"time"
 
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto"
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/sdk"
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/session"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
-	"gopkg.in/virgil.v5/sdk"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
+
+var crypt = &crypto.Crypto{}
 
 func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
 		Name:      "revoke",
 		ArgsUsage: "[id]",
 		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "c", Usage: "private key password"},
 			&cli.StringFlag{Name: "i", Usage: "config file name"},
 		},
 		Usage: "delete cards by id",
@@ -75,30 +78,22 @@ func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
 				fmt.Print(err)
 			}
 
-			privateKey, err := crypto.ImportPrivateKey(conf.APPKey, "")
+			privateKey, err := crypt.ImportPrivateKey(conf.APPKey)
 			if err != nil {
 				return utils.CliExit(err)
 			}
 
 			identity := utils.ReadFlagOrConsoleValue(context, "i", utils.CardIdentityPrompt)
 
-			ttl := time.Minute
-
-			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APPKeyID, tokenSigner, conf.AppID, ttl)
-			cardVerifier, err := sdk.NewVirgilCardVerifier(cardCrypto, true, true)
-			if err != nil {
-				return utils.CliExit(err)
-			}
-			mgrParams := &sdk.CardManagerParams{
-				Crypto:              cardCrypto,
-				CardVerifier:        cardVerifier,
-				AccessTokenProvider: sdk.NewGeneratorJwtProvider(jwtGenerator, nil, identity),
+			generator := session.JwtGenerator{
+				AppKey:            privateKey,
+				AppKeyID:          conf.APPKeyID,
+				AppID:             conf.AppID,
+				AccessTokenSigner: &session.VirgilAccessTokenSigner{Crypto: crypt},
+				TTL:               time.Minute,
 			}
 
-			cardManager, err := sdk.NewCardManager(mgrParams)
-			if err != nil {
-				return utils.CliExit(err)
-			}
+			cardManager := sdk.NewCardManager(session.NewGeneratorJwtProvider(generator, session.SetGeneratorJwtProviderDefaultIdentity(identity)))
 			yesOrNo := utils.ReadConsoleValue("y or n", fmt.Sprintf("%s (y/n) ?", utils.CardDeletePrompt), "y", "n")
 			if yesOrNo == "n" {
 				return nil
