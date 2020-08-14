@@ -7,6 +7,8 @@
 - **Linux shells** – Use common shell programs such as Bash, Zsh, and tsch to run commands in Linux, macOS, or Unix.
 - **Windows command line** – On Microsoft Windows, run commands in either PowerShell or the Windows Command Processor.
 
+### Note regarding passwords
+Password protected keys are not supported since v5.2.8 
 
 ## Content
 - [Virgil CLI](#virgil-cli)
