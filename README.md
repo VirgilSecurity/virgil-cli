@@ -324,7 +324,7 @@ config file example :
 ### Search cards
 This command searches for any Virgil Card by its identity:
 ```bash
-$ virgil cards search -c <file> <identity>,
+$ virgil cards search -c <file> <identity>
 ```
 ```
 flags :
@@ -332,9 +332,9 @@ flags :
 ```
 
 ### Revoke card
-This command deletes Virgil Card by it's id
+This command deletes Virgil Card by its id
 ```bash
-$ virgil cards delete -c <file> -i <identity> <card_id>,
+$ virgil cards revoke -c <file> -i <identity> <card_id>
 ```
 ```
 flags :
@@ -349,7 +349,7 @@ flags :
 ### Generate private key
 This command generates a User's Private Key:
 ```bash
-$ virgil keygen -o <file>,
+$ virgil keygen -o <file>
 ```
 ```
 flags :
