@@ -46,18 +46,18 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 
-	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
 
 var crypt = &crypto.Crypto{}
 
-func Revoke(vcli *client.VirgilHTTPClient) *cli.Command {
+func Revoke() *cli.Command {
 	return &cli.Command{
 		Name:      "revoke",
 		ArgsUsage: "[id]",
 		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "i", Usage: "config file name"},
+			&cli.StringFlag{Name: "c", Usage: "config file name"},
+			&cli.StringFlag{Name: "i", Usage: "identity"},
 		},
 		Usage: "delete cards by id",
 		Action: func(context *cli.Context) error {
