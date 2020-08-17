@@ -41,14 +41,16 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
-	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-cli/client"
 	"github.com/VirgilSecurity/virgil-cli/models"
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
+
+var crypt = &crypto.Crypto{}
 
 func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 	return &cli.Command{
@@ -90,21 +92,21 @@ func Create(vcli *client.VirgilHTTPClient) *cli.Command {
 }
 
 func CreateFunc(name, appID string, vcli *client.VirgilHTTPClient) (apiKeyID string, err error) {
-	keyPair, err := cryptoimpl.NewKeypair()
+	keyPair, err := crypt.GenerateKeypair()
 
 	if err != nil {
 		return "", err
 	}
 
-	prKey, err := keyPair.PrivateKey().Encode(nil)
+	prKey, err := crypt.ExportPrivateKey(keyPair)
 	if err != nil {
 		return "", err
 	}
-	pubKey, err := keyPair.PublicKey().Encode()
+	pubKey, err := crypt.ExportPublicKey(keyPair.PublicKey())
 	if err != nil {
 		return "", err
 	}
-	sign, err := cryptoimpl.Signer.Sign(pubKey, keyPair.PrivateKey())
+	sign, err := crypt.Sign(pubKey, keyPair)
 	if err != nil {
 		return "", err
 	}

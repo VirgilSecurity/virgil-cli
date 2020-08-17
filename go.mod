@@ -1,15 +1,18 @@
 module github.com/VirgilSecurity/virgil-cli
 
-go 1.13
+go 1.15
 
 require (
-	github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.8
-	github.com/agl/ed25519 v0.0.0-20170116200512-5312a6153412 // indirect
-	github.com/golang/protobuf v1.3.3
+	github.com/VirgilSecurity/virgil-sdk-go/v6 v6.0.15
+	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/golang/protobuf v1.4.2
 	github.com/google/uuid v1.1.1
 	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.4.0
-	github.com/urfave/cli/v2 v2.1.1
-	gopkg.in/virgil.v5 v5.2.0
+	github.com/urfave/cli/v2 v2.2.0
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
+	golang.org/x/sys v0.0.0-20200812155832-6a926be9bd1d // indirect
+	google.golang.org/protobuf v1.25.0
+	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

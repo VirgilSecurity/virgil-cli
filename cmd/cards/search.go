@@ -42,17 +42,11 @@ import (
 	"io/ioutil"
 	"time"
 
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/sdk"
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/session"
 	"github.com/urfave/cli/v2"
-	"gopkg.in/virgil.v5/cryptoimpl"
-	"gopkg.in/virgil.v5/sdk"
 
 	"github.com/VirgilSecurity/virgil-cli/utils"
-)
-
-var (
-	crypto      = cryptoimpl.NewVirgilCrypto()
-	cardCrypto  = cryptoimpl.NewVirgilCardCrypto()
-	tokenSigner = cryptoimpl.NewVirgilAccessTokenSigner()
 )
 
 func Search() *cli.Command {
@@ -65,10 +59,6 @@ func Search() *cli.Command {
 		Usage: "search cards by identity",
 		Action: func(context *cli.Context) error {
 			identity := utils.ReadParamOrDefaultOrFromConsole(context, "identity", utils.CardIdentityPrompt, "")
-			cardVerifier, err := sdk.NewVirgilCardVerifier(cardCrypto, true, true)
-			if err != nil {
-				return utils.CliExit(err)
-			}
 
 			configFileName := utils.ReadFlagOrDefault(context, "c", "")
 			if configFileName == "" {
@@ -85,25 +75,20 @@ func Search() *cli.Command {
 				return utils.CliExit(err)
 			}
 
-			privateKey, err := crypto.ImportPrivateKey(conf.APIKey, "")
+			privateKey, err := crypt.ImportPrivateKey(conf.APPKey)
 			if err != nil {
 				return utils.CliExit(err)
 			}
 
-			ttl := time.Minute
-
-			jwtGenerator := sdk.NewJwtGenerator(privateKey, conf.APIKeyID, tokenSigner, conf.AppID, ttl)
-
-			mgrParams := &sdk.CardManagerParams{
-				Crypto:              cardCrypto,
-				CardVerifier:        cardVerifier,
-				AccessTokenProvider: sdk.NewGeneratorJwtProvider(jwtGenerator, nil, ""),
+			generator := session.JwtGenerator{
+				AppKey:            privateKey,
+				AppKeyID:          conf.APPKeyID,
+				AppID:             conf.AppID,
+				AccessTokenSigner: &session.VirgilAccessTokenSigner{Crypto: crypt},
+				TTL:               time.Minute,
 			}
 
-			cardManager, err := sdk.NewCardManager(mgrParams)
-			if err != nil {
-				return utils.CliExit(err)
-			}
+			cardManager := sdk.NewCardManager(session.NewGeneratorJwtProvider(generator, session.SetGeneratorJwtProviderDefaultIdentity(identity)))
 
 			cards, err := cardManager.SearchCards(identity)
 			if err != nil {
@@ -122,7 +107,7 @@ func Search() *cli.Command {
 				"---------------------------------------",
 			)
 			for _, c := range cards {
-				pk, err := crypto.ExportPublicKey(c.PublicKey)
+				pk, err := crypt.ExportPublicKey(c.PublicKey)
 				if err != nil {
 					return utils.CliExit(err)
 				}

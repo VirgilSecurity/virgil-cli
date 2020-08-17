@@ -42,7 +42,6 @@ import (
 	"os"
 
 	"github.com/urfave/cli/v2"
-	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
@@ -51,11 +50,10 @@ func Keygen() *cli.Command {
 	return &cli.Command{
 		Name:  "keygen",
 		Usage: "Generate keypair",
-		Flags: []cli.Flag{&cli.StringFlag{Name: "o", Usage: "destination file name"},
-			&cli.StringFlag{Name: "p", Usage: "password"}},
+		Flags: []cli.Flag{&cli.StringFlag{Name: "o", Usage: "destination file name"}},
 		Action: func(context *cli.Context) error {
 			pass := utils.ReadFlagOrDefault(context, "p", "")
-			key, err := KeygenFunc(pass)
+			key, err := KeygenFunc()
 			if err != nil {
 				return utils.CliExit(err)
 			}
@@ -100,17 +98,12 @@ func Keygen() *cli.Command {
 	}
 }
 
-func KeygenFunc(password string) (privateKey []byte, err error) {
-	keyPair, err := cryptoimpl.NewKeypair()
+func KeygenFunc() (privateKey []byte, err error) {
+	keyPair, err := crypt.GenerateKeypair()
 
 	if err != nil {
 		return nil, err
 	}
 
-	prKey, err := keyPair.PrivateKey().Encode([]byte(password))
-	if err != nil {
-		return nil, err
-	}
-
-	return prKey, nil
+	return crypt.ExportPrivateKey(keyPair)
 }

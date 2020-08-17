@@ -36,20 +36,22 @@
 package keygen
 
 import (
-	"gopkg.in/virgil.v5/cryptoimpl"
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto"
 )
 
+var crypt = &crypto.Crypto{}
+
 func generateKeypairEncoded() (sk []byte, pk []byte, err error) {
-	keyPair, err := cryptoimpl.NewKeypair()
+	keyPair, err := crypt.GenerateKeypair()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if sk, err = keyPair.PrivateKey().Encode(nil); err != nil {
+	if sk, err = crypt.ExportPrivateKey(keyPair); err != nil {
 		return nil, nil, err
 	}
 
-	if pk, err = keyPair.PublicKey().Encode(); err != nil {
+	if pk, err = crypt.ExportPublicKey(keyPair.PublicKey()); err != nil {
 		return nil, nil, err
 	}
 	return sk, pk, nil

@@ -92,7 +92,7 @@ func main() {
 			cmd.Decrypt(),
 			cmd.Sign(),
 			cmd.Verify(),
-			cmd.Cards(apiGatewayClient),
+			cmd.Cards(),
 			cmd.Wave(apiGatewayClient),
 			// cmd.KMS(kmsClient),
 		},

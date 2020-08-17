@@ -39,8 +39,8 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"github.com/VirgilSecurity/virgil-sdk-go/v6/crypto"
 	"github.com/urfave/cli/v2"
-	"gopkg.in/virgil.v5/cryptoimpl"
 
 	"github.com/VirgilSecurity/virgil-cli/utils"
 )
@@ -63,14 +63,18 @@ func OwnSigningKey() *cli.Command {
 }
 
 func printOwnSigningKeys() error {
-	keyPair, err := cryptoimpl.NewKeypair()
+	crypt := &crypto.Crypto{}
+	keyPair, err := crypt.GenerateKeypair()
 
 	if err != nil {
 		return err
 	}
 
-	prKey, err := keyPair.PrivateKey().Encode(nil)
-	pkKey, err := keyPair.PublicKey().Encode()
+	prKey, err := crypt.ExportPrivateKey(keyPair)
+	if err != nil {
+		return err
+	}
+	pkKey, err := crypt.ExportPublicKey(keyPair.PublicKey())
 	if err != nil {
 		return err
 	}
